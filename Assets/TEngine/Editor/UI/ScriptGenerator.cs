@@ -1,4 +1,6 @@
-﻿#if UNITY_EDITOR
+﻿using ScriptGenerator = TEngine.Editor.ScriptGenerator;
+
+#if UNITY_EDITOR
 namespace TEngine.Editor
 {
     using System.Collections.Generic;
@@ -30,7 +32,7 @@ namespace TEngine.Editor
                 return;
             }
 
-            var content = SwitchGroupGenerator.Instance.Process(root);
+            var content = ScriptGenerator.SwitchGroupGenerator.Instance.Process(root);
             TextEditor te = new TextEditor();
             te.text = content;
             te.SelectAll();
@@ -52,8 +54,6 @@ namespace TEngine.Editor
                 if (includeListener)
                 {
                     strFile.Append("using TEngine;\n");
-                    strFile.Append("using TEngine;\n");
-                    strFile.Append("using TEngine.Unitity;\n");
                     strFile.Append("using UnityEngine;\n");
                     strFile.Append("using UnityEngine.UI;\n\n");
                     strFile.Append("\tclass " + root.name + " : UIWindow\n");
@@ -217,7 +217,7 @@ namespace TEngine.Editor
             [MenuItem("GameObject/ScriptGenerator/About", priority = 49)]
             public static void About()
             {
-                GeneratorHelper welcomeWindow = (GeneratorHelper)EditorWindow.GetWindow(typeof(GeneratorHelper), false, "About ScriptGenerator");
+                ScriptGenerator.GeneratorHelper welcomeWindow = (ScriptGenerator.GeneratorHelper)EditorWindow.GetWindow(typeof(ScriptGenerator.GeneratorHelper), false, "About ScriptGenerator");
             }
 
             public void Awake()
