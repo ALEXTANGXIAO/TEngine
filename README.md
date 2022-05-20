@@ -32,7 +32,6 @@ TEngine
   <br>
   <a href="http://1.12.241.46:5000/"><strong>框架文档 »</strong></a>
   <br>
-  ·
   <br>
   <a href="https://github.com/ALEXTANGXIAO/TEngine">框架首页 »</a>
 </p>
