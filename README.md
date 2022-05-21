@@ -65,7 +65,7 @@ class B
 {
   private void SaySomeThings()
   {
-      //跨类发送事件
+      //发送事件流
       GameEventMgr.Instance.Send("TEngine很好用");
       GameEventMgr.Instance.Send(Hellp);
   }
