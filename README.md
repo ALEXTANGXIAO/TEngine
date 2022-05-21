@@ -85,17 +85,17 @@ class ClientHandle
     int playerId = mainpack.playerId;
     var player = PlayerMgr.Instance.GetPlayer(playerId);
     if(player != null){
-      player.Event.Send("Hpchange",hpPack);     //角色Player局部的事件管理器
-      GameEventMgr.Instance.("Hpchange",hpPack);
+      player.Event.Send("Hpchange",hpPack);       //局部的事件管理器
+      GameEventMgr.Instance.("Hpchange",hpPack);  //全局事件中心
     }
   }
 }
 
 class PlayerHp
 {
-  public PlayerEvent Event = new PlayerEvent();
+  public ECSEventCmpt Event { get; set; }
   PlayerHp(){
-    Event.Instance.AddEventListener<HpPack>(Hellp,HandleUpChange);
+    Event.AddEventListener<HpPack>(Hellp,HandleUpChange);
   }
 }
 
