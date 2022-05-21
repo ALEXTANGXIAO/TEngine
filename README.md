@@ -45,7 +45,7 @@
 ```Csharp
 [TLogger][INFO][2022-05-20 23:44:19 871] - DevicePerformanceLevel 设备性能评级:High
 ```
-2. 高效的事件系统GameEventMgr，可以指定事件ID/事件String监听和分发事件。通过事件来驱动模块，如战斗的角色身上的事件流、UI和网络以及Model的数据流、开发中的大部分情况都可以通过事件来进行驱动。(配合UI模块或者拓展的战斗模块实现MVE[Model - View - Event]事件驱动架构)
+2. <strong>高效的事件系统GameEventMgr，可以指定事件ID/事件String监听和分发事件。通过事件来驱动模块，如战斗的角色身上的事件流、UI和网络以及Model的数据流、开发中的绝大部分情况都可以通过事件来进行驱动。(配合UI模块或者拓展的战斗模块实现MVE[Model - View - Event]事件驱动架构)
 ```Csharp
 
 public static int Hellp = StringId.StringToHash("Hellp.Hellp");
@@ -68,6 +68,39 @@ class B
       //跨类发送事件
       GameEventMgr.Instance.Send("TEngine很好用");
       GameEventMgr.Instance.Send(Hellp);
+  }
+}
+
+【举个例子：游戏中血量扣除的时候，服务器发来了一个减少Hp的消息包，我们可以在收到这个消息包的时候发送一个事件流，在玩家头顶的HP进度条组件/左上角Hp的UI血条组件添加一个监听事件，各个模块负责自己监听后的逻辑】
+Server -> SendMessage(ReduceHP)
+
+class ClientHandle
+{
+  private void HandleMessage(MainPack mainpack)
+  {
+    ...
+    HpPack hpPack = mainpack.hpPack;
+    int playerId = mainpack.playerId;
+    var player = PlayerMgr.Instance.GetPlayer(playerId);
+    if(player != null){
+      player.Event.Send("Hpchange",hpPack);     //角色Player局部的事件管理器
+      GameEventMgr.Instance.("Hpchange",hpPack);
+    }
+  }
+}
+
+class PlayerHp
+{
+  public PlayerEvent Event = new PlayerEvent();
+  PlayerHp(){
+    Event.Instance.AddEventListener<HpPack>(Hellp,HandleUpChange);
+  }
+}
+
+class PlayerHpUI
+{
+  PlayerHpUI(){
+    GameEventMgr.Instance.AddEventListener<HpPack>(Hellp,HandleUpChange);
   }
 }
 ```
