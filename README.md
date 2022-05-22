@@ -241,6 +241,11 @@ TEngine
     └── Core            // 核心模块
 ```
 ---
+## <strong>技术支持
+ QQ群：967860570   
+ 欢迎大家提供意见和改进意见，不喜请友善提意见哈 谢谢~
+
+---
 ## <strong>优质开源项目推荐
 #### <a href="https://github.com/JasonXuDeveloper/JEngine"><strong>JEngine</strong></a> - 使Unity开发的游戏支持热更新的解决方案。
 
