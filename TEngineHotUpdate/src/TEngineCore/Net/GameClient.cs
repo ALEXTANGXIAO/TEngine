@@ -112,6 +112,15 @@ namespace TEngineCore.Net
             m_connectWatcher = new ClientConnectWatcher(this);
         }
 
+        ~GameClient()
+        {
+            if (m_connect != null)
+            {
+                m_connect.Close();
+            }
+            m_connect = null;
+        }
+
         public bool Connect(string host, int port, bool reconnect = false)
         {
             ResetParam();
@@ -123,7 +132,7 @@ namespace TEngineCore.Net
             m_lastHost = host;
             m_lastPort = port;
             Status = reconnect ? GameClientStatus.StatusReconnect : GameClientStatus.StatusInit;
-            TLogger.LogWarning("Start connect server {0}:{1} Reconnect:{2}", host, port, reconnect);
+            TLogger.LogInfo("Start connect server {0}:{1} Reconnect:{2}", host, port, reconnect);
             return m_connect.Connect(host, port);
         }
 
@@ -131,6 +140,7 @@ namespace TEngineCore.Net
         {
             m_connect.Close();
             m_status = GameClientStatus.StatusInit;
+            TLogger.LogWarning("GameClient Shut Down");
         }
 
         #region 发送网络消息
@@ -255,11 +265,14 @@ namespace TEngineCore.Net
 
             if (listHandle != null)
             {
-                if (listHandle.Contains(msgDelegate))
+                if (!listHandle.Contains(msgDelegate))
                 {
-                    Debug.LogFormat("-------------repeat RegCmdHandle ActionCode:{0}-----------", (ActionCode)actionId);
+                    listHandle.Add(msgDelegate);
                 }
-                listHandle.Add(msgDelegate);
+                else
+                {
+                    //Debug.LogFormat("-------------repeat RegCmdHandle ActionCode:{0}-----------", (ActionCode)actionId);
+                }
             }
         }
         /// <summary>
@@ -437,7 +450,7 @@ namespace TEngineCore.Net
             uint hashIndex = actionCode % MAX_MSG_HANDLE;
             if (m_aMsgHandles[hashIndex] != null)
             {
-                NotifyTimeout(m_aMsgHandles[hashIndex]);
+                //NotifyTimeout(m_aMsgHandles[hashIndex]);
                 RmvCheckCsMsg((int)hashIndex);
             }
             m_aMsgHandles[hashIndex] = resHandler;
@@ -465,13 +478,16 @@ namespace TEngineCore.Net
                 {
                     var pack = queuepPacks.Peek();
 
-                    handle(pack);
+                    if (pack != null)
+                    {
+                        handle(pack);
 
-                    UInt32 hashIndex = (uint)pack.Actioncode % MAX_MSG_HANDLE;
+                        UInt32 hashIndex = (uint)pack.Actioncode % MAX_MSG_HANDLE;
 
-                    m_aMsgHandles[hashIndex](null);
+                        m_aMsgHandles[hashIndex](null);
 
-                    RmvCheckCsMsg((int)hashIndex);
+                        RmvCheckCsMsg((int)hashIndex);
+                    }
                 }
                 queuepPacks.Dequeue();
             }
@@ -493,6 +509,11 @@ namespace TEngineCore.Net
 
         public override void Release()
         {
+            if (m_connect != null)
+            {
+                m_connect.Close();
+            }
+            m_connect = null;
             base.Release();
         }
 

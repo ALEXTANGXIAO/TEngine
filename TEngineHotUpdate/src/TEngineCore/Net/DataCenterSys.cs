@@ -20,9 +20,26 @@ namespace TEngineCore.Net
             return true;
         }
 
+        public override void OnUpdate()
+        {
+            GameClient.Instance.OnUpdate();
+            var listModule = m_listModule;
+            for (int i = 0; i < listModule.Count; i++)
+            {
+                listModule[i].OnUpdate();
+            }
+        }
+
+        public override void OnDestroy()
+        {
+            GameClient.Instance.Shutdown();
+            base.OnDestroy();
+        }
+
         private void RegCmdHandle()
         {
-            
+            var client = GameClient.Instance;
+            //client.RegActionHandle();
         }
 
         void InitModule()

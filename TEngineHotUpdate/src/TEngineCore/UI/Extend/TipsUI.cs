@@ -6,18 +6,17 @@ using UnityEngine.UI;
 
 namespace TEngineCore
 {
+    public static class TipsEvent
+    {
+        public static int Log = StringId.StringToHash("TipsEvent.Log");
+    }
+
     public class MsgUI : UIWindow
     {
         protected override void RegisterEvent()
         {
-            base.RegisterEvent();
             GameEventMgr.Instance.AddEventListener<string>(TipsEvent.Log, TipsUI.Instance.Show);
         }
-    }
-
-    public class TipsEvent
-    {
-        public static int Log = StringId.StringToHash("TipsEvent.Log");
     }
 
     public class TipsUI : MonoBehaviour

@@ -181,7 +181,7 @@ namespace TEngineCore
                     else
                     {
                         _stringBuilder.AppendFormat(
-                            bColor ? "[TLogger][INFO][{0}] - <color=gray>{1}</color>" : "[TLogger][SUCCESSED][{0}] - {1}",
+                            bColor ? "[TLogger][INFO][{0}] - <color=#00FF18>{1}</color>" : "[TLogger][SUCCESSED][{0}] - {1}",
                             System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff"), logString);
                     }
                     break;

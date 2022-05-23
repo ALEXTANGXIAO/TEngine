@@ -47,9 +47,10 @@ namespace TEngineCore.Net
             {
                 TLogger.LogError(e.Message);
                 TLogger.LogError("socket connect {0}:{1} failed", host, port);
-                //ChangeStateOnEnterFail();
                 return false;
             }
+
+            TLogger.LogInfoSuccessd("connect server[{0}:{1}] success!!!", host, port);
             m_Host = host;
             m_Port = port;
             return true;
