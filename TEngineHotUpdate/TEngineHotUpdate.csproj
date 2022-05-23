@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0"
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -38,8 +39,23 @@
     <Reference Include="UnityEngine">
       <HintPath>UnityLib\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>UnityLib\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>UnityLib\UnityEngine.AssetBundleModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>UnityLib\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>UnityLib\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>UnityLib\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>UnityLib\UnityEngine.InputLegacyModule.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
@@ -49,7 +65,76 @@
   <ItemGroup>
     <Compile Include="GameApp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\**" />
+    <Compile Include="src\TEngineCore\ClientSaveData\ClientSaveData.cs" />
+    <Compile Include="src\TEngineCore\Config\ResConfigUtil.cs" />
+    <Compile Include="src\TEngineCore\Core\BaseLogicSys.cs" />
+    <Compile Include="src\TEngineCore\Core\ILogicSys.cs" />
+    <Compile Include="src\TEngineCore\Core\ListPool.cs" />
+    <Compile Include="src\TEngineCore\Core\MemPoolMgr.cs" />
+    <Compile Include="src\TEngineCore\Core\Singleton.cs" />
+    <Compile Include="src\TEngineCore\Core\TEngine.cs" />
+    <Compile Include="src\TEngineCore\Core\TEngineRedux.cs" />
+    <Compile Include="src\TEngineCore\Core\TLogger.cs" />
+    <Compile Include="src\TEngineCore\Core\TSingleton.cs" />
+    <Compile Include="src\TEngineCore\Core\UnitySingleton.cs" />
+    <Compile Include="src\TEngineCore\ECS\ArrayPool.cs" />
+    <Compile Include="src\TEngineCore\ECS\Demo\ECSDemoApp.cs" />
+    <Compile Include="src\TEngineCore\ECS\Demo\ECSGameSystem.cs" />
+    <Compile Include="src\TEngineCore\ECS\ECSActor.cs" />
+    <Compile Include="src\TEngineCore\ECS\ECSComponent.cs" />
+    <Compile Include="src\TEngineCore\ECS\ECSDebugBehaviour.cs" />
+    <Compile Include="src\TEngineCore\ECS\ECSEventCmpt.cs" />
+    <Compile Include="src\TEngineCore\ECS\ECSObject.cs" />
+    <Compile Include="src\TEngineCore\ECS\ECSSystem.cs" />
+    <Compile Include="src\TEngineCore\ECS\Entity.cs" />
+    <Compile Include="src\TEngineCore\ECS\HotfixComponent.cs" />
+    <Compile Include="src\TEngineCore\ECS\IFixedUpdate.cs" />
+    <Compile Include="src\TEngineCore\ECS\IUpdate.cs" />
+    <Compile Include="src\TEngineCore\ECS\UpdateComponent.cs" />
+    <Compile Include="src\TEngineCore\Event\GameEventMgr.cs" />
+    <Compile Include="src\TEngineCore\Event\StringId.cs" />
+    <Compile Include="src\TEngineCore\FileSystem\FileSystem.cs" />
+    <Compile Include="src\TEngineCore\FileSystem\FileWriter.cs" />
+    <Compile Include="src\TEngineCore\FileSystem\LogToFile.cs" />
+    <Compile Include="src\TEngineCore\Json\JsonHelper.cs" />
+    <Compile Include="src\TEngineCore\Json\LitJson\IJsonWrapper.cs" />
+    <Compile Include="src\TEngineCore\Json\LitJson\JsonData.cs" />
+    <Compile Include="src\TEngineCore\Json\LitJson\JsonException.cs" />
+    <Compile Include="src\TEngineCore\Json\LitJson\JsonMapper.cs" />
+    <Compile Include="src\TEngineCore\Json\LitJson\JsonMockWrapper.cs" />
+    <Compile Include="src\TEngineCore\Json\LitJson\JsonReader.cs" />
+    <Compile Include="src\TEngineCore\Json\LitJson\JsonWriter.cs" />
+    <Compile Include="src\TEngineCore\Json\LitJson\Lexer.cs" />
+    <Compile Include="src\TEngineCore\Json\LitJson\Netstandard15Polyfill.cs" />
+    <Compile Include="src\TEngineCore\Json\LitJson\ParserToken.cs" />
+    <Compile Include="src\TEngineCore\Json\MiniJSON\Json.cs" />
+    <Compile Include="src\TEngineCore\Mono\MonoController.cs" />
+    <Compile Include="src\TEngineCore\Mono\MonoManager.cs" />
+    <Compile Include="src\TEngineCore\Res\AssetBundleData.cs" />
+    <Compile Include="src\TEngineCore\Res\AssetConfig.cs" />
+    <Compile Include="src\TEngineCore\Res\AssetData.cs" />
+    <Compile Include="src\TEngineCore\Res\AssetTag.cs" />
+    <Compile Include="src\TEngineCore\Res\ResMgr.cs" />
+    <Compile Include="src\TEngineCore\Res\TResource.cs" />
+    <Compile Include="src\TEngineCore\Thread\Loom.cs" />
+    <Compile Include="src\TEngineCore\Thread\ThreadMgr.cs" />
+    <Compile Include="src\TEngineCore\UI\Extend\DragItem.cs" />
+    <Compile Include="src\TEngineCore\UI\Extend\EmptyGraph.cs" />
+    <Compile Include="src\TEngineCore\UI\Extend\TipsUI.cs" />
+    <Compile Include="src\TEngineCore\UI\Extend\TweenUtil.cs" />
+    <Compile Include="src\TEngineCore\UI\Extend\UIEventItem.cs" />
+    <Compile Include="src\TEngineCore\UI\Extend\UIWindowWidget.cs" />
+    <Compile Include="src\TEngineCore\UI\IUIController.cs" />
+    <Compile Include="src\TEngineCore\UI\UIBase.cs" />
+    <Compile Include="src\TEngineCore\UI\UIManager.cs" />
+    <Compile Include="src\TEngineCore\UI\UISys.cs" />
+    <Compile Include="src\TEngineCore\UI\UIWindow.cs" />
+    <Compile Include="src\TEngineCore\UI\UIWindowBase.cs" />
+    <Compile Include="src\TEngineCore\Unitity\DevicePerformanceUtil.cs" />
+    <Compile Include="src\TEngineCore\Unitity\UnityUtil.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src\TEngineCore\3rd\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
