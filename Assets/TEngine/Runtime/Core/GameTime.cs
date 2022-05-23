@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace TEngineCore
+namespace TEngine
 {
     /// <summary>
     /// 统一获取游戏内的时间处理，减少多处调用Unity的时间函数

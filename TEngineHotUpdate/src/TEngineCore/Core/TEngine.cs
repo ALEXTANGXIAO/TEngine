@@ -19,6 +19,8 @@ namespace TEngineCore
             RegisterAllSystem();
 
             AfterAwake();
+
+            GameTime.StartFrame();
         }
 
         /// <summary>
@@ -72,6 +74,7 @@ namespace TEngineCore
         #region 生命周期
         public void Start()
         {
+            GameTime.StartFrame();
             var listLogic = m_LogicMgrList;
             var logicCnt = listLogic.Count;
             for (int i = 0; i < logicCnt; i++)
@@ -85,6 +88,7 @@ namespace TEngineCore
 
         public void Update()
         {
+            GameTime.StartFrame();
             var listLogic = m_LogicMgrList;
             var logicCnt = listLogic.Count;
             for (int i = 0; i < logicCnt; i++)
@@ -96,6 +100,7 @@ namespace TEngineCore
 
         public void LateUpdate()
         {
+            GameTime.StartFrame();
             var listLogic = m_LogicMgrList;
             var logicCnt = listLogic.Count;
             for (int i = 0; i < logicCnt; i++)
@@ -107,6 +112,7 @@ namespace TEngineCore
 
         public void OnPause()
         {
+            GameTime.StartFrame();
             for (int i = 0; i < m_LogicMgrList.Count; i++)
             {
                 var logicSys = m_LogicMgrList[i];
@@ -116,6 +122,7 @@ namespace TEngineCore
 
         public void OnResume()
         {
+            GameTime.StartFrame();
             for (int i = 0; i < m_LogicMgrList.Count; i++)
             {
                 var logicSys = m_LogicMgrList[i];
@@ -125,6 +132,7 @@ namespace TEngineCore
 
         protected override void OnDestroy()
         {
+            GameTime.StartFrame();
             for (int i = 0; i < m_LogicMgrList.Count; i++)
             {
                 var logicSys = m_LogicMgrList[i];
