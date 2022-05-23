@@ -57,3 +57,8 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+
+# Hotfix
+TEngineHotUpdate/bin
+TEngineHotUpdate/obj
+
