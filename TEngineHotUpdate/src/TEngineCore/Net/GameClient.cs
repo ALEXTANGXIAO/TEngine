@@ -436,6 +436,11 @@ namespace TEngineCore.Net
         private void RegTimeOutHandle(uint actionCode, CsMsgDelegate resHandler)
         {
             uint hashIndex = actionCode % MAX_MSG_HANDLE;
+            if (m_aMsgHandles[hashIndex] != null)
+            {
+                NotifyTimeout(m_aMsgHandles[hashIndex]);
+                RmvCheckCsMsg((int)hashIndex);
+            }
             m_aMsgHandles[hashIndex] = resHandler;
             m_fMsgRegTime[hashIndex] = GameTime.time;
         }
@@ -457,7 +462,15 @@ namespace TEngineCore.Net
             {
                 foreach (CsMsgDelegate handle in cachelistHandle.Dequeue())
                 {
-                    handle(queuepPacks.Peek());
+                    var pack = queuepPacks.Peek();
+
+                    handle(pack);
+
+                    UInt32 hashIndex = (uint)pack.Actioncode % MAX_MSG_HANDLE;
+
+                    m_aMsgHandles[hashIndex](null);
+
+                    RmvCheckCsMsg((int)hashIndex);
                 }
                 queuepPacks.Dequeue();
             }
