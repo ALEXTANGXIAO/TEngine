@@ -451,7 +451,9 @@ namespace TEngineCore.Net
         }
 
         #endregion
-
+        /// <summary>
+        /// 主线程从消息包缓存堆栈/委托缓存堆栈中出列
+        /// </summary>
         private void HandleCsMsgOnUpdate()
         {
             if (cachelistHandle.Count <= 0 || queuepPacks.Count <= 0)
