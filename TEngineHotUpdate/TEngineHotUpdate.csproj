@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0"
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -56,6 +57,12 @@
     <Reference Include="UnityEngine.InputLegacyModule">
       <HintPath>UnityLib\UnityEngine.InputLegacyModule.dll</HintPath>
     </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>UnityLib\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>UnityLib\Google.Protobuf.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
@@ -68,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\GameLogic\" />
+    <Folder Include="src\Proto\" />
     <Folder Include="src\TEngineCore\3rd\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

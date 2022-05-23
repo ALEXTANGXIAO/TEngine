@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using TEngineCore;
 
 namespace TEngineHotUpdate
 {
@@ -12,32 +6,32 @@ namespace TEngineHotUpdate
     {
         public static void Init()
         {
-            Debug.Log("Init");
+            GameTime.StartFrame();
         }
 
         public static void Start()
         {
-            Debug.Log("Start");
+            GameTime.StartFrame();
         }
 
         public static void Update()
         {
-            Debug.Log("Update");
+            GameTime.StartFrame();
         }
 
         public static void LateUpdate()
         {
-            Debug.Log("LateUpdate");
+            GameTime.StartFrame();
         }
 
         public static void Destroy()
         {
-            
+            GameTime.StartFrame();
         }
 
         public static void OnApplicationPause(bool isPause)
         {
-            
+            GameTime.StartFrame();
         }
     }
 }
