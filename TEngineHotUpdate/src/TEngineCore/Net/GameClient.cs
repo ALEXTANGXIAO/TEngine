@@ -219,12 +219,11 @@ namespace TEngineCore.Net
             }
         }
         /// <summary>
-        /// Udp网络消息回调，非主线程
+        /// Udp网络消息回调，Loom多线程回调到此处，主线程
         /// </summary>
         /// <param name="pack"></param>
-        private void UdpHandleResponse(MainPack pack)
+        public void UdpHandleResponse(MainPack pack)
         {
-            //Debug.Log(pack);
             List<CsMsgDelegate> listHandle;
 
             if (m_mapCmdHandle.TryGetValue((int)pack.Actioncode, out listHandle))

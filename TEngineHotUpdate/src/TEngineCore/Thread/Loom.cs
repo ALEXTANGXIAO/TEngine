@@ -116,7 +116,7 @@ namespace TEngineCore
             }
         }
 
-        public static Thread RunAsync(string actionName,Action action)
+        public static Thread RunAsync(Action action)
         {
             Initialize();
             while (_numThreads >= MaxThreads)
