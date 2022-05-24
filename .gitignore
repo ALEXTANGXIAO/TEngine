@@ -9,7 +9,7 @@
 /[Bb]uilds/
 /[Ll]ogs/
 /[Mm]emoryCaptures/
-
+/EditorBuild/
 # /[Aa]ssets/TResources/DLL/
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
