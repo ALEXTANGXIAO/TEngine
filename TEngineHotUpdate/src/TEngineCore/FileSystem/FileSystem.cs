@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace TEngineCore
 {
@@ -137,7 +138,19 @@ namespace TEngineCore
             if (string.IsNullOrEmpty(filePath))
                 return null;
 
+#if UNITY_ANDROID && !UNITY_EDITOR
+            //外部目录
+            if (filePath.StartsWith(Application.persistentDataPath))
+            {
+                return ReadAllBytesFromOutFolder(filePath);
+            }
+            else //内部目录
+            {
+                return ReadAllBytesFromInnerFolder(filePath);
+            }
+#else
             return ReadAllBytesFromOutFolder(filePath);
+#endif
         }
 
         private static byte[] ReadAllBytesFromOutFolder(string filePath)
@@ -148,6 +161,38 @@ namespace TEngineCore
                 return null;
             }
             return File.ReadAllBytes(filePath);
+        }
+
+        private static byte[] ReadAllBytesFromInnerFolder(string filePath)
+        {
+#if !UNITY_ANDROID || UNITY_EDITOR
+            filePath = $"file://{filePath}";
+#endif
+            UnityWebRequest www = UnityWebRequest.Get(filePath);
+            UnityWebRequestAsyncOperation request = www.SendWebRequest();
+            while (!request.isDone) ;
+            byte[] data = www.downloadHandler.data;
+            www.downloadHandler.Dispose();
+            www.Dispose();
+            www = null;
+            return data;
+        }
+
+        /// <summary>
+        /// 读取内部目录
+        /// </summary>
+        /// <param name="filePath">文件完整路径</param>
+        /// <returns></returns>
+        private static string ReadTextFromInnerFolder(string filePath)
+        {
+#if !UNITY_ANDROID || UNITY_EDITOR
+            filePath = $"file://{filePath}";
+#endif
+            UnityWebRequest www = UnityWebRequest.Get(filePath);
+            UnityWebRequestAsyncOperation request = www.SendWebRequest();
+            while (!request.isDone) ;
+
+            return www.downloadHandler.text;
         }
     }
 }
