@@ -126,5 +126,28 @@ namespace TEngineCore
             return File.OpenRead(filePath);
 #endif
         }
+
+        /// <summary>
+        /// 从指定文件中读取字节串
+        /// </summary>
+        /// <param name="filePath">文件路径</param>
+        /// <returns></returns>
+        public static byte[] ReadAllBytesFromOutOrInnerFolder(string filePath)
+        {
+            if (string.IsNullOrEmpty(filePath))
+                return null;
+
+            return ReadAllBytesFromOutFolder(filePath);
+        }
+
+        private static byte[] ReadAllBytesFromOutFolder(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                TLogger.LogError("file:[{0}] is not exist!, please check!", filePath);
+                return null;
+            }
+            return File.ReadAllBytes(filePath);
+        }
     }
 }
