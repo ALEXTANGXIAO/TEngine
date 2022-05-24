@@ -117,15 +117,17 @@ namespace TEngineCore
 
         public static Stream OpenRead(string filePath)
         {
-#if UNITY_ANDROID && !UNITY_EDITOR
-            byte[] bytes = ReadAllBytesFromOutOrInnerFolder(filePath);
-            if (bytes != null)
-                return new MemoryStream(bytes);
-            else
-                return null;
-#else
-            return File.OpenRead(filePath);
+#if !UNITY_EDITOR
+            if (Application.platform == RuntimePlatform.Android)
+            {
+                byte[] bytes = ReadAllBytesFromOutOrInnerFolder(filePath);
+                if (bytes != null)
+                    return new MemoryStream(bytes);
+                else
+                    return null;
+            }
 #endif
+            return File.OpenRead(filePath);
         }
 
         /// <summary>
@@ -137,20 +139,21 @@ namespace TEngineCore
         {
             if (string.IsNullOrEmpty(filePath))
                 return null;
-
-#if UNITY_ANDROID && !UNITY_EDITOR
-            //外部目录
-            if (filePath.StartsWith(Application.persistentDataPath))
+            if (Application.platform == RuntimePlatform.Android)
             {
-                return ReadAllBytesFromOutFolder(filePath);
-            }
-            else //内部目录
-            {
-                return ReadAllBytesFromInnerFolder(filePath);
-            }
-#else
-            return ReadAllBytesFromOutFolder(filePath);
+#if !UNITY_EDITOR
+                //外部目录
+                if (filePath.StartsWith(Application.persistentDataPath))
+                {
+                    return ReadAllBytesFromOutFolder(filePath);
+                }
+                else //内部目录
+                {
+                    return ReadAllBytesFromInnerFolder(filePath);
+                }
 #endif
+            }
+            return ReadAllBytesFromOutFolder(filePath);
         }
 
         private static byte[] ReadAllBytesFromOutFolder(string filePath)
@@ -165,9 +168,10 @@ namespace TEngineCore
 
         private static byte[] ReadAllBytesFromInnerFolder(string filePath)
         {
-#if !UNITY_ANDROID || UNITY_EDITOR
-            filePath = $"file://{filePath}";
-#endif
+            if (Application.platform != RuntimePlatform.Android || Application.platform == RuntimePlatform.WindowsEditor)
+            {
+                filePath = $"file://{filePath}";
+            }
             UnityWebRequest www = UnityWebRequest.Get(filePath);
             UnityWebRequestAsyncOperation request = www.SendWebRequest();
             while (!request.isDone) ;
@@ -185,9 +189,10 @@ namespace TEngineCore
         /// <returns></returns>
         private static string ReadTextFromInnerFolder(string filePath)
         {
-#if !UNITY_ANDROID || UNITY_EDITOR
-            filePath = $"file://{filePath}";
-#endif
+            if (Application.platform != RuntimePlatform.Android || Application.platform == RuntimePlatform.WindowsEditor)
+            {
+                filePath = $"file://{filePath}";
+            }
             UnityWebRequest www = UnityWebRequest.Get(filePath);
             UnityWebRequestAsyncOperation request = www.SendWebRequest();
             while (!request.isDone) ;

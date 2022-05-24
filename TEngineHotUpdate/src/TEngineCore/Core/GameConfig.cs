@@ -104,11 +104,15 @@ namespace TEngineCore
         /// <returns></returns>
         internal string GetInnerVersion()
         {
-#if UNITY_ANDROID && !UNITY_EDITOR
-            var innerPath = Path.Combine(FileSystem.ResourceRootInStreamAsset, CONFIG);
-#else
-            var innerPath = $"file://{Path.Combine(FileSystem.ResourceRootInStreamAsset, CONFIG)}";
-#endif
+            string innerPath = string.Empty;
+            if (Application.platform == RuntimePlatform.Android)
+            {
+                innerPath = Path.Combine(FileSystem.ResourceRootInStreamAsset, CONFIG);
+            }
+            else
+            {
+                innerPath = $"file://{Path.Combine(FileSystem.ResourceRootInStreamAsset, CONFIG)}";
+            }
             var www = UnityWebRequest.Get(innerPath);
             var request = www.SendWebRequest();
             while (!request.isDone)
