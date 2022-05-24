@@ -41,7 +41,7 @@ public class TEngineUI : UIWindow
 
     protected override void OnUpdate()
     {
-        TEngineHotUpdate.GameLogicMain.Update();
+        //TEngineHotUpdate.GameLogicMain.Update();
         TLogger.LogInfo("TEngineUI OnUpdate");
     }
 
