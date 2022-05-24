@@ -23,16 +23,6 @@ namespace TEngineCore.Net
     {
 
         #region Propriety
-
-        #region TimeOutCheck
-        private const int CHECK_TIMEOUT_PERFRAME = 10;
-        const int MAX_MSG_HANDLE = 256;
-        UInt32 m_dwLastCheckIndex = 0;
-        CsMsgDelegate[] m_aMsgHandles = new CsMsgDelegate[MAX_MSG_HANDLE];
-        float[] m_fMsgRegTime = new float[MAX_MSG_HANDLE];
-        private float m_timeout = 15;
-        #endregion
-
         private string m_lastHost = null;
         private int m_lastPort = 0;
         private GameClientStatus m_status = GameClientStatus.StatusInit;
@@ -415,6 +405,14 @@ namespace TEngineCore.Net
 
         #region 超时检测
 
+        #region TimeOutCheck
+        private const int CHECK_TIMEOUT_PERFRAME = 10;
+        const int MAX_MSG_HANDLE = 256;
+        UInt32 m_dwLastCheckIndex = 0;
+        CsMsgDelegate[] m_aMsgHandles = new CsMsgDelegate[MAX_MSG_HANDLE];
+        float[] m_fMsgRegTime = new float[MAX_MSG_HANDLE];
+        private float m_timeout = 15;
+        #endregion
         private readonly MainPack _timeOutPack = new MainPack { Returncode = ReturnCode.MsgTimeOut };
         private void CheckCsMsgTimeOut()
         {
@@ -480,8 +478,6 @@ namespace TEngineCore.Net
                         handle(pack);
 
                         UInt32 hashIndex = (uint)pack.Actioncode % MAX_MSG_HANDLE;
-
-                        m_aMsgHandles[hashIndex](null);
 
                         RmvCheckCsMsg((int)hashIndex);
                     }
