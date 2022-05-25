@@ -140,7 +140,7 @@ namespace TEngine
             return _source;
         }
 
-        public static TAudio Create(string path, bool bAsync, AudioMixerGroup audioMixerGroup, bool bInPool = false)
+        public static TAudio Create(string path, bool bAsync, AudioMixerGroup audioMixerGroup = null, bool bInPool = false)
         {
             TAudio audio = new TAudio();
             audio.Init(audioMixerGroup);
@@ -149,7 +149,7 @@ namespace TEngine
             return audio;
         }
 
-        public void Init(AudioMixerGroup audioMixerGroup)
+        public void Init(AudioMixerGroup audioMixerGroup = null)
         {
             GameObject host = new GameObject("Audio");
             host.transform.SetParent(AudioManager.Instance.transform);
@@ -157,7 +157,10 @@ namespace TEngine
             _transform = host.transform;
             _source = host.AddComponent<AudioSource>();
             _source.playOnAwake = false;
-            _source.outputAudioMixerGroup = audioMixerGroup;
+            if (audioMixerGroup != null)
+            {
+                _source.outputAudioMixerGroup = audioMixerGroup;
+            }
             _id = _source.GetInstanceID();
         }
 
@@ -223,7 +226,6 @@ namespace TEngine
                     assetData.AddRef();
                     AudioManager.Instance.AudioClipPool.Add(assetData.Path, assetData);
                 }
-
             }
 
 
