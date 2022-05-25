@@ -74,6 +74,7 @@ namespace TEngine
         #region 生命周期
         public void Start()
         {
+            GameTime.Start();
             GameTime.StartFrame();
             var listLogic = m_LogicMgrList;
             var logicCnt = listLogic.Count;
