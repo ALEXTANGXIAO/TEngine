@@ -233,6 +233,17 @@ namespace TEngine
 #endif
         }
 
+        public void GetAssetAsync(string path, bool withSubAssets, System.Action<AssetData> onComplete)
+        {
+            if (string.IsNullOrEmpty(path)) onComplete(null);
+
+#if ASSETBUNDLE_ENABLE
+            _assetConfig.GetAssetAtPathAsync(path, withSubAssets, onComplete);
+#else
+            onComplete(GetAsset(path, withSubAssets));
+#endif
+        }
+
         #endregion
 
         public bool Exists(string path)
