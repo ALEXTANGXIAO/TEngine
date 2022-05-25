@@ -91,6 +91,31 @@ namespace TEngine.Editor
             assetPaths = AssetDatabase.GetDependencies(assetPaths);
             AssetDatabase.ExportPackage(assetPaths, path, ExportPackageOptions.Interactive | ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies);
         }
+
+        [MenuItem("Assets/Get Asset Path", priority = 3)]
+        static void GetAssetPath()
+        {
+            UnityEngine.Object selObj = Selection.activeObject;
+
+            if (selObj != null)
+            {
+                string assetPath = AssetDatabase.GetAssetPath(selObj);
+                int sindex = assetPath.IndexOf(AssetConfig.AssetRootPath);
+                int eindex = assetPath.LastIndexOf('.');
+                if (sindex >= 0 && eindex >= 0)
+                {
+                    string resPath = assetPath.Substring(sindex + AssetConfig.AssetRootPath.Length + 1);
+                    if (selObj is Sprite)
+                        resPath += $"#{selObj.name}";
+                    TLogger.LogInfoSuccessd($"Asset path is {resPath}");
+                    EditorGUIUtility.systemCopyBuffer = resPath;
+                }
+                else
+                {
+                    TLogger.LogError("This is not a Asset file!");
+                }
+            }
+        }
 #endif
-    }
+        }
 }
