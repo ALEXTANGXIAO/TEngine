@@ -72,7 +72,9 @@ namespace TEngine
                     assetData.AddRef();
                     result = assetData.AssetObject as T;
                     if (result != null && !_scriptableObjects.ContainsKey(result))
+                    {
                         _scriptableObjects.Add(result, assetData);
+                    }
                 }
             }
 
@@ -82,7 +84,9 @@ namespace TEngine
         public T Load<T>(string path) where T:UnityEngine.Object
         {
             if (string.IsNullOrEmpty(path))
+            {
                 return null;
+            }
 
             T result = null;
             AssetData assetData = _assetConfig.GetAssetAtPath(path);
@@ -112,7 +116,9 @@ namespace TEngine
         public GameObject GetGameObject(string path)
         {
             if (string.IsNullOrEmpty(path))
+            {
                 return null;
+            }
 
             GameObject go = null;
             AssetData assetData = _assetConfig.GetAssetAtPath(path);
@@ -120,7 +126,9 @@ namespace TEngine
             if (assetData != null)
             {
                 go = Object.Instantiate(assetData.AssetObject) as GameObject;
-                BindAssetData(go, assetData);
+                {
+                    BindAssetData(go, assetData);
+                }
             }
 
             return go;
@@ -139,7 +147,9 @@ namespace TEngine
         public byte[] GetBytesFromAsset(string path)
         {
             if (string.IsNullOrEmpty(path))
+            {
                 return null;
+            }
 
             byte[] result = null;
             AssetData assetData = _assetConfig.GetAssetAtPath(path);

@@ -344,11 +344,14 @@ namespace TEngine
             if (_assetPath2BundleDatas.TryGetValue(path, out bundleName))
             {
                 if (!_bundleDatas.TryGetValue(bundleName, out assetBundleData))
+                {
                     TLogger.LogError($"Can not get AssetBundleData with AssetBundle '{bundleName}'!");
+                }
             }
             else
+            {
                 TLogger.LogError($"Can not find '{path}' in any AssetBundle!");
-
+            }
             return assetBundleData;
         }
     }
