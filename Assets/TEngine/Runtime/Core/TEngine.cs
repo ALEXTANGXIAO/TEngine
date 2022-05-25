@@ -12,11 +12,6 @@ namespace TEngine
         {
             base.Awake();
 
-#if ENABLE_GM || UNITY_EDITOR || _DEVELOPMENT_BUILD_
-            GMPage.CollectExecCommands();
-            GMPage.Active();
-#endif
-
             TLogger.LogInfo($"DevicePerformanceLevel 设备性能评级:{DevicePerformanceUtil.GetDevicePerformanceLevel()}");
 
             InitLibImp();

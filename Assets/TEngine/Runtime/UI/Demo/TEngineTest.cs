@@ -18,18 +18,18 @@ public class TEngineTest : TEngine.TEngine
 
     protected override void StartGame()
     {
-        UISys.Mgr.ShowWindow<TEngineUI>(true);
-
-        UISys.Mgr.ShowWindow<MsgUI>(true);
-
-        StartCoroutine(ActiveObjMgr());
+        StartCoroutine(Run());
     }
 
-    IEnumerator ActiveObjMgr()
+    IEnumerator Run()
     {
         yield return new WaitForSeconds(2.0f);
 
         ObjMgr.Instance.Active();
+
+        UISys.Mgr.ShowWindow<TEngineUI>(true);
+
+        UISys.Mgr.ShowWindow<MsgUI>(true);
     }
 
 }
