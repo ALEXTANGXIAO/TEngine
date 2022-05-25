@@ -5,9 +5,6 @@ using UnityEngine.U2D;
 
 namespace TEngine
 {
-    /// <summary>
-    /// 封装的AssetBundle
-    /// </summary>
     public class AssetData
     {
         private AssetBundleData _refBundle;
@@ -56,14 +53,8 @@ namespace TEngine
 
         public string FullPath => _fPath;
 
-        /// <summary>
-        /// Asset名
-        /// </summary>
         public string Name => _name;
 
-        /// <summary>
-        /// 异步操作对象
-        /// </summary>
         public AsyncOperation AsyncOp
         {
             get
@@ -111,14 +102,11 @@ namespace TEngine
             _fPath = path;
         }
 
-        /// <summary>
-        /// 增引用计数
-        /// </summary>
         public void AddRef()
         {
             ++_refCount;
 #if UNITY_EDITOR
-            //TLogger.LogInfo($"Add AssetData {_fPath} _refCount = {_refCount}");
+            TLogger.LogInfoSuccessd($"Add AssetData {_fPath} _refCount = {_refCount}");
 #endif
         }
 
@@ -129,7 +117,7 @@ namespace TEngine
         {
             --_refCount;
 #if UNITY_EDITOR
-            //TLogger.LogInfo($"Dec AssetData {_fPath} _refCount = {_refCount}");
+            TLogger.LogInfoSuccessd($"Dec AssetData {_fPath} _refCount = {_refCount}");
 #endif
             if (_refCount <= 0)
             {
@@ -328,11 +316,15 @@ namespace TEngine
         public void LoadScene(LoadSceneMode mode)
         {
             if (_refBundle != null && _refBundle.Bundle == null)
+            {
                 _refBundle.Load();
+            }
 
             _asyncLoadRequest = SceneManager.LoadSceneAsync(_name, mode);
             if (_asyncLoadRequest != null)
+            {
                 _asyncLoadRequest.allowSceneActivation = false;
+            }
         }
 
         /// <summary>

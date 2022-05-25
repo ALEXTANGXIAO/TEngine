@@ -27,7 +27,7 @@ namespace TEngine
     {
         List<MemPoolBase> m_listPool = new List<MemPoolBase>();
 
-        [Conditional("TEngine_DEBUG")]
+        [Conditional("UNITY_EDITOR")]
         public void ShowCount()
         {
             int totalCnt = 0;
