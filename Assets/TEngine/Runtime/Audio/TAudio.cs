@@ -152,7 +152,7 @@ namespace TEngine
         public void Init(AudioMixerGroup audioMixerGroup = null)
         {
             GameObject host = new GameObject("Audio");
-            host.transform.SetParent(AudioManager.Instance.transform);
+            host.transform.SetParent(AudioMgr.Instance.transform);
             host.transform.localPosition = Vector3.zero;
             _transform = host.transform;
             _source = host.AddComponent<AudioSource>();
@@ -172,9 +172,9 @@ namespace TEngine
                 _duration = 0;
                 if (!string.IsNullOrEmpty(path))
                 {
-                    if (AudioManager.Instance.AudioClipPool.ContainsKey(path))
+                    if (AudioMgr.Instance.AudioClipPool.ContainsKey(path))
                     {
-                        OnAssetLoadComplete(AudioManager.Instance.AudioClipPool[path]);
+                        OnAssetLoadComplete(AudioMgr.Instance.AudioClipPool[path]);
                         return;
                     }
                     if (bAsync)
@@ -221,10 +221,10 @@ namespace TEngine
             if (assetData != null)
             {
                 assetData.OnAsyncLoadComplete -= OnAssetLoadComplete;
-                if (_inPool && !AudioManager.Instance.AudioClipPool.ContainsKey(assetData.Path))
+                if (_inPool && !AudioMgr.Instance.AudioClipPool.ContainsKey(assetData.Path))
                 {
                     assetData.AddRef();
-                    AudioManager.Instance.AudioClipPool.Add(assetData.Path, assetData);
+                    AudioMgr.Instance.AudioClipPool.Add(assetData.Path, assetData);
                 }
             }
 
