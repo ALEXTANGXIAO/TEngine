@@ -18,18 +18,26 @@ namespace TEngine
 
     public class AudioMgr : UnitySingleton<AudioMgr>
     {
+        #region Propreties
+        private float _volume = 1f;
+        private bool _enable = true;
+        private bool _disabled = false;
+        public AudioMixer audioMixer { get; set; }
+        float[] _agentVolume = new float[(int)AudioType.Max];
         private AudioAgent[] _audioAgents = new AudioAgent[(int)AudioType.Max];
         public Dictionary<string, int> _soundConfigDic = new Dictionary<string, int>();
         public Dictionary<string, AssetData> AudioClipPool = new Dictionary<string, AssetData>();
-        private float _volume = 1f;
-        private bool _enable = true;
-        private bool _bUnityAudioDisabled = false;
+        #endregion
 
+        #region 控制器
+        /// <summary>
+        /// 总音量
+        /// </summary>
         public float Volume
         {
             get
             {
-                if (_bUnityAudioDisabled)
+                if (_disabled)
                 {
                     return 0.0f;
                 }
@@ -37,7 +45,7 @@ namespace TEngine
             }
             set
             {
-                if (_bUnityAudioDisabled)
+                if (_disabled)
                 {
                     return;
                 }
@@ -46,11 +54,14 @@ namespace TEngine
             }
         }
 
+        /// <summary>
+        /// 总开关
+        /// </summary>
         public bool Enable
         {
             get
             {
-                if (_bUnityAudioDisabled)
+                if (_disabled)
                 {
                     return false;
                 }
@@ -58,7 +69,7 @@ namespace TEngine
             }
             set
             {
-                if (_bUnityAudioDisabled)
+                if (_disabled)
                 {
                     return;
                 }
@@ -67,29 +78,197 @@ namespace TEngine
             }
         }
 
+        /// <summary>
+        /// 背景音量
+        /// </summary>
+        public float MusicVolume
+        {
+            get
+            {
+                if (_disabled)
+                {
+                    return 0.0f;
+                }
+                return _agentVolume[(int)AudioType.Music];
+            }
+            set
+            {
+                if (_disabled)
+                {
+                    return;
+                }
+                float volume = Mathf.Clamp(value, 0.0001f, 1.0f);
+                _agentVolume[(int)AudioType.Music] = volume;
+                audioMixer.SetFloat("MusicVolume", Mathf.Log10(volume) * 20f);
+            }
+        }
+
+        /// <summary>
+        /// 音效音量
+        /// </summary>
+        public float SoundVolume
+        {
+            get
+            {
+                if (_disabled)
+                {
+                    return 0.0f;
+                }
+                return _agentVolume[(int)AudioType.Sound];
+            }
+            set
+            {
+                if (_disabled)
+                {
+                    return;
+                }
+                float volume = Mathf.Clamp(value, 0.0001f, 1.0f);
+                _agentVolume[(int)AudioType.Sound] = volume;
+                audioMixer.SetFloat("SoundVolume", Mathf.Log10(volume) * 20f);
+            }
+        }
+
+        /// <summary>
+        /// Voice音量
+        /// </summary>
+        public float VoiceVolume
+        {
+            get
+            {
+                if (_disabled)
+                {
+                    return 0.0f;
+                }
+                return _agentVolume[(int)AudioType.Voice];
+            }
+            set
+            {
+                if (_disabled)
+                {
+                    return;
+                }
+                float volume = Mathf.Clamp(value, 0.0001f, 1.0f);
+                _agentVolume[(int)AudioType.Voice] = volume;
+                audioMixer.SetFloat("VoiceVolume", Mathf.Log10(volume) * 20f);
+            }
+        }
+
+        public bool MusicEnable
+        {
+            get
+            {
+                if (_disabled)
+                {
+                    return false;
+                }
+                float db;
+                if (audioMixer.GetFloat("MusicVolume", out db))
+                {
+                    return db > -80f;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            set
+            {
+                if (_disabled)
+                {
+                    return;
+                }
+                if (value)
+                {
+                    audioMixer.SetFloat("MusicVolume", Mathf.Log10(_agentVolume[(int)AudioType.Music]) * 20f);
+                }
+                else
+                {
+                    audioMixer.SetFloat("MusicVolume", -80f);
+                }
+            }
+        }
+
+        public bool SoundEnable
+        {
+            get
+            {
+                if (_disabled)
+                {
+                    return false;
+                }
+                return _audioAgents[(int)AudioType.Sound].Enable;
+            }
+            set
+            {
+                if (_disabled)
+                {
+                    return;
+                }
+                _audioAgents[(int)AudioType.Sound].Enable = value;
+            }
+        }
+
+        public bool VoiceEnable
+        {
+            get
+            {
+                if (_disabled)
+                {
+                    return false;
+                }
+                return _audioAgents[(int)AudioType.Voice].Enable;
+            }
+            set
+            {
+                if (_disabled)
+                {
+                    return;
+                }
+                _audioAgents[(int)AudioType.Voice].Enable = value;
+            }
+        }
+        #endregion
+
+
         protected override void OnLoad()
         {
             try
             {
                 TypeInfo typeInfo = typeof(AudioSettings).GetTypeInfo();
                 PropertyInfo propertyInfo = typeInfo.GetDeclaredProperty("unityAudioDisabled");
-                _bUnityAudioDisabled = (bool)propertyInfo.GetValue(null);
-                if (_bUnityAudioDisabled)
+                _disabled = (bool)propertyInfo.GetValue(null);
+                if (_disabled)
                 {
                     return;
                 }
-                //_soundConfigDic = JsonConvert.DeserializeObject<Dictionary<string, int>>(str);
             }
             catch (Exception e)
             {
                 TLogger.LogError(e.ToString());
+            }
+
+            audioMixer = TResources.Load<AudioMixer>("Audio/TEngineAudioMixer.mixer");
+
+            for (int i = 0; i < (int)AudioType.Max; ++i)
+            {
+                int channelMaxNum = 0;
+                if (i == (int)AudioType.Sound)
+                {
+                    channelMaxNum = 10;
+                }
+                else
+                {
+                    channelMaxNum = 1;
+                }
+                _audioAgents[i] = new AudioAgent(channelMaxNum, audioMixer.FindMatchingGroups(((AudioType)i).ToString())[0]);
+                _agentVolume[i] = 1.0f;
             }
         }
 
         #region 外部调用播放操作
         public TAudio Play(AudioType type, string path, bool bLoop = false, float volume = 1.0f, bool bAsync = false, bool bInPool = false)
         {
-            if (_bUnityAudioDisabled)
+            if (_disabled)
             {
                 return null;
             }
@@ -106,7 +285,7 @@ namespace TEngine
 
         public void Stop(AudioType type, bool fadeout)
         {
-            if (_bUnityAudioDisabled)
+            if (_disabled)
             {
                 return;
             }
@@ -115,7 +294,7 @@ namespace TEngine
 
         public void StopAll(bool fadeout)
         {
-            if (_bUnityAudioDisabled)
+            if (_disabled)
             {
                 return;
             }
@@ -131,7 +310,7 @@ namespace TEngine
 
         public void Restart()
         {
-            if (_bUnityAudioDisabled)
+            if (_disabled)
             {
                 return;
             }
@@ -159,7 +338,7 @@ namespace TEngine
         #region Pool
         public void PutInAudioPool(List<string> list)
         {
-            if (_bUnityAudioDisabled)
+            if (_disabled)
                 return;
             foreach (string path in list)
             {
@@ -173,7 +352,7 @@ namespace TEngine
 
         public void RemoveClipFromPool(List<string> list)
         {
-            if (_bUnityAudioDisabled)
+            if (_disabled)
             {
                 return;
             }
@@ -189,7 +368,7 @@ namespace TEngine
 
         public void CleanSoundPool()
         {
-            if (_bUnityAudioDisabled)
+            if (_disabled)
             {
                 return;
             }
@@ -213,6 +392,7 @@ namespace TEngine
         #endregion
     }
 
+    #region AudioAgent
     public class AudioAgent
     {
         public List<TAudio> _audioObjects;
@@ -273,7 +453,10 @@ namespace TEngine
 
         public TAudio Play(string path, bool bAsync, bool bInPool = false)
         {
-            if (!_bEnable) return null;
+            if (!_bEnable)
+            {
+                return null;
+            }
             int freeChannel = -1;
             float duration = -1;
             int num = 0;
@@ -282,7 +465,9 @@ namespace TEngine
                 if (_audioObjects[i] != null && _audioObjects[i]._assetData != null && _audioObjects[i].IsFinish == false)
                 {
                     if (path.Equals(_audioObjects[i]._assetData.Path))
+                    {
                         num++;
+                    }
                 }
             }
 
@@ -295,6 +480,7 @@ namespace TEngine
                         if (_audioObjects[i].Duration > duration)
                         {
                             duration = _audioObjects[i].Duration;
+
                             freeChannel = i;
                         }
                     }
@@ -304,11 +490,13 @@ namespace TEngine
                     if (_audioObjects[i]._assetData == null || _audioObjects[i].IsFinish == true)
                     {
                         freeChannel = i;
+
                         break;
                     }
                     else if (_audioObjects[i].Duration > duration)
                     {
                         duration = _audioObjects[i].Duration;
+
                         freeChannel = i;
                     }
                 }
@@ -317,9 +505,13 @@ namespace TEngine
             if (freeChannel >= 0)
             {
                 if (_audioObjects[freeChannel] == null)
+                {
                     _audioObjects[freeChannel] = TAudio.Create(path, bAsync, _audioMixerGroup, bInPool);
+                }
                 else
+                {
                     _audioObjects[freeChannel].Load(path, bAsync, bInPool);
+                }
                 return _audioObjects[freeChannel];
             }
             else
@@ -351,4 +543,5 @@ namespace TEngine
             }
         }
     }
+    #endregion
 }

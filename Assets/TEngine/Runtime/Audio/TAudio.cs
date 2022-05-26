@@ -66,9 +66,13 @@ namespace TEngine
             get
             {
                 if (_source != null)
+                {
                     return _state == State.End;
+                }
                 else
+                {
                     return true;
+                }
             }
         }
 
@@ -109,14 +113,20 @@ namespace TEngine
             get
             {
                 if (_source != null)
+                {
                     return _source.loop;
+                }
                 else
+                {
                     return false;
+                }
             }
             set
             {
                 if (_source != null)
+                {
                     _source.loop = value;
+                }
             }
         }
         internal bool IsPlaying
@@ -233,7 +243,9 @@ namespace TEngine
             {
                 assetData.AddRef();
                 if (assetData != null)
+                {
                     assetData.DecRef();
+                }
                 _state = State.End;
                 string path = _pendingLoad.path;
                 bool bAsync = _pendingLoad.bAsync;
@@ -244,9 +256,10 @@ namespace TEngine
             {
                 assetData.AddRef();
                 if (_assetData != null)
+                {
                     _assetData.DecRef();
+                }
                 _assetData = assetData;
-
                 _source.clip = _assetData.AssetObject as AudioClip;
                 if (_source.clip != null)
                 {
@@ -269,7 +282,9 @@ namespace TEngine
             if (_state == State.Playing)
             {
                 if (!_source.isPlaying)
+                {
                     _state = State.End;
+                }
             }
             else if (_state == State.FadingOut)
             {
@@ -299,7 +314,7 @@ namespace TEngine
         {
             if (_transform != null)
             {
-                GameObject.Destroy(_transform.gameObject);
+                Object.Destroy(_transform.gameObject);
             }
 
             if (_assetData != null)
