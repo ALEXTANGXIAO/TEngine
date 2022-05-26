@@ -1,6 +1,7 @@
 <linker>
 	<assembly fullname="GameLogic" preserve="all"/>
 	<assembly fullname="TEngine" preserve="all"/>
+	<assembly fullname="TEngineCore" preserve="all"/>
 	<assembly fullname="Unity.Main" preserve="all" />
 	<assembly fullname="Unity.Hotfix" preserve="all" />
 	<assembly fullname="Unity.NGUI" preserve="all" />
