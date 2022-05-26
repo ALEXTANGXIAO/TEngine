@@ -348,7 +348,7 @@ namespace TEngineCore.Net
                 return;
             }
 
-            var nowTime = GameTime.realtimeSinceStartup;
+            var nowTime = GameTime.RealtimeSinceStartup;
             if (m_lastHbTime + m_heartBeatDurTime < nowTime)
             {
                 m_lastHbTime = nowTime;
@@ -373,7 +373,7 @@ namespace TEngineCore.Net
             }
             else
             {
-                float diffTime = GameTime.realtimeSinceStartup - mainPack.HeatEchoTime;
+                float diffTime = GameTime.RealtimeSinceStartup - mainPack.HeatEchoTime;
                 m_ping = (int)(diffTime * 1000);
                 m_heatBeatTimeoutNum = 0;
             }
