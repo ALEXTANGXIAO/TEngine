@@ -102,7 +102,7 @@ namespace TEngine
                             }
                         }
 
-                        //Core.ULogger.LogInfo("value：" + value + ",长按持续时间：" + _curTime);
+                        //TLogger.LogInfo("value：" + value + ",长按持续时间：" + _curTime);
                         _curCallTime = 0;
                         onLongPress?.Invoke(Mathf.FloorToInt(value));
                     }
