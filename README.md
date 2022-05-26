@@ -44,6 +44,13 @@
 0. 五分钟即可上手整套开发流程，代码整洁，思路清晰，功能强大。模块化和可定制度高，模块间的耦合度极低，您可以随时把您不需要的模块进行移除。
 1. 强大的日志系统TLogger，可以编辑器/真机输出日志和日志文件到可持久化目录，捕捉到Excepion的时候自定义上传。
 ```Csharp
+public void Test()
+{
+  TLogger.Instance.LogInfo();
+  TLogger.Instance.LogAssert();
+  TLogger.Instance.LogInfoSuccessd();
+...
+}
 [TLogger][INFO][2022-05-20 23:44:19 871] - DevicePerformanceLevel 设备性能评级:High
 ```
 2. <strong>高效的事件系统GameEventMgr，可以指定事件ID/事件String监听和分发事件。通过事件来驱动模块，如战斗的角色身上的事件流、UI和网络以及Model的数据流、开发中的绝大部分情况都可以通过事件来进行驱动。(配合UI模块或者拓展的战斗模块实现MVE[Model - View - Event]事件驱动架构)
@@ -107,18 +114,17 @@ class PlayerHpUI
   }
 }
 ```
-3. 健壮的资源模块TResources,开发者只用关注一个接口便可以通用的在编辑器进行资源加载或者真机加载AB，包括打包AB等等。通过类AssetConfig统一配置本地资源加载和AB打包的路径(AssetRootPath)。增加了资源计数的概念，后续在运行时更好的支持内存以及资源管理。
+3. 健壮的资源模块TResources,开发者只用关注一个接口便可以通用的在编辑器进行资源加载或者真机加载AB，包括打包AB等等。通过类AssetConfig统一配置本地资源加载和AB打包的路径(AssetRootPath),AB加密偏移也在底层处理，更安全的保护了您的项目，测试无法被AssetStudio解密，切AB加密偏移性能几乎无影响。   
+增加了AB资源计数的概念，TODO：在运行时支持内存以及资源管理，防止无用资源残留等问题。
 ```Csharp
-public static class TResources{
-  public static T Load<T>(string path) where T : UnityEngine.Object
-  {
-      return ResMgr.Instance.Load<T>(path);
-  }
+public void Test()
+{
+  T t = TResources.Load<T>(resPath);
 
-  public static void LoadAsync(string path, Action<AssetData> callBack, bool withSubAsset = false)
-  {
-      ResMgr.Instance.GetAssetAtPathAsync(path, withSubAsset, callBack);
-  }
+  TextAsset jsonStr = TResources.Load<TextAsset>(resPath);
+
+  TResources.LoadAsync(resPath, (obj) =>{ todo })
+...
 }
 
 ```
@@ -172,7 +178,30 @@ static void Main(string[] args)
     }
 }
 ```
-6. 可选择的高效网络模块，支持TCP/UDP异步网络管理器+Protobuf(后续看看建议会增加C#+DotNetty+Protobuf的服务器或者GoLang+Protobuf的服务器案例)
+6. 可选择的高效网络模块，支持TCP/UDP异步网络管理器+Protobuf(增加了C#+DotNetty+Protobuf的服务器服务器案例)
+```Csharp
+//举例子 用户Data管理器
+class UserDataMgr
+{
+  private void RegisterNetHandle()
+  {
+    //注册网络事件回调
+    GameClient.Instance.RegActionHandle(int:ActionId,Func<MainPack>:func);
+  }
+}
+
+class LoginUI
+{
+  Login()
+  {
+    //注册过了回调的发送协议
+    GameClient.Instance.SendCsMsg(MainPack);
+    //自定义注册回调
+    GameClient.Instance.SendCsMsg(MainPack,Func<MainPack>:callback);
+  }
+}
+
+```
 7. 可选择的商业化的UI框架，配合强大的TResource您可以直接进行游戏的UI开发。与Evnet事件模块实现MVE事件流驱动(Model - View - Event)。支持按照命名规范(ScriptGenerator/About查看)拼完预制体后，右键ScriptGenerator/UIProprty直接生成该预制体的属性绑定代码！！！极大的加快了UI开发的工作流。(您无需新建额外的狗屎UIMonobehaviour再挂载到UI预制体上面，您只需要把ScriptGenerator生成的UI代码复制到同名的UI脚本里就OK了)
 ```CSharp
 //示例工具直接生成的代码
@@ -221,14 +250,16 @@ Assets
 ├── link.xml            // IL2CPP的防裁剪
 ├── TEngine             // 框架目录
 ├── TResources          // 资源文件目录(可以自己修改AssetConfig进行自定义)
-└── HotUpdateScripts    // 热更脚本资源
+└── HotUpdateScripts    // 热更脚本资源(可以把TEngine下的Runtime脚本放入此处，让TEngine也处于热更域)
 
 TEngine
 ├── Config~             // 配置表和转表工具(一键转表生成C#结构体和Json配置)
 ├── FileServer~         // Node编写的资源文件系统，可以部署测试AB下载，生产环境最好还是用OSS
 ├── UIFrameWork~        // UI系统的Package包
+├── Editor              // TEngine编辑器核心代码
 └── Runtime             // TEngine核心代码
-    ├── ClientSaveData  // 本地可持久化(非必要)       
+    ├── PlayerPrefsDataMgr// 本地可持久化(非必要)       
+    ├── Audio           // 音频模块(非必要)
     ├── Config          // 配置表加载器(非必要)
     ├── Mono            // Mono管理器
     ├── Unitity         // 工具类
