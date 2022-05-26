@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -16,6 +17,7 @@ namespace TEngine
         public const string BuildPath = "Build";
         public const string AssetBundleBuildPath = BuildPath + "/AssetBundles";
         private const string AssetBundleTargetPath = "{0}/AssetBundles";
+        public const string Md5CheckList = "Md5CheckList.json";
         /// <summary>
         /// 资源更新读取根目录
         /// </summary>
@@ -193,6 +195,31 @@ namespace TEngine
             while (!request.isDone) ;
 
             return www.downloadHandler.text;
+        }
+    }
+
+    [Serializable]
+    public struct fileMd5
+    {
+        public string fileName;
+        public string md5;
+        public string fileSize;
+    }
+
+    [Serializable]
+    public class Serialization<T>
+    {
+        [SerializeField]
+        List<T> _target;
+
+        public List<T> ToList()
+        {
+            return _target;
+        }
+
+        public Serialization(List<T> target)
+        {
+            this._target = target;
         }
     }
 }
