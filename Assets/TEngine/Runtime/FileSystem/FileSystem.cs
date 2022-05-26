@@ -17,7 +17,7 @@ namespace TEngine
         public const string BuildPath = "Build";
         public const string AssetBundleBuildPath = BuildPath + "/AssetBundles";
         private const string AssetBundleTargetPath = "{0}/AssetBundles";
-        public const string Md5CheckList = "Md5CheckList.json";
+        public const string Md5List = "Md5List.json";
         /// <summary>
         /// 资源更新读取根目录
         /// </summary>
@@ -203,7 +203,7 @@ namespace TEngine
     {
         public string fileName;
         public string md5;
-        public string fileSize;
+        public long fileSize;
     }
 
     [Serializable]
