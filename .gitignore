@@ -13,6 +13,7 @@
 # /[Aa]ssets/TResources/DLL/
 /[Aa]ssets/StreamingAssets
 /BuildBundleInfo/
+/[Aa]ssets/AATest/
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !/[Aa]ssets/**/*.meta
