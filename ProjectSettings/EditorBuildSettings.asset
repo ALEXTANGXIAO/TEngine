@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/NetDemo/TEngine-NetDemo.unity
+    path: Assets/Scene/TEngine-NetDemo.unity
     guid: 961c85cf7d9a44549a13b94e9931e037
   m_configObjects: {}
