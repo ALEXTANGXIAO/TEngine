@@ -46,10 +46,10 @@ public class ConsoleToSceen : MonoBehaviour
 
     void OnGUI()
     {
-        titleStyle2.fontSize = 20;
+        titleStyle2.fontSize = 26;
         titleStyle2.normal.textColor = Color.white;
-        GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity,
-            new Vector3(Screen.width / 1920f, Screen.height / 800.0f, 1.0f));
+        //GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(Screen.width / 1920f, Screen.height / 800.0f, 1.0f));
+        GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
         GUI.Label(new Rect(10, 10, 800, 370), _logStr, titleStyle2);
     }
 }
