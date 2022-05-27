@@ -30,7 +30,7 @@ namespace TEngine
         readonly Dictionary<string, string> _assetPath2BundleDatas = new Dictionary<string, string>();
 
         /// <summary>
-        /// 加载资源依赖数据，产生AssetBundle依赖拓扑
+        /// 加载资源依赖
         /// </summary>
         public void Load()
         {
@@ -52,10 +52,10 @@ namespace TEngine
                 bundleName = reader.ReadString();
                 assetCount = reader.ReadInt32();
                 assetPaths = new string[assetCount];
-                for (int ii = 0; ii < assetCount; ++ii)
+                for (int j = 0; j < assetCount; ++j)
                 {
-                    assetPaths[ii] = reader.ReadString();
-                    _assetPath2BundleDatas.Add(assetPaths[ii], bundleName);
+                    assetPaths[j] = reader.ReadString();
+                    _assetPath2BundleDatas.Add(assetPaths[j], bundleName);
                 }
                 depCount = reader.ReadInt32();
                 if (!_bundleDatas.TryGetValue(bundleName, out assetBundleData))
@@ -72,7 +72,7 @@ namespace TEngine
 
                 assetBundleData.InitAssets(assetPaths);
 
-                for (int ii = 0; ii < depCount; ++ii)
+                for (int j = 0; j < depCount; ++j)
                 {
                     bundleName = reader.ReadString();
                     if (!_bundleDatas.TryGetValue(bundleName, out depAssetBundleData))
@@ -80,21 +80,20 @@ namespace TEngine
                         depAssetBundleData = new AssetBundleData(bundleName);
                         _bundleDatas.Add(bundleName, depAssetBundleData);
                     }
-                    assetBundleData.Dependencies[ii] = depAssetBundleData;
+                    assetBundleData.Dependencies[j] = depAssetBundleData;
                 }
             }
             stream.Close();
 #endif
         }
 
-        /// <summary>
-        /// 卸载AssetBundle数据
-        /// </summary>
         public void Unload()
         {
 #if ASSETBUNDLE_ENABLE
             foreach(var bundleData in _bundleDatas)
+            {
                 bundleData.Value.Unload(true);
+            }
             _bundleDatas.Clear();
             _assetPath2BundleDatas.Clear();
 #endif
@@ -104,7 +103,9 @@ namespace TEngine
         {
 #if ASSETBUNDLE_ENABLE
             foreach(var bundleData in _bundleDatas)
+            {
                 bundleData.Value.UnloadBundleFalse();
+            }
             _bundleDatas.Clear();
             _assetPath2BundleDatas.Clear();
 #endif

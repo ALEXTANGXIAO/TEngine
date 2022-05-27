@@ -9,8 +9,8 @@ namespace TEngine
     [Serializable]
     public struct VersonConfig
     {
-        public string AppVersion;           //底包版本号
-        public string BaseResVersion;       //基于底包对应的资源版本号
+        public string AppVersion;           //APP版本号
+        public string BaseResVersion;       //APP对应的资源版本号
         public string ResVersion;           //资源版本号
     }
 
