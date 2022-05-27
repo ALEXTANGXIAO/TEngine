@@ -7,17 +7,20 @@ namespace TEngine
 {
     public class AssetData
     {
+        #region Proprieties
+        private string _name;
+        private string _path;
+        private string _fullPath;
+        private int _refCount;
+        private bool _useSubAsset;
         private AssetBundleData _refBundle;
         private Object _assetObject;
         private Dictionary<string, UnityEngine.Object> _subAssetObjects;
-        private string _kPath;
-        private string _fPath;
-        private string _name;
-        private int _refCount;
-        private bool _useSubAsset;
         private AsyncOperation _asyncLoadRequest;
         private event System.Action<AssetData> _onAsyncLoadComplete;
+        #endregion
 
+        #region Public Proprities
         public UnityEngine.Object AssetObject => _assetObject;
 
         public UnityEngine.Object this[string key]
@@ -39,7 +42,7 @@ namespace TEngine
                             }
                             else
                             {
-                                TLogger.LogError($"Can not get sub asset({key}) from {_fPath}");
+                                TLogger.LogError($"Can not get sub asset({key}) from {_fullPath}");
                             }
                         }
                     }
@@ -49,9 +52,9 @@ namespace TEngine
             }
         }
 
-        public string Path => _kPath;
+        public string Path => _path;
 
-        public string FullPath => _fPath;
+        public string FullPath => _fullPath;
 
         public string Name => _name;
 
@@ -74,19 +77,20 @@ namespace TEngine
                 _onAsyncLoadComplete -= value;
             }
         }
+        #endregion
 
         public AssetData(string path = "", AssetBundleData refBundle = null, UnityEngine.Object assetObject = null)
         {
-            _kPath = path;
-            if (!string.IsNullOrEmpty(_kPath))
+            _path = path;
+            if (!string.IsNullOrEmpty(_path))
             {
-                int ei = _kPath.LastIndexOf('/');
-                _name = ei >= 0 ? _kPath.Substring(ei + 1) : _kPath;
-                _fPath = $"{AssetConfig.AssetRootPath}/{_kPath}";
+                int ei = _path.LastIndexOf('/');
+                _name = ei >= 0 ? _path.Substring(ei + 1) : _path;
+                _fullPath = $"{AssetConfig.AssetRootPath}/{_path}";
             }
             else
             {
-                _fPath = System.String.Empty;
+                _fullPath = System.String.Empty;
             }
 
             _assetObject = assetObject;
@@ -99,14 +103,15 @@ namespace TEngine
 
         internal void SetAsPackageAsset(string path)
         {
-            _fPath = path;
+            _fullPath = path;
         }
 
+        #region 计数引用
         public void AddRef()
         {
             ++_refCount;
 #if UNITY_EDITOR
-            TLogger.LogInfoSuccessd($"Add AssetData {_fPath} _refCount = {_refCount}");
+            TLogger.LogInfoSuccessd($"Add AssetData {_fullPath} _refCount = {_refCount}");
 #endif
         }
 
@@ -117,19 +122,21 @@ namespace TEngine
         {
             --_refCount;
 #if UNITY_EDITOR
-            TLogger.LogInfoSuccessd($"Dec AssetData {_fPath} _refCount = {_refCount}");
+            TLogger.LogInfoSuccessd($"Dec AssetData {_fullPath} _refCount = {_refCount}");
 #endif
             if (_refCount <= 0)
             {
                 if (_refBundle != null)
                 {
                     _refBundle.DecRef(bNoDelay);
-                    _refBundle.SetAsset(_kPath, null);
+                    _refBundle.SetAsset(_path, null);
                     Unload();
                 }
             }
         }
+        #endregion
 
+        #region 加载与卸载
         /// <summary>
         /// 同步加载Asset
         /// </summary>
@@ -145,26 +152,26 @@ namespace TEngine
             {
                 if (_useSubAsset)
                 {
-                    UnityEngine.Object[] subAssets = _refBundle.Bundle.LoadAssetWithSubAssets(_fPath);
+                    UnityEngine.Object[] subAssets = _refBundle.Bundle.LoadAssetWithSubAssets(_fullPath);
                     if (subAssets != null && subAssets.Length > 0)
                     {
                         ProcessSubAssets(subAssets);
                     }
                     else
                     {
-                        TLogger.LogError($"Can not load the asset '{_fPath}'");
+                        TLogger.LogError($"Can not load the asset '{_fullPath}'");
                     }
                 }
                 else
                 {
-                    UnityEngine.Object assetObject = _refBundle.Bundle.LoadAsset(_fPath);
+                    UnityEngine.Object assetObject = _refBundle.Bundle.LoadAsset(_fullPath);
                     if (assetObject != null)
                     {
                         _assetObject = assetObject;
                     }
                     else
                     {
-                        TLogger.LogError($"Can not load the asset '{_fPath}'");
+                        TLogger.LogError($"Can not load the asset '{_fullPath}'");
                     }
                 }
             }
@@ -203,7 +210,7 @@ namespace TEngine
                     {
                         if (_asyncLoadRequest == null)
                         {
-                            _asyncLoadRequest = bundleData.Bundle.LoadAssetWithSubAssetsAsync(_fPath);
+                            _asyncLoadRequest = bundleData.Bundle.LoadAssetWithSubAssetsAsync(_fullPath);
                             _asyncLoadRequest.completed += OnAssetLoadComplete;
                         }
                     }
@@ -218,7 +225,7 @@ namespace TEngine
                     {
                         if (_asyncLoadRequest == null)
                         {
-                            _asyncLoadRequest = bundleData.Bundle.LoadAssetAsync(_fPath);
+                            _asyncLoadRequest = bundleData.Bundle.LoadAssetAsync(_fullPath);
                             _asyncLoadRequest.completed += OnAssetLoadComplete;
                         }
                     }
@@ -229,7 +236,9 @@ namespace TEngine
                 }
             }
             else
+            {
                 TLogger.LogError("Return a mismatch AssetBundleData for OnAssetBundleDataLoadComplete");
+            }
         }
 
         void OnAssetLoadComplete(AsyncOperation asyncOperation)
@@ -249,7 +258,7 @@ namespace TEngine
                             }
                             else
                             {
-                                TLogger.LogError($"Can not load the asset '{_fPath}'");
+                                TLogger.LogError($"Can not load the asset '{_fullPath}'");
                             }
                         }
                         else
@@ -257,7 +266,7 @@ namespace TEngine
                             _assetObject = assetBundleRequest.asset;
                             if (_assetObject == null)
                             {
-                                TLogger.LogError($"Can not load the asset '{_fPath}'");
+                                TLogger.LogError($"Can not load the asset '{_fullPath}'");
                             }
                         }
                     }
@@ -297,7 +306,7 @@ namespace TEngine
                     _subAssetObjects.Add(name, sprites[i]);
                 }
             }
-            else 
+            else
             {
                 for (int i = 0; i < subAssets.Length; ++i)
                 {
@@ -343,8 +352,9 @@ namespace TEngine
             }
             else
             {
-                TLogger.LogWarning($"Try to unload refcount > 0 asset({_fPath})!");
+                TLogger.LogWarning($"Try to unload refcount > 0 asset({_fullPath})!");
             }
         }
+        #endregion
     }
 }

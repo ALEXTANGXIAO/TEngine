@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace TEngine
 {
+    /// <summary>
+    /// 通用资源加载接口
+    /// </summary>
     public static class TResources
     {
         #region 同步加载

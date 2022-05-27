@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 namespace TEngine
 {
     /// <summary>
-    /// 资源配置器 负责资源路径 AssetBundle映射，管理AssetBundle、Asset数据
+    /// 资源配置
     /// </summary>
     public class AssetConfig
     {

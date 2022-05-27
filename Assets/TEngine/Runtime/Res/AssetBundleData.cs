@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace TEngine
 {
+    /// <summary>
+    /// 封装的AssetBundle Plus
+    /// </summary>
     public class AssetBundleData
     {
         public AssetBundle Bundle;
@@ -120,12 +123,18 @@ namespace TEngine
             if (_assets != null)
             {
                 if (_path2Index.ContainsKey(assetPath))
+                {
                     _assets[_path2Index[assetPath]] = assetData;
+                }
                 else
+                {
                     TLogger.LogError($"Try to set asset data '{assetPath}' which not in the bundle '{_name}'");
+                }
             }
             else
+            {
                 TLogger.LogError($"Try to set asset data in the bundle '{_name}' which not include any asset");
+            }
         }
 
         /// <summary>
@@ -187,14 +196,17 @@ namespace TEngine
                     for (int i = 0; i < Dependencies.Length; ++i)
                     {
                         if (!Dependencies[i]._isInvokeLoad)
+                        {
                             Dependencies[i].LoadAsync(OnDependenciesAsyncLoadComplete, true);
+                        }
                         else
+                        {
                             TLogger.LogWarning($"Dependency cycle detected for '{Dependencies[i]._name}'");
+                        }
                     }
                     _asyncLoadRequest = new AsyncLoadRequest
                     {
-                        Request = AssetBundle.LoadFromFileAsync(FileSystem.GetAssetBundlePathInVersion(_name), 0, Offset)
-                        ,
+                        Request = AssetBundle.LoadFromFileAsync(FileSystem.GetAssetBundlePathInVersion(_name), 0, Offset),
                         DependedRefCount = bDepended ? 1 : 0
                     };
                     _asyncLoadRequest.Request.completed += OnAssetBundleLoadComplete;
