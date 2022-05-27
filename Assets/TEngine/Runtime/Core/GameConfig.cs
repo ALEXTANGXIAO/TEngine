@@ -18,7 +18,6 @@ namespace TEngine
     {
         private static GameConfig _instance;
         public const string CONFIG = "version.json";
-        public const string RESTALLCONFIG = "restall.txt";
         public const string SUFFIX = "_Version";
         private VersonConfig _versionConfig;
         private Dictionary<string, string> _fileFixList = new Dictionary<string, string>();
@@ -161,30 +160,6 @@ namespace TEngine
             {
                 return $"{AppId}.{ResId}";
             }
-        }
-        /// <summary>
-        /// 是否重新安装
-        /// </summary>
-        /// <returns></returns>
-        internal bool IsReinstall()
-        {
-            return File.Exists($"{FileSystem.ResourceRoot}/{RESTALLCONFIG}");
-        }
-
-        /// <summary>
-        /// 设置重新安装了
-        /// </summary>
-        internal void SignReInstall()
-        {
-            ReInstallFinish();
-            File.Create($"{FileSystem.ResourceRoot}/{RESTALLCONFIG}");
-        }
-        /// <summary>
-        /// 去掉重新安装标志文件
-        /// </summary>
-        internal void ReInstallFinish()
-        {
-            DeleteFile($"{FileSystem.ResourceRoot}/{RESTALLCONFIG}");
         }
 
         /// <summary>

@@ -6,6 +6,30 @@ using UnityEngine.Networking;
 
 namespace TEngine
 {
+    [Serializable]
+    public struct fileMd5
+    {
+        public string fileName;
+        public string md5;
+        public long fileSize;
+    }
+
+    [Serializable]
+    public class Serialization<T>
+    {
+        [SerializeField]
+        List<T> _target;
+
+        public List<T> ToList()
+        {
+            return _target;
+        }
+
+        public Serialization(List<T> target)
+        {
+            this._target = target;
+        }
+    }
     public static class FileSystem
     {
         public const string ArtResourcePath = "Assets/ArtResources";
@@ -195,31 +219,6 @@ namespace TEngine
             while (!request.isDone) ;
 
             return www.downloadHandler.text;
-        }
-    }
-
-    [Serializable]
-    public struct fileMd5
-    {
-        public string fileName;
-        public string md5;
-        public long fileSize;
-    }
-
-    [Serializable]
-    public class Serialization<T>
-    {
-        [SerializeField]
-        List<T> _target;
-
-        public List<T> ToList()
-        {
-            return _target;
-        }
-
-        public Serialization(List<T> target)
-        {
-            this._target = target;
         }
     }
 }
