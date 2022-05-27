@@ -161,11 +161,11 @@ namespace TEngine
 
         public void Init(AudioMixerGroup audioMixerGroup = null)
         {
-            GameObject host = new GameObject("Audio");
-            host.transform.SetParent(AudioMgr.Instance.transform);
-            host.transform.localPosition = Vector3.zero;
-            _transform = host.transform;
-            _source = host.AddComponent<AudioSource>();
+            GameObject root = new GameObject("Audio");
+            root.transform.SetParent(AudioMgr.Instance.transform);
+            root.transform.localPosition = Vector3.zero;
+            _transform = root.transform;
+            _source = root.AddComponent<AudioSource>();
             _source.playOnAwake = false;
             if (audioMixerGroup != null)
             {

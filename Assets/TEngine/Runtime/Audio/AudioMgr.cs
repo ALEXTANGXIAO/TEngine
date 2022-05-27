@@ -25,7 +25,6 @@ namespace TEngine
         public AudioMixer audioMixer { get; set; }
         float[] _agentVolume = new float[(int)AudioType.Max];
         private AudioAgent[] _audioAgents = new AudioAgent[(int)AudioType.Max];
-        public Dictionary<string, int> _soundConfigDic = new Dictionary<string, int>();
         public Dictionary<string, AssetData> AudioClipPool = new Dictionary<string, AssetData>();
         #endregion
 
@@ -473,32 +472,17 @@ namespace TEngine
 
             for (int i = 0; i < _audioObjects.Count; i++)
             {
-                if (AudioMgr.Instance._soundConfigDic != null && AudioMgr.Instance._soundConfigDic.ContainsKey(path) && AudioMgr.Instance._soundConfigDic[path] == num)
+                if (_audioObjects[i]._assetData == null || _audioObjects[i].IsFinish == true)
                 {
-                    if (_audioObjects[i] != null && _audioObjects[i]._assetData != null && path == _audioObjects[i]._assetData.Path)
-                    {
-                        if (_audioObjects[i].Duration > duration)
-                        {
-                            duration = _audioObjects[i].Duration;
+                    freeChannel = i;
 
-                            freeChannel = i;
-                        }
-                    }
+                    break;
                 }
-                else
+                else if (_audioObjects[i].Duration > duration)
                 {
-                    if (_audioObjects[i]._assetData == null || _audioObjects[i].IsFinish == true)
-                    {
-                        freeChannel = i;
+                    duration = _audioObjects[i].Duration;
 
-                        break;
-                    }
-                    else if (_audioObjects[i].Duration > duration)
-                    {
-                        duration = _audioObjects[i].Duration;
-
-                        freeChannel = i;
-                    }
+                    freeChannel = i;
                 }
             }
 
