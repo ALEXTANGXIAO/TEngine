@@ -130,6 +130,7 @@ namespace UI
                     m_tmpWindowList.Add(kv.Value);
                 }
                 m_tmpWindowListDirty = false;
+                itr.Dispose();
             }
             return m_tmpWindowList;
         }
