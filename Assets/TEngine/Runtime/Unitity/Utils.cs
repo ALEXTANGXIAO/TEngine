@@ -143,7 +143,11 @@ namespace TEngine
 
         static void LoadAsset<T>(Component component, string path, int index) where T : UnityEngine.Object
         {
-            //TODO
+            if (component == null)
+            {
+                TLogger.LogException("component is null");
+                return;
+            }
 
             if (string.IsNullOrEmpty(path))
             {
