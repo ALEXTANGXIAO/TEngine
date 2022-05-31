@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
@@ -125,7 +126,7 @@ namespace TEngine
         /// <remarks>置空时传入path为null</remarks>
         public static void SetSprite(this UnityEngine.UI.Image image, string path, bool bAsync = false)
         {
-            LoadAsset<Sprite>(image, path, 0, bAsync);
+            LoadAsset<Sprite>(image, path, 0);
         }
 
         /// <summary>
@@ -135,14 +136,72 @@ namespace TEngine
         /// <param name="path">Sprite路径，通过右键菜单Get Asset Path获取的路径</param>
         /// <param name="bAsync">是否异步加载</param>
         /// <remarks>置空时传入path为null</remarks>
-        public static void SetSprite(this SpriteRenderer spriteRenderer, string path, bool bAsync = false)
+        public static void SetSprite(this SpriteRenderer spriteRenderer, string path)
         {
-            LoadAsset<Sprite>(spriteRenderer, path, 0, bAsync);
+            LoadAsset<Sprite>(spriteRenderer, path, 0);
         }
 
-        static void LoadAsset<T>(Component component, string path, int index, bool bAsync) where T : UnityEngine.Object
+        static void LoadAsset<T>(Component component, string path, int index) where T : UnityEngine.Object
         {
             //TODO
+
+            if (string.IsNullOrEmpty(path))
+            {
+                if (component as Image != null)
+                {
+                    var image = (Image)component;
+                    image.sprite = null;
+                }
+                else if(component as SpriteRenderer != null)
+                {
+                    var image = (SpriteRenderer)component;
+                    image.sprite = null;
+                }
+            }
+            else
+            {
+                int splitIndex = path.LastIndexOf('#');
+                string resPath;
+                bool bWithSubAssets;
+                string subAssetName;
+                if (splitIndex > 0)
+                {
+                    resPath = path.Substring(0, splitIndex);
+                    subAssetName = path.Substring(splitIndex + 1);
+                    bWithSubAssets = true;
+                }
+                else
+                {
+                    resPath = path;
+                    if (component.GetType() == typeof(Sprite))
+                    {
+                        bWithSubAssets = true;
+                        subAssetName = Path.GetFileNameWithoutExtension(path);
+                    }
+                    else
+                    {
+                        bWithSubAssets = false;
+                    }
+                }
+
+                var asset = ResMgr.Instance.GetAsset(resPath, bWithSubAssets);
+
+                if (asset == null)
+                {
+                    return;
+                }
+
+                if (component.GetType() == typeof(Image))
+                {
+                    var image = (Image)component;
+                    image.sprite = asset.AssetObject as Sprite;
+                }
+                else if (component as SpriteRenderer != null)
+                {
+                    var image = (SpriteRenderer)component;
+                    image.sprite = asset.AssetObject as Sprite;
+                }
+            }
         }
         #endregion
 
