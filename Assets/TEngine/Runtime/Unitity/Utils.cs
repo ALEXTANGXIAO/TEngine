@@ -177,7 +177,7 @@ namespace TEngine
                 else
                 {
                     resPath = path;
-                    if (component.GetType() == typeof(Sprite))
+                    if (typeof(T) == typeof(Sprite))
                     {
                         bWithSubAssets = true;
                         subAssetName = Path.GetFileNameWithoutExtension(path);
@@ -202,8 +202,8 @@ namespace TEngine
                 }
                 else if (component as SpriteRenderer != null)
                 {
-                    var image = (SpriteRenderer)component;
-                    image.sprite = asset.AssetObject as Sprite;
+                    var spriteRenderer = (SpriteRenderer)component;
+                    spriteRenderer.sprite = asset.AssetObject as Sprite;
                 }
             }
         }
