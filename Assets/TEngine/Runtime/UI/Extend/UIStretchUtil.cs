@@ -28,19 +28,16 @@ namespace TEngine
             float designScale = canvasScaler.referenceResolution.x / canvasScaler.referenceResolution.y;
             if (m_screenAspect > designScale)
             {
-                //Match 以 Height 为标准
                 m_canvasSize.y = canvasScaler.referenceResolution.y;
                 m_canvasSize.x = m_canvasSize.y * Screen.width / Screen.height;
             }
             else
             {
-                //Match 以 Weight 为标准
                 m_canvasSize.x = canvasScaler.referenceResolution.x;
                 m_canvasSize.y = m_canvasSize.x * Screen.height / Screen.width;
             }
-            //BLogger.Error("referenceResolution = "+ canvasScaler.referenceResolution);
-            //BLogger.Error("m_canvasSize = " + m_canvasSize);
-
+            TLogger.LogWarning("referenceResolution = "+ canvasScaler.referenceResolution);
+            TLogger.LogWarning("m_canvasSize = " + m_canvasSize);
             m_isInit = true;
             return true;
         }
