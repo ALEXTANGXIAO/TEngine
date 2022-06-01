@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using UI;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace TEngine
@@ -9,18 +10,13 @@ namespace TEngine
         private Vector2 m_canvasSize;
         private float m_screenAspect;
 
-        public bool Init()
+        public bool InitUiStretch()
         {
-            var goRoot = GameObject.Find("UIRoot/Canvas");
-            if (goRoot == null)
-            {
-                TLogger.LogError("找不到 goRoot");
-                return false;
-            }
-            var canvasScaler = goRoot.GetComponent<CanvasScaler>();
+            var canvas = UIManager.Instance.m_canvas;
+            var canvasScaler = canvas.gameObject.GetComponent<CanvasScaler>();
             if (canvasScaler == null)
             {
-                TLogger.LogError("找不到 CanvasScaler");
+                TLogger.LogError("Could Not Found Component[CanvasScaler]");
                 return false;
             }
 
@@ -46,7 +42,7 @@ namespace TEngine
         {
             if (!m_isInit)
             {
-                if (!Init())
+                if (!InitUiStretch())
                 {
                     return;
                 }

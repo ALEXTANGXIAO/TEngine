@@ -7,12 +7,12 @@ namespace TEngine
     /// </summary>
     public class UIBackgroundImageStretch : MonoBehaviour
     {
-        public bool m_noClip;
+        public bool NoClip;
 
         private void Start()
         {
             var imageRect = GetComponent<RectTransform>();
-            UIStretchUtil.Instance.DoStretch(imageRect, m_noClip);
+            UIStretchUtil.Instance.DoStretch(imageRect, NoClip);
         }
     }
 }
