@@ -94,7 +94,7 @@ class ClientHandle
     var player = PlayerMgr.Instance.GetPlayer(playerId);
     if(player != null){
       player.Event.Send("Hpchange",hpPack);       //局部的事件管理器
-      GameEventMgr.Instance.("Hpchange",hpPack);  //全局事件中心
+      GameEventMgr.Instance.Send("Hpchange",hpPack);  //全局事件中心
     }
   }
 }
