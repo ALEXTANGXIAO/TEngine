@@ -81,6 +81,9 @@ namespace UI
         public static void ShowTipMsg(string str)
         {
             GameEventMgr.Instance.Send(TipsEvent.Log,str);
+#if UNITY_EDITOR
+            TLogger.LogInfo(str);
+#endif
         }
     }
 
