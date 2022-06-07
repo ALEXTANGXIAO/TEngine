@@ -11,7 +11,7 @@ namespace UI
         protected override void RegisterEvent()
         {
             base.RegisterEvent();
-            GameEventMgr.Instance.AddEventListener<string>(TipsEvent.Log, TipsUI.Instance.Show);
+            //GameEventMgr.Instance.AddEventListener<string>(TipsEvent.Log, TipsUI.Instance.Show);
         }
     }
 
@@ -27,6 +27,15 @@ namespace UI
         private void Awake()
         {
             Instance = this;
+
+            AvailablePool = new List<GameObject>();
+            UsedPool = new List<GameObject>();
+            for (int i = 0; i < 5; i++)
+            {
+                AvailablePool.Add(Instantiate(Prefab, Mask.transform));
+                AvailablePool[i].SetActive(false);
+            }
+            GameEventMgr.Instance.AddEventListener<string>(TipsEvent.Log, TipsUI.Instance.Show);
         }
         //Prefab
         public GameObject Prefab;
@@ -41,13 +50,6 @@ namespace UI
         private float timer2;
         void Start()
         {
-            AvailablePool = new List<GameObject>();
-            UsedPool = new List<GameObject>();
-            for (int i = 0; i < 5; i++)
-            {
-                AvailablePool.Add(Instantiate(Prefab, Mask.transform));
-                AvailablePool[i].SetActive(false);
-            }
             //GameEventMgr.Instance.AddEventListener<string>(TipsEvent.Log, Show);
         }
 
