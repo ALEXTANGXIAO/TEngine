@@ -11,7 +11,6 @@ namespace UI
         protected override void RegisterEvent()
         {
             base.RegisterEvent();
-            //GameEventMgr.Instance.AddEventListener<string>(TipsEvent.Log, TipsUI.Instance.Show);
         }
     }
 
@@ -50,12 +49,11 @@ namespace UI
         private float timer2;
         void Start()
         {
-            //GameEventMgr.Instance.AddEventListener<string>(TipsEvent.Log, Show);
+            
         }
 
         void Update()
         {
-            //如果一定时间内没有新消息，则挨个消失
             timer1 += Time.deltaTime;
             if (timer1 >= 2)
             {
