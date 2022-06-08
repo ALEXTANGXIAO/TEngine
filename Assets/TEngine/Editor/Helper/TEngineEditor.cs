@@ -11,7 +11,7 @@ namespace TEngine.Editor
 #if UNITY_EDITOR
         internal class EditorMenus
         {
-            [UnityEditor.MenuItem("TEngine/Open TEngine Document")]
+            [MenuItem("TEngine/打开文档|Open TEngine Document", priority = 1500)]
             public static void OpenTEngineDocument()
             {
                 Application.OpenURL("http://1.12.241.46:5000/");

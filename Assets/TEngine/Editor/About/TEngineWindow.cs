@@ -18,10 +18,10 @@ namespace TEngine.Editor
         }
         public static ModuleType showModuleType;
 
-        [MenuItem("TEngine/EditorWindow", priority = 1500)]
+        [MenuItem("TEngine/管理面板|TEngine管理面板", priority = 1500)]
         private static void Open()
         {
-            var window = GetWindow<TEngineWindow>("EditorWindow");
+            var window = GetWindow<TEngineWindow>("管理面板|TEngine管理面板");
             window.minSize = new Vector2(900, 600);
             window.maxSize = new Vector2(900, 600);
             window.Show();

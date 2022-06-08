@@ -12,7 +12,7 @@ namespace TEngine.Editor
     {
         private const string OnlineUrl = "http://1.12.241.46:8081/TEngine/";
 
-        [MenuItem("TEngine/在线模块商店|Package Manager", priority = 1500)]
+        [MenuItem("TEngine/模块商店|在线Package Manager", priority = 1500)]
         private static void Open()
         {
             var window = GetWindow<PackageManagerInternal>("在线模块商店|Package Manager");

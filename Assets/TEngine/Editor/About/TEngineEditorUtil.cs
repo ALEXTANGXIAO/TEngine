@@ -10,7 +10,7 @@ namespace TEngine.Editor
 {
     public class TEngineEditorUtil
     {
-        [MenuItem("TEngine/GenMd5List", priority = 1500)]
+        [MenuItem("TEngine/Utils/生成MD5ListGenMd5List", priority = 1500)]
         public static void GenMd5List()
         {
             try
