@@ -13,6 +13,7 @@ public class TEngineTest : TEngine.TEngine
     {
         base.RegisterAllSystem();
         //注册系统，例如UI系统，网络系统，战斗系统等等
+        AddLogicSys(BehaviourSingleSystem.Instance);
         AddLogicSys(UISys.Instance);
     }
 

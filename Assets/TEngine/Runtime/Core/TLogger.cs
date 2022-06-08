@@ -86,10 +86,16 @@ namespace TEngine
         }
 
         [Conditional("UNITY_EDITOR"), Conditional("_DEVELOPMENT_BUILD_"), Conditional("ENABLE_LOG_ASSERT")]
-        public static void LogAssert(bool condition, string logStr)
+        public static void LogAssert(bool condition, string logStr = "")
         {
             if (!condition)
+            {
+                if (string.IsNullOrEmpty(logStr))
+                {
+                    logStr = string.Format("{0}", "Assert Failed");
+                }
                 Instance.Log(LogLevel.ASSERT, logStr);
+            }
         }
 
         [Conditional("UNITY_EDITOR"), Conditional("_DEVELOPMENT_BUILD_"), Conditional("ENABLE_LOG_ASSERT")]
