@@ -198,7 +198,19 @@ namespace TEngine
                 if (component.GetType() == typeof(Image))
                 {
                     var image = (Image)component;
-                    image.sprite = asset.AssetObject as Sprite;
+
+                    if (bWithSubAssets)
+                    {
+                        string name = path.Split('.')[0];
+                        if (asset[name] != null)
+                        {
+                            image.sprite = asset[name] as Sprite;
+                        }
+                    }
+                    else
+                    {
+                        image.sprite = asset.AssetObject as Sprite;
+                    }
                 }
                 else if (component as SpriteRenderer != null)
                 {
