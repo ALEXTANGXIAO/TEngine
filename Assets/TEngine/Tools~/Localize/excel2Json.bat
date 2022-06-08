@@ -1,1 +1,0 @@
- "XlsxToLua.exe" "ExcelConfig" "-notExportLua" "-noClient" "-noLang" "-exportJson(localization)" "-exportJsonParam(exportPath=ExcelConfig|extension=json|isFormat=true|isExportJsonArrayFormat=false|isMapIncludeKeyColumnValue=false)"
