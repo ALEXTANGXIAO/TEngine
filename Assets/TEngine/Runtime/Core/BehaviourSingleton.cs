@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace TEngine
 {
+    /// <summary>
+    /// 通过LogicSys来驱动且具备Unity完整生命周期的单例（不继承MonoBehaviour）
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class BehaviourSingleton<T> : BaseBehaviourSingleton where T : BaseBehaviourSingleton, new()
     {
         private static T sInstance;
@@ -83,13 +83,19 @@ namespace TEngine
             m_listStart.Add(inst);
         }
 
+        public void UnRegSingleton(BaseBehaviourSingleton inst)
+        {
+            TLogger.LogAssert(m_listInst.Contains(inst));
+            m_listInst.Remove(inst);
+            m_listStart.Remove(inst);
+            inst.Destroy();
+        }
+
         public override void OnUpdate()
         {
             var listStart = m_listStart;
-
             var listToUpdate = m_listUpdate;
             var listToLateUpdate = m_listLateUpdate;
-
             if (listStart.Count > 0)
             {
                 for (int i = 0; i < listStart.Count; i++)
