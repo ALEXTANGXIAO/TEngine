@@ -35,6 +35,10 @@ namespace TEngine
     {
         public bool IsStart = false;
 
+        public virtual void Active()
+        {
+        }
+
         public virtual void Awake()
         {
         }
@@ -85,10 +89,30 @@ namespace TEngine
 
         public void UnRegSingleton(BaseBehaviourSingleton inst)
         {
+            if (inst == null)
+            {
+                TLogger.LogError($"BaseBehaviourSingleton Is Null");
+                return;
+            }
             TLogger.LogAssert(m_listInst.Contains(inst));
-            m_listInst.Remove(inst);
-            m_listStart.Remove(inst);
+            if (m_listInst.Contains(inst))
+            {
+                m_listInst.Remove(inst);
+            }
+            if (m_listStart.Contains(inst))
+            {
+                m_listStart.Remove(inst);
+            }
+            if (m_listUpdate.Contains(inst))
+            {
+                m_listUpdate.Remove(inst);
+            }
+            if (m_listLateUpdate.Contains(inst))
+            {
+                m_listLateUpdate.Remove(inst);
+            }
             inst.Destroy();
+            inst = null;
         }
 
         public override void OnUpdate()
