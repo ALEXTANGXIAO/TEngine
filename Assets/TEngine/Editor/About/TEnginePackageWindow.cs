@@ -10,10 +10,12 @@ namespace TEngine.Editor
 {
     public class PackageManagerInternal : EditorWindow
     {
-        [MenuItem("TEngine/Package Manager Internal", priority = 1500)]
+        private const string OnlineUrl = "http://1.12.241.46:8081/TEngine/";
+
+        [MenuItem("TEngine/在线模块商店|Package Manager", priority = 1500)]
         private static void Open()
         {
-            var window = GetWindow<PackageManagerInternal>("TEngine Manager Internal");
+            var window = GetWindow<PackageManagerInternal>("在线模块商店|Package Manager");
             window.minSize = new Vector2(600f, 400f);
             window.Show();
         }
@@ -67,6 +69,7 @@ namespace TEngine.Editor
         {
             packages = new List<List<PackageTemplate>>();
             foldoutDic = new Dictionary<string, bool>();
+            EditorCoroutineRunner.StartEditorCoroutine(GetPackagesInfo());
         }
 
         private void OnGUI()
@@ -236,7 +239,7 @@ namespace TEngine.Editor
         //获取资源包信息
         private IEnumerator GetPackagesInfo()
         {
-            string url = "http://1.12.241.46:8081/TEngine/packages.json";
+            string url = $"{OnlineUrl}packages.json";
             WWW www = new WWW(url);
             yield return www;
             if (www.error == null)
@@ -271,7 +274,8 @@ namespace TEngine.Editor
         //下载并导入资源包
         private IEnumerator DownloadPackage(PackageTemplate package)
         {
-            string url = $"http://1.12.241.46:8081/TEngine/packages/{package.name}/{package.version}.unitypackage";
+            string url = $"{OnlineUrl}packages/{package.name}/{package.version}/{package.name}.unitypackage";
+            //Debug.Log(url);
             WWW www = new WWW(url);
             yield return www;
             if (www.error == null)
