@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace TEngine
 {
@@ -135,6 +136,16 @@ namespace TEngine
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// 释放所有单例
+        /// </summary>
+        public static void ReStart()
+        {
+            Release();
+
+            SceneManager.LoadScene(0);
         }
     }
 
