@@ -105,10 +105,16 @@ namespace TEngine
             var jsonData = JsonHelper.Instance.Deserialize<List<T>>(jsonStr.text);
 
             var etr = jsonData.GetEnumerator();
+
             if(dic == null)
             {
                 dic = new Dictionary<K, T>();
             }
+            else
+            {
+                dic.Clear();
+            }
+
             while (etr.MoveNext())
             {
                 var key = convKey(etr.Current);
@@ -119,6 +125,48 @@ namespace TEngine
                     }
                     dic.Add(key, etr.Current);
                 }
+            }
+
+            return jsonData;
+        }
+
+        public static List<T> ReadResBinDict<K, T>(Dictionary<K, List<T>> dict, ConvertDictionaryKey<K, T> convKey, string fileName = "")
+        {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                fileName = typeof(T).Name;
+            }
+
+            string resPath = string.Format("Config/{0}.json", fileName);
+            TextAsset jsonStr = TResources.Load<TextAsset>(resPath);
+            if (jsonStr == null)
+            {
+                TLogger.LogError("读取Json配置数据失败：{0}", fileName);
+                return null;
+            }
+
+            var jsonData = JsonHelper.Instance.Deserialize<List<T>>(jsonStr.text);
+
+            var etr = jsonData.GetEnumerator();
+            if (dict == null)
+            {
+                dict = new Dictionary<K, List<T>>();
+            }
+            else
+            {
+                dict.Clear();
+            }
+            while (etr.MoveNext())
+            {
+                var data = etr.Current;
+                var key = convKey(data);
+                List<T> listItem;
+                if (!dict.TryGetValue(key, out listItem))
+                {
+                    listItem = new List<T>();
+                    dict.Add(key, listItem);
+                }
+                listItem.Add(data);
             }
 
             return jsonData;
