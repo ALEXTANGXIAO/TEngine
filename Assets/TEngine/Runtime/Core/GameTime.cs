@@ -48,6 +48,8 @@ namespace TEngine
         public static float quickRealTime;
         public static long TimeStamp => System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
         private static long _lastFrameTimeStamp;
+        private static bool _isPause = false;
+        private static float _keepTimeScale = 1f;
 
         /// <summary>
         /// 从游戏启动到现在的真实时长（秒）
@@ -69,5 +71,49 @@ namespace TEngine
             ServerTimeStamp = serverTime;
         }
 
+
+        /// <summary>
+        /// 获取、设置TimeScale
+        /// </summary>
+        public static float TimeScale
+        {
+            get
+            {
+                return Time.timeScale;
+            }
+            set
+            {
+                if (!_isPause)
+                {
+                    _keepTimeScale = Time.timeScale;
+                    Time.timeScale = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 时间停止，所有基于DeltaTime更新的逻辑都会停滞
+        /// </summary>
+        public static void Pause()
+        {
+            if (!_isPause)
+            {
+                _keepTimeScale = Time.timeScale;
+                Time.timeScale = 0f;
+                _isPause = true;
+            }
+        }
+
+        /// <summary>
+        /// 时间恢复
+        /// </summary>
+        public static void Resume()
+        {
+            if (_isPause)
+            {
+                Time.timeScale = _keepTimeScale;
+                _isPause = false;
+            }
+        }
     }
 }
