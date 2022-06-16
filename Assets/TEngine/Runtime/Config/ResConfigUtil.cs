@@ -5,14 +5,34 @@ using UnityEngine;
 
 namespace TEngine
 {
+    /// <summary>
+    /// 过滤配置
+    /// </summary>
+    /// <typeparam name="TType"></typeparam>
+    /// <param name="val"></param>
+    /// <returns></returns>
+    public delegate bool FilterResBin<TType>(TType val);
+    /// <summary>
+    /// 计算拼接Key
+    /// </summary>
+    /// <typeparam name="KeyType"></typeparam>
+    /// <typeparam name="TType"></typeparam>
+    /// <param name="val"></param>
+    /// <returns></returns>
+    public delegate KeyType ConvertDictionaryKey<KeyType, TType>(TType val);
+
     public class ResConfigUtil 
     {
         private static StringBuilder m_strBuilder = new StringBuilder();
         private static readonly string m_split = "_";
 
         #region 读取接口
-        public static List<T> ReadConfigListRes<T>(string fileName)
+        public static List<T> ReadConfigListRes<T>(string fileName = "")
         {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                fileName = typeof(T).Name;
+            }
             string resPath = string.Format("Config/{0}.json",fileName);
             TextAsset jsonStr = TResources.Load<TextAsset>(resPath);
             if (jsonStr == null)
@@ -27,8 +47,12 @@ namespace TEngine
             return list;
         }
 
-        public static Dictionary<string, T> ReadConfigRes<T>(string fileName)
+        public static Dictionary<string, T> ReadConfigRes<T>(string fileName = "")
         {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                fileName = typeof(T).Name;
+            }
             string resPath = string.Format("Config/{0}.json", fileName);
             TextAsset jsonStr = TResources.Load<TextAsset>(resPath);
             if (jsonStr == null)
@@ -43,8 +67,12 @@ namespace TEngine
             return dic;
         }
 
-        public static Dictionary<int, T> ReadConfigResIntKey<T>(string fileName)
+        public static Dictionary<int, T> ReadConfigResIntKey<T>(string fileName = "")
         {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                fileName = typeof(T).Name;
+            }
             string resPath = string.Format("Config/{0}.json", fileName);
             TextAsset jsonStr = TResources.Load<TextAsset>(resPath);
             if (jsonStr == null)
@@ -59,6 +87,42 @@ namespace TEngine
             return dic;
         }
 
+        public static List<T> ReadResBinDict<K,T>(Dictionary<K, T> dic,ConvertDictionaryKey<K,T> convKey ,string fileName = "")
+        {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                fileName = typeof(T).Name;
+            }
+
+            string resPath = string.Format("Config/{0}.json", fileName);
+            TextAsset jsonStr = TResources.Load<TextAsset>(resPath);
+            if (jsonStr == null)
+            {
+                TLogger.LogError("读取Json配置数据失败：{0}", fileName);
+                return null;
+            }
+
+            var jsonData = JsonHelper.Instance.Deserialize<List<T>>(jsonStr.text);
+
+            var etr = jsonData.GetEnumerator();
+            if(dic == null)
+            {
+                dic = new Dictionary<K, T>();
+            }
+            while (etr.MoveNext())
+            {
+                var key = convKey(etr.Current);
+                {
+                    if (dic.ContainsKey(key))
+                    {
+                        TLogger.LogError("Config {0} Load Error, Repeat config {1}",typeof(T).ToString(),key.ToString());
+                    }
+                    dic.Add(key, etr.Current);
+                }
+            }
+
+            return jsonData;
+        }
         #endregion
 
         public static UInt64 Make64Key(uint key1, uint key2)
