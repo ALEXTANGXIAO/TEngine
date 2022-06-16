@@ -1,5 +1,5 @@
-{
-  "1001": {
+[
+  {
     "BuffID": 1001,
     "BuffType": 0,
     "BuffValue": 0.5,
@@ -8,7 +8,7 @@
     "HandleState": 0,
     "CanAddBuff": 1
   },
-  "1002": {
+  {
     "BuffID": 1002,
     "BuffType": 1,
     "BuffValue": 0.5,
@@ -17,7 +17,7 @@
     "HandleState": 0,
     "CanAddBuff": 1
   },
-  "1003": {
+  {
     "BuffID": 1003,
     "BuffType": 3,
     "BuffValue": 0.1,
@@ -26,7 +26,7 @@
     "HandleState": 1,
     "CanAddBuff": 1
   },
-  "1004": {
+  {
     "BuffID": 1004,
     "BuffType": 0,
     "BuffValue": -0.3,
@@ -35,7 +35,7 @@
     "HandleState": 0,
     "CanAddBuff": 1
   },
-  "1005": {
+  {
     "BuffID": 1005,
     "BuffType": 1,
     "BuffValue": -0.3,
@@ -44,7 +44,7 @@
     "HandleState": 0,
     "CanAddBuff": 1
   },
-  "1006": {
+  {
     "BuffID": 1006,
     "BuffType": 2,
     "BuffValue": 5,
@@ -53,7 +53,7 @@
     "HandleState": 0,
     "CanAddBuff": 1
   },
-  "1007": {
+  {
     "BuffID": 1007,
     "BuffType": 4,
     "BuffValue": 0.6,
@@ -62,7 +62,7 @@
     "HandleState": 1,
     "CanAddBuff": 0
   },
-  "1008": {
+  {
     "BuffID": 1008,
     "BuffType": 5,
     "BuffValue": 15,
@@ -71,7 +71,7 @@
     "HandleState": 1,
     "CanAddBuff": 0
   },
-  "1009": {
+  {
     "BuffID": 1009,
     "BuffType": 6,
     "BuffValue": 0.4,
@@ -80,7 +80,7 @@
     "HandleState": 2,
     "CanAddBuff": 1
   },
-  "1010": {
+  {
     "BuffID": 1010,
     "BuffType": 7,
     "BuffValue": 0.1,
@@ -89,7 +89,7 @@
     "HandleState": 4,
     "CanAddBuff": 0
   },
-  "1011": {
+  {
     "BuffID": 1011,
     "BuffType": 8,
     "BuffValue": 3,
@@ -98,7 +98,7 @@
     "HandleState": 1,
     "CanAddBuff": 1
   },
-  "1012": {
+  {
     "BuffID": 1012,
     "BuffType": 9,
     "BuffValue": 0,
@@ -107,7 +107,7 @@
     "HandleState": 3,
     "CanAddBuff": 0
   },
-  "1013": {
+  {
     "BuffID": 1013,
     "BuffType": 10,
     "BuffValue": 1,
@@ -116,7 +116,7 @@
     "HandleState": 2,
     "CanAddBuff": 0
   },
-  "1014": {
+  {
     "BuffID": 1014,
     "BuffType": 8,
     "BuffValue": 4,
@@ -125,7 +125,7 @@
     "HandleState": 1,
     "CanAddBuff": 1
   },
-  "1015": {
+  {
     "BuffID": 1015,
     "BuffType": 2,
     "BuffValue": 2,
@@ -134,7 +134,7 @@
     "HandleState": 1,
     "CanAddBuff": 0
   },
-  "1016": {
+  {
     "BuffID": 1016,
     "BuffType": 2,
     "BuffValue": 3,
@@ -143,7 +143,7 @@
     "HandleState": 1,
     "CanAddBuff": 0
   },
-  "1017": {
+  {
     "BuffID": 1017,
     "BuffType": 2,
     "BuffValue": 8,
@@ -152,7 +152,7 @@
     "HandleState": 0,
     "CanAddBuff": 1
   },
-  "1018": {
+  {
     "BuffID": 1018,
     "BuffType": 3,
     "BuffValue": 0.15,
@@ -161,7 +161,7 @@
     "HandleState": 1,
     "CanAddBuff": 1
   },
-  "1019": {
+  {
     "BuffID": 1019,
     "BuffType": 4,
     "BuffValue": 0.5,
@@ -170,7 +170,7 @@
     "HandleState": 1,
     "CanAddBuff": 0
   },
-  "1020": {
+  {
     "BuffID": 1020,
     "BuffType": 5,
     "BuffValue": 10,
@@ -179,7 +179,7 @@
     "HandleState": 1,
     "CanAddBuff": 0
   },
-  "1021": {
+  {
     "BuffID": 1021,
     "BuffType": 11,
     "BuffValue": 6,
@@ -188,7 +188,7 @@
     "HandleState": 0,
     "CanAddBuff": 0
   },
-  "1022": {
+  {
     "BuffID": 1022,
     "BuffType": 11,
     "BuffValue": 3,
@@ -197,4 +197,4 @@
     "HandleState": 0,
     "CanAddBuff": 0
   }
-}
+]
