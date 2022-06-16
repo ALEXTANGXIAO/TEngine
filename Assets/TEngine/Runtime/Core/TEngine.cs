@@ -47,12 +47,17 @@ namespace TEngine
         //-------------------------------------------------------系统注册--------------------------------------------------------//
         private List<ILogicSys> m_LogicMgrList = new List<ILogicSys>();
 
+        public bool ContainLogicSys(ILogicSys logicSys)
+        {
+            return m_LogicMgrList.Contains(logicSys);
+        }
+
         /// <summary>
         /// 系统注册
         /// </summary>
         /// <param name="logicSys"></param>
         /// <returns></returns>
-        protected bool AddLogicSys(ILogicSys logicSys)
+        public bool AddLogicSys(ILogicSys logicSys)
         {
             if (m_LogicMgrList.Contains(logicSys))
             {
