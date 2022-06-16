@@ -71,7 +71,7 @@ namespace TEngine
             }
 
 #if UNITY_EDITOR
-            TLogger.LogInfo("read config {0} used time: {1}", typeof(T).ToString(), tickWatcher.ElapseTime());
+            TLogger.LogInfoSuccessd("Read Config {0} Used Time: {1}", typeof(T).ToString(), tickWatcher.ElapseTime());
 #endif
         }
 
