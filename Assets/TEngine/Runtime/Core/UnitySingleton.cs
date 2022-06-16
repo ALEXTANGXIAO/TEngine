@@ -85,12 +85,12 @@ namespace TEngine
             }
 #if UNITY_EDITOR
             TLogger.LogInfo($"UnitySingleton Instance:{typeof(T).Name}");
+#endif
             GameObject tEngine = SingletonMgr.Root;
             if (tEngine != null)
             {
                 this.gameObject.transform.SetParent(tEngine.transform);
             }
-#endif
         }
 
         protected virtual void OnDestroy()
