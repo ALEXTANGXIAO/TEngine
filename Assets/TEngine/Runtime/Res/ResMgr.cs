@@ -81,7 +81,7 @@ namespace TEngine
             return result;
         }
 
-        public T Load<T>(string path) where T:UnityEngine.Object
+        public T Load<T>(string path) where T : UnityEngine.Object
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -89,11 +89,34 @@ namespace TEngine
             }
 
             T result = null;
-            AssetData assetData = _assetConfig.GetAssetAtPath(path);
+
+            AssetData assetData;
+
+            bool isSprite = false;
+
+            if (typeof(T) == typeof(Sprite))
+            {
+                isSprite = true;
+                assetData = _assetConfig.GetAssetAtPath(path, true);
+            }
+            else
+            {
+                assetData = _assetConfig.GetAssetAtPath(path);
+            }
+
 
             if (assetData != null)
             {
-                result = assetData.AssetObject as T;
+                if (isSprite)
+                {
+                    string name = assetData.Name.Split('.')[0];
+
+                    result = assetData[name] as T;
+                }
+                else
+                {
+                    result = assetData.AssetObject as T;
+                }
                 if (result is GameObject)
                 {
                     var go = Object.Instantiate(assetData.AssetObject) as GameObject;
