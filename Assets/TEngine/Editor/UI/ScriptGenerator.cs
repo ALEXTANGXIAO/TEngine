@@ -53,6 +53,7 @@ namespace TEngine.Editor
 
                 if (includeListener)
                 {
+                    strFile.Append("using UI;\n");
                     strFile.Append("using TEngine;\n");
                     strFile.Append("using UnityEngine;\n");
                     strFile.Append("using UnityEngine.UI;\n\n");
