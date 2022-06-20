@@ -46,9 +46,9 @@
 ```Csharp
 public void Test()
 {
-  TLogger.Instance.LogInfo();
-  TLogger.Instance.LogAssert();
-  TLogger.Instance.LogInfoSuccessd();
+  TLogger.LogInfo();
+  TLogger.LogAssert();
+  TLogger.LogInfoSuccessd();
 ...
 }
 [TLogger][INFO][2022-05-20 23:44:19 871] - DevicePerformanceLevel 设备性能评级:High
