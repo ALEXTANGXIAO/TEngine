@@ -22,7 +22,7 @@ namespace TEngine
                     GameObject go = SingletonMgr.GetGameObject(instName);
                     if (go == null)
                     {
-                        go = GameObject.Find($"/{instName}");
+                        go = GameObject.Find($"{instName}");
                         if (go == null)
                         {
                             go = new GameObject(instName);

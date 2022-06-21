@@ -28,7 +28,16 @@ namespace TEngine
             {
                 if (_root == null)
                 {
-                    _root = GameObject.Find("TEngine");
+                    _root = GameObject.Find("TEngineMgr");
+
+                    if (_root == null)
+                    {
+                        _root = new GameObject("TEngineMgr");
+
+                        _root.transform.position = Vector3.zero;
+                    }
+
+                    UnityEngine.Object.DontDestroyOnLoad(_root);
                 }
 
                 return _root;
