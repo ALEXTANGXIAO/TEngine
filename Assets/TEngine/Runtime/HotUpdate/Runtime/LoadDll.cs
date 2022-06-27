@@ -9,7 +9,7 @@ using UnityEngine;
 public class LoadDll : MonoBehaviour
 {
     private System.Reflection.Assembly gameLogic;
-    private MethodInfo updateMethod;
+    private Action<float> updateAction;
 
     void Start()
     {
@@ -39,12 +39,9 @@ public class LoadDll : MonoBehaviour
 
         AddMyComponent("TEngineCore.TEngineDemo", this.gameObject);
 
-        //Type appType = gameLogic.GetType("TEngineCore.TEngine");
-        //MethodInfo mainMethod = appType.GetMethod("InitLibImp");
-        //mainMethod?.Invoke(null, null);
-
-        //updateMethod = appType.GetMethod("Update");
-        //var updateDel = System.Delegate.CreateDelegate(typeof(Action<float>), null, updateMethod);
+        Type appType = gameLogic.GetType("TEngineCore.TEngineDemo");
+        var method = appType.GetMethod("GetUpdateDelegate");
+        updateAction = (Action<float>)method.Invoke(null, null);
     }
 
     void AddMyComponent(string className, GameObject obj)
@@ -56,10 +53,9 @@ public class LoadDll : MonoBehaviour
 
     void Update()
     {
-        //if (gameLogic == null)
-        //{
-        //    return;
-        //}
-        //updateMethod?.Invoke(Time.deltaTime,null);
+        if(updateAction != null)
+        {
+            updateAction(Time.deltaTime);
+        }
     }
 }
