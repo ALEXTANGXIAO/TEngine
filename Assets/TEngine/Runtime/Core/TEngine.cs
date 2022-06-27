@@ -76,6 +76,25 @@ namespace TEngine
             return true;
         }
 
+        /// <summary>
+        /// 系统注销
+        /// </summary>
+        /// <param name="logicSys"></param>
+        /// <returns></returns>
+        public void RemoveLogicSys(ILogicSys logicSys)
+        {
+            if (m_LogicMgrList.Contains(logicSys))
+            {
+                TLogger.LogInfo("Remove logic system: " + logicSys.GetType().Name);
+
+                logicSys.OnDestroy();
+
+                m_LogicMgrList.Remove(logicSys);
+
+                logicSys = null;
+            }
+        }
+
         #region 生命周期
         public void Start()
         {
