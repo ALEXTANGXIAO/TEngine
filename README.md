@@ -1,6 +1,6 @@
 # TEngine
 <p align="center">
-    <img src="http://www.alextgames.com:8081/temp/TEngine512.png" alt="logo" width="384" height="384">
+    <img src="http://1.12.241.46:8081/temp/TEngine512.png" alt="logo" width="384" height="384">
 </p>
 
 <h3 align="center"><strong>TEngine<strong></h3>
@@ -37,7 +37,7 @@
 
 #### TEngine是一个简单(新手友好)且强大的Unity框架,对于需要一套上手快、文档清晰、高性能且可拓展性极强的开发者或者团队来说是一个很好的游戏开发框架解决方案。
 
-## <a href="http://www.alextgames.com:5000/"><strong>文档快速入门 »</strong></a>
+## <a href="http://1.12.241.46:5000/"><strong>文档快速入门 »</strong></a>
 ## <a href="https://github.com/ALEXTANGXIAO/TEngineServer"><strong>服务端GitHub入口 »</strong></a>
 
 ## <strong>为什么要使用TEngine
