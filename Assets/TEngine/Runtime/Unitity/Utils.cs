@@ -167,7 +167,7 @@ namespace TEngine
                 int splitIndex = path.LastIndexOf('#');
                 string resPath;
                 bool bWithSubAssets;
-                string subAssetName;
+                string subAssetName = string.Empty;
                 if (splitIndex > 0)
                 {
                     resPath = path.Substring(0, splitIndex);
@@ -201,10 +201,9 @@ namespace TEngine
 
                     if (bWithSubAssets)
                     {
-                        string name = path.Split('.')[0];
-                        if (asset[name] != null)
+                        if (asset[subAssetName] != null)
                         {
-                            image.sprite = asset[name] as Sprite;
+                            image.sprite = asset[subAssetName] as Sprite;
                         }
                     }
                     else
