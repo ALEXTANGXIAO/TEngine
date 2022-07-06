@@ -61,9 +61,26 @@ namespace UI
         private Transform m_uiManagerTransform;
         private Camera m_uiCamera;
         public Camera Camera => m_uiCamera;
+        private bool m_init = false;
 
         public UIManager()
         {
+            InitUiMgr();
+        }
+
+        public override void Active()
+        {
+            base.Active();
+
+            InitUiMgr();
+        }
+
+        private void InitUiMgr()
+        {
+            if (m_init == true)
+            {
+                return;
+            }
             m_uiManagerGo = TResources.Load("UI/UIRoot.prefab");
             Object.DontDestroyOnLoad(m_uiManagerGo);
             m_uiManagerTransform = m_uiManagerGo.transform;
@@ -87,6 +104,8 @@ namespace UI
                 baseOrder += 1000;
             }
             CalcCameraRect();
+
+            m_init = true;
         }
 
         void CalcCameraRect()

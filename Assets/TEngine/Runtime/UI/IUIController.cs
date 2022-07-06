@@ -2,6 +2,6 @@
 {
     interface IUIController
     {
-        void ResigterUIEvent();
+        void RegisterUIEvent();
     }
 }

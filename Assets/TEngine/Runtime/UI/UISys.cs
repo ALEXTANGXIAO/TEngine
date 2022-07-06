@@ -8,18 +8,12 @@ namespace UI
     {
         public static int DesginWidth
         {
-            get
-            {
-                return 750;
-            }
+            get { return 750; }
         }
 
         public static int DesginHeight
         {
-            get
-            {
-                return 1624;
-            }
+            get { return 1624; }
         }
 
         public static int ScreenWidth;
@@ -54,7 +48,7 @@ namespace UI
 
         private void RegistAllController()
         {
-            //AddController<LoadingUIController>();
+            //AddController<GameUIController>();
         }
 
         private void AddController<T>() where T : IUIController, new()
@@ -75,12 +69,12 @@ namespace UI
 
             m_listController.Add(controller);
 
-            controller.ResigterUIEvent();
+            controller.RegisterUIEvent();
         }
 
         public static void ShowTipMsg(string str)
         {
-            GameEventMgr.Instance.Send(TipsEvent.Log,str);
+            GameEventMgr.Instance.Send(TipsEvent.Log, str);
 #if UNITY_EDITOR
             TLogger.LogInfo(str);
 #endif
@@ -117,6 +111,7 @@ namespace UI
             rectTransform.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, left, size.x);
             rectTransform.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Bottom, bottom, size.y);
         }
+
         /// <summary>
         /// 调整 RectTransform 组件中的 Left、Top 属性
         /// </summary>
@@ -129,6 +124,7 @@ namespace UI
             rectTransform.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, left, size.x);
             rectTransform.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, top, size.y);
         }
+
         /// <summary>
         /// 调整 RectTransform 组件中的 Right、Bottom 属性
         /// </summary>
@@ -141,6 +137,7 @@ namespace UI
             rectTransform.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Right, right, size.x);
             rectTransform.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Bottom, bottom, size.y);
         }
+
         /// <summary>
         /// 调整 RectTransform 组件中的 Right、Top 属性
         /// </summary>
@@ -153,6 +150,7 @@ namespace UI
             rectTransform.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Right, right, size.x);
             rectTransform.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, top, size.y);
         }
+
         public static void SetCenter(this RectTransform rectTransform, float x = 0, float y = 0)
         {
             rectTransform.localPosition = new Vector3(0, 0, 0);
@@ -165,5 +163,4 @@ namespace UI
             rectTransform.localPosition = new Vector2(x, y);
         }
     }
-
 }

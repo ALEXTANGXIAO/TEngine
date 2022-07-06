@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace UI
 {
-    public class UIWindowBase : UIBase
+    partial class UIWindowBase : UIBase
     {
         /// <summary>
         /// 所属的window
