@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace UI
 {
-    partial class UIWindowBase : UIBase
+    public partial class UIWindowBase : UIBase
     {
         /// <summary>
         /// 所属的window
@@ -21,6 +21,7 @@ namespace UI
         /// 是否首次显示过了
         /// </summary>
         protected bool m_firstVisible = false;
+
         /// <summary>
         /// 当前是否显示出来了
         /// </summary>
@@ -54,7 +55,6 @@ namespace UI
         {
             get { return UIWindowBaseType.None; }
         }
-
 
         #region 最基础的接口
 
@@ -144,63 +144,46 @@ namespace UI
         #region 子类扩展的接口
 
         /// <summary> 脚本生成的代码 </summary>
-        protected virtual void ScriptGenerator()
-        {
-
-        }
+        protected virtual void ScriptGenerator() { }
 
         /// <summary>
         ///  绑定代码和prefab之间元素的关系
         /// </summary>
-        protected virtual void BindMemberProperty()
-        {
-        }
+        protected virtual void BindMemberProperty() { }
 
-        protected virtual void RegisterEvent()
-        {
-        }
+        protected virtual void RegisterEvent() { }
 
         private bool m_hasOverrideUpdate = true;
+
         protected virtual void OnUpdate()
         {
             m_hasOverrideUpdate = false;
-
         }
 
         /// <summary>
         /// 界面创建出来的时候调用，被覆盖不可见不会重复触发
         /// </summary>
-        protected virtual void OnCreate()
-        {
-        }
+        protected virtual void OnCreate() { }
 
-        protected virtual void OnDestroy()
-        {
-        }
+        protected virtual void OnDestroy() { }
 
         /// <summary>
         /// 创建出来首次visible
         /// 用来播放一些显示动画之类的
         /// </summary>
-        protected virtual void OnFirstVisible()
-        {
-        }
+        protected virtual void OnFirstVisible() { }
 
         /// <summary>
         /// 当显示出来的时候调用
         /// 包括首次初始化后显示和上面的界面消失后重新恢复显示
         /// </summary>
-        protected virtual void OnVisible()
-        {
-        }
+        protected virtual void OnVisible() { }
 
         /// <summary>
         /// 界面不可见的时候调用
         /// 当被上层全屏界面覆盖后，也会触发一次隐藏
         /// </summary>
-        protected virtual void OnHidden()
-        {
-        }
+        protected virtual void OnHidden() { }
 
         protected void _OnSortingOrderChg()
         {
@@ -217,9 +200,7 @@ namespace UI
             OnSortingOrderChg();
         }
 
-        protected virtual void OnSortingOrderChg()
-        {
-        }
+        protected virtual void OnSortingOrderChg() { }
         #endregion
 
         public void AddChild(UIWindowBase child)
@@ -298,7 +279,6 @@ namespace UI
             return UnityUtil.FindChildComponent<T>(_transform, path);
         }
 
-
         public void Show(bool visible)
         {
             // 加个保护
@@ -368,7 +348,6 @@ namespace UI
             }
             OnHidden();
         }
-
 
         /// <summary>
         /// 返回是否有必要下一帧继续执行
@@ -441,5 +420,4 @@ namespace UI
 
         #endregion
     }
-
 }
