@@ -128,7 +128,7 @@ public void Test()
 }
 
 ```
-## <strong>4.救世的HybirdCLR(huatuo)热更新！！！！！！！！(2022.5.19日huatuo的安卓和IOS单元测试已全部通过)(目前支持Unity2020.3.33f1等高版本，2019版本将在2022年6月份支持。)
+## <strong>4.救世的<a href="https://github.com/focus-creative-games/hybridclr"><strong>HybirdCLR(huatuo)</strong></a>热更新！！！！！！！！(2022.5.19日huatuo的安卓和IOS单元测试已全部通过)(目前支持Unity2020.3.33f1等高版本，2019版本将在2022年6月份支持。)
 5. 如果您需要，强大的ECS模块Entity-Component-System,可以配合JobSystem和Brust释放你的性能。
 ```Csharp
 ### ECS架构类似unity的gameObject->component模式, 但是ECS是面向数据的编程思想，不同于面向对象以及Unity常用的Mono模式。Mono模式在内存中是散列的，而面向数据的ECS则是在内存中线性分布，且支持多线程（JobSystem、Brust编译）因此性能远高于原生Unity-Mono。可实现千人同屏。
@@ -281,4 +281,4 @@ TEngine
 ## <strong>优质开源项目推荐
 #### <a href="https://github.com/JasonXuDeveloper/JEngine"><strong>JEngine</strong></a> - 使Unity开发的游戏支持热更新的解决方案。
 
-#### <a href="https://github.com/focus-creative-games/huatuo"><strong>Huatuo</strong></a> - 特性完整、零成本、高性能、低内存的近乎完美的Unity全平台原生c#热更方案
+#### <a href="https://github.com/focus-creative-games/hybridclr"><strong>HybridCLR</strong></a> - 特性完整、零成本、高性能、低内存的近乎完美的Unity全平台原生c#热更方案
