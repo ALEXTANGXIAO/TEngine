@@ -114,7 +114,7 @@ class PlayerHpUI
   }
 }
 ```
-3. 健壮的资源模块TResources,开发者只用关注一个接口便可以通用的在编辑器进行资源加载或者真机加载AB，包括打包AB等等。通过类AssetConfig统一配置本地资源加载和AB打包的路径(AssetRootPath),AB加密偏移也在底层处理，更安全的保护了您的项目，测试无法被AssetStudio解密，切AB加密偏移性能几乎无影响。   
+3. 健壮的资源模块TResources,开发者只用关注一个接口便可以通用的在编辑器进行资源加载或者真机加载AB，包括打包AB等等。通过类AssetConfig统一配置本地资源加载和AB打包的路径(AssetRootPath),AB加密偏移也在底层处理，更安全的保护了您的项目，测试无法被AssetStudio解密，并且经测试AB加密偏移性能几乎无影响。   
 增加了AB资源计数的概念，TODO：在运行时支持内存以及资源管理，防止无用资源残留等问题。
 ```Csharp
 public void Test()
@@ -128,7 +128,7 @@ public void Test()
 }
 
 ```
-## <strong>4.救世的huatuo热更新！！！！！！！！，TEngine内部集成了huatuo脚手架，可以一键改造Unity的IL2CPP，且备份好原本的文件,并且支持内部更新huatuo到最新版(2022.5.19日huatuo的安卓和IOS单元测试已全部通过)(目前支持Unity2020.3.33f1等高版本，2019版本将在2022年6月份支持。)
+## <strong>4.救世的HybirdCLR(huatuo)热更新！！！！！！！！(2022.5.19日huatuo的安卓和IOS单元测试已全部通过)(目前支持Unity2020.3.33f1等高版本，2019版本将在2022年6月份支持。)
 5. 如果您需要，强大的ECS模块Entity-Component-System,可以配合JobSystem和Brust释放你的性能。
 ```Csharp
 ### ECS架构类似unity的gameObject->component模式, 但是ECS是面向数据的编程思想，不同于面向对象以及Unity常用的Mono模式。Mono模式在内存中是散列的，而面向数据的ECS则是在内存中线性分布，且支持多线程（JobSystem、Brust编译）因此性能远高于原生Unity-Mono。可实现千人同屏。
