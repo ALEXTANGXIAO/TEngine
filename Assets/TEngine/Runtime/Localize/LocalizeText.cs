@@ -15,7 +15,11 @@ namespace TEngine
         protected override void Start()
         {
             base.Start();
-            if (string.IsNullOrEmpty(this.text))
+            if (Key > 0 && string.IsNullOrEmpty(this.text))
+            {
+                text = SetText(Key);
+            }
+            else if (!string.IsNullOrEmpty(this.text))
             {
                 Key = LocalizeMgr.Instance.GetLocalId(this.text);
                 if (Key <= 0)
