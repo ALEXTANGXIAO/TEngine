@@ -26,5 +26,10 @@
             long endTick = System.DateTime.Now.Ticks;
             return (float)((endTick - m_startTick) / 10000) / 1000.0f;
         }
+
+        public void LogUsedTime()
+        {
+            TLogger.LogException($"Used Time: {this.ElapseTime()}");
+        }
     }
 }
