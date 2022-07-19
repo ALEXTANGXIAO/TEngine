@@ -75,7 +75,7 @@ namespace TEngine
         {
             m_data = new Dictionary<K, T>();
 
-            ///读取文件不支持filter,实际也没这个需求
+            //读取文件不支持filter,实际也没这个需求
             TLogger.LogAssert(m_filter == null);
 
             List<T> rawList;
