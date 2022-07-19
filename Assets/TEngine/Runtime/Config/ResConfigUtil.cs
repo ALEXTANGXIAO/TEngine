@@ -15,11 +15,11 @@ namespace TEngine
     /// <summary>
     /// 计算拼接Key
     /// </summary>
-    /// <typeparam name="KeyType"></typeparam>
-    /// <typeparam name="TType"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     /// <param name="val"></param>
     /// <returns></returns>
-    public delegate KeyType ConvertDictionaryKey<KeyType, TType>(TType val);
+    public delegate TKey ConvertDictionaryKey<TKey, TValue>(TValue val);
 
     public class ResConfigUtil 
     {
@@ -37,7 +37,7 @@ namespace TEngine
             TextAsset jsonStr = TResources.Load<TextAsset>(resPath);
             if (jsonStr == null)
             {
-                TLogger.LogError("读取Json配置数据失败：{0}", fileName);
+                TLogger.LogError("Config {0} Read Json Error", fileName);
                 return null;
             }
 
@@ -57,7 +57,7 @@ namespace TEngine
             TextAsset jsonStr = TResources.Load<TextAsset>(resPath);
             if (jsonStr == null)
             {
-                TLogger.LogError("读取Json配置数据失败：{0}", fileName);
+                TLogger.LogError("Config {0} Read Json Error", fileName);
                 return null;
             }
 
@@ -77,7 +77,7 @@ namespace TEngine
             TextAsset jsonStr = TResources.Load<TextAsset>(resPath);
             if (jsonStr == null)
             {
-                TLogger.LogError("读取Json配置数据失败：{0}", fileName);
+                TLogger.LogError("Config {0} Read Json Error", fileName);
                 return null;
             }
 
@@ -98,7 +98,7 @@ namespace TEngine
             TextAsset jsonStr = TResources.Load<TextAsset>(resPath);
             if (jsonStr == null)
             {
-                TLogger.LogError("读取Json配置数据失败：{0}", fileName);
+                TLogger.LogError("Config {0} Read Json Error", fileName);
                 return null;
             }
 
@@ -127,6 +127,8 @@ namespace TEngine
                 }
             }
 
+            etr.Dispose();
+
             return jsonData;
         }
 
@@ -141,7 +143,7 @@ namespace TEngine
             TextAsset jsonStr = TResources.Load<TextAsset>(resPath);
             if (jsonStr == null)
             {
-                TLogger.LogError("读取Json配置数据失败：{0}", fileName);
+                TLogger.LogError("Config {0} Read Json Error", fileName);
                 return null;
             }
 
@@ -168,6 +170,7 @@ namespace TEngine
                 }
                 listItem.Add(data);
             }
+            etr.Dispose();
 
             return jsonData;
         }
