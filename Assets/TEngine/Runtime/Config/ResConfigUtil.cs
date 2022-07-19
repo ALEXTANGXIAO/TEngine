@@ -217,7 +217,7 @@ public class BufferMgr : Singleton<BufferMgr>
 
     public BufferMgr()
     {
-        m_dictBaseConfig = ResConfigUtil.ReadConfigRes<BuffConfig>("BuffConfig");
+        m_dictBaseConfig = ResConfigUtil.ReadConfigRes<BuffConfig>();
     }
 
     public Dictionary<string, BuffConfig> GetBuffConfig()
