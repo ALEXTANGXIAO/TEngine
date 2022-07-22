@@ -2,14 +2,14 @@
 
 这个目录主要包含
 
-- huatuo相关仓库
+- HybirdCLR相关仓库
 - 本地il2cpp目录
 - 其他生成的目录
 
-## 安装huatuo
+## 安装HybirdCLR
 
-正常情况下，安装huatuo需要替换Unity安装目录下libil2cpp目录为huatuo版本的实现，但Unity允许使用环境变量UNITY_IL2CPP_PATH自定义%IL2CPP_PATH%的位置。
-因此我们不修改原始的il2cpp目录，直接在本地创建huatuo版本的il2cpp，并让环境变量指向它
+正常情况下，安装HybirdCLR需要替换Unity安装目录下libil2cpp目录为HybirdCLR版本的实现，但Unity允许使用环境变量UNITY_IL2CPP_PATH自定义%IL2CPP_PATH%的位置。
+因此我们不修改原始的il2cpp目录，直接在本地创建HybirdCLR版本的il2cpp，并让环境变量指向它
 
 安装流程
 
