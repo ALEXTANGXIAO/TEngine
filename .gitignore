@@ -69,3 +69,5 @@ TEnginePersistentDataPath/Log
 TEngineHotUpdate/bin
 TEngineHotUpdate/obj
 
+#HybirdCLR(HuaTuo)
+/HybirdCLRData/
