@@ -14,7 +14,7 @@ namespace TEngineCore
 
         protected override void StartGame()
         {
-            UnityEngine.Debug.Log("你好呀华佗".ToColor(ColorUtils.White));
+            UnityEngine.Debug.Log("你好呀HybirdCLR".ToColor(ColorUtils.White));
 
             UISys.Mgr.ShowWindow<TEngineLoginUI>();
 
@@ -28,7 +28,7 @@ namespace TEngineCore
 
         public static void Update(float deltaTime)
         {
-            UnityEngine.Debug.Log("HuaTuo热更域Update");
+            UnityEngine.Debug.Log("HybirdCLR热更域Update");
         }
     }
 }
