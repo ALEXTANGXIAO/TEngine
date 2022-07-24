@@ -8,31 +8,13 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using TEngine.UI;
 using UnityEngine;
 
 namespace TEngine
 {
     public class LoaderUtilities
     {
-
-        /// <summary>
-        /// 删除文件
-        /// </summary>
-        /// <param name="filePath">文件路径</param>
-        public static void DeleteFile(string filePath)
-        {
-            try
-            {
-                if (File.Exists(filePath))
-                {
-                    File.Delete(filePath);
-                }
-            }
-            catch (Exception e)
-            {
-                TLogger.LogError(e.ToString());
-            }
-        }
 
         /// <summary>
         /// 获取文件的md5码
@@ -388,6 +370,189 @@ namespace TEngine
             StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding(encoding));
             string retString = reader.ReadToEnd();
             return retString;
+        }
+
+        /// <summary>
+        /// 删除文件夹
+        /// </summary>
+        /// <param name="dir"></param>
+        public static void DeleteFolder(string dir)
+        {
+            try
+            {
+                if (!Directory.Exists(dir))
+                    return;
+
+                foreach (string d in Directory.GetFileSystemEntries(dir))
+                {
+                    if (File.Exists(d))
+                    {
+                        FileInfo fi = new FileInfo(d);
+                        if (fi.Attributes.ToString().IndexOf("ReadOnly") != -1)
+                        {
+                            fi.Attributes = FileAttributes.Normal;
+                        }
+                        LoaderUtilities.DeleteFile(d);//直接删除其中的文件 
+                    }
+                    else
+                    {
+                        DirectoryInfo d1 = new DirectoryInfo(d);
+                        if (d1.GetFiles().Length != 0)
+                        {
+                            DeleteFolder(d1.FullName);////递归删除子文件夹
+                        }
+                        Directory.Delete(d, true);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                TLogger.LogError(e.StackTrace.ToString());
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 删除文件
+        /// </summary>
+        /// <param name="filePath">文件路径</param>
+        public static void DeleteFile(string filePath)
+        {
+            try
+            {
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+            }
+            catch (Exception e)
+            {
+                TLogger.LogError(e.ToString());
+            }
+        }
+
+        /// <summary>
+        /// 显示提示框，目前最多支持三个按钮
+        /// </summary>
+        /// <param name="desc">描述</param>
+        /// <param name="showtype">类型（MessageShowType）</param>
+        /// <param name="OnOk">点击事件</param>
+        /// <param name="OnCancle">取消事件</param>
+        /// <param name="OnPackage">更新事件</param>
+        public static void ShowMessageBox(string desc, MessageShowType showtype = MessageShowType.OneButton,
+            LoadStyle.StyleEnum style = LoadStyle.StyleEnum.Style_Default,
+            Action OnOk = null,
+            Action OnCancle = null,
+            Action OnPackage = null)
+        {
+            UILoadMgr.Show(UIDefine.UILoadTip, desc);
+            var ui = UILoadMgr.GetActiveUI(UIDefine.UILoadTip) as UILoadTip;
+            if (ui == null) return;
+            ui.OnOk = OnOk;
+            ui.OnCancle = OnCancle;
+            ui.Showtype = showtype;
+            ui.OnEnter(desc);
+
+            var ls = ui.GetComponent<LoadStyle>();
+            if (ls)
+            {
+                ls.SetStyle(style);
+            }
+        }
+
+        /// <summary>
+        /// 拷贝文件夹
+        /// </summary>
+        /// <param name="srcPath">原目录地址</param>
+        /// <param name="destPath">目标目录地址</param>
+        public static void CopyDirectory(string srcPath, string destPath)
+        {
+            try
+            {
+
+                if (string.IsNullOrEmpty(srcPath) || !Directory.Exists(srcPath))
+                {
+                    Debug.LogError("不存在的原目录地址：" + srcPath);
+                    return;
+                }
+
+                if (!Directory.Exists(destPath))
+                    Directory.CreateDirectory(destPath);
+
+                var dir = new DirectoryInfo(srcPath);
+                var fileinfo = dir.GetFileSystemInfos();
+                foreach (var i in fileinfo)
+                {
+                    string sub_name = i.Name;
+                    if (i is DirectoryInfo)
+                    {
+                        if (!Directory.Exists($"{destPath}/{sub_name}"))
+                        {
+                            Directory.CreateDirectory($"{destPath}/{sub_name}");
+                        }
+                        CopyDirectory(i.FullName, $"{destPath}/{sub_name}");
+                    }
+                    else
+                    {
+                        File.Copy(i.FullName, $"{destPath}/{sub_name}", true);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                TLogger.LogError(e.ToString());
+                throw;
+            }
+        }
+
+        private static readonly char[] DirectorySeperators =
+        {
+            Path.DirectorySeparatorChar,
+            Path.AltDirectorySeparatorChar,
+        };
+
+        /// <summary>
+        /// 创建文件夹
+        /// </summary>
+        /// <param name="path">目标目录地址</param>
+        /// <param name="is_last_file"></param>
+        public static void MakeAllDirectory(string path, bool is_last_file = true)
+        {
+            try
+            {
+                if (is_last_file)
+                {
+                    path = Path.GetDirectoryName(path);
+                }
+                if (path == null)
+                    return;
+
+                var pathFragments = path.Split(DirectorySeperators);
+                if (pathFragments.Length <= 0)
+                    return;
+
+                path = pathFragments[0];
+                if (path != string.Empty && !Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+
+                for (var i = 1; i < pathFragments.Length; i++)
+                {
+                    path += Path.DirectorySeparatorChar;
+
+                    string pathFragment = pathFragments[i];
+                    if (string.IsNullOrEmpty(pathFragment))
+                        continue;
+
+                    path += pathFragment;
+                    if (!Directory.Exists(path))
+                        Directory.CreateDirectory(path);
+                }
+            }
+            catch (Exception e)
+            {
+                TLogger.LogError(e.ToString());
+                throw;
+            }
         }
     }
 }

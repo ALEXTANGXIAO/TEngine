@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 namespace TEngine
@@ -298,6 +299,29 @@ namespace TEngine
             {
                 go.SetActive(isActive);
             }
+        }
+
+        /// <summary>
+        /// 获取RawBytes下资源完整路径
+        /// </summary>
+        /// <param name="rawPath">路径会包含RawBytes，适应获取资源的其他接口使用习惯</param>
+        /// <returns></returns>
+        public static string GetRawBytesFullPath(string rawPath)
+        {
+            if (string.IsNullOrEmpty(rawPath))
+                return rawPath;
+
+#if ASSETBUNDLE_ENABLE
+            string target = GameConfig.Instance.FilePath($"{FileSystem.ResourceRoot}/{rawPath}");
+            if (!File.Exists(target))
+            {
+                target = $"{FileSystem.ResourceRootInStreamAsset}/{rawPath}";
+            }   
+            
+            return target;
+#else
+            return $"{Application.dataPath}/TResources/{rawPath}";
+#endif
         }
     }
 }
