@@ -42,6 +42,13 @@ namespace TEngine
         public const string AssetBundleBuildPath = BuildPath + "/AssetBundles";
         private const string AssetBundleTargetPath = "{0}/AssetBundles";
         public const string Md5List = "Md5List.json";
+        public const string AssetFolder = "AssetLoad";
+        //加压缩日志列表
+        public const string Md5VerifyLog = "Md5VerifyText.txt";
+
+        public const string FirstPackageName = "First.zip";
+        public const string DllScriptPkgName = "Script.bin";
+        public const string DllScriptPkgBackUpName = "ScriptBackUp.bin";
         /// <summary>
         /// 资源更新读取根目录
         /// </summary>
@@ -219,6 +226,16 @@ namespace TEngine
             while (!request.isDone) ;
 
             return www.downloadHandler.text;
+        }
+
+        public static string OldPersistentDataPath
+        {
+            get
+            {
+                string path = Application.persistentDataPath;
+
+                return path.FixPath();
+            }
         }
     }
 }

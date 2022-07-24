@@ -420,5 +420,13 @@ namespace TEngine
                 return path;
             }
         }
+
+        /// <summary>
+        /// 设置重新安装了
+        /// </summary>
+        internal void SignReInstall()
+        {
+            
+        }
     }
 }
