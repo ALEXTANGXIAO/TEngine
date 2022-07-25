@@ -120,7 +120,7 @@ namespace TEngine
         }
 
         /// <summary>
-        /// 底包版本号，设置3位
+        /// 底包版本号
         /// </summary>
         internal string AppId
         {
@@ -131,7 +131,7 @@ namespace TEngine
         }
 
         /// <summary>
-        /// 资源版本号，设置1位
+        /// 资源版本号
         /// </summary>
         internal string ResId
         {
@@ -145,7 +145,10 @@ namespace TEngine
             }
         }
 
-        //基础母包资源版本号
+        /// <summary>
+        /// 基础母包资源版本号
+        /// </summary>
+        /// <returns></returns>
         internal string BaseResId()
         {
             return _versionConfig.BaseResVersion;
