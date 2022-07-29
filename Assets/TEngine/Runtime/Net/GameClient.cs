@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TEngineProto;
 using UnityEngine;
 
@@ -106,6 +107,21 @@ namespace TEngine.Net
                 m_connect.Close();
             }
             m_connect = null;
+        }
+
+        public async void ConnectAsync(string host, int port, bool reconnect = false)
+        {
+            try
+            {
+                await Task.Run((() =>
+                {
+                    Connect(host, port, reconnect);
+                }));
+            }
+            catch (Exception e)
+            {
+                TLogger.LogException(e.Message);
+            }
         }
 
         public bool Connect(string host, int port, bool reconnect = false)
