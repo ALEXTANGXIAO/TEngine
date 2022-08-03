@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Sockets;
 using TEngineProto;
 
@@ -11,12 +10,12 @@ namespace TEngine.Net
         private Socket socket;
         private string m_Host;
         private int m_Port;
-        private Message message;
+        private MessageProcess message;
         private GameClient gameClient;
 
         public TcpConnection(GameClient gameClient)
         {
-            message = new Message();
+            message = new MessageProcess();
             this.gameClient = gameClient;
         }
 
@@ -58,7 +57,7 @@ namespace TEngine.Net
 
         void StartReceive()
         {
-            socket.BeginReceive(message.Buffer, message.StartIndex, message.Remsize, SocketFlags.None, ReceiveCallback, null);
+            socket.BeginReceive(message.Buffer, message.StartIndex, message.RemSize, SocketFlags.None, ReceiveCallback, null);
         }
 
         void ReceiveCallback(IAsyncResult asyncResult)
@@ -70,16 +69,16 @@ namespace TEngine.Net
                     return;
                 }
 
-                int Length = socket.EndReceive(asyncResult);
+                int buffLength = socket.EndReceive(asyncResult);
 
-                if (Length == 0)
+                if (buffLength == 0)
                 {
                     Close();
 
                     return;
                 }
 
-                message.ReadBuffer(Length, gameClient.HandleResponse);
+                message.ReadBuffer(buffLength, gameClient.HandleResponse);
 
                 StartReceive();
             }
@@ -99,7 +98,7 @@ namespace TEngine.Net
 
             try
             {
-                socket.Send(Message.PackData(mainPack));
+                socket.Send(MessageProcess.PackData(mainPack));
                 return true;
             }
             catch (Exception e)
