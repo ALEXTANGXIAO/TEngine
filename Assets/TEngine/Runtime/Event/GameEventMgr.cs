@@ -1,381 +1,159 @@
 ﻿using System;
-using System.Collections.Generic;
-using TEngine;
 
 namespace TEngine
 {
-    #region EventInfo
-    internal interface IEventInfo
-    {
-
-    }
-
-    public class EventInfo : IEventInfo
-    {
-        public Action actions;
-
-        public EventInfo(Action action)
-        {
-            actions += action;
-        }
-    }
-
-
-    public class EventInfo<T> : IEventInfo
-    {
-        public Action<T> actions;
-
-        public EventInfo(Action<T> action)
-        {
-            actions += action;
-        }
-    }
-
-    public class EventInfo<T, U> : IEventInfo
-    {
-        public Action<T, U> actions;
-
-        public EventInfo(Action<T, U> action)
-        {
-            actions += action;
-        }
-    }
-
-    public class EventInfo<T, U, W> : IEventInfo
-    {
-        public Action<T, U, W> actions;
-
-        public EventInfo(Action<T, U, W> action)
-        {
-            actions += action;
-        }
-    }
-    #endregion
     /// <summary>
     /// 总观察者 - 总事件中心系统
     /// </summary>
     public class GameEventMgr : TSingleton<GameEventMgr>
     {
-        /// <summary>
-        ///  Dictionary<int, IEventInfo> Key->Int.32 Value->EventInfo,调用频率高建议使用int事件，减少字典内String的哈希碰撞
-        /// </summary>
-        private Dictionary<int, IEventInfo> m_eventDic = new Dictionary<int, IEventInfo>();
+        private GameEvent _gameEvent;
 
-        /// <summary>
-        ///  Dictionary<string, IEventInfo> Key->string Value->EventInfo,调用频率不高的时候可以使用
-        /// </summary>
-        private Dictionary<string, IEventInfo> m_eventStrDic = new Dictionary<string, IEventInfo>();
+        public GameEventMgr()
+        {
+            _gameEvent = GameMemPool<GameEvent>.Alloc();
+        }
+
+        public override void Release()
+        {
+            GameMemPool<GameEvent>.Free(_gameEvent);
+        }
+
+        public override void Active()
+        {
+            base.Active();
+        }
 
         #region AddEventListener
-        public void AddEventListener<T>(int eventid, Action<T> action)
+        public void AddEventListener<T>(int eventId, Action<T> action)
         {
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                (m_eventDic[eventid] as EventInfo<T>).actions += action;
-            }
-            else
-            {
-                m_eventDic.Add(eventid, new EventInfo<T>(action));
-            }
+            _gameEvent.AddEventListener(eventId, action);
         }
 
-        public void AddEventListener<T, U>(int eventid, Action<T, U> action)
+        public void AddEventListener<T, U>(int eventId, Action<T, U> action)
         {
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                (m_eventDic[eventid] as EventInfo<T, U>).actions += action;
-            }
-            else
-            {
-                m_eventDic.Add(eventid, new EventInfo<T, U>(action));
-            }
+            _gameEvent.AddEventListener(eventId, action);
         }
 
-        public void AddEventListener<T, U, W>(int eventid, Action<T, U, W> action)
+        public void AddEventListener<T, U, W>(int eventId, Action<T, U, W> action)
         {
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                (m_eventDic[eventid] as EventInfo<T, U, W>).actions += action;
-            }
-            else
-            {
-                m_eventDic.Add(eventid, new EventInfo<T, U, W>(action));
-            }
+            _gameEvent.AddEventListener(eventId, action);
         }
 
-        public void AddEventListener(int eventid, Action action)
+        public void AddEventListener(int eventId, Action action)
         {
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                (m_eventDic[eventid] as EventInfo).actions += action;
-            }
-            else
-            {
-                m_eventDic.Add(eventid, new EventInfo(action));
-            }
+            _gameEvent.AddEventListener(eventId, action);
         }
         #endregion
 
         #region RemoveEventListener
-        public void RemoveEventListener<T>(int eventid, Action<T> action)
+        public void RemoveEventListener<T>(int eventId, Action<T> action)
         {
-            if (action == null)
-            {
-                return;
-            }
-
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                (m_eventDic[eventid] as EventInfo<T>).actions -= action;
-            }
+            _gameEvent.RemoveEventListener(eventId, action);
         }
 
-        public void RemoveEventListener<T, U>(int eventid, Action<T, U> action)
+        public void RemoveEventListener<T, U>(int eventId, Action<T, U> action)
         {
-            if (action == null)
-            {
-                return;
-            }
-
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                (m_eventDic[eventid] as EventInfo<T, U>).actions -= action;
-            }
+            _gameEvent.RemoveEventListener(eventId, action);
         }
 
-        public void RemoveEventListener<T, U, W>(int eventid, Action<T, U, W> action)
+        public void RemoveEventListener<T, U, W>(int eventId, Action<T, U, W> action)
         {
-            if (action == null)
-            {
-                return;
-            }
-
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                (m_eventDic[eventid] as EventInfo<T, U, W>).actions -= action;
-            }
+            _gameEvent.RemoveEventListener(eventId, action);
         }
 
-        public void RemoveEventListener(int eventid, Action action)
+        public void RemoveEventListener(int eventId, Action action)
         {
-            if (action == null)
-            {
-                return;
-            }
-
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                (m_eventDic[eventid] as EventInfo).actions -= action;
-            }
+            _gameEvent.RemoveEventListener(eventId, action);
         }
         #endregion
 
         #region Send
-        public void Send<T>(int eventid, T info)
+        public void Send<T>(int eventId, T info)
         {
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                var eventInfo = (m_eventDic[eventid] as EventInfo<T>);
-                if (eventInfo != null)
-                {
-                    eventInfo.actions.Invoke(info);
-                }
-            }
+            _gameEvent.Send(eventId, info);
         }
 
-        public void Send<T, U>(int eventid, T info, U info2)
+        public void Send<T, U>(int eventId, T info, U info2)
         {
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                var eventInfo = (m_eventDic[eventid] as EventInfo<T, U>);
-                if (eventInfo != null)
-                {
-                    eventInfo.actions.Invoke(info, info2);
-                }
-            }
+            _gameEvent.Send(eventId, info, info2);
         }
 
-        public void Send<T, U, W>(int eventid, T info, U info2, W info3)
+        public void Send<T, U, W>(int eventId, T info, U info2, W info3)
         {
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                var eventInfo = (m_eventDic[eventid] as EventInfo<T, U, W>);
-                if (eventInfo != null)
-                {
-                    eventInfo.actions.Invoke(info, info2, info3);
-                }
-            }
+            _gameEvent.Send(eventId, info, info2, info3);
         }
 
-        /// <summary>
-        /// 事件触发 无参
-        /// </summary>
-        /// <param name="name"></param>
-        public void Send(int eventid)
+        public void Send(int eventId)
         {
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                var eventInfo = (m_eventDic[eventid] as EventInfo);
-                if (eventInfo != null)
-                {
-                    eventInfo.actions.Invoke();
-                }
-            }
+            _gameEvent.Send(eventId);
         }
         #endregion
 
         #region StringEvent
         #region AddEventListener
-        public void AddEventListener<T>(string eventid, Action<T> action)
+        public void AddEventListener<T>(string eventId, Action<T> action)
         {
-            if (m_eventStrDic.ContainsKey(eventid))
-            {
-                (m_eventStrDic[eventid] as EventInfo<T>).actions += action;
-            }
-            else
-            {
-                m_eventStrDic.Add(eventid, new EventInfo<T>(action));
-            }
+            _gameEvent.AddEventListener(eventId, action);
         }
 
-        public void AddEventListener<T, U>(string eventid, Action<T, U> action)
+        public void AddEventListener<T, U>(string eventId, Action<T, U> action)
         {
-            if (m_eventStrDic.ContainsKey(eventid))
-            {
-                (m_eventStrDic[eventid] as EventInfo<T, U>).actions += action;
-            }
-            else
-            {
-                m_eventStrDic.Add(eventid, new EventInfo<T, U>(action));
-            }
+            _gameEvent.AddEventListener(eventId, action);
         }
 
-        public void AddEventListener<T, U, W>(string eventid, Action<T, U, W> action)
+        public void AddEventListener<T, U, W>(string eventId, Action<T, U, W> action)
         {
-            if (m_eventStrDic.ContainsKey(eventid))
-            {
-                (m_eventStrDic[eventid] as EventInfo<T, U, W>).actions += action;
-            }
-            else
-            {
-                m_eventStrDic.Add(eventid, new EventInfo<T, U, W>(action));
-            }
+            _gameEvent.AddEventListener(eventId, action);
         }
 
-        public void AddEventListener(string eventid, Action action)
+        public void AddEventListener(string eventId, Action action)
         {
-            if (m_eventStrDic.ContainsKey(eventid))
-            {
-                (m_eventStrDic[eventid] as EventInfo).actions += action;
-            }
-            else
-            {
-                m_eventStrDic.Add(eventid, new EventInfo(action));
-            }
+            _gameEvent.AddEventListener(eventId, action);
         }
         #endregion
 
         #region RemoveEventListener
-        public void RemoveEventListener<T>(string eventid, Action<T> action)
+        public void RemoveEventListener<T>(string eventId, Action<T> action)
         {
-            if (action == null)
-            {
-                return;
-            }
-
-            if (m_eventStrDic.ContainsKey(eventid))
-            {
-                (m_eventStrDic[eventid] as EventInfo<T>).actions -= action;
-            }
+            _gameEvent.RemoveEventListener(eventId, action);
         }
 
-        public void RemoveEventListener<T, U>(string eventid, Action<T, U> action)
+        public void RemoveEventListener<T, U>(string eventId, Action<T, U> action)
         {
-            if (action == null)
-            {
-                return;
-            }
-
-            if (m_eventStrDic.ContainsKey(eventid))
-            {
-                (m_eventStrDic[eventid] as EventInfo<T, U>).actions -= action;
-            }
+            _gameEvent.RemoveEventListener(eventId, action);
         }
 
-        public void RemoveEventListener<T, U, W>(string eventid, Action<T, U, W> action)
+        public void RemoveEventListener<T, U, W>(string eventId, Action<T, U, W> action)
         {
-            if (action == null)
-            {
-                return;
-            }
-
-            if (m_eventStrDic.ContainsKey(eventid))
-            {
-                (m_eventStrDic[eventid] as EventInfo<T, U, W>).actions -= action;
-            }
+            _gameEvent.RemoveEventListener(eventId, action);
         }
 
-        public void RemoveEventListener(string eventid, Action action)
+        public void RemoveEventListener(string eventId, Action action)
         {
-            if (action == null)
-            {
-                return;
-            }
-
-            if (m_eventStrDic.ContainsKey(eventid))
-            {
-                (m_eventStrDic[eventid] as EventInfo).actions -= action;
-            }
+            _gameEvent.RemoveEventListener(eventId, action);
         }
         #endregion
 
         #region Send
-        public void Send<T>(string eventid, T info)
+        public void Send<T>(string eventId, T info)
         {
-            if (m_eventStrDic.ContainsKey(eventid))
-            {
-                var eventInfo = (m_eventStrDic[eventid] as EventInfo<T>);
-                if (eventInfo != null)
-                {
-                    eventInfo.actions.Invoke(info);
-                }
-            }
+            _gameEvent.Send(eventId, info);
         }
 
-        public void Send<T, U>(string eventid, T info, U info2)
+        public void Send<T, U>(string eventId, T info, U info2)
         {
-            if (m_eventStrDic.ContainsKey(eventid))
-            {
-                var eventInfo = (m_eventStrDic[eventid] as EventInfo<T, U>);
-                if (eventInfo != null)
-                {
-                    eventInfo.actions.Invoke(info, info2);
-                }
-            }
+            _gameEvent.Send(eventId, info, info2);
         }
 
-        public void Send<T, U, W>(string eventid, T info, U info2, W info3)
+        public void Send<T, U, W>(string eventId, T info, U info2, W info3)
         {
-            if (m_eventStrDic.ContainsKey(eventid))
-            {
-                var eventInfo = (m_eventStrDic[eventid] as EventInfo<T, U, W>);
-                if (eventInfo != null)
-                {
-                    eventInfo.actions.Invoke(info, info2, info3);
-                }
-            }
+            _gameEvent.Send(eventId, info, info2, info3);
         }
 
-        public void Send(string eventid)
+        public void Send(string eventId)
         {
-            if (m_eventStrDic.ContainsKey(eventid))
-            {
-                var eventInfo = (m_eventStrDic[eventid] as EventInfo);
-                if (eventInfo != null)
-                {
-                    eventInfo.actions.Invoke();
-                }
-            }
+            _gameEvent.Send(eventId);
         }
         #endregion
         #endregion
@@ -383,8 +161,7 @@ namespace TEngine
         #region Clear
         public void Clear()
         {
-            m_eventDic.Clear();
-            m_eventStrDic.Clear();
+            _gameEvent.Clear();
         }
         #endregion
     }
