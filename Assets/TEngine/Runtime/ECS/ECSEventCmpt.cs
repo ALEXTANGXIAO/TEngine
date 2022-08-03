@@ -5,170 +5,78 @@ namespace TEngine
 {
     public class ECSEventCmpt : ECSComponent
     {
-        private Dictionary<int, IEcsEcsEventInfo> m_eventDic = new Dictionary<int, IEcsEcsEventInfo>();
+        private GameEvent _gameEvent;
 
         #region AddEventListener
-        public void AddEventListener<T>(int eventid, Action<T> action)
+        public void AddEventListener<T>(int eventId, Action<T> action)
         {
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                (m_eventDic[eventid] as EcsEventInfo<T>).actions += action;
-            }
-            else
-            {
-                m_eventDic.Add(eventid, new EcsEventInfo<T>(action));
-            }
+            _gameEvent.AddEventListener(eventId, action);
         }
 
-        public void AddEventListener<T, U>(int eventid, Action<T, U> action)
+        public void AddEventListener<T, U>(int eventId, Action<T, U> action)
         {
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                (m_eventDic[eventid] as EcsEventInfo<T, U>).actions += action;
-            }
-            else
-            {
-                m_eventDic.Add(eventid, new EcsEventInfo<T, U>(action));
-            }
+            _gameEvent.AddEventListener(eventId, action);
         }
 
-        public void AddEventListener<T, U, W>(int eventid, Action<T, U, W> action)
+        public void AddEventListener<T, U, W>(int eventId, Action<T, U, W> action)
         {
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                (m_eventDic[eventid] as EcsEventInfo<T, U, W>).actions += action;
-            }
-            else
-            {
-                m_eventDic.Add(eventid, new EcsEventInfo<T, U, W>(action));
-            }
+            _gameEvent.AddEventListener(eventId, action);
         }
 
-        public void AddEventListener(int eventid, Action action)
+        public void AddEventListener(int eventId, Action action)
         {
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                (m_eventDic[eventid] as EcsEventInfo).actions += action;
-            }
-            else
-            {
-                m_eventDic.Add(eventid, new EcsEventInfo(action));
-            }
+            _gameEvent.AddEventListener(eventId, action);
         }
         #endregion
 
         #region RemoveEventListener
-        public void RemoveEventListener<T>(int eventid, Action<T> action)
+        public void RemoveEventListener<T>(int eventId, Action<T> action)
         {
-            if (action == null)
-            {
-                return;
-            }
-
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                (m_eventDic[eventid] as EcsEventInfo<T>).actions -= action;
-            }
+            _gameEvent.RemoveEventListener(eventId, action);
         }
 
-        public void RemoveEventListener<T, U>(int eventid, Action<T, U> action)
+        public void RemoveEventListener<T, U>(int eventId, Action<T, U> action)
         {
-            if (action == null)
-            {
-                return;
-            }
-
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                (m_eventDic[eventid] as EcsEventInfo<T, U>).actions -= action;
-            }
+            _gameEvent.RemoveEventListener(eventId, action);
         }
 
-        public void RemoveEventListener<T, U, W>(int eventid, Action<T, U, W> action)
+        public void RemoveEventListener<T, U, W>(int eventId, Action<T, U, W> action)
         {
-            if (action == null)
-            {
-                return;
-            }
-
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                (m_eventDic[eventid] as EcsEventInfo<T, U, W>).actions -= action;
-            }
+            _gameEvent.RemoveEventListener(eventId, action);
         }
 
-        public void RemoveEventListener(int eventid, Action action)
+        public void RemoveEventListener(int eventId, Action action)
         {
-            if (action == null)
-            {
-                return;
-            }
-
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                (m_eventDic[eventid] as EcsEventInfo).actions -= action;
-            }
+            _gameEvent.RemoveEventListener(eventId, action);
         }
         #endregion
 
         #region Send
-        public void Send<T>(int eventid, T info)
+        public void Send<T>(int eventId, T info)
         {
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                var EcsEventInfo = (m_eventDic[eventid] as EcsEventInfo<T>);
-                if (EcsEventInfo != null)
-                {
-                    EcsEventInfo.actions.Invoke(info);
-                }
-            }
+            _gameEvent.Send(eventId, info);
         }
 
-        public void Send<T, U>(int eventid, T info, U info2)
+        public void Send<T, U>(int eventId, T info, U info2)
         {
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                var EcsEventInfo = (m_eventDic[eventid] as EcsEventInfo<T, U>);
-                if (EcsEventInfo != null)
-                {
-                    EcsEventInfo.actions.Invoke(info, info2);
-                }
-            }
+            _gameEvent.Send(eventId, info, info2);
         }
 
-        public void Send<T, U, W>(int eventid, T info, U info2, W info3)
+        public void Send<T, U, W>(int eventId, T info, U info2, W info3)
         {
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                var EcsEventInfo = (m_eventDic[eventid] as EcsEventInfo<T, U, W>);
-                if (EcsEventInfo != null)
-                {
-                    EcsEventInfo.actions.Invoke(info, info2, info3);
-                }
-            }
+            _gameEvent.Send(eventId, info, info2, info3);
         }
 
-        /// <summary>
-        /// 事件触发 无参
-        /// </summary>
-        /// <param name="name"></param>
-        public void Send(int eventid)
+        public void Send(int eventId)
         {
-            if (m_eventDic.ContainsKey(eventid))
-            {
-                var EcsEventInfo = (m_eventDic[eventid] as EcsEventInfo);
-                if (EcsEventInfo != null)
-                {
-                    EcsEventInfo.actions.Invoke();
-                }
-            }
+            _gameEvent.Send(eventId);
         }
         #endregion
 
         #region Clear
         public void Clear()
         {
-            m_eventDic.Clear();
+            GameMemPool<GameEvent>.Free(_gameEvent);
         }
         #endregion
 
@@ -180,57 +88,9 @@ namespace TEngine
 
         public override void Awake()
         {
+            _gameEvent = GameMemPool<GameEvent>.Alloc();
             Entity.Event = this;
         }
         #endregion
     }
-
-    #region EcsEventInfo
-    internal interface IEcsEcsEventInfo
-    {
-
-    }
-
-    public class EcsEventInfo : IEcsEcsEventInfo
-    {
-        public Action actions;
-
-        public EcsEventInfo(Action action)
-        {
-            actions += action;
-        }
-    }
-
-
-    public class EcsEventInfo<T> : IEcsEcsEventInfo
-    {
-        public Action<T> actions;
-
-        public EcsEventInfo(Action<T> action)
-        {
-            actions += action;
-        }
-    }
-
-    public class EcsEventInfo<T, U> : IEcsEcsEventInfo
-    {
-        public Action<T, U> actions;
-
-        public EcsEventInfo(Action<T, U> action)
-        {
-            actions += action;
-        }
-    }
-
-    public class EcsEventInfo<T, U, W> : IEcsEcsEventInfo
-    {
-        public Action<T, U, W> actions;
-
-        public EcsEventInfo(Action<T, U, W> action)
-        {
-            actions += action;
-        }
-    }
-    #endregion
-
 }
