@@ -3,7 +3,11 @@ using UnityEngine.Events;
 
 namespace TEngine
 {
-    public static class ListPool<T>
+    /// <summary>
+    /// 对象池管理器
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public static class ObjectPoolMgr<T>
     {
         private static readonly ObjectPool<List<T>> m_ListPool = new ObjectPool<List<T>>(null, Clear);
 

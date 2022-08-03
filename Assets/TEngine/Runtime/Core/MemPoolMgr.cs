@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using Debug = UnityEngine.Debug;
 
 namespace TEngine
 {
@@ -10,22 +9,16 @@ namespace TEngine
         void Destroy();
     }
 
-    public interface MemPoolBase
+    public interface IMemPoolBase
     {
         string GetName();
         int GetPoolItemCount();
         void ClearPool();
     }
 
-    public class MemPool
-    {
-
-    }
-
-
     public class MemPoolMgr : TSingleton<MemPoolMgr>
     {
-        List<MemPoolBase> m_listPool = new List<MemPoolBase>();
+        List<IMemPoolBase> m_listPool = new List<IMemPoolBase>();
 
         [Conditional("UNITY_EDITOR")]
         public void ShowCount()
@@ -35,12 +28,12 @@ namespace TEngine
             {
                 var pool = m_listPool[i];
                 totalCnt += pool.GetPoolItemCount();
-                TLogger.LogInfo("[pool][{0}] [{1}]", pool.GetName(), pool.GetPoolItemCount());
+                TLogger.LogInfoSuccessd("[pool][{0}] [{1}]", pool.GetName(), pool.GetPoolItemCount());
             }
-            TLogger.LogInfo("-------------------------memory pool count: {0}", totalCnt);
+            TLogger.LogInfoSuccessd("-------------------------memory pool count: {0}", totalCnt);
         }
 
-        public void RegMemPool(MemPoolBase pool)
+        public void RegMemPool(IMemPoolBase pool)
         {
             m_listPool.Add(pool);
         }
@@ -55,7 +48,7 @@ namespace TEngine
         }
     }
 
-    public class GameMemPool<T> : TSingleton<GameMemPool<T>>, MemPoolBase where T : IMemPoolObject, new()
+    public class GameMemPool<T> : TSingleton<GameMemPool<T>>, IMemPoolBase where T : IMemPoolObject, new()
     {
         private List<T> m_objPool = new List<T>();
 
