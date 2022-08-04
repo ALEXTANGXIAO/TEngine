@@ -55,10 +55,10 @@ namespace TEngine.Net
             }
             catch
             {
-                TLogger.LogError("UDP connect failed!...".ToColor("FF0000"));
+                TLogger.LogError("UDP connect failed!...");
                 return;
             }
-            TLogger.LogInfo("start connect udp server[{0}:{1}] successed...".ToColor("10FD00"), host, port);
+            TLogger.LogInfoSuccessd("start connect udp server[{0}:{1}] success...", host, port);
             Loom.RunAsync(() =>
                 {
                     udpThread = new Thread(ReceiveMsg);
