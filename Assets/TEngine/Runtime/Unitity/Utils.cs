@@ -290,5 +290,109 @@ namespace TEngine
             return startIndex;
         }
         #endregion
+
+        #region Canvas
+        /// <summary>
+        /// 增加Canvas并设置绘制顺序
+        /// </summary>
+        /// <param name="go"></param>
+        /// <param name="sortingOrder"></param>
+        /// <param name="sortingLayerName"></param>
+        /// <param name="addCanvasGroup"></param>
+        /// <param name="addGraphicRaycaster"></param>
+        /// <returns></returns>
+        public static Canvas AddCanvasSortOrder(GameObject go, int sortingOrder, string sortingLayerName, bool addCanvasGroup, bool addGraphicRaycaster = true)
+        {
+            if (go == null)
+            {
+                return null;
+            }
+            Canvas canvas = go.GetComponent<Canvas>();
+            if (canvas == null)
+            {
+                canvas = go.AddComponent<Canvas>();
+                if (addGraphicRaycaster)
+                {
+                    go.AddComponent<GraphicRaycaster>();
+                }
+            }
+            else if (addGraphicRaycaster && go.GetComponent<GraphicRaycaster>() == null)
+            {
+                go.AddComponent<GraphicRaycaster>();
+            }
+
+            if (addCanvasGroup && go.GetComponent<CanvasGroup>() == null)
+            {
+                go.AddComponent<CanvasGroup>();
+            }
+
+#if UNITY_EDITOR
+            if (!go.activeSelf)
+            {
+                TLogger.LogWarning(string.Format("Modify sortingOrder and sortingLayerName, gameObject(%s) must be active to take effect", go.name));
+            }
+#endif
+            canvas.overrideSorting = true;
+            canvas.sortingOrder = sortingOrder;
+            if (!string.IsNullOrEmpty(sortingLayerName))
+            {
+                canvas.sortingLayerName = sortingLayerName;
+            }
+
+            canvas.additionalShaderChannels = AdditionalCanvasShaderChannels.TexCoord1;
+            return canvas;
+        }
+
+        /// <summary>
+        /// 设置粒子特效的SortingOrder
+        /// </summary>
+        /// <param name="go"></param>
+        /// <param name="sortOrder"></param>
+        /// <param name="isSortParticle"></param>
+        public static void SetParticleSortOrder(GameObject go, int sortOrder, bool isSortParticle)
+        {
+            if (go == null) return;
+
+            ParticleSystemRenderer[] psRender = go.GetComponentsInChildren<ParticleSystemRenderer>();
+
+            if (isSortParticle)
+            {
+                int lastSortingOrder = 0;
+                int curSortingOrder = sortOrder;
+                List<ParticleSystemRenderer> psRenderList = new List<ParticleSystemRenderer>(psRender);
+                psRenderList.Sort((a, b) => a.sortingOrder.CompareTo(b.sortingOrder));
+
+                for (int i = 0, len = psRenderList.Count; i < len; i++)
+                {
+                    if (lastSortingOrder == 0)
+                    {
+                        lastSortingOrder = psRenderList[i].sortingOrder;
+                        psRenderList[i].sortingOrder = curSortingOrder;
+                        continue;
+                    }
+
+                    if (psRenderList[i].sortingOrder == lastSortingOrder)
+                    {
+                        psRenderList[i].sortingOrder = curSortingOrder;
+                        continue;
+                    }
+
+                    lastSortingOrder = psRenderList[i].sortingOrder;
+
+                    ++curSortingOrder;
+                    psRenderList[i].sortingOrder = curSortingOrder;
+                }
+            }
+            else
+            {
+                for (int i = 0, len = psRender.Length; i < len; i++)
+                {
+                    psRender[i].sortingOrder = sortOrder;
+                }
+            }
+        }
+
+
+        #endregion
     }
 }
