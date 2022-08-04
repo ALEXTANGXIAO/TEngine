@@ -77,7 +77,6 @@ namespace TEngine.UIEditor
             string url = $"{Application.dataPath}/TResources/{ConfigPath}";
             if (!String.IsNullOrEmpty(url))
             {
-                string finalPath;
 #if UNITY_ANDROID
                 if (url.StartsWith(Application.persistentDataPath))
                     url = $"file://{url}";

@@ -5,6 +5,7 @@ using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 using LitJson;
+using UnityEngine.Networking;
 
 namespace TEngine.Editor
 {
@@ -29,27 +30,27 @@ namespace TEngine.Editor
             /// <summary>
             /// 名称
             /// </summary>
-            public string name;
+            public string name = string.Empty;
             /// <summary>
             /// 作者
             /// </summary>
-            public string author;
+            public string author = string.Empty;
             /// <summary>
             /// 版本
             /// </summary>
-            public string version;
+            public string version = string.Empty;
             /// <summary>
             /// 发布日期
             /// </summary>
-            public string releasedDate;
+            public string releasedDate = string.Empty;
             /// <summary>
             /// 简介
             /// </summary>
-            public string description;
+            public string description = string.Empty;
             /// <summary>
             /// 依赖项
             /// </summary>
-            public string[] dependencies;
+            public string[] dependencies = null;
         }
 
         //资源包信息列表
@@ -240,12 +241,17 @@ namespace TEngine.Editor
         private IEnumerator GetPackagesInfo()
         {
             string url = $"{OnlineUrl}packages.json";
-            WWW www = new WWW(url);
-            yield return www;
+            UnityWebRequest www = UnityWebRequest.Get(url);
+            UnityWebRequestAsyncOperation request = www.SendWebRequest();
+            while (true)
+            {
+                if (request.isDone)
+                    break;
+            }
+            yield return request.isDone;
             if (www.error == null)
             {
-                //List<object> list = JsonUtility.FromJson<List<object>>(www.text);
-                List<PackageTemplate> list = JsonMapper.ToObject<List<PackageTemplate>>(www.text);
+                List<PackageTemplate> list = JsonMapper.ToObject<List<PackageTemplate>>(www.downloadHandler.text);
 
                 for (int i = 0; i < list.Count; i++)
                 {
@@ -276,11 +282,17 @@ namespace TEngine.Editor
         {
             string url = $"{OnlineUrl}packages/{package.name}/{package.version}/{package.name}.unitypackage";
             //Debug.Log(url);
-            WWW www = new WWW(url);
-            yield return www;
+            UnityWebRequest www = UnityWebRequest.Get(url);
+            UnityWebRequestAsyncOperation request = www.SendWebRequest();
+            while (true)
+            {
+                if (request.isDone)
+                    break;
+            }
+            yield return request.isDone;
             if (www.error == null)
             {
-                byte[] bytes = www.bytes;
+                byte[] bytes = www.downloadHandler.data;
                 string path = $"{Application.dataPath}/{package.name}-{package.version}.unitypackage";
                 //写入本地
                 using (FileStream fs = new FileStream(path, FileMode.Create))
