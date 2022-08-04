@@ -68,7 +68,7 @@ namespace TEngine
                 {
                     _instance._versionConfig = JsonUtility.FromJson<VersonConfig>(configContent);
                 }
-                catch (Exception e)
+                catch 
                 {
                     TLogger.LogError($"configContent Conver failed,content{configContent}");
                     return false;
@@ -204,7 +204,7 @@ namespace TEngine
             {
                 innerVersionConfig = JsonUtility.FromJson<VersonConfig>(innerVersion);
             }
-            catch (Exception e)
+            catch 
             {
                 //如果反序列化失败了，就默认返回给业务逻辑需要解压了
                 TLogger.LogError($"GameConfig,JsonUtility.FromJson failed,{innerVersion}");
