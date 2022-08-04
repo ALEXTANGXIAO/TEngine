@@ -1,9 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace TEngine
 {
-    public abstract class BaseClientData<T> where T :class
+    public abstract class BaseClientData<T> where T : class
     {
         public T Value;
 
@@ -43,6 +44,8 @@ namespace TEngine
 
     public class ClientSaveData
     {
+        private StringBuilder _stringBuilder = new StringBuilder();
+
         public static string GetSaveUniqPrefix()
         {
             string hashPath = UnityUtil.GetHashCodeByString(Application.dataPath).ToString();
@@ -51,11 +54,11 @@ namespace TEngine
             return uniqKey;
         }
 
-        public static string Serialize<T>(T type) where T:class
+        public static string Serialize<T>(T type) where T : class
         {
-           var ret= JsonConvert.SerializeObject(type);
+            var ret = JsonConvert.SerializeObject(type);
 
-           return ret;
+            return ret;
         }
 
         public static T Deserialize<T>(string json) where T : class
@@ -65,15 +68,16 @@ namespace TEngine
             return ret;
         }
 
-        public static T Load<T>(T type) where T : class
+        public static T Load<T>(string keyName, int userId = 0) where T : class
         {
             T ret = default(T);
 
-            string typeName = typeof(T).Name;
+            string typeName = typeof(T).Name + keyName;
 
-            string fullName = GetSaveUniqPrefix() + typeName;
+            string fullName = GetSaveUniqPrefix() + typeName + userId;
 
             var jsonString = PlayerPrefs.GetString(fullName);
+
             if (!string.IsNullOrEmpty(jsonString))
             {
                 ret = Deserialize<T>(jsonString);
@@ -81,30 +85,34 @@ namespace TEngine
             return ret;
         }
 
-        public static bool Save<T>(T type) where T : class
+        public static bool Save<T>(string keyName, T type, int userId = 0) where T : class
         {
-            var jsonTex = ClientSaveData.Serialize<T>(type);
+            var jsonTex = Serialize<T>(type);
+
             if (!string.IsNullOrEmpty(jsonTex))
             {
                 TLogger.LogInfoSuccessd(jsonTex);
-                return Save<string>(jsonTex);
+
+                return Save<T>(keyName, jsonTex, userId);
             }
 
             return false;
         }
 
-        public static bool Save<T>(string json) where T : class
+        public static bool Save<T>(string keyName, string json, int userId = 0) where T : class
         {
             var ret = false;
 
-            string typeName = typeof(T).Name;
+            string typeName = typeof(T).Name + keyName;
 
-            string fullName = GetSaveUniqPrefix() + typeName;
+            string fullName = GetSaveUniqPrefix() + typeName + userId;
 
             if (!string.IsNullOrEmpty(json))
             {
                 PlayerPrefs.SetString(fullName, json);
+
                 PlayerPrefs.Save();
+
                 ret = true;
             }
 
