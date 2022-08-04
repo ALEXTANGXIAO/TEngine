@@ -581,20 +581,20 @@ namespace TEngine
 
             if (_coroutine != null)
             {
-                CoroutineUtility.StopCoroutine(_coroutine);
+                MonoUtility.StopCoroutine(_coroutine);
                 _coroutine = null;
             }
             //开始下载
-            _coroutine = CoroutineUtility.StartCoroutine(Downloader.DownLoad());
+            _coroutine = MonoUtility.StartCoroutine(Downloader.DownLoad());
 
             LoaderUtilities.DelayFun(() =>
             {
                 if (_load_data_check != null)
                 {
-                    CoroutineUtility.StopCoroutine(_load_data_check);
+                    MonoUtility.StopCoroutine(_load_data_check);
                 }
 
-                _load_data_check = CoroutineUtility.StartCoroutine(_StartLoadingCheck());
+                _load_data_check = MonoUtility.StartCoroutine(_StartLoadingCheck());
             }, new WaitForSeconds(1));
         }
 
@@ -605,7 +605,7 @@ namespace TEngine
 
             Downloader.StopDownLoad();
             if (_coroutine == null) return;
-            CoroutineUtility.StopCoroutine(_coroutine);
+            MonoUtility.StopCoroutine(_coroutine);
             _coroutine = null;
         }
 
@@ -649,7 +649,7 @@ namespace TEngine
         {
             if (_load_data_check != null)
             {
-                CoroutineUtility.StopCoroutine(_load_data_check);
+                MonoUtility.StopCoroutine(_load_data_check);
             }
         }
         //尝试重连
@@ -863,7 +863,7 @@ namespace TEngine
 
 
             FileunzipManager.Instance.StartFastUnZip(file.All, dir, dir);
-            CoroutineUtility.StartCoroutine(UpdateProgress(totalFilesize, status, callback, progress));
+            MonoUtility.StartCoroutine(UpdateProgress(totalFilesize, status, callback, progress));
         }
 
         public IEnumerator UpdateProgress(long size, GameStatus status, Action<bool, GameStatus> callback, Action<long, long> progress)

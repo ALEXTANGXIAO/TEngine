@@ -134,9 +134,9 @@ namespace TEngine
 
 			if (_coroutine != null)
 			{
-                MonoManager.Instance.StopCoroutine(_coroutine);
+                MonoUtility.StopCoroutine(_coroutine);
 			}
-			_coroutine = MonoManager.Instance.StartCoroutine(_Response(_msgContent));
+			_coroutine = MonoUtility.StartCoroutine(_Response(_msgContent));
 		}
 
 		private static IEnumerator _Response(NetContent content)
@@ -157,7 +157,7 @@ namespace TEngine
 
 			if (_coroutine != null)
 			{
-                MonoManager.Instance.StopCoroutine(_coroutine);
+                MonoUtility.StopCoroutine(_coroutine);
 				_coroutine = null;
 			}
 		}
@@ -279,7 +279,7 @@ namespace TEngine
         /// <param name="time"></param>
         public static Coroutine DelayFun(Action callback, YieldInstruction time)
         {
-            return MonoManager.Instance.StartCoroutine(DelayFunIEnumerator(callback, time));
+            return MonoUtility.StartCoroutine(DelayFunIEnumerator(callback, time));
         }
 
         public static IEnumerator DelayFunIEnumerator(Action callback, YieldInstruction time)

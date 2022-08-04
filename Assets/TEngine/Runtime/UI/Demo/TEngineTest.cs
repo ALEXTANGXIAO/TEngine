@@ -40,7 +40,7 @@ public class ObjMgr : TSingleton<ObjMgr>
     public override void Active()
     {
         //外部注入Update
-        MonoManager.Instance.AddUpdateListener(Update);
+        MonoUtility.AddUpdateListener(Update);
 
         GameEventMgr.Instance.Send<string>(TipsEvent.Log, "WelCome To Use TEngine");
     }

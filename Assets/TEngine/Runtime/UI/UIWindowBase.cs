@@ -247,12 +247,12 @@ namespace UI
 
         protected Coroutine StartCoroutine(IEnumerator routine)
         {
-            return MonoManager.Instance.StartCoroutine(routine);
+            return MonoUtility.StartCoroutine(routine);
         }
 
         protected void StopCoroutine(Coroutine cort)
         {
-            MonoManager.Instance.StopCoroutine(cort);
+            MonoUtility.StopCoroutine(cort);
         }
 
         #endregion
