@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace TEngine
+namespace TEngine.Redux
 {
     #region Architecture
 
