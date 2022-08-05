@@ -39,7 +39,7 @@ namespace TEngine.UI
         public string Label_DownLoadFailed = "网络太慢，是否继续下载";
         public string Label_ClearConfig = "清除环境配置，需要重启应用";
         public string Label_RegionInfoIllegal = "区服信息为空";
-        public string Label_RemoteUrlisNull = "热更新服地址为空";
+        public string Label_RemoteUrlisNull = "热更地址为空";
         public string Label_FirstPackageNotFound = "首包资源加载失败";
         public string Label_RequestReginInfo = "正在请求区服信息{0}次";
         public string Label_RequestTimeOut = "请求区服信息超时,是否重试？";
@@ -57,18 +57,19 @@ namespace TEngine.UI
         public string Label_Dlc_ConfigLoadingStage = "下载配置中...";
         public string Label_Dlc_AssetsLoading = "下载资源中...";
         public string Label_Dlc_LoadingFinish = "下载结束";
-        
+
         public string Label_Dlc_Load_Force_WIFI =
             "检测到有新的游戏内容需要更新, 取消更新将导致无法进入游戏，您当前已为<color=#BA3026>wifi网络</color>，请开始更新";
         public string Label_Dlc_Load_Force_NO_WIFI =
             "检测到有新的游戏内容需要更新, 取消更新将导致无法进入游戏，请开始更新";
     }
 
-    public class LoadText: TextMode
+    public class LoadText : TextMode
     {
         private static LoadText _instance;
 
-        public static LoadText Instance {
+        public static LoadText Instance
+        {
             get { return _instance ?? (_instance = new LoadText()); }
         }
 

@@ -9,9 +9,11 @@ namespace TEngine
 {
     public class Launcher:MonoBehaviour
     {
+
         void Start()
         {
             TLogger.Instance.Active();
+            LoadMgr.Instance.InitParam("http://1.12.241.46:8081/TXYXGame/",isTestUpdate:true);
             LoadMgr.Instance.StartLoadInit(LaunchSuccess);
         }
 

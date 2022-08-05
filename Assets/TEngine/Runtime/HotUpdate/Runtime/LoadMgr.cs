@@ -30,6 +30,8 @@ namespace TEngine
 
     public class LoadMgr : TSingleton<LoadMgr>
     {
+        private bool _isTestUpdate = false;
+
         /// <summary>
         /// 资源版本号
         /// </summary>
@@ -63,6 +65,12 @@ namespace TEngine
             return _instance._loaderUpdateLaunched;
         }
 
+        public void InitParam(string url,bool isTestUpdate = false)
+        {
+            Url = url;
+            _isTestUpdate = isTestUpdate;
+        }
+
         public void StartLoadInit(Action onUpdateComplete)
         {
             //热更新阶段文本初始化
@@ -81,6 +89,11 @@ namespace TEngine
 #if RELEASE_BUILD || _DEVELOPMENT_BUILD_
             StartLoad(() => { FinishCallBack(onUpdateComplete); });
 #else
+                if (_isTestUpdate)
+                {
+                    StartLoad(() => { FinishCallBack(onUpdateComplete); });
+                    return;
+                }
                 onUpdateComplete?.Invoke();
 #endif
             }
@@ -139,7 +152,7 @@ namespace TEngine
             }
 
             UILoadMgr.Show(UIDefine.UILoadUpdate, string.Format(LoadText.Instance.Label_Load_Checking, _curTryCount));
-            if (string.IsNullOrEmpty(OnlineParamUrl))
+            if (string.IsNullOrEmpty(Url) || string.IsNullOrEmpty(OnlineParamUrl))
             {
                 TLogger.LogError("LoadMgr.RequestVersion, remote url is empty or null");
                 LoaderUtilities.ShowMessageBox(LoadText.Instance.Label_RemoteUrlisNull, MessageShowType.OneButton,
@@ -511,7 +524,7 @@ namespace TEngine
 
         private string _resListUrl = string.Empty;
         private string _onlineParamUrl = string.Empty;
-        internal const string Url = "http://1.12.241.46:8081/TXYXGame/";
+        internal string Url = string.Empty;
 
         internal string ResListUrl
         {
