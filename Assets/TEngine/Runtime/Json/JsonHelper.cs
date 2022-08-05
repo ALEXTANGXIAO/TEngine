@@ -1,6 +1,5 @@
-﻿using UnityEngine;
-using LitJson;
-using TEngine;
+﻿using LitJson;
+using System;
 
 namespace TEngine
 {
@@ -10,6 +9,10 @@ namespace TEngine
         {
         }
 
+        public object Deserialize(Type type, string json)
+        {
+            return JsonMapper.ToObject(json,type);
+        }
         public T Deserialize<T>(string json)
         {
             return JsonMapper.ToObject<T>(json);
@@ -25,7 +28,7 @@ namespace TEngine
             return JsonMapper.ToJson(jsonData);
         }
 
-        public string Serialize(Object jsonData)
+        public string Serialize(object jsonData)
         {
             return JsonMapper.ToJson(jsonData);
         }
