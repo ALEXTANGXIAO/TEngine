@@ -1,25 +1,24 @@
 ﻿using TEngine;
 using UnityEngine;
 
-public class ECSDemoApp : MonoBehaviour
+public class EcsDemoApp : MonoBehaviour
 {
-    public ECSGameSystem EcsGameSystem = new ECSGameSystem();
     public GameObject @object;
 
     void Start()
     {
-        var entity = EcsGameSystem.Create<Entity>();
-        ECSActor actor = entity.AddComponent<ECSActor>();
-        actor.Name = typeof(ECSActor).ToString();
+        var entity = EcsSystem.Instance.Create<Entity>();
+        EcsActor actor = entity.AddComponent<EcsActor>();
+        actor.Name = typeof(EcsActor).ToString();
         actor.gameObject = Instantiate(@object);
         actor.transform = actor.gameObject.GetComponent<Transform>();
-        entity.AddComponent<ECSComponent>();
+        entity.AddComponent<EcsComponent>();
 
         Debug.Log(entity.ToString());
     }
 
     void Update()
     {
-        EcsGameSystem.OnUpdate();
+        EcsSystem.Instance.Update();
     }
 }

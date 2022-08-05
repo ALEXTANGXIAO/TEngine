@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace TEngine
 {
-    public class HotfixComponent : ECSComponent,IUpdate
+    public class HotfixComponent : EcsComponent,IUpdate
     {
         public object[] Values;
         public Action OnAwake, OnUpdate, OnDestroyExt;

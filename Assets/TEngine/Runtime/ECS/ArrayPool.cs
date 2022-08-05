@@ -32,7 +32,7 @@ namespace TEngine
     [DebuggerDisplay("Count = {Count}")]
     public class ArrayPool<T> where T:IIndex
     {
-        internal T[] m_Items = new T[256];
+        internal T[] Items = new T[256];
         internal bool[] Buckets = new bool[256];
         private int m_Index;
         private int count;
@@ -41,11 +41,11 @@ namespace TEngine
         {
             get
             {
-                return m_Items[index];
+                return Items[index];
             }
             set
             {
-                m_Items[index] = value;
+                Items[index] = value;
             }
         }
 
@@ -60,11 +60,11 @@ namespace TEngine
         public T[] ToArray()
         {
             List<T> elements = new List<T>();
-            for (int i = 0; i < m_Items.Length; i++)
+            for (int i = 0; i < Items.Length; i++)
             {
                 if (Buckets[i])
                 {
-                    elements.Add(m_Items[i]);
+                    elements.Add(Items[i]);
                 }
             }
             return elements.ToArray();
@@ -74,7 +74,7 @@ namespace TEngine
         {
             lock (this)
             {
-                m_Items[item.Index] = default;
+                Items[item.Index] = default;
                 Buckets[item.Index] = false;
             }
         }
@@ -87,23 +87,23 @@ namespace TEngine
                 {
                     if (!Buckets[item.Index])
                     {
-                        m_Items[item.Index] = item;
+                        Items[item.Index] = item;
                         Buckets[item.Index] = true;
                         return;
                     }
                 }
 
-                m_Items[m_Index] = item;
+                Items[m_Index] = item;
                 Buckets[m_Index] = true;
                 item.Index = m_Index;
                 m_Index++;
-                if (m_Index >= m_Items.Length)
+                if (m_Index >= Items.Length)
                 {
-                    T[] newItems = new T[m_Items.Length * 2];
-                    bool[] newBuckets = new bool[m_Items.Length * 2];
-                    Array.Copy(m_Items,0,newItems,0,m_Items.Length);
+                    T[] newItems = new T[Items.Length * 2];
+                    bool[] newBuckets = new bool[Items.Length * 2];
+                    Array.Copy(Items,0,newItems,0,Items.Length);
                     Array.Copy(Buckets, 0, newBuckets, 0, Buckets.Length);
-                    m_Items = newItems;
+                    Items = newItems;
                     Buckets = newBuckets;
                 }
                 count = m_Index;

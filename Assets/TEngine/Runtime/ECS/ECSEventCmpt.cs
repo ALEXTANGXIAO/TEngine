@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace TEngine
 {
-    public class ECSEventCmpt : ECSComponent
+    public class EcsEventCmpt : EcsComponent
     {
         private GameEvent _gameEvent;
 

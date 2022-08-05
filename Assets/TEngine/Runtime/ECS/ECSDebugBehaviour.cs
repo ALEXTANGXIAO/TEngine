@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TEngine
 {
-    public enum ECSDebugType
+    public enum EcsDebugType
     {
         Entity,
         System,
@@ -11,31 +11,31 @@ namespace TEngine
     }
 
     [Serializable]
-    public class ECSCmptDebugKeyInfo
+    public class EcsCmptDebugKeyInfo
     {
         public string m_name;
         public string val;
     }
 
     [Serializable]
-    public class ECSCmptDebugInfo
+    public class EcsCmptDebugInfo
     {
         public string m_name;
-        public ECSDebugType Type = ECSDebugType.Component;
-        public List<ECSCmptDebugKeyInfo> m_info = new List<ECSCmptDebugKeyInfo>();
+        public EcsDebugType Type = EcsDebugType.Component;
+        public List<EcsCmptDebugKeyInfo> m_info = new List<EcsCmptDebugKeyInfo>();
     }
 
-    public class ECSDebugBehaviour : UnityEngine.MonoBehaviour
+    public class EcsDebugBehaviour : UnityEngine.MonoBehaviour
     {
-        public List<ECSCmptDebugInfo> m_ECSInfo = new List<ECSCmptDebugInfo>();
-        public ECSCmptDebugInfo AddDebugCmpt(string cmptName)
+        public List<EcsCmptDebugInfo> m_EcsInfo = new List<EcsCmptDebugInfo>();
+        public EcsCmptDebugInfo AddDebugCmpt(string cmptName)
         {
-            var cmptInfo = m_ECSInfo.Find((item) => { return item.m_name == cmptName; });
+            var cmptInfo = m_EcsInfo.Find((item) => { return item.m_name == cmptName; });
             if (cmptInfo == null)
             {
-                cmptInfo = new ECSCmptDebugInfo();
+                cmptInfo = new EcsCmptDebugInfo();
                 cmptInfo.m_name = cmptName;
-                m_ECSInfo.Add(cmptInfo); ;
+                m_EcsInfo.Add(cmptInfo); ;
             }
 
             return cmptInfo;
@@ -43,7 +43,7 @@ namespace TEngine
 
         public void RmvDebugCmpt(string cmptName)
         {
-            m_ECSInfo.RemoveAll((item) => { return item.m_name == cmptName; });
+            m_EcsInfo.RemoveAll((item) => { return item.m_name == cmptName; });
         }
 
         public void SetDebugInfo(string cmptName, string key, string val)
@@ -52,7 +52,7 @@ namespace TEngine
             var entry = cmptInfo.m_info.Find((t) => { return t.m_name == key; });
             if (entry == null)
             {
-                entry = new ECSCmptDebugKeyInfo();
+                entry = new EcsCmptDebugKeyInfo();
                 entry.m_name = key;
                 cmptInfo.m_info.Add(entry);
             }
@@ -62,7 +62,7 @@ namespace TEngine
 
         public void RemoveAllDebugInfo(string cmpName)
         {
-            var cmpInfo = m_ECSInfo.Find((item) => { return item.m_name == cmpName; });
+            var cmpInfo = m_EcsInfo.Find((item) => { return item.m_name == cmpName; });
             if (cmpInfo != null)
             {
                 cmpInfo.m_info.Clear();

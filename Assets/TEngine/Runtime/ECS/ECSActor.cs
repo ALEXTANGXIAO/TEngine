@@ -1,9 +1,9 @@
 ﻿namespace TEngine
 {
     /// <summary>
-    /// ECS Actor
+    /// Ecs Actor
     /// </summary>
-    public class ECSActor : ECSComponent
+    public class EcsActor : EcsComponent
     {
         public string Name;
         public UnityEngine.GameObject gameObject;

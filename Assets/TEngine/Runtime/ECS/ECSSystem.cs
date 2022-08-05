@@ -5,16 +5,33 @@ using System.Threading.Tasks;
 namespace TEngine
 {
     /// <summary>
-    /// ECS系统 管理Entity、ECSComponent复用对象池
+    /// Ecs系统
     /// </summary>
     [Serializable]
-    public class ECSSystem : IDisposable
+    public class EcsSystem : IDisposable
     {
-        private static ECSSystem instance = new ECSSystem();
-        public static ECSSystem Instance => instance;
-        private readonly Dictionary<int,Stack<ECSObject>> m_ObjectPool = new Dictionary<int, Stack<ECSObject>>();
+        private static EcsSystem _instance;
+
+        public static EcsSystem Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new EcsSystem();
+                }
+
+                return _instance;
+            }
+        }
+        private EcsSystem()
+        {
+        }
+        /// <summary>
+        /// Key -> HashSet(type) / Value -> Stack(EcsObject)
+        /// </summary>
+        internal readonly Dictionary<int, Stack<EcsObject>> ObjectPool = new Dictionary<int, Stack<EcsObject>>();
         internal readonly ArrayPool<Entity> Entities = new ArrayPool<Entity>();
-        private bool m_IsDispose = false;
 
         public void AddEntity(Entity entity)
         {
@@ -28,42 +45,34 @@ namespace TEngine
             Entities.Remove(entity);
         }
 
-        /// <summary>
-        /// Get Object From ECSSystem
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public T Get<T>() where T : ECSObject, new()
+        public T Get<T>() where T : EcsObject, new()
         {
             int type = typeof(T).GetHashCode();
-            if (m_ObjectPool.TryGetValue(type,out Stack<ECSObject> stack))
+            if (ObjectPool.TryGetValue(type, out Stack<EcsObject> stack))
             {
                 if (stack.Count > 0)
                 {
-                    return (T) stack.Pop();
+                    return (T)stack.Pop();
                 }
                 goto Instantiate;
             }
-            stack = new Stack<ECSObject>();
-            m_ObjectPool.Add(type,stack);
-            Instantiate: T ecsObject = new T();
+            stack = new Stack<EcsObject>();
+            ObjectPool.Add(type, stack);
+        Instantiate: T ecsObject = new T();
             return ecsObject;
         }
 
-        /// <summary>
-        /// Push Object To ECSSystem
-        /// </summary>
-        public void Push(ECSObject ecsObject)
+        public void Push(EcsObject ecsObject)
         {
             int type = ecsObject.HashCode;
 
-            if (m_ObjectPool.TryGetValue(type,out Stack<ECSObject> stack))
+            if (ObjectPool.TryGetValue(type, out Stack<EcsObject> stack))
             {
                 stack.Push(ecsObject);
                 return;
             }
-            stack = new Stack<ECSObject>();
-            m_ObjectPool.Add(type,stack);
+            stack = new Stack<EcsObject>();
+            ObjectPool.Add(type, stack);
             stack.Push(ecsObject);
         }
 
@@ -81,7 +90,7 @@ namespace TEngine
         }
 
         /// <summary>
-        /// 更新ECS系统
+        /// 更新Ecs系统
         /// </summary>
         /// <param name="worker">线程池是否并行</param>
         public void Update(bool worker = false)
@@ -90,7 +99,7 @@ namespace TEngine
         }
 
         /// <summary>
-        /// 更新ECS物理系统
+        /// 更新Ecs物理系统
         /// </summary>
         /// <param name="worker">线程池是否并行</param>
         public void FixedUpdate(bool worker = false)
@@ -99,7 +108,7 @@ namespace TEngine
         }
 
         /// <summary>
-        /// 运行ECS系统
+        /// 运行Ecs系统
         /// </summary>
         /// <param name="worker">线程池是否并行</param>
         public void Run(bool worker = false)
@@ -176,16 +185,15 @@ namespace TEngine
             }
         }
 
+        #region Dispose
         public void Dispose()
         {
-            if (m_IsDispose)
-            {
-                return;
-            }
-            m_IsDispose = true;
+            _instance = null;
         }
+        #endregion
 
-        public T FindObjectOfType<T>() where T : ECSObject
+        #region FindObjectOfType
+        public T FindObjectOfType<T>() where T : EcsObject
         {
             Type type = typeof(T);
             var elements = Entities.ToArray();
@@ -207,7 +215,7 @@ namespace TEngine
             return null;
         }
 
-        public T[] FindObjectsOfType<T>() where T : ECSObject
+        public T[] FindObjectsOfType<T>() where T : EcsObject
         {
             Type type = typeof(T);
             var entities = Entities.ToArray();
@@ -228,6 +236,7 @@ namespace TEngine
             }
             return elements.ToArray();
         }
+        #endregion
     }
 }
 

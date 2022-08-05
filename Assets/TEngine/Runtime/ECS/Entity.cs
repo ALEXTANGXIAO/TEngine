@@ -1,24 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using UnityEngine;
 
 namespace TEngine
 {
-    public class Entity : ECSObject, IIndex
+    [Flags]
+    public enum EntityStatus : byte
     {
+        None = 0,
+        IsFromPool = 1,
+        IsRegister = 1 << 1,
+        IsComponent = 1 << 2,
+        IsCreated = 1 << 3,
+        IsNew = 1 << 4,
+    }
+
+    public class Entity : EcsObject, IIndex
+    {
+        [IgnoreDataMember]
+        private EntityStatus status = EntityStatus.None;
+
+        #region Status
+        [IgnoreDataMember]
+        private bool IsFromPool
+        {
+            get => (this.status & EntityStatus.IsFromPool) == EntityStatus.IsFromPool;
+            set
+            {
+                if (value)
+                {
+                    this.status |= EntityStatus.IsFromPool;
+                }
+                else
+                {
+                    this.status &= ~EntityStatus.IsFromPool;
+                }
+            }
+        }
+
+
+        #endregion
+
         [SerializeField]
-        internal List<ECSComponent> Components = new List<ECSComponent>();
+        internal List<EcsComponent> Components = new List<EcsComponent>();
         internal List<IUpdate> Updates = new List<IUpdate>();
         internal List<IFixedUpdate> FixedUpdates = new List<IFixedUpdate>();
         internal bool InActive;
         internal bool CanUpdate;
         internal bool CanFixedUpdate;
         public int Index { get; set; } = -1;
-        public ECSEventCmpt Event { get; set; }
+        public EcsEventCmpt Event { get; set; }
         public Entity()
         {
             InActive = true;
-            System = ECSSystem.Instance;
+            System = EcsSystem.Instance;
         }
 
         ~Entity()
@@ -42,7 +78,7 @@ namespace TEngine
             }
         }
 
-        public void RmvComponent<T>() where T : ECSComponent, new()
+        public void RmvComponent<T>() where T : EcsComponent, new()
         {
             for (int i = 0; i < Components.Count; i++)
             {
@@ -56,7 +92,6 @@ namespace TEngine
                     {
                         FixedUpdates.Remove(fixedUpdate);
                     }
-
                     System.Push(component);
 
                     CanUpdate = Updates.Count > 0;
@@ -89,7 +124,7 @@ namespace TEngine
 
                         CanFixedUpdate = FixedUpdates.Count > 0;
                     }
-                    //if (componentType is ECSComponent component)
+                    //if (componentType is EcsComponent component)
                     //{
                     //    System.Push(component);
                     //}
@@ -100,7 +135,7 @@ namespace TEngine
 #endif
         }
 
-        public T AddComponent<T>() where T : ECSComponent, new()
+        public T AddComponent<T>() where T : EcsComponent, new()
         {
 #if UNITY_EDITOR
             CheckDebugInfo();
@@ -123,7 +158,7 @@ namespace TEngine
             return component;
         }
 
-        public ECSComponent AddComponent(ECSComponent component)
+        public EcsComponent AddComponent(EcsComponent component)
         {
 #if UNITY_EDITOR
             CheckDebugInfo();
@@ -145,7 +180,7 @@ namespace TEngine
             return component;
         }
 
-        public T GetComponent<T>() where T : ECSComponent
+        public T GetComponent<T>() where T : EcsComponent
         {
             for (int i = 0; i < Components.Count; i++)
             {
@@ -158,7 +193,7 @@ namespace TEngine
             return null;
         }
 
-        public ECSComponent GetComponent(Type componentType)
+        public EcsComponent GetComponent(Type componentType)
         {
             for (int i = 0; i < Components.Count; i++)
             {
@@ -171,7 +206,7 @@ namespace TEngine
             return null;
         }
 
-        public T[] GetComponents<T>() where T : ECSComponent
+        public T[] GetComponents<T>() where T : EcsComponent
         {
             List<T> elements = new List<T>();
             for (int i = 0; i < Components.Count; i++)
@@ -184,7 +219,7 @@ namespace TEngine
             return elements.ToArray();
         }
 
-        public List<T> GetComponentsList<T>() where T : ECSComponent
+        public List<T> GetComponentsList<T>() where T : EcsComponent
         {
             List<T> elements = new List<T>();
             for (int i = 0; i < Components.Count; i++)
@@ -197,9 +232,9 @@ namespace TEngine
             return elements;
         }
 
-        public ECSComponent[] GetComponents(Type comType)
+        public EcsComponent[] GetComponents(Type comType)
         {
-            List<ECSComponent> elements = new List<ECSComponent>();
+            List<EcsComponent> elements = new List<EcsComponent>();
             for (int i = 0; i < Components.Count; i++)
             {
                 {
@@ -234,8 +269,8 @@ namespace TEngine
                 return;
             }
 
-            var debugBehaviour = UnityUtil.AddMonoBehaviour<ECSDebugBehaviour>(gameObject);
-            debugBehaviour.m_ECSInfo.Clear();
+            var debugBehaviour = UnityUtil.AddMonoBehaviour<EcsDebugBehaviour>(gameObject);
+            debugBehaviour.m_EcsInfo.Clear();
             for (int i = 0; i < this.Components.Count; i++)
             {
                 var component = this.Components[i];
@@ -259,8 +294,8 @@ namespace TEngine
             //    return;
             //}
 
-            //var debugBehaviour = UnityUtil.AddMonoBehaviour<ECSDebugBehaviour>(actorEntity.gameObject);
-            //debugBehaviour.m_ECSInfo.Clear();
+            //var debugBehaviour = UnityUtil.AddMonoBehaviour<EcsDebugBehaviour>(actorEntity.gameObject);
+            //debugBehaviour.m_EcsInfo.Clear();
             //for (int i = 0; i < this.Components.Count; i++)
             //{
             //    var component = this.Components[i];
