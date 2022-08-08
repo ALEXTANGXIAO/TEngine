@@ -28,6 +28,8 @@ namespace TEngine.EntityModule
         {
             GameEventMgr.Instance.AddEventListener<int,Action<EcsObject>>(EntityEvent.AttachToEntity, AttachToEntity);
             Update(true);
+            MonoUtility.AddFixedUpdateListener(FixedUpdate);
+            MonoUtility.AddLateUpdateListener(LateUpdate);
         }
         /// <summary>
         /// Key -> HashSet(type) / Value -> Stack(EcsObject)
