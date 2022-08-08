@@ -4,29 +4,27 @@ namespace TEngine
 {
     public class StringId
     {
-        private static Dictionary<string, int> m_eventTypeHashMap = new Dictionary<string, int>();
-        private static Dictionary<int, string> m_eventHashToStringMap = new Dictionary<int, string>();
-        private static int m_currentId = 0;
+        private static readonly Dictionary<string, int> eventTypeHashMap = new Dictionary<string, int>();
+        private static readonly Dictionary<int, string> eventHashToStringMap = new Dictionary<int, string>();
+        private static int _currentId = 0;
 
         public static int StringToHash(string val)
         {
-            int hashId;
-            if (m_eventTypeHashMap.TryGetValue(val, out hashId))
+            if (eventTypeHashMap.TryGetValue(val, out var hashId))
             {
                 return hashId;
             }
 
-            hashId = ++m_currentId;
-            m_eventTypeHashMap[val] = hashId;
-            m_eventHashToStringMap[hashId] = val;
+            hashId = ++_currentId;
+            eventTypeHashMap[val] = hashId;
+            eventHashToStringMap[hashId] = val;
 
             return hashId;
         }
 
         public static string HashToString(int hash)
         {
-            string value;
-            if (m_eventHashToStringMap.TryGetValue(hash, out value))
+            if (eventHashToStringMap.TryGetValue(hash, out var value))
             {
                 return value;
             }
