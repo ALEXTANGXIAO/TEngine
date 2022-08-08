@@ -12,7 +12,7 @@ namespace TEngine.EntityModule
         public int InstanceId
         {
             get;
-            protected set;
+            set;
         }
 
         internal int HashCode
@@ -30,8 +30,6 @@ namespace TEngine.EntityModule
         public EcsObject()
         {
             HashCode = GetType().GetHashCode();
-            InstanceId = EntitySystem.Instance.CurInstanceId;
-            EntitySystem.Instance.CurInstanceId++;
         }
 
         public virtual void Dispose()

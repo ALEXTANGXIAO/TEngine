@@ -27,7 +27,11 @@ namespace TEngine.EntityModule
         private EntitySystem()
         {
             GameEventMgr.Instance.AddEventListener<int,Action<EcsObject>>(EntityEvent.AttachToEntity, AttachToEntity);
-            Update(true);
+            //Update(true);
+            MonoUtility.AddUpdateListener((() =>
+            {
+                Update(false);
+            }));
             MonoUtility.AddFixedUpdateListener(FixedUpdate);
             MonoUtility.AddLateUpdateListener(LateUpdate);
         }
@@ -59,15 +63,24 @@ namespace TEngine.EntityModule
             {
                 if (stack.Count > 0)
                 {
-                    return (T)stack.Pop();
+                    var poolObj = (T)stack.Pop();
+                    GenInstanceId(poolObj);
+                    return poolObj;
                 }
                 goto Instantiate;
             }
             stack = new Stack<EcsObject>();
             ObjectPool.Add(type, stack);
             Instantiate: T ecsObject = new T();
-            EcsObjects.Add(ecsObject.InstanceId, ecsObject);
+            GenInstanceId(ecsObject);
             return ecsObject;
+        }
+
+        private void GenInstanceId(EcsObject ecsObject)
+        {
+            ecsObject.InstanceId = CurInstanceId;
+            Instance.CurInstanceId++;
+            EcsObjects.Add(ecsObject.InstanceId, ecsObject);
         }
 
         internal void Push(EcsObject ecsObject)

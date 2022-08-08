@@ -40,6 +40,12 @@ namespace TEngine
                 });
                 Entity.Destroy(entity);
                 Entity.Destroy(entity2);
+
+
+                TimerMgr.Instance.AddTimer(objects =>
+                {
+                    Start();
+                }, 3f);
             }), 3f,false);
         }
 
