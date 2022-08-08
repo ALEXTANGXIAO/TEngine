@@ -65,6 +65,14 @@ namespace TEngine.EntityModule
                 {
                     entityComponent.Entity.Updates.Remove(update);
                 }
+                if (entityComponent is IFixedUpdate fixedupdate)
+                {
+                    entityComponent.Entity.FixedUpdates.Remove(fixedupdate);
+                }
+                if (entityComponent is ILateUpdate lateupdate)
+                {
+                    entityComponent.Entity.LateUpdates.Remove(lateupdate);
+                }
                 if (reuse)
                 {
                     entityComponent.Entity.System.Push(entityComponent);
@@ -82,11 +90,10 @@ namespace TEngine.EntityModule
                     entityComponentTemp.OnDestroy();
                     if (reuse)
                     {
-                        entity.System.Push(entityComponentTemp);
+                        Destroy(entityComponentTemp);
                     }
                 }
-                entity.Updates.Clear();
-                entity.CanUpdate = false;
+                entity.IsDispose = true;
                 if (reuse)
                 {
                     entity.System.Push(entity);   

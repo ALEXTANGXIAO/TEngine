@@ -1,4 +1,4 @@
-﻿using TEngine;
+﻿using TEngine.EntityModule;
 using UnityEngine;
 
 public class EcsDemoApp : MonoBehaviour

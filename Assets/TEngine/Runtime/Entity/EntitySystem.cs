@@ -81,6 +81,7 @@ namespace TEngine.EntityModule
         internal T Create<T>() where T : Entity, new()
         {
             T entity = Get<T>();
+            entity.IsDispose = false;
             AddEntity(entity);
             return entity;
         }

@@ -23,7 +23,7 @@ namespace TEngine.EntityModule
 
         #region Status
         [IgnoreDataMember]
-        private bool IsFromPool
+        internal bool IsFromPool
         {
             get => (this.status & EntityStatus.IsFromPool) == EntityStatus.IsFromPool;
             set
@@ -40,7 +40,27 @@ namespace TEngine.EntityModule
         }
 
         [IgnoreDataMember]
-        private bool IsDispose => (this.status & EntityStatus.IsDispose) == EntityStatus.IsDispose;
+        internal bool IsDispose
+        {
+            get => (this.status & EntityStatus.IsDispose) == EntityStatus.IsDispose;
+            set
+            {
+                if (value)
+                {
+                    this.status |= EntityStatus.IsDispose;
+                    CanUpdate = false;
+                    CanFixedUpdate = false;
+                    CanLateUpdates = false;
+                    Updates.Clear();
+                    FixedUpdates.Clear();
+                    LateUpdates.Clear();
+                }
+                else
+                {
+                    this.status &= ~EntityStatus.IsDispose;
+                }
+            }
+        }
         
 
         #endregion
@@ -50,19 +70,19 @@ namespace TEngine.EntityModule
         internal List<IUpdate> Updates = new List<IUpdate>();
         internal List<IFixedUpdate> FixedUpdates = new List<IFixedUpdate>();
         internal List<ILateUpdate> LateUpdates = new List<ILateUpdate>();
-        internal bool InActive;
         internal bool CanUpdate;
+        internal bool CanFixedUpdate;
+        internal bool CanLateUpdates;
 
         public int Index { get; set; } = -1;
         public Entity()
         {
-            InActive = true;
             System = EntitySystem.Instance;
         }
 
         ~Entity()
         {
-            InActive = false;
+            
         }
 
         internal void Update()

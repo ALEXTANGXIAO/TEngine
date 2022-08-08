@@ -7,18 +7,9 @@ namespace TEngine.EntityModule
     {
         public void RmvComponent<T>(T component) where T :EntityComponent, new()
         {
-            if (component is IUpdate update)
-            {
-                Updates.Remove(update);
-            }
-            else if (component is IFixedUpdate fixedUpdate)
-            {
-                FixedUpdates.Remove(fixedUpdate);
-            }
-
-            CanUpdate = Updates.Count > 0;
-
             Destroy(component);
+
+            CheckUpdate();
         }
 
         public T AddComponent<T>() where T :EntityComponent, new()
@@ -36,8 +27,11 @@ namespace TEngine.EntityModule
             {
                 FixedUpdates.Add(fixedUpdate);
             }
-            CanUpdate = Updates.Count > 0;
-
+            else if (component is ILateUpdate lateUpdate)
+            {
+                LateUpdates.Add(lateUpdate);
+            }
+            CheckUpdate();
             return component;
         }
 
@@ -55,7 +49,11 @@ namespace TEngine.EntityModule
             {
                 FixedUpdates.Add(fixedUpdate);
             }
-            CanUpdate = Updates.Count > 0;
+            else if (component is ILateUpdate lateUpdate)
+            {
+                LateUpdates.Add(lateUpdate);
+            }
+            CheckUpdate();
             return component;
         }
 
@@ -124,6 +122,13 @@ namespace TEngine.EntityModule
                 }
             }
             return elements.ToArray();
+        }
+
+        private void CheckUpdate()
+        {
+            CanUpdate = Updates.Count > 0;
+            CanFixedUpdate = FixedUpdates.Count > 0;
+            CanLateUpdates = LateUpdates.Count > 0;
         }
     }
 }
