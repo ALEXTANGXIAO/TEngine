@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TEngine
+namespace TEngine.EntityModule
 {
     public enum EcsDebugType
     {

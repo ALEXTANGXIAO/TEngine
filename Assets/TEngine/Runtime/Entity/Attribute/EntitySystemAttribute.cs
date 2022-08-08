@@ -3,7 +3,7 @@
 namespace TEngine
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public class ObjectSystemAttribute : BaseAttribute
+    public class EntitySystemAttribute : BaseAttribute
     {
     }
 }

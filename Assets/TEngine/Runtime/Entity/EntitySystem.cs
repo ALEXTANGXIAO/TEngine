@@ -1,31 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading.Tasks;
 
-namespace TEngine
+namespace TEngine.EntityModule
 {
     /// <summary>
-    /// Ecs系统
+    /// Entity系统
     /// </summary>
     [Serializable]
-    public class EcsSystem : IDisposable
+    public class EntitySystem : IDisposable
     {
-        private static EcsSystem _instance;
+        private static EntitySystem _instance;
 
-        public static EcsSystem Instance
+        public static EntitySystem Instance
         {
             get
             {
                 if (_instance == null)
                 {
-                    _instance = new EcsSystem();
+                    _instance = new EntitySystem();
                 }
 
                 return _instance;
             }
         }
-        private EcsSystem()
+        private EntitySystem()
         {
         }
         /// <summary>
@@ -34,22 +33,22 @@ namespace TEngine
         internal readonly Dictionary<int, Stack<EcsObject>> ObjectPool = new Dictionary<int, Stack<EcsObject>>();
         internal readonly ArrayPool<Entity> Entities = new ArrayPool<Entity>();
         internal readonly Dictionary<int, EcsObject> EcsObjects = new Dictionary<int, EcsObject>();
-        internal readonly Dictionary<int, IUpdateSystem> UpdateSystems = new Dictionary<int, IUpdateSystem>();
         internal int CurInstanceId = 1000;
 
-        public void AddEntity(Entity entity)
+        #region internal
+        internal void AddEntity(Entity entity)
         {
             entity.System = this;
             entity.Awake();
             Entities.Add(entity);
         }
 
-        public void RemoveEntity(Entity entity)
+        internal void RemoveEntity(Entity entity)
         {
             Entities.Remove(entity);
         }
 
-        public T Get<T>() where T : EcsObject, new()
+        private T Get<T>() where T : EcsObject, new()
         {
             int type = typeof(T).GetHashCode();
             if (ObjectPool.TryGetValue(type, out Stack<EcsObject> stack))
@@ -62,15 +61,14 @@ namespace TEngine
             }
             stack = new Stack<EcsObject>();
             ObjectPool.Add(type, stack);
-        Instantiate: T ecsObject = new T();
-            EcsObjects.Add(ecsObject.InstanceId,ecsObject);
+            Instantiate: T ecsObject = new T();
+            EcsObjects.Add(ecsObject.InstanceId, ecsObject);
             return ecsObject;
         }
 
-        public void Push(EcsObject ecsObject)
+        internal void Push(EcsObject ecsObject)
         {
             int type = ecsObject.HashCode;
-            ecsObject.Dispose();
             if (ObjectPool.TryGetValue(type, out Stack<EcsObject> stack))
             {
                 stack.Push(ecsObject);
@@ -80,22 +78,22 @@ namespace TEngine
             ObjectPool.Add(type, stack);
             stack.Push(ecsObject);
         }
-
-        public T Create<T>() where T : Entity, new()
+        internal T Create<T>() where T : Entity, new()
         {
             T entity = Get<T>();
             AddEntity(entity);
             return entity;
         }
-
-        public T Create<T>(T entity) where T : Entity, new()
+        internal T CreateComponent<T>() where T : EntityComponent, new()
         {
-            AddEntity(entity);
-            return entity;
+            T component = Get<T>();
+            return component;
         }
+        #endregion
 
+        #region Update
         /// <summary>
-        /// 更新Ecs系统
+        /// 更新Entity系统
         /// </summary>
         /// <param name="worker">线程池是否并行</param>
         public void Update(bool worker = false)
@@ -114,7 +112,7 @@ namespace TEngine
                     {
                         continue;
                     }
-                    Entities[i].Execute();
+                    Entities[i].Update();
                 }
             }
             else
@@ -130,13 +128,13 @@ namespace TEngine
                     {
                         return;
                     }
-                    Entities[i].Execute();
+                    Entities[i].Update();
                 });
             }
         }
 
         /// <summary>
-        /// 更新Ecs物理系统
+        /// 更新Entity物理系统
         /// </summary>
         /// <param name="worker">线程池是否并行</param>
         public void FixedUpdate(bool worker = false)
@@ -175,6 +173,7 @@ namespace TEngine
                 });
             }
         }
+        #endregion
 
         #region Dispose
         public void Dispose()

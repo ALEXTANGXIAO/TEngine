@@ -1,76 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace TEngine
+namespace TEngine.EntityModule
 {
     partial class Entity
     {
-        public void RmvComponent<T>() where T : EcsComponent, new()
+        public void RmvComponent<T>(T component) where T :EntityComponent, new()
         {
-            for (int i = 0; i < Components.Count; i++)
+            if (component is IUpdate update)
             {
-                if (Components[i] is T component)
-                {
-                    if (component is IUpdate update)
-                    {
-                        Updates.Remove(update);
-                    }
-                    else if (component is IFixedUpdate fixedUpdate)
-                    {
-                        FixedUpdates.Remove(fixedUpdate);
-                    }
-                    System.Push(component);
-
-                    CanUpdate = Updates.Count > 0;
-
-                    CanFixedUpdate = FixedUpdates.Count > 0;
-                }
+                Updates.Remove(update);
+            }
+            else if (component is IFixedUpdate fixedUpdate)
+            {
+                FixedUpdates.Remove(fixedUpdate);
             }
 
-#if UNITY_EDITOR
-            CheckDebugInfo();
-#endif
+            CanUpdate = Updates.Count > 0;
+
+            CanFixedUpdate = FixedUpdates.Count > 0;
+
+            Destroy(component);
         }
 
-        public void RmvComponent(Type componentType)
+        public T AddComponent<T>() where T :EntityComponent, new()
         {
-            for (int i = 0; i < Components.Count; i++)
-            {
-                if (Components[i].GetType() == componentType)
-                {
-
-                    if (componentType is IUpdate update)
-                    {
-                        Updates.Remove(update);
-
-                        CanUpdate = Updates.Count > 0;
-                    }
-                    else if (componentType is IFixedUpdate fixedUpdate)
-                    {
-                        FixedUpdates.Remove(fixedUpdate);
-
-                        CanFixedUpdate = FixedUpdates.Count > 0;
-                    }
-                    //if (componentType is EcsComponent component)
-                    //{
-                    //    System.Push(component);
-                    //}
-                }
-            }
-#if UNITY_EDITOR
-            CheckDebugInfo();
-#endif
-        }
-
-        public T AddComponent<T>() where T : EcsComponent, new()
-        {
-#if UNITY_EDITOR
-            CheckDebugInfo();
-#endif
-            T component = System.Get<T>();
+            T component = EntityComponent.Create<T>();
             component.Entity = this;
             component.System = System;
             Components.Add(component);
@@ -88,11 +43,8 @@ namespace TEngine
             return component;
         }
 
-        public EcsComponent AddComponent(EcsComponent component)
+        public EntityComponent AddComponent(EntityComponent component)
         {
-#if UNITY_EDITOR
-            CheckDebugInfo();
-#endif
             component.Entity = this;
             component.System = System;
             Components.Add(component);
@@ -110,7 +62,7 @@ namespace TEngine
             return component;
         }
 
-        public T GetComponent<T>() where T : EcsComponent
+        public T GetComponent<T>() where T :EntityComponent
         {
             for (int i = 0; i < Components.Count; i++)
             {
@@ -123,7 +75,7 @@ namespace TEngine
             return null;
         }
 
-        public EcsComponent GetComponent(Type componentType)
+        public EntityComponent GetComponent(Type componentType)
         {
             for (int i = 0; i < Components.Count; i++)
             {
@@ -136,7 +88,7 @@ namespace TEngine
             return null;
         }
 
-        public T[] GetComponents<T>() where T : EcsComponent
+        public T[] GetComponents<T>() where T :EntityComponent
         {
             List<T> elements = new List<T>();
             for (int i = 0; i < Components.Count; i++)
@@ -149,7 +101,7 @@ namespace TEngine
             return elements.ToArray();
         }
 
-        public List<T> GetComponentsList<T>() where T : EcsComponent
+        public List<T> GetComponentsList<T>() where T :EntityComponent
         {
             List<T> elements = new List<T>();
             for (int i = 0; i < Components.Count; i++)
@@ -162,9 +114,9 @@ namespace TEngine
             return elements;
         }
 
-        public EcsComponent[] GetComponents(Type comType)
+        public EntityComponent[] GetComponents(Type comType)
         {
-            List<EcsComponent> elements = new List<EcsComponent>();
+            List<EntityComponent> elements = new List<EntityComponent>();
             for (int i = 0; i < Components.Count; i++)
             {
                 {
@@ -176,6 +128,5 @@ namespace TEngine
             }
             return elements.ToArray();
         }
-
     }
 }

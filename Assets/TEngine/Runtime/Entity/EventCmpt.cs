@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace TEngine
+namespace TEngine.EntityModule
 {
-    public class EcsEventCmpt : EcsComponent
+    public class EventCmpt :EntityComponent
     {
         private GameEvent _gameEvent;
 
@@ -88,7 +88,6 @@ namespace TEngine
         public override void Awake()
         {
             _gameEvent = GameMemPool<GameEvent>.Alloc();
-            Entity.Event = this;
         }
         #endregion
     }

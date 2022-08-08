@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace TEngine
+namespace TEngine.EntityModule
 {
     public interface IIndex
     {

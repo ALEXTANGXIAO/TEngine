@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using UnityEngine;
 
-namespace TEngine
+namespace TEngine.EntityModule
 {
     [Flags]
     public enum EntityStatus : byte
@@ -39,21 +39,26 @@ namespace TEngine
             }
         }
 
+        [IgnoreDataMember]
+        private bool IsDispose => (this.status & EntityStatus.IsDispose) == EntityStatus.IsDispose;
+        
+
         #endregion
 
         [SerializeField]
-        internal List<EcsComponent> Components = new List<EcsComponent>();
+        internal List<EntityComponent> Components = new List<EntityComponent>();
         internal List<IUpdate> Updates = new List<IUpdate>();
         internal List<IFixedUpdate> FixedUpdates = new List<IFixedUpdate>();
+        internal List<ILateUpdate> LateUpdates = new List<ILateUpdate>();
         internal bool InActive;
         internal bool CanUpdate;
         internal bool CanFixedUpdate;
+        internal bool CanLateUpdate;
         public int Index { get; set; } = -1;
-        public EcsEventCmpt Event { get; set; }
         public Entity()
         {
             InActive = true;
-            System = EcsSystem.Instance;
+            System = EntitySystem.Instance;
         }
 
         ~Entity()
@@ -61,7 +66,7 @@ namespace TEngine
             InActive = false;
         }
 
-        internal void Execute()
+        internal void Update()
         {
             for (int i = 0; i < Updates.Count; i++)
             {
@@ -74,6 +79,14 @@ namespace TEngine
             for (int i = 0; i < FixedUpdates.Count; i++)
             {
                 FixedUpdates[i].FixedUpdate();
+            }
+        }
+
+        internal void LateUpdate()
+        {
+            for (int i = 0; i < LateUpdates.Count; i++)
+            {
+                LateUpdates[i].LateUpdate();
             }
         }
 
@@ -132,7 +145,7 @@ namespace TEngine
         #region Static
         public static T Create<T>() where T : Entity, new()
         {
-            var entity = EcsSystem.Instance.Create<T>();
+            var entity = EntitySystem.Instance.Create<T>();
             return entity;
         }
         #endregion

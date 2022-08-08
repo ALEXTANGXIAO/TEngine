@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace TEngine
+namespace TEngine.EntityModule
 {
     /// <summary>
-    /// Ecs架构基类Object
+    /// Entity架构基类Object
     /// </summary>
     public class EcsObject
     {
@@ -21,7 +21,7 @@ namespace TEngine
             private set;
         }
 
-        internal EcsSystem System;
+        internal EntitySystem System;
 
 
         [IgnoreDataMember]
@@ -30,15 +30,15 @@ namespace TEngine
         public EcsObject()
         {
             HashCode = GetType().GetHashCode();
-            InstanceId = EcsSystem.Instance.CurInstanceId;
-            EcsSystem.Instance.CurInstanceId++;
+            InstanceId = EntitySystem.Instance.CurInstanceId;
+            EntitySystem.Instance.CurInstanceId++;
         }
 
         public virtual void Dispose()
         {
             if (InstanceId != 0)
             {
-                EcsSystem.Instance.EcsObjects.Remove(InstanceId);
+                EntitySystem.Instance.EcsObjects.Remove(InstanceId);
             }
             else
             {
@@ -58,19 +58,18 @@ namespace TEngine
         /// <param name="reuse">此对象是否可以复用，复用会将对象丢入System对象池中 等待再次使用，如果是Entity对象，并且不复用的话，则把Entity所使用的组件也不复用</param>
         public static void Destroy(EcsObject ecsObject, bool reuse = true)
         {
-            if (ecsObject is EcsComponent ecsComponent)
+            if (ecsObject is EntityComponent entityComponent)
             {
-                ecsComponent.Entity.Components.Remove(ecsComponent);
-                if (ecsComponent is IUpdate update)
+                entityComponent.Entity.Components.Remove(entityComponent);
+                if (entityComponent is IUpdate update)
                 {
-                    ecsComponent.Entity.Updates.Remove(update);
+                    entityComponent.Entity.Updates.Remove(update);
                 }
                 if (reuse)
                 {
-                    ecsComponent.Entity.System.Push(ecsComponent);
+                    entityComponent.Entity.System.Push(entityComponent);
                 }
                 ecsObject.OnDestroy();
-                return;
             }
             else if (ecsObject is Entity entity)
             {
@@ -78,12 +77,12 @@ namespace TEngine
                 entity.OnDestroy();
                 while (entity.Components.Count > 0)
                 {
-                    EcsComponent ecsComponentTemp = entity.Components[0];
+                   EntityComponent entityComponentTemp = entity.Components[0];
                     entity.Components.RemoveAt(0);
-                    ecsComponentTemp.OnDestroy();
+                    entityComponentTemp.OnDestroy();
                     if (reuse)
                     {
-                        entity.System.Push(ecsComponentTemp);
+                        entity.System.Push(entityComponentTemp);
                     }
                 }
                 entity.Updates.Clear();
@@ -93,6 +92,7 @@ namespace TEngine
                     entity.System.Push(entity);   
                 }
             }
+            ecsObject.Dispose();
         }
 
         public T FindObjectOfType<T>() where T : EcsObject
