@@ -1,4 +1,5 @@
-﻿using TEngine.EntityModule;
+﻿using System;
+using TEngine.EntityModule;
 using UnityEngine;
 
 namespace TEngine
@@ -33,6 +34,10 @@ namespace TEngine
 
             TimerMgr.Instance.AddTimer((args =>
             {
+                GameEventMgr.Instance.Send<int,Action<EcsObject>>(EntityEvent.AttachToEntity,entity.InstanceId,(obj)=>
+                {
+                    TLogger.LogInfoSuccessd("Attach Success"+obj.HashCode);
+                });
                 Entity.Destroy(entity);
                 Entity.Destroy(entity2);
             }), 3f,false);

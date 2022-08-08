@@ -26,6 +26,7 @@ namespace TEngine.EntityModule
         }
         private EntitySystem()
         {
+            GameEventMgr.Instance.AddEventListener<int,Action<EcsObject>>(EntityEvent.AttachToEntity, AttachToEntity);
             Update(true);
         }
         /// <summary>
@@ -189,5 +190,26 @@ namespace TEngine.EntityModule
         }
         #endregion
 
+        #region AttachEventToEntity
+
+        public void AttachToEntity(int instanceId,Action<EcsObject> callback)
+        {
+            if (EcsObjects.TryGetValue(instanceId,out var entity))
+            {
+                if (entity.IsDisposed)
+                {
+                    return;
+                }
+                callback?.Invoke(entity);
+            }
+        }
+        
+
+        #endregion
+    }
+
+    public static class EntityEvent
+    {
+        public static int AttachToEntity = StringId.StringToHash("EntityEvent.AttachToEntity");
     }
 }
