@@ -15,9 +15,9 @@ namespace TEngine
             {
                 if (null == sInstance)
                 {
-                    if (!TEngine.Instance.ContainLogicSys(BehaviourSingleSystem.Instance))
+                    if (!TEngineEntry.Instance.ContainLogicSys(BehaviourSingleSystem.Instance))
                     {
-                        TEngine.Instance.AddLogicSys(BehaviourSingleSystem.Instance);
+                        TEngineEntry.Instance.AddLogicSys(BehaviourSingleSystem.Instance);
                     }
                     sInstance = new T();
                     TLogger.LogAssert(sInstance != null);

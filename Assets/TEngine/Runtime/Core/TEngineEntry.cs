@@ -3,24 +3,14 @@ using UnityEngine;
 
 namespace TEngine
 {
-    /// <summary>
-    /// 游戏入口，派生TEngine，实现进入游戏虚函数(override StartGame)
-    /// </summary>
-    public class TEngine : UnitySingleton<TEngine>
+    public class TEngineEntry : UnitySingleton<TEngineEntry>
     {
-        public override void Awake()
+        public System.Action OnStartGame;
+        protected override void OnLoad()
         {
-            base.Awake();
-
-            TLogger.LogInfo($"DevicePerformanceLevel 设备性能评级:{DevicePerformanceUtil.GetDevicePerformanceLevel()}");
-
             InitLibImp();
 
             RegisterAllSystem();
-
-            AfterAwake();
-
-            GameTime.StartFrame();
         }
 
         /// <summary>
@@ -167,16 +157,10 @@ namespace TEngine
             SingletonMgr.Release();
         }
 
-        protected virtual void AfterAwake()
-        {
-
-        }
-
         protected virtual void StartGame()
         {
-
+            OnStartGame?.Invoke();
         }
-
         #endregion
     }
 }
