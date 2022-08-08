@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Sockets;
 using TEngineProto;
 
@@ -19,7 +20,7 @@ namespace TEngine.Net
             this.gameClient = gameClient;
         }
 
-        public bool Connect(string host, int port)
+        public bool Connect(string host, int port ,bool async = false)
         {
             if (socket == null)
             {
@@ -38,9 +39,36 @@ namespace TEngine.Net
             gameClient.Status = GameClientStatus.StatusInit;
             try
             {
-                socket.Connect(host, port);
-                StartReceive();
-                gameClient.Status = GameClientStatus.StatusConnect;
+                if (async)
+                {
+                    IPEndPoint ipPoint = new IPEndPoint(IPAddress.Parse(host), port);
+                    SocketAsyncEventArgs args = new SocketAsyncEventArgs();
+                    args.RemoteEndPoint = ipPoint;
+
+                    args.Completed += (obj, socketError) =>
+                    {
+                        if (socketError.SocketError == SocketError.Success)
+                        {
+                            TLogger.LogInfoSuccessd("connect server[{0}:{1}] success!!!", host, port);
+                            SocketAsyncEventArgs receiveArgs = new SocketAsyncEventArgs();
+                            receiveArgs.SetBuffer(message.Buffer, 0, message.Buffer.Length);
+                            receiveArgs.Completed += ReceiveCallBackAsync;
+                            this.socket.ReceiveAsync(receiveArgs);
+                            gameClient.Status = GameClientStatus.StatusConnect;
+                        }
+                        else
+                        {
+                            TLogger.LogError("connect server failed" + socketError.SocketError);
+                        }
+                    };
+                    socket.ConnectAsync(args);
+                }
+                else
+                {
+                    socket.Connect(host, port);
+                    StartReceive();
+                    gameClient.Status = GameClientStatus.StatusConnect;
+                }
             }
             catch (Exception e)
             {
@@ -49,10 +77,33 @@ namespace TEngine.Net
                 return false;
             }
 
-            TLogger.LogInfoSuccessd("connect server[{0}:{1}] success!!!", host, port);
+            //TLogger.LogInfoSuccessd("connect server[{0}:{1}] success!!!", host, port);
             m_Host = host;
             m_Port = port;
             return true;
+        }
+
+        void ReceiveCallBackAsync(object obj, SocketAsyncEventArgs args)
+        {
+            if (args.SocketError == SocketError.Success)
+            {
+                message.ReadBuffer(args.BytesTransferred, gameClient.HandleResponse);
+
+                args.SetBuffer(message.StartIndex, message.RemSize);
+                if (this.socket != null && this.socket.Connected)
+                {
+                    socket.ReceiveAsync(args);
+                }
+                else
+                {
+                    Close();
+                }
+            }
+            else
+            {
+                TLogger.LogError("socket receive error" + args.SocketError);
+                Close();
+            }
         }
 
         void StartReceive()

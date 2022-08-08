@@ -136,7 +136,7 @@ namespace TEngine.Net
             m_lastPort = port;
             Status = reconnect ? GameClientStatus.StatusReconnect : GameClientStatus.StatusInit;
             TLogger.LogInfo("Start connect server {0}:{1} Reconnect:{2}", host, port, reconnect);
-            return m_connect.Connect(host, port);
+            return m_connect.Connect(host, port,false);
         }
 
         public void Shutdown()
