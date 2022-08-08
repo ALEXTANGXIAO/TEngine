@@ -47,7 +47,7 @@ namespace TEngine.EntityModule
 
         internal void RemoveEntity(Entity entity)
         {
-            Entities.Remove(entity);
+            Entities.Buckets[entity.Index] = false;
         }
 
         private T Get<T>() where T : EcsObject, new()
@@ -133,6 +133,42 @@ namespace TEngine.EntityModule
                     }
                     Entities[i].Update();
                 });
+            }
+        }
+
+        public void FixedUpdate()
+        {
+            int count = Entities.Count;
+            for (int i = 0; i < count; i++)
+            {
+                if (!Entities.Buckets[i])
+                {
+                    continue;
+                }
+
+                if (!Entities[i].CanFixedUpdate)
+                {
+                    continue;
+                }
+                Entities[i].FixedUpdate();
+            }
+        }
+
+        public void LateUpdate()
+        {
+            int count = Entities.Count;
+            for (int i = 0; i < count; i++)
+            {
+                if (!Entities.Buckets[i])
+                {
+                    continue;
+                }
+
+                if (!Entities[i].CanLateUpdates)
+                {
+                    continue;
+                }
+                Entities[i].LateUpdate();
             }
         }
         #endregion
