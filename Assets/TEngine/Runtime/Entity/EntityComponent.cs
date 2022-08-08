@@ -12,6 +12,9 @@
         public static T Create<T>() where T : EntityComponent, new()
         {
             var entity = EntitySystem.Instance.CreateComponent<T>();
+#if UNITY_EDITOR
+            TLogger.LogInfoSuccessd($"Create ID {entity.InstanceId} EntityComponent{ entity.ToString()}");
+#endif
             return entity;
         }
         #endregion

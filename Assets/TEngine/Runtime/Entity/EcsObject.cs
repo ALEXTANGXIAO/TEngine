@@ -60,6 +60,9 @@ namespace TEngine.EntityModule
         {
             if (ecsObject is EntityComponent entityComponent)
             {
+#if UNITY_EDITOR
+                TLogger.LogWarning($"Destroy ID {entityComponent.InstanceId}  EntityComponent{entityComponent.ToString()},reuse {reuse}");
+#endif
                 entityComponent.Entity.Components.Remove(entityComponent);
                 if (entityComponent is IUpdate update)
                 {
@@ -81,6 +84,9 @@ namespace TEngine.EntityModule
             }
             else if (ecsObject is Entity entity)
             {
+#if UNITY_EDITOR
+                TLogger.LogWarning($"Destroy ID {entity.InstanceId} Entity{entity.ToString()},reuse {reuse}");
+#endif
                 entity.System.RemoveEntity(entity);
                 entity.OnDestroy();
                 while (entity.Components.Count > 0)

@@ -26,6 +26,7 @@ namespace TEngine.EntityModule
         }
         private EntitySystem()
         {
+            Update(true);
         }
         /// <summary>
         /// Key -> HashSet(type) / Value -> Stack(EcsObject)

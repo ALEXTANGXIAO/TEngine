@@ -165,6 +165,9 @@ namespace TEngine.EntityModule
         public static T Create<T>() where T : Entity, new()
         {
             var entity = EntitySystem.Instance.Create<T>();
+#if UNITY_EDITOR
+            TLogger.LogWarning($"Create ID {entity.InstanceId}  EntityComponent{entity.ToString()}");
+#endif
             return entity;
         }
         #endregion
