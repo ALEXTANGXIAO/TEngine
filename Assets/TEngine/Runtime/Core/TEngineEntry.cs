@@ -5,7 +5,6 @@ namespace TEngine
 {
     public class TEngineEntry : UnitySingleton<TEngineEntry>
     {
-        public System.Action OnStartGame;
         protected override void OnLoad()
         {
             InitLibImp();
@@ -97,8 +96,6 @@ namespace TEngine
                 var logic = listLogic[i];
                 logic.OnStart();
             }
-            TLogger.LogInfo("TEngine:StartGame");
-            StartGame();
         }
 
         public void Update()
@@ -155,11 +152,6 @@ namespace TEngine
             }
             base.OnDestroy();
             SingletonMgr.Release();
-        }
-
-        protected virtual void StartGame()
-        {
-            OnStartGame?.Invoke();
         }
         #endregion
     }
