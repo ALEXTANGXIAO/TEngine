@@ -87,7 +87,7 @@ namespace TEngine
         }
         #endregion
 
-        #region 注入UnityUpdate/FixedUpdate
+        #region 注入UnityUpdate/FixedUpdate/LateUpdate
         /// <summary>
         /// 为给外部提供的 添加帧更新事件
         /// </summary>
@@ -109,6 +109,16 @@ namespace TEngine
         }
 
         /// <summary>
+        /// 为给外部提供的 添加Late帧更新事件
+        /// </summary>
+        /// <param name="fun"></param>
+        public static void AddLateUpdateListener(UnityAction fun)
+        {
+            _MakeEntity();
+            _behaviour.AddLateUpdateListener(fun);
+        }
+
+        /// <summary>
         /// 移除帧更新事件
         /// </summary>
         /// <param name="fun"></param>
@@ -126,6 +136,16 @@ namespace TEngine
         {
             _MakeEntity();
             _behaviour.RemoveFixedUpdateListener(fun);
+        }
+
+        /// <summary>
+        /// 移除Late帧更新事件
+        /// </summary>
+        /// <param name="fun"></param>
+        public static void RemoveLateUpdateListener(UnityAction fun)
+        {
+            _MakeEntity();
+            _behaviour.RemoveLateUpdateListener(fun);
         }
         #endregion
 
@@ -156,6 +176,7 @@ namespace TEngine
         {
             private event UnityAction updateEvent;
             private event UnityAction fixedUpdateEvent;
+            private event UnityAction lateUpdateEvent;
 
             void Update()
             {
@@ -171,6 +192,24 @@ namespace TEngine
                 {
                     fixedUpdateEvent();
                 }
+            }
+
+            void LateUpdate()
+            {
+                if (lateUpdateEvent != null)
+                {
+                    lateUpdateEvent();
+                }
+            }
+
+            public void AddLateUpdateListener(UnityAction fun)
+            {
+                lateUpdateEvent += fun;
+            }
+
+            public void RemoveLateUpdateListener(UnityAction fun)
+            {
+                lateUpdateEvent -= fun;
             }
 
             public void AddFixedUpdateListener(UnityAction fun)
