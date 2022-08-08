@@ -18,8 +18,6 @@ namespace TEngine.EntityModule
 
             CanUpdate = Updates.Count > 0;
 
-            CanFixedUpdate = FixedUpdates.Count > 0;
-
             Destroy(component);
         }
 
@@ -39,7 +37,7 @@ namespace TEngine.EntityModule
                 FixedUpdates.Add(fixedUpdate);
             }
             CanUpdate = Updates.Count > 0;
-            CanFixedUpdate = FixedUpdates.Count > 0;
+
             return component;
         }
 
@@ -58,7 +56,6 @@ namespace TEngine.EntityModule
                 FixedUpdates.Add(fixedUpdate);
             }
             CanUpdate = Updates.Count > 0;
-            CanFixedUpdate = FixedUpdates.Count > 0;
             return component;
         }
 

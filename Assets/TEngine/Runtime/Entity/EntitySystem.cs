@@ -132,47 +132,6 @@ namespace TEngine.EntityModule
                 });
             }
         }
-
-        /// <summary>
-        /// 更新Entity物理系统
-        /// </summary>
-        /// <param name="worker">线程池是否并行</param>
-        public void FixedUpdate(bool worker = false)
-        {
-            int count = Entities.Count;
-            if (!worker)
-            {
-                for (int i = 0; i < count; i++)
-                {
-                    if (!Entities.Buckets[i])
-                    {
-                        continue;
-                    }
-
-                    if (!Entities[i].CanFixedUpdate)
-                    {
-                        continue;
-                    }
-                    Entities[i].FixedUpdate();
-                }
-            }
-            else
-            {
-                Parallel.For(0, count, i =>
-                {
-                    if (!Entities.Buckets[i])
-                    {
-                        return;
-                    }
-
-                    if (!Entities[i].CanFixedUpdate)
-                    {
-                        return;
-                    }
-                    Entities[i].FixedUpdate();
-                });
-            }
-        }
         #endregion
 
         #region Dispose

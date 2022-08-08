@@ -52,8 +52,7 @@ namespace TEngine.EntityModule
         internal List<ILateUpdate> LateUpdates = new List<ILateUpdate>();
         internal bool InActive;
         internal bool CanUpdate;
-        internal bool CanFixedUpdate;
-        internal bool CanLateUpdate;
+
         public int Index { get; set; } = -1;
         public Entity()
         {
