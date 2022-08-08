@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TEngine
 {
-    public class TimerMgr:UnitySingleton<TimerMgr>
+    public class TimerMgr : UnitySingleton<TimerMgr>
     {
         public delegate void TimerHandler(object[] args);
 
@@ -13,9 +14,9 @@ namespace TEngine
             public float curTime = 0;
             public float time = 0;
             public TimerHandler handler;
-            public bool isLoop = false;        
+            public bool isLoop = false;
             public bool isNeedRemove = false;
-            public bool isRunning = false;   
+            public bool isRunning = false;
             public bool isUnscaled = false;    //是否使用非缩放的时间
             public object[] args = null;       //回调参数
         }
@@ -412,6 +413,38 @@ namespace TEngine
         {
             UpdateTimer();
             UpdateUnscaledTimer();
+        }
+
+        private List<System.Timers.Timer> _ticker = new List<System.Timers.Timer>();
+        public System.Timers.Timer AddSystemTimer(Action<object,System.Timers.ElapsedEventArgs> callBack)
+        {
+            var timerTick = new System.Timers.Timer();
+            int interval = 1000;
+            timerTick = new System.Timers.Timer(interval);
+            timerTick.AutoReset = true;
+            timerTick.Enabled = true;
+            timerTick.Elapsed += new System.Timers.ElapsedEventHandler(callBack);
+
+            _ticker.Add(timerTick);
+
+            return timerTick;
+        }
+
+        protected override void OnDestroy()
+        {
+            DestroySystemTimer();
+            base.OnDestroy();
+        }
+
+        private void DestroySystemTimer()
+        {
+            for (int i = 0; i < _ticker.Count; i++)
+            {
+                if (_ticker[i] != null)
+                {
+                    _ticker[i].Stop();
+                }
+            }
         }
     }
 }
