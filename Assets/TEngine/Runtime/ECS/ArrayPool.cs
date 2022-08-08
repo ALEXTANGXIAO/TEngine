@@ -11,11 +11,11 @@ namespace TEngine
 
     internal class HashSetDebugView<T> where T : IIndex
     {
-        private readonly ArrayPool<T> m_Set;
+        private readonly ArrayPool<T> _set;
 
         public HashSetDebugView(ArrayPool<T> set)
         {
-            m_Set = set ?? throw new ArgumentNullException(nameof(set));
+            _set = set ?? throw new ArgumentNullException(nameof(set));
         }
 
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
@@ -23,7 +23,7 @@ namespace TEngine
         {
             get
             {
-                return m_Set.ToArray();
+                return _set.ToArray();
             }
         }
     }
@@ -34,8 +34,8 @@ namespace TEngine
     {
         internal T[] Items = new T[256];
         internal bool[] Buckets = new bool[256];
-        private int m_Index;
-        private int count;
+        private int _index;
+        private int _count;
 
         public T this[int index]
         {
@@ -53,7 +53,7 @@ namespace TEngine
         {
             get
             {
-                return count;
+                return _count;
             }
         }
 
@@ -93,11 +93,11 @@ namespace TEngine
                     }
                 }
 
-                Items[m_Index] = item;
-                Buckets[m_Index] = true;
-                item.Index = m_Index;
-                m_Index++;
-                if (m_Index >= Items.Length)
+                Items[_index] = item;
+                Buckets[_index] = true;
+                item.Index = _index;
+                _index++;
+                if (_index >= Items.Length)
                 {
                     T[] newItems = new T[Items.Length * 2];
                     bool[] newBuckets = new bool[Items.Length * 2];
@@ -106,7 +106,7 @@ namespace TEngine
                     Items = newItems;
                     Buckets = newBuckets;
                 }
-                count = m_Index;
+                _count = _index;
             }
         }
     }

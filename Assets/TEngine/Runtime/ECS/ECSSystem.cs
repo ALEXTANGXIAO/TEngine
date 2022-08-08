@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace TEngine
@@ -32,6 +33,9 @@ namespace TEngine
         /// </summary>
         internal readonly Dictionary<int, Stack<EcsObject>> ObjectPool = new Dictionary<int, Stack<EcsObject>>();
         internal readonly ArrayPool<Entity> Entities = new ArrayPool<Entity>();
+        internal readonly Dictionary<int, EcsObject> EcsObjects = new Dictionary<int, EcsObject>();
+        internal readonly Dictionary<int, IUpdateSystem> UpdateSystems = new Dictionary<int, IUpdateSystem>();
+        internal int CurInstanceId = 1000;
 
         public void AddEntity(Entity entity)
         {
@@ -59,13 +63,14 @@ namespace TEngine
             stack = new Stack<EcsObject>();
             ObjectPool.Add(type, stack);
         Instantiate: T ecsObject = new T();
+            EcsObjects.Add(ecsObject.InstanceId,ecsObject);
             return ecsObject;
         }
 
         public void Push(EcsObject ecsObject)
         {
             int type = ecsObject.HashCode;
-
+            ecsObject.Dispose();
             if (ObjectPool.TryGetValue(type, out Stack<EcsObject> stack))
             {
                 stack.Push(ecsObject);
@@ -94,24 +99,6 @@ namespace TEngine
         /// </summary>
         /// <param name="worker">线程池是否并行</param>
         public void Update(bool worker = false)
-        {
-            Run(worker);
-        }
-
-        /// <summary>
-        /// 更新Ecs物理系统
-        /// </summary>
-        /// <param name="worker">线程池是否并行</param>
-        public void FixedUpdate(bool worker = false)
-        {
-            RunFixed(worker);
-        }
-
-        /// <summary>
-        /// 运行Ecs系统
-        /// </summary>
-        /// <param name="worker">线程池是否并行</param>
-        public void Run(bool worker = false)
         {
             int count = Entities.Count;
             if (!worker)
@@ -148,7 +135,11 @@ namespace TEngine
             }
         }
 
-        public void RunFixed(bool worker = false)
+        /// <summary>
+        /// 更新Ecs物理系统
+        /// </summary>
+        /// <param name="worker">线程池是否并行</param>
+        public void FixedUpdate(bool worker = false)
         {
             int count = Entities.Count;
             if (!worker)
@@ -237,6 +228,6 @@ namespace TEngine
             return elements.ToArray();
         }
         #endregion
+
     }
 }
-

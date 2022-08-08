@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace TEngine
 {
@@ -8,13 +9,42 @@ namespace TEngine
     /// </summary>
     public class EcsObject
     {
-        internal int HashCode;
+        public int InstanceId
+        {
+            get;
+            protected set;
+        }
+
+        internal int HashCode
+        {
+            get;
+            private set;
+        }
 
         internal EcsSystem System;
+
+
+        [IgnoreDataMember]
+        public bool IsDisposed => this.InstanceId == 0;
 
         public EcsObject()
         {
             HashCode = GetType().GetHashCode();
+            InstanceId = EcsSystem.Instance.CurInstanceId;
+            EcsSystem.Instance.CurInstanceId++;
+        }
+
+        public virtual void Dispose()
+        {
+            if (InstanceId != 0)
+            {
+                EcsSystem.Instance.EcsObjects.Remove(InstanceId);
+            }
+            else
+            {
+                throw new Exception($"{this.ToString()} Instance is 0 but still Dispose");
+            }
+            InstanceId = 0;
         }
 
         public virtual void Awake() { }
@@ -24,7 +54,7 @@ namespace TEngine
         /// <summary>
         /// Remove The EcsEntity or Component And Throw the EcsObject to ArrayPool When AddComponent Or Create Can Use Again
         /// </summary>
-        /// <param name="ecsObject"></param>
+        /// <param name="ecsObject">EcsEntity/Component/System</param>
         /// <param name="reuse">此对象是否可以复用，复用会将对象丢入System对象池中 等待再次使用，如果是Entity对象，并且不复用的话，则把Entity所使用的组件也不复用</param>
         public static void Destroy(EcsObject ecsObject, bool reuse = true)
         {
