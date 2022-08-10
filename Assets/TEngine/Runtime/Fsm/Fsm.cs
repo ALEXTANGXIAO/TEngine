@@ -457,7 +457,7 @@ namespace TEngine.Fsm
         /// <param name="data">要设置的有限状态机数据。</param>
         public void SetData<TData>(string name, TData data)
         {
-            SetData(name,data);
+            SetData(name,(object)data);
         }
 
         /// <summary>
