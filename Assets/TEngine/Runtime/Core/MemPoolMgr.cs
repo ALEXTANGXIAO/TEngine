@@ -18,6 +18,16 @@ namespace TEngine
 
     public class MemPoolMgr : TSingleton<MemPoolMgr>
     {
+        protected override void Init()
+        {
+            base.Init();
+#if UNITY_EDITOR
+            MemPoolComponent.Active();
+#endif
+        }
+
+        public int Count => m_listPool.Count;
+
         List<IMemPoolBase> m_listPool = new List<IMemPoolBase>();
 
         [Conditional("UNITY_EDITOR")]
@@ -45,6 +55,11 @@ namespace TEngine
                 var pool = m_listPool[i];
                 pool.ClearPool();
             }
+        }
+
+        public List<IMemPoolBase> GetAllObjectPools()
+        {
+            return m_listPool;
         }
     }
 
@@ -114,5 +129,4 @@ namespace TEngine
             return m_objPool.Count;
         }
     }
-
 }
