@@ -1,0 +1,423 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Kcp</name>
+    </assembly>
+    <members>
+        <member name="T:System.Net.Sockets.Kcp.FakeKcpIO">
+            <summary>
+            用于调试的KCP IO 类，没有Kcp功能
+            </summary>
+        </member>
+        <member name="T:System.Net.Sockets.Kcp.IKcpCallback">
+            <summary>
+            Kcp回调
+            </summary>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.IKcpCallback.Output(System.Buffers.IMemoryOwner{System.Byte},System.Int32)">
+            <summary>
+            kcp 发送方向输出
+            </summary>
+            <param name="buffer">kcp 交出发送缓冲区控制权，缓冲区来自<see cref="!:RentBuffer(int)"/></param>
+            <param name="avalidLength">数据的有效长度</param>
+            <returns>不需要返回值</returns>
+            <remarks>通过增加 avalidLength 能够在协议栈中有效的减少数据拷贝</remarks>
+        </member>
+        <member name="T:System.Net.Sockets.Kcp.IRentable">
+            <summary>
+            外部提供缓冲区,可以在外部链接一个内存池
+            </summary>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.IRentable.RentBuffer(System.Int32)">
+            <summary>
+            外部提供缓冲区,可以在外部链接一个内存池
+            </summary>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.Kcp`1.#ctor(System.UInt32,System.Net.Sockets.Kcp.IKcpCallback,System.Net.Sockets.Kcp.IRentable)">
+            <summary>
+            create a new kcp control object, 'conv' must equal in two endpoint
+            from the same connection.
+            </summary>
+            <param name="conv_"></param>
+            <param name="callback"></param>
+            <param name="rentable">可租用内存的回调</param>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.Kcp`1.CreateBuffer(System.Int32)">
+            <summary>
+            如果外部能够提供缓冲区则使用外部缓冲区，否则new byte[]
+            </summary>
+            <param name="needSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.Kcp`1.Recv(System.Span{System.Byte})">
+            <summary>
+            user/upper level recv: returns size, returns below zero for EAGAIN
+            </summary>
+            <param name="buffer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.Kcp`1.UncheckRecv(System.Span{System.Byte})">
+            <summary>
+            这个函数不检查任何参数
+            </summary>
+            <param name="buffer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.Kcp`1.PeekSize">
+            <summary>
+            check the size of next message in the recv queue
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.Kcp`1.Send(System.Span{System.Byte})">
+            <summary>
+            user/upper level send, returns below zero for error
+            </summary>
+            <param name="buffer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.Kcp`1.Input(System.Span{System.Byte})">
+            <summary>
+            when you received a low level packet (eg. UDP packet), call it
+            </summary>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="T:System.Net.Sockets.Kcp.KcpCore`1">
+            <summary>
+            https://github.com/skywind3000/kcp/wiki/Network-Layer
+            <para>外部buffer ----拆分拷贝----等待列表 -----移动----发送列表----拷贝----发送buffer---output</para>
+            https://github.com/skywind3000/kcp/issues/118#issuecomment-338133930
+            </summary>
+        </member>
+        <member name="P:System.Net.Sockets.Kcp.KcpCore`1.conv">
+            <summary>
+            频道号
+            </summary>
+        </member>
+        <member name="F:System.Net.Sockets.Kcp.KcpCore`1.mtu">
+            <summary>
+            最大传输单元（Maximum Transmission Unit，MTU）
+            </summary>
+        </member>
+        <member name="P:System.Net.Sockets.Kcp.KcpCore`1.BufferNeedSize">
+            <summary>
+            缓冲区最小大小
+            </summary>
+        </member>
+        <member name="F:System.Net.Sockets.Kcp.KcpCore`1.mss">
+            <summary>
+            最大报文段长度
+            </summary>
+        </member>
+        <member name="F:System.Net.Sockets.Kcp.KcpCore`1.rcv_nxt">
+            <summary>
+            下一个等待接收消息ID
+            </summary>
+        </member>
+        <member name="F:System.Net.Sockets.Kcp.KcpCore`1.IsLittleEndian">
+            <summary>
+            <para>https://github.com/skywind3000/kcp/issues/53</para>
+            按照 C版 设计，使用小端字节序
+            </summary>
+        </member>
+        <member name="F:System.Net.Sockets.Kcp.KcpCore`1.acklist">
+            <summary>
+            发送 ack 队列 
+            </summary>
+        </member>
+        <member name="F:System.Net.Sockets.Kcp.KcpCore`1.snd_queue">
+            <summary>
+            发送等待队列
+            </summary>
+        </member>
+        <member name="F:System.Net.Sockets.Kcp.KcpCore`1.snd_buf">
+            <summary>
+            正在发送列表
+            </summary>
+        </member>
+        <member name="F:System.Net.Sockets.Kcp.KcpCore`1.rcv_queue">
+            <summary>
+            正在等待触发接收回调函数消息列表
+            <para>需要执行的操作  添加 遍历 删除</para>
+            </summary>
+        </member>
+        <member name="F:System.Net.Sockets.Kcp.KcpCore`1.rcv_buf">
+            <summary>
+            正在等待重组消息列表
+            <para>需要执行的操作  添加 插入 遍历 删除</para>
+            </summary>
+        </member>
+        <member name="P:System.Net.Sockets.Kcp.KcpCore`1.WaitSnd">
+            <summary>
+            get how many packet is waiting to be sent
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:System.Net.Sockets.Kcp.KcpCore`1.m_disposing">
+            <summary>
+            是否正在释放
+            </summary>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.KcpCore`1.Dispose">
+            <summary>
+            释放不是严格线程安全的，尽量使用和Update相同的线程调用，
+            或者等待析构时自动释放。
+            </summary>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.KcpCore`1.Check(System.DateTime)">
+            <summary>
+            Determine when should you invoke ikcp_update:
+            returns when you should invoke ikcp_update in millisec, if there
+            is no ikcp_input/_send calling. you can call ikcp_update in that
+            time, instead of call update repeatly.
+            <para></para>
+            Important to reduce unnacessary ikcp_update invoking. use it to
+            schedule ikcp_update (eg. implementing an epoll-like mechanism,
+            or optimize ikcp_update when handling massive kcp connections)
+            <para></para>
+            </summary>
+            <param name="time"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.KcpCore`1.Move_Rcv_buf_2_Rcv_queue">
+            <summary>
+            move available data from rcv_buf -> rcv_queue
+            </summary>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.KcpCore`1.Update_ack(System.Int32)">
+            <summary>
+            update ack.
+            </summary>
+            <param name="rtt"></param>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.KcpCore`1.Flush">
+            <summary>
+            flush pending data
+            </summary>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.KcpCore`1.Update(System.DateTime@)">
+            <summary>
+            update state (call it repeatedly, every 10ms-100ms), or you can ask
+            ikcp_check when to call it again (without ikcp_input/_send calling).
+            </summary>
+            <param name="time">DateTime.UtcNow</param>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.KcpCore`1.SetMtu(System.Int32)">
+            <summary>
+            change MTU size, default is 1400
+            <para>** 这个方法不是线程安全的。请在没有发送和接收时调用 。</para>
+            </summary>
+            <param name="mtu"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.KcpCore`1.Interval(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="interval_"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.KcpCore`1.NoDelay(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            fastest: ikcp_nodelay(kcp, 1, 20, 2, 1)
+            </summary>
+            <param name="nodelay_">0:disable(default), 1:enable</param>
+            <param name="interval_">internal update timer interval in millisec, default is 100ms</param>
+            <param name="resend_">0:disable fast resend(default), 1:enable fast resend</param>
+            <param name="nc_">0:normal congestion control(default), 1:disable congestion control</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.KcpCore`1.WndSize(System.Int32,System.Int32)">
+            <summary>
+            set maximum window size: sndwnd=32, rcvwnd=32 by default
+            </summary>
+            <param name="sndwnd"></param>
+            <param name="rcvwnd"></param>
+            <returns></returns>
+        </member>
+        <member name="T:System.Net.Sockets.Kcp.IKcpIO">
+            <summary>
+            kcp协议输入输出标准接口
+            </summary>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.IKcpIO.Input(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            下层收到数据后添加到kcp协议中
+            </summary>
+            <param name="span"></param>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.IKcpIO.Input(System.Buffers.ReadOnlySequence{System.Byte})">
+            <summary>
+            下层收到数据后添加到kcp协议中
+            </summary>
+            <param name="span"></param>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.IKcpIO.Recv(System.Buffers.IBufferWriter{System.Byte},System.Object)">
+            <summary>
+            从kcp中取出一个整合完毕的数据包
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.IKcpIO.Send(System.ReadOnlySpan{System.Byte},System.Object)">
+            <summary>
+            将要发送到网络的数据Send到kcp协议中
+            </summary>
+            <param name="span"></param>
+            <param name="option"></param>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.IKcpIO.Send(System.Buffers.ReadOnlySequence{System.Byte},System.Object)">
+            <summary>
+            将要发送到网络的数据Send到kcp协议中
+            </summary>
+            <param name="span"></param>
+            <param name="option"></param>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.IKcpIO.Output(System.Buffers.IBufferWriter{System.Byte},System.Object)">
+            <summary>
+            从kcp协议中取出需要发送到网络的数据。
+            </summary>
+            <param name="writer"></param>
+            <param name="option"></param>
+            <returns></returns>
+        </member>
+        <member name="T:System.Net.Sockets.Kcp.SimplePipeQueue`1">
+            <summary>
+            异步缓存管道
+            <para/>也可以通过（bool isEnd,T value）元组，来实现终止信号
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="T:System.Net.Sockets.Kcp.KcpSegment">
+            <summary>
+            调整了没存布局，直接拷贝块提升性能。
+            <para>结构体保存内容只有一个指针，不用担心参数传递过程中的性能</para>
+            https://github.com/skywind3000/kcp/issues/118#issuecomment-338133930
+            <para>不要对没有初始化的KcpSegment(内部指针为0，所有属性都将指向位置区域) 进行任何赋值操作，可能导致内存损坏。
+            出于性能考虑，没有对此项进行安全检查。</para>
+            </summary>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.KcpSegment.AllocHGlobal(System.Int32)">
+            <summary>
+            使用完必须显示释放，否则内存泄漏
+            </summary>
+            <param name="appendDateSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.KcpSegment.FreeHGlobal(System.Net.Sockets.Kcp.KcpSegment)">
+            <summary>
+            释放非托管内存
+            </summary>
+            <param name="seg"></param>
+        </member>
+        <member name="P:System.Net.Sockets.Kcp.KcpSegment.resendts">
+            以下为本机使用的参数
+            <summary>
+            offset = 0
+            </summary>
+        </member>
+        <member name="P:System.Net.Sockets.Kcp.KcpSegment.rto">
+            <summary>
+            offset = 4
+            </summary>
+        </member>
+        <member name="P:System.Net.Sockets.Kcp.KcpSegment.fastack">
+            <summary>
+            offset = 8
+            </summary>
+        </member>
+        <member name="P:System.Net.Sockets.Kcp.KcpSegment.xmit">
+            <summary>
+            offset = 12
+            </summary>
+        </member>
+        <member name="F:System.Net.Sockets.Kcp.KcpSegment.LocalOffset">
+            以下为需要网络传输的参数
+        </member>
+        <member name="P:System.Net.Sockets.Kcp.KcpSegment.conv">
+            <summary>
+            offset = <see cref="F:System.Net.Sockets.Kcp.KcpSegment.LocalOffset"/>
+            </summary>
+            https://github.com/skywind3000/kcp/issues/134
+        </member>
+        <member name="P:System.Net.Sockets.Kcp.KcpSegment.cmd">
+            <summary>
+            offset = <see cref="F:System.Net.Sockets.Kcp.KcpSegment.LocalOffset"/> + 4
+            </summary>
+        </member>
+        <member name="P:System.Net.Sockets.Kcp.KcpSegment.frg">
+            <summary>
+            offset = <see cref="F:System.Net.Sockets.Kcp.KcpSegment.LocalOffset"/> + 5
+            </summary>
+        </member>
+        <member name="P:System.Net.Sockets.Kcp.KcpSegment.wnd">
+            <summary>
+            offset = <see cref="F:System.Net.Sockets.Kcp.KcpSegment.LocalOffset"/> + 6
+            </summary>
+        </member>
+        <member name="P:System.Net.Sockets.Kcp.KcpSegment.ts">
+            <summary>
+            offset = <see cref="F:System.Net.Sockets.Kcp.KcpSegment.LocalOffset"/> + 8
+            </summary>
+        </member>
+        <member name="P:System.Net.Sockets.Kcp.KcpSegment.sn">
+            <summary>
+            <para> SendNumber? </para>
+            offset = <see cref="F:System.Net.Sockets.Kcp.KcpSegment.LocalOffset"/> + 12
+            </summary>
+        </member>
+        <member name="P:System.Net.Sockets.Kcp.KcpSegment.una">
+            <summary>
+            offset = <see cref="F:System.Net.Sockets.Kcp.KcpSegment.LocalOffset"/> + 16
+            </summary>
+        </member>
+        <member name="P:System.Net.Sockets.Kcp.KcpSegment.len">
+            <summary>
+            <para> AppendDateSize </para>
+            offset = <see cref="F:System.Net.Sockets.Kcp.KcpSegment.LocalOffset"/> + 20
+            </summary>
+        </member>
+        <member name="P:System.Net.Sockets.Kcp.KcpSegment.data">
+            <summary>
+            
+            </summary>
+            https://github.com/skywind3000/kcp/issues/35#issuecomment-263770736
+        </member>
+        <member name="M:System.Net.Sockets.Kcp.KcpSegment.Encode(System.Span{System.Byte})">
+            <summary>
+            将片段中的要发送的数据拷贝到指定缓冲区
+            </summary>
+            <param name="buffer"></param>
+            <returns></returns>
+        </member>
+        <member name="T:System.Net.Sockets.Kcp.UnSafeSegManager">
+            <summary>
+            使用这个就不能SetMtu了，大小已经写死
+            </summary>
+            <remarks>需要大量测试</remarks>
+        </member>
+        <member name="F:System.Net.Sockets.Kcp.UnSafeSegManager.blockSize">
+            <summary>
+            因为默认mtu是1400，并且内存需要内存行/内存页对齐。这里直接512对齐。
+            </summary>
+        </member>
+        <member name="T:System.Net.Sockets.Kcp.PoolSegManager">
+            <summary>
+            使用内存池，而不是非托管内存，有内存alloc，但是不多。可以解决Marshal.AllocHGlobal 内核调用带来的性能问题
+            </summary>
+        </member>
+        <member name="F:System.Net.Sockets.Kcp.PoolSegManager.blockSize">
+            <summary>
+            因为默认mtu是1400，并且内存需要内存行/内存页对齐。这里直接512对齐。
+            </summary>
+        </member>
+        <member name="F:System.Net.Sockets.Kcp.PoolSegManager.Seg.LocalOffset">
+            以下为需要网络传输的参数
+        </member>
+        <member name="T:System.Net.Sockets.Kcp.Simple.SimpleKcpClient">
+            <summary>
+            简单例子
+            </summary>
+        </member>
+    </members>
+</doc>
