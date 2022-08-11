@@ -25,6 +25,8 @@ namespace TEngine.Net
 
         private UdpState udpState = UdpState.None;
 
+        public Socket UdpSocket => udpClient;
+
         public UdpState State
         {
             get
