@@ -27,7 +27,7 @@
             }
         }
 
-        #region virtual fucntion
+        #region virtual function
         public virtual bool OnInit()
         {
             if (null == m_Instance)
