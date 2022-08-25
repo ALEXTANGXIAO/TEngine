@@ -209,8 +209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f010c29093f111146bfc776d19c8fb27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_BuildInfoTextAsset: {fileID: 4900000, guid: d231f7a19087f02418363f9a6d5cb2c7,
-    type: 3}
+  m_BuildInfoTextAsset: {fileID: 4900000, guid: d231f7a19087f02418363f9a6d5cb2c7, type: 3}
 --- !u!1 &3463045026010536328
 GameObject:
   m_ObjectHideFlags: 0
@@ -254,8 +253,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc449de9a177d854181ed6d829a72ada, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ResourceMode: 2
-  EditorResourceMode: 0
+  ResourceMode: 1
+  EditorResourceMode: 1
 --- !u!1 &3463045026180535776
 GameObject:
   m_ObjectHideFlags: 0
