@@ -12,6 +12,7 @@ namespace TEngine.Runtime
     /// <param name="val"></param>
     /// <returns></returns>
     public delegate bool FilterResBin<TType>(TType val);
+
     /// <summary>
     /// 计算拼接Key
     /// </summary>
@@ -21,19 +22,21 @@ namespace TEngine.Runtime
     /// <returns></returns>
     public delegate TKey ConvertDictionaryKey<TKey, TValue>(TValue val);
 
-    public class ResConfigUtil 
+    public class ResConfigUtil
     {
-        private static StringBuilder m_strBuilder = new StringBuilder();
-        private static readonly string m_split = "_";
+        private static StringBuilder _mStrBuilder = new StringBuilder();
+        private static readonly string MSplit = "_";
 
         #region 读取接口
+
         public static List<T> ReadConfigListRes<T>(string fileName = "")
         {
             if (string.IsNullOrEmpty(fileName))
             {
                 fileName = typeof(T).Name;
             }
-            string resPath = string.Format("Config/{0}.json",fileName);
+
+            string resPath = string.Format("Config/{0}.json", fileName);
             TextAsset jsonStr = TResources.Load<TextAsset>(resPath);
             if (jsonStr == null)
             {
@@ -47,7 +50,8 @@ namespace TEngine.Runtime
             return list;
         }
 
-        public static List<T> ReadResBinDict<K,T>(Dictionary<K, T> dic,ConvertDictionaryKey<K,T> convKey ,string fileName = "")
+        public static List<T> ReadResBinDict<K, T>(Dictionary<K, T> dic, ConvertDictionaryKey<K, T> convKey,
+            string fileName = "")
         {
             if (string.IsNullOrEmpty(fileName))
             {
@@ -66,7 +70,7 @@ namespace TEngine.Runtime
 
             var etr = jsonData.GetEnumerator();
 
-            if(dic == null)
+            if (dic == null)
             {
                 dic = new Dictionary<K, T>();
             }
@@ -81,8 +85,10 @@ namespace TEngine.Runtime
                 {
                     if (dic.ContainsKey(key))
                     {
-                        TLogger.LogError("Config {0} Load Error, Repeat config {1}",typeof(T).ToString(),key.ToString());
+                        TLogger.LogError("Config {0} Load Error, Repeat config {1}", typeof(T).ToString(),
+                            key.ToString());
                     }
+
                     dic.Add(key, etr.Current);
                 }
             }
@@ -92,7 +98,8 @@ namespace TEngine.Runtime
             return jsonData;
         }
 
-        public static List<T> ReadResBinDict<K, T>(Dictionary<K, List<T>> dict, ConvertDictionaryKey<K, T> convKey, string fileName = "")
+        public static List<T> ReadResBinDict<K, T>(Dictionary<K, List<T>> dict, ConvertDictionaryKey<K, T> convKey,
+            string fileName = "")
         {
             if (string.IsNullOrEmpty(fileName))
             {
@@ -118,6 +125,7 @@ namespace TEngine.Runtime
             {
                 dict.Clear();
             }
+
             while (etr.MoveNext())
             {
                 var data = etr.Current;
@@ -128,12 +136,15 @@ namespace TEngine.Runtime
                     listItem = new List<T>();
                     dict.Add(key, listItem);
                 }
+
                 listItem.Add(data);
             }
+
             etr.Dispose();
 
             return jsonData;
         }
+
         #endregion
 
         public static UInt64 Make64Key(uint key1, uint key2)
@@ -143,31 +154,31 @@ namespace TEngine.Runtime
 
         public static string MakeStringKey(uint key1, uint key2, uint key3)
         {
-            m_strBuilder.Length = 0;
-            m_strBuilder.Append(key1);
-            m_strBuilder.Append(m_split);
-            m_strBuilder.Append(key2);
-            m_strBuilder.Append(m_split);
-            m_strBuilder.Append(key3);
-            return m_strBuilder.ToString();
+            _mStrBuilder.Length = 0;
+            _mStrBuilder.Append(key1);
+            _mStrBuilder.Append(MSplit);
+            _mStrBuilder.Append(key2);
+            _mStrBuilder.Append(MSplit);
+            _mStrBuilder.Append(key3);
+            return _mStrBuilder.ToString();
         }
 
         public static string MakeStringKey(string key1, uint key2)
         {
-            m_strBuilder.Length = 0;
-            m_strBuilder.Append(key1);
-            m_strBuilder.Append(m_split);
-            m_strBuilder.Append(key2);
-            return m_strBuilder.ToString();
+            _mStrBuilder.Length = 0;
+            _mStrBuilder.Append(key1);
+            _mStrBuilder.Append(MSplit);
+            _mStrBuilder.Append(key2);
+            return _mStrBuilder.ToString();
         }
 
         public static string MakeStringKey(string key1, string key2)
         {
-            m_strBuilder.Length = 0;
-            m_strBuilder.Append(key1);
-            m_strBuilder.Append(m_split);
-            m_strBuilder.Append(key2);
-            return m_strBuilder.ToString();
+            _mStrBuilder.Length = 0;
+            _mStrBuilder.Append(key1);
+            _mStrBuilder.Append(MSplit);
+            _mStrBuilder.Append(key2);
+            return _mStrBuilder.ToString();
         }
     }
 }
