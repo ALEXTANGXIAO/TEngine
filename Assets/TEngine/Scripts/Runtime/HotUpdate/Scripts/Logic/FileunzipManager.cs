@@ -7,6 +7,7 @@ using UnityEngine.Networking;
 
 namespace TEngine.Runtime.HotUpdate
 {
+#pragma warning disable CS0649
     public class FileunzipManager
     {
         private static FileunzipManager _instance;
@@ -17,9 +18,7 @@ namespace TEngine.Runtime.HotUpdate
         private string _unzipPath;
         private readonly ulong[] _progress = { 0 };
         private int _fileIndex;
-        private string _fileDir = "";
         private long _currentBuffSize;
-        private int Max = 0;
         private bool _bussiness;
         private bool _unpackresult;
 
@@ -30,7 +29,7 @@ namespace TEngine.Runtime.HotUpdate
         /// <param name="count"></param>
         public void ResetVersionCount(int count)
         {
-            Max = count;
+            
         }
 
         /// <summary>

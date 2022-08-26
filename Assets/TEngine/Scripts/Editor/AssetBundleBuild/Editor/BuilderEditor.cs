@@ -9,6 +9,7 @@ using Object = UnityEngine.Object;
 
 namespace TEngineCore.Editor
 {
+    #pragma warning disable CS0649
     public class BuilderEditor : SoEditorBase
     {
         #region 顶端

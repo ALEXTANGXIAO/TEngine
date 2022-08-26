@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 namespace TEngine.Runtime.HotUpdate
 {
+#pragma warning disable CS0649
     public class LoadStyle : MonoBehaviour
     {
         public Button _btn_ignore;
