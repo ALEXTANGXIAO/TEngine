@@ -9,8 +9,9 @@ namespace TEngine.Runtime
     {
         private GameEvent _gameEvent;
 
-        public GameEventMgr()
+        protected override void Init()
         {
+            base.Init();
             _gameEvent = MemoryPool.Acquire<GameEvent>();
         }
 
