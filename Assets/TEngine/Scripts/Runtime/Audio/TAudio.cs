@@ -6,6 +6,7 @@ namespace TEngine.Runtime
     public class TAudio
     {
         #region Propreties
+
         private int _id = 0;
         public AssetData _assetData = null;
         public AudioSource _source = null;
@@ -15,9 +16,11 @@ namespace TEngine.Runtime
         private float _fadeoutTimer = 0f;
         private const float FadeoutDuration = 0.2f;
         private bool _inPool = false;
+
         #endregion
 
         #region Public Propreties
+
         enum State
         {
             None,
@@ -39,10 +42,7 @@ namespace TEngine.Runtime
 
         public int ID
         {
-            get
-            {
-                return _id;
-            }
+            get { return _id; }
         }
 
         public float Volume
@@ -55,10 +55,7 @@ namespace TEngine.Runtime
                     _source.volume = _volume;
                 }
             }
-            get
-            {
-                return _volume;
-            }
+            get { return _volume; }
         }
 
         public bool IsFinish
@@ -78,10 +75,7 @@ namespace TEngine.Runtime
 
         public float Duration
         {
-            get
-            {
-                return _duration;
-            }
+            get { return _duration; }
         }
 
         public float Length
@@ -92,20 +86,15 @@ namespace TEngine.Runtime
                 {
                     return _source.clip.length;
                 }
+
                 return 0;
             }
         }
 
         public Vector3 Position
         {
-            get
-            {
-                return _transform.position;
-            }
-            set
-            {
-                _transform.position = value;
-            }
+            get { return _transform.position; }
+            set { _transform.position = value; }
         }
 
         public bool IsLoop
@@ -129,6 +118,7 @@ namespace TEngine.Runtime
                 }
             }
         }
+
         internal bool IsPlaying
         {
             get
@@ -143,6 +133,7 @@ namespace TEngine.Runtime
                 }
             }
         }
+
         #endregion
 
         public AudioSource AudioResource()
@@ -150,7 +141,8 @@ namespace TEngine.Runtime
             return _source;
         }
 
-        public static TAudio Create(string path, bool bAsync, AudioMixerGroup audioMixerGroup = null, bool bInPool = false)
+        public static TAudio Create(string path, bool bAsync, AudioMixerGroup audioMixerGroup = null,
+            bool bInPool = false)
         {
             TAudio audio = new TAudio();
             audio.Init(audioMixerGroup);
@@ -171,6 +163,7 @@ namespace TEngine.Runtime
             {
                 _source.outputAudioMixerGroup = audioMixerGroup;
             }
+
             _id = _source.GetInstanceID();
         }
 
@@ -187,6 +180,7 @@ namespace TEngine.Runtime
                         OnAssetLoadComplete(AudioMgr.Instance.AudioClipPool[path]);
                         return;
                     }
+
                     if (bAsync)
                     {
                         _state = State.Loading;
@@ -246,6 +240,7 @@ namespace TEngine.Runtime
                 {
                     assetData.DecRef();
                 }
+
                 _state = State.End;
                 string path = _pendingLoad.path;
                 bool bAsync = _pendingLoad.bAsync;
@@ -259,6 +254,7 @@ namespace TEngine.Runtime
                 {
                     _assetData.DecRef();
                 }
+
                 _assetData = assetData;
                 _source.clip = _assetData.AssetObject as AudioClip;
                 if (_source.clip != null)
@@ -303,6 +299,7 @@ namespace TEngine.Runtime
                         _pendingLoad = null;
                         Load(path, bAsync);
                     }
+
                     _source.volume = _volume;
                 }
             }
