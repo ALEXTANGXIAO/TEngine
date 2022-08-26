@@ -1,7 +1,7 @@
 namespace TEngine.Runtime
 {
     /// <summary>
-    /// Á÷³Ì¼ÓÔØÆ÷ - ¿ªÊ¼Æğµã
+    /// æµç¨‹åŠ è½½å™¨ - å¼€å§‹èµ·ç‚¹
     /// </summary>
     public class ProcedureLaunch : ProcedureBase
     {

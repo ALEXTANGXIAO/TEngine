@@ -384,9 +384,9 @@ namespace LitJson
         }
 
         [CLSCompliant(false)]
-#pragma warning disable CS3021 // ÓÉÓÚ³ÌĞò¼¯Ã»ÓĞ CLSCompliant ÌØĞÔ£¬Òò´ËÀàĞÍ»ò³ÉÔ±²»ĞèÒª CLSCompliant ÌØĞÔ
+#pragma warning disable CS3021 // ç”±äºç¨‹åºé›†æ²¡æœ‰ CLSCompliant ç‰¹æ€§ï¼Œå› æ­¤ç±»å‹æˆ–æˆå‘˜ä¸éœ€è¦ CLSCompliant ç‰¹æ€§
         public void Write (ulong number)
-#pragma warning restore CS3021 // ÓÉÓÚ³ÌĞò¼¯Ã»ÓĞ CLSCompliant ÌØĞÔ£¬Òò´ËÀàĞÍ»ò³ÉÔ±²»ĞèÒª CLSCompliant ÌØĞÔ
+#pragma warning restore CS3021 // ç”±äºç¨‹åºé›†æ²¡æœ‰ CLSCompliant ç‰¹æ€§ï¼Œå› æ­¤ç±»å‹æˆ–æˆå‘˜ä¸éœ€è¦ CLSCompliant ç‰¹æ€§
         {
             DoValidation (Condition.Value);
             PutNewline ();

@@ -3,7 +3,7 @@ using UnityEngine;
 namespace TEngine.Runtime
 {
     /// <summary>
-    /// Á÷³Ì¼ÓÔØÆ÷ - ×ÊÔ´³õÊ¼»¯
+    /// æµç¨‹åŠ è½½å™¨ - èµ„æºåˆå§‹åŒ–
     /// </summary>
     public class ProcedureResourcesInit : ProcedureBase
     {
@@ -51,7 +51,7 @@ namespace TEngine.Runtime
         private void OnInitResourceComplete()
         {
             m_initResourceComplete = true;
-            Log.Info("OnInitResourceComplete ³õÊ¼»¯×ÊÔ´Íê³É");
+            Log.Info("OnInitResourceComplete åˆå§‹åŒ–èµ„æºå®Œæˆ");
         }
     }
 }
