@@ -14,6 +14,7 @@
 /[Aa]ssets/StreamingAssets
 /BuildBundleInfo/
 /[Aa]ssets/AATest/
+/[Aa]ssets/AATest.meta
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !/[Aa]ssets/**/*.meta
@@ -62,8 +63,8 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
-# Log
-TEnginePersistentDataPath/Log
+# TEnginePersistentDataPath
+TEnginePersistentDataPath/
 
 # Hotfix
 TEngineHotUpdate/bin
@@ -71,3 +72,12 @@ TEngineHotUpdate/obj
 
 #HybirdCLR(HuaTuo)
 /HybirdCLRData/
+
+/ProjectSettings/
+
+/Packages/manifest.json
+/Packages/packages-lock.json
+
+#AATemp
+/[Aa]ssets/AATemp/
+/[Aa]ssets/AATemp.meta
