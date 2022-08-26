@@ -12,7 +12,6 @@ namespace TEngine.Runtime
 {
     public class LoaderUtilities
     {
-
         /// <summary>
         /// 获取文件的md5码
         /// </summary>
@@ -25,6 +24,7 @@ namespace TEngine.Runtime
                 TLogger.LogWarning($"not exit file,path:{fileName}");
                 return string.Empty;
             }
+
             try
             {
                 using (FileStream file = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
@@ -36,9 +36,9 @@ namespace TEngine.Runtime
                     {
                         sb.Append(retVal[i].ToString("x2"));
                     }
+
                     return sb.ToString();
                 }
-
             }
             catch (Exception ex)
             {
@@ -133,6 +133,7 @@ namespace TEngine.Runtime
             {
                 MonoUtility.StopCoroutine(_coroutine);
             }
+
             _coroutine = MonoUtility.StartCoroutine(_Response(_msgContent));
         }
 
@@ -171,7 +172,8 @@ namespace TEngine.Runtime
                     stream.Close();
                     stream.Dispose();
                     var rspResult = webReq.BeginGetResponse(ResponseComplete, webReq);
-                    ThreadPool.RegisterWaitForSingleObject(rspResult.AsyncWaitHandle, TimeoutCallback, result, 2000, true);
+                    ThreadPool.RegisterWaitForSingleObject(rspResult.AsyncWaitHandle, TimeoutCallback, result, 2000,
+                        true);
                 }
                 catch (Exception e)
                 {
@@ -265,6 +267,7 @@ namespace TEngine.Runtime
                     Console.WriteLine(e);
                     throw;
                 }
+
                 webReq.Abort();
             }
         }
@@ -284,6 +287,7 @@ namespace TEngine.Runtime
             yield return time;
             callback();
         }
+
         #endregion
 
         /// <summary>
@@ -331,7 +335,8 @@ namespace TEngine.Runtime
         /// </summary> 
         public static string HttpGet(string url, string postDataStr = "")
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url + (postDataStr == "" ? "" : "?") + postDataStr);
+            HttpWebRequest request =
+                (HttpWebRequest)WebRequest.Create(url + (postDataStr == "" ? "" : "?") + postDataStr);
             request.Method = "GET";
             request.ContentType = "text/html;charset=UTF-8";
 
@@ -363,6 +368,7 @@ namespace TEngine.Runtime
             {
                 encoding = "UTF-8"; //默认编码 
             }
+
             StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding(encoding));
             string retString = reader.ReadToEnd();
             return retString;
@@ -388,15 +394,17 @@ namespace TEngine.Runtime
                         {
                             fi.Attributes = FileAttributes.Normal;
                         }
-                        LoaderUtilities.DeleteFile(d);//直接删除其中的文件 
+
+                        LoaderUtilities.DeleteFile(d); //直接删除其中的文件 
                     }
                     else
                     {
                         DirectoryInfo d1 = new DirectoryInfo(d);
                         if (d1.GetFiles().Length != 0)
                         {
-                            DeleteFolder(d1.FullName);////递归删除子文件夹
+                            DeleteFolder(d1.FullName); ////递归删除子文件夹
                         }
+
                         Directory.Delete(d, true);
                     }
                 }
@@ -465,7 +473,6 @@ namespace TEngine.Runtime
         {
             try
             {
-
                 if (string.IsNullOrEmpty(srcPath) || !Directory.Exists(srcPath))
                 {
                     Debug.LogError("不存在的原目录地址：" + srcPath);
@@ -486,6 +493,7 @@ namespace TEngine.Runtime
                         {
                             Directory.CreateDirectory($"{destPath}/{sub_name}");
                         }
+
                         CopyDirectory(i.FullName, $"{destPath}/{sub_name}");
                     }
                     else
@@ -520,6 +528,7 @@ namespace TEngine.Runtime
                 {
                     path = Path.GetDirectoryName(path);
                 }
+
                 if (path == null)
                     return;
 
