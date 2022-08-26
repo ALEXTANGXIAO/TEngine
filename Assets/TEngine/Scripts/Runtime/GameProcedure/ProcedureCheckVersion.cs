@@ -296,10 +296,13 @@ namespace TEngine.Runtime
 #if UNITY_STANDALONE_WIN
             return "Windows";
 #elif UNITY_EDITOR_OSX
+            return "IOS";
 #elif UNITY_IOS
             return "IOS";
 #elif UNITY_ANDROID
             return "Android";
+#else
+            return "Unknow"
 #endif
 #else
             // 这里和 PlatformUtility.GetPlatformPath() 对应。由 Unity.RuntimePlatform 得到 平台标识符
