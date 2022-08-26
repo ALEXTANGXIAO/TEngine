@@ -22,34 +22,34 @@ namespace TEngine.Runtime.HotUpdate
 
         public enum StyleEnum
         {
-            Style_Default = 0,//Ä¬ÈÏ
-            Style_QuitApp = 1,//ÍË³öÓ¦ÓÃ
-            Style_RestartApp = 2,//ÖØÆôÓ¦ÓÃ
-            Style_Retry = 3,//ÖØÊÔ
-            Style_StartUpdate_Notice = 4,//ÌáÊ¾¸üĞÂ
-            Style_DownLoadApk = 5,//ÏÂÔØµ×°ü
-            Style_Clear = 6,//ĞŞ¸´¿Í»§¶Ë
-            Style_DownZip = 7,//¼ÌĞøÏÂÔØÑ¹Ëõ°ü
+            Style_Default = 0,//é»˜è®¤
+            Style_QuitApp = 1,//é€€å‡ºåº”ç”¨
+            Style_RestartApp = 2,//é‡å¯åº”ç”¨
+            Style_Retry = 3,//é‡è¯•
+            Style_StartUpdate_Notice = 4,//æç¤ºæ›´æ–°
+            Style_DownLoadApk = 5,//ä¸‹è½½åº•åŒ…
+            Style_Clear = 6,//ä¿®å¤å®¢æˆ·ç«¯
+            Style_DownZip = 7,//ç»§ç»­ä¸‹è½½å‹ç¼©åŒ…
         }
 
         public enum BtnEnum
         {
-            BtnOK = 0,    //È·¶¨°´Å¥
-            BtnIgnore = 1,//È¡Ïû°´Å¥
-            BtnOther = 2, //ÆäËû°´Å¥
+            BtnOK = 0,    //ç¡®å®šæŒ‰é’®
+            BtnIgnore = 1,//å–æ¶ˆæŒ‰é’®
+            BtnOther = 2, //å…¶ä»–æŒ‰é’®
         }
 
         /// <summary>
-        /// µ¥¸ö°´Å¥µÄÑùÊ½
+        /// å•ä¸ªæŒ‰é’®çš„æ ·å¼
         /// </summary>
         private class StyleItem
         {
-            public Alignment Align;//¶ÔÆä·½Ê½
-            public bool Show;//ÊÇ·ñÒş²Ø
-            public string Desc;//°´Å¥ÃèÊö
+            public Alignment Align;//å¯¹å…¶æ–¹å¼
+            public bool Show;//æ˜¯å¦éšè—
+            public string Desc;//æŒ‰é’®æè¿°
         }
         /// <summary>
-        /// ¶ÔÆë·½Ê½
+        /// å¯¹é½æ–¹å¼
         /// </summary>
         private enum Alignment
         {
@@ -60,7 +60,7 @@ namespace TEngine.Runtime.HotUpdate
 
         private void Awake()
         {
-            //ÉèÖÃ°´Å¥µÄÄ¬ÈÏÃèÊö
+            //è®¾ç½®æŒ‰é’®çš„é»˜è®¤æè¿°
             _label_ignore.text = LoadText.Instance.Label_Btn_Ignore;
             _label_update.text = LoadText.Instance.Label_Btn_Update;
             _label_package.text = LoadText.Instance.Label_Btn_Package;
@@ -78,7 +78,7 @@ namespace TEngine.Runtime.HotUpdate
             }
         }
 
-        #region ³õÊ¼»¯ÅäÖÃÎÄ¼ş
+        #region åˆå§‹åŒ–é…ç½®æ–‡ä»¶
         private string SetFilePath(string path)
         {
 #if UNITY_ANDROID
@@ -107,9 +107,9 @@ namespace TEngine.Runtime.HotUpdate
         }
         #endregion
         /// <summary>
-        /// ÉèÖÃÑùÊ½
+        /// è®¾ç½®æ ·å¼
         /// </summary>
-        /// <param name="type">ÑùÊ½¶ÔÓ¦µÄid</param>
+        /// <param name="type">æ ·å¼å¯¹åº”çš„id</param>
         public void SetStyle(StyleEnum type)
         {
             if (type == StyleEnum.Style_Default)
@@ -131,7 +131,7 @@ namespace TEngine.Runtime.HotUpdate
         }
 
         /// <summary>
-        /// ÉèÖÃ°´Å¥µÄÃèÊö,ÊÇ·ñÒş²Ø
+        /// è®¾ç½®æŒ‰é’®çš„æè¿°,æ˜¯å¦éšè—
         /// </summary>
         private void SetButtonStyle(Dictionary<BtnEnum, StyleItem> list)
         {
@@ -159,7 +159,7 @@ namespace TEngine.Runtime.HotUpdate
         }
 
         /// <summary>
-        /// ÉèÖÃ°´Å¥Î»ÖÃ
+        /// è®¾ç½®æŒ‰é’®ä½ç½®
         /// </summary>
         private void SetButtonPos(Alignment align, Transform item)
         {
