@@ -13,8 +13,8 @@
 # /[Aa]ssets/TResources/DLL/
 /[Aa]ssets/StreamingAssets
 /BuildBundleInfo/
-/[Aa]ssets/AATest/
-/[Aa]ssets/AATest.meta
+[Aa]ssets/AATest/
+[Aa]ssets/AATest.meta
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !/[Aa]ssets/**/*.meta
@@ -79,8 +79,8 @@ TEngineHotUpdate/obj
 /Packages/packages-lock.json
 
 #AATemp
-/[Aa]ssets/AATemp/
-/[Aa]ssets/AATemp.meta
+[Aa]ssets/AATemp/
+[Aa]ssets/AATemp.meta
 
 #Rider
 /.idea/
