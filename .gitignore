@@ -81,3 +81,6 @@ TEngineHotUpdate/obj
 #AATemp
 /[Aa]ssets/AATemp/
 /[Aa]ssets/AATemp.meta
+
+#Rider
+/.idea/
