@@ -84,3 +84,10 @@ TEngineHotUpdate/obj
 
 #Rider
 /.idea/
+
+# ABConfig
+[Aa]ssets/BuildConfig/
+[Aa]ssets/BuildConfig.meta
+
+[Aa]ssets/StreamingAssets/
+[Aa]ssets/StreamingAssets.meta
