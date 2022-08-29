@@ -16,7 +16,8 @@ namespace TEngine.Runtime
 #if UNITY_EDITOR
         [SerializeField] public bool EditorResourceMode = true;
 #else
-        public bool EditorResourceMode = false;
+        private bool _editorResourceMode = false;
+        public bool EditorResourceMode => _editorResourceMode;
 #endif
 
 
