@@ -18,13 +18,19 @@
         }
 
         /// <summary>
-        /// 用时
+        /// 用时检测
         /// </summary>
+        /// <param name="logTime">是否输出日志</param>
         /// <returns></returns>
-        public float ElapseTime()
+        public float ElapseTime(bool logTime = false)
         {
             long endTick = System.DateTime.Now.Ticks;
-            return (float)((endTick - m_startTick) / 10000) / 1000.0f;
+            float ret = (float)((endTick - m_startTick) / 10000) / 1000.0f;
+            if (logTime)
+            {
+                Log.Debug($"GameTickWatcher ElapseTime :{ret} s");
+            }
+            return ret;
         }
 
         public void LogUsedTime()

@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class DemoMain : MonoBehaviour
 {
+    GameTickWatcher m_gameTimeWatcher = new GameTickWatcher();
     // Start is called before the first frame update
     void Start()
     {
@@ -16,6 +17,7 @@ public class DemoMain : MonoBehaviour
     private void OnStartGame()
     {
         Log.Debug("TEngineEvent.OnStartGame");
+        m_gameTimeWatcher.ElapseTime(true);
     }
 
     // Update is called once per frame
