@@ -12,7 +12,7 @@ namespace TEngine.Runtime
         /// <summary>
         /// 是否需要加载热更新DLL
         /// </summary>
-        public bool NeedLoadDll = false;
+        public bool NeedLoadDll => ResourceComponent.Instance.ResourceMode == ResourceMode.Updatable || ResourceComponent.Instance.ResourceMode == ResourceMode.UpdatableWhilePlaying;
 
         private IFsm<IProcedureManager> m_procedureOwner;
 
