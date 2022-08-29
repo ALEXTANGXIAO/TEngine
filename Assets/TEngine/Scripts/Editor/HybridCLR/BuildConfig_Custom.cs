@@ -10,7 +10,6 @@ namespace HybridCLR.Editor
         /// </summary>
         public static List<string> HotUpdateAssemblies { get; } = new List<string>
         {
-            "TEngine.Runtime.dll",
             "HotFix.dll",
         };
 
