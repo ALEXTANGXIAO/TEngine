@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TEngine.Runtime
@@ -11,7 +12,7 @@ namespace TEngine.Runtime
     public class Network : UnitySingleton<Network>
     {
         private INetworkManager m_NetworkManager = null;
-        private NetEvent m_NetEvent = NetEvent.Instance;
+        public NetworkManager NetworkManager;
 
         /// <summary>
         /// 获取网络频道数量。
@@ -20,14 +21,42 @@ namespace TEngine.Runtime
         {
             get
             {
+                if (m_NetworkManager == null)
+                {
+                    return 0;
+                }
                 return m_NetworkManager.NetworkChannelCount;
             }
         }
 
-        public override void Awake()
+        protected override void OnLoad()
         {
-            base.Awake();
+            base.OnLoad();
+            
+            GameEventMgr.Instance.AddEventListener(TEngineEvent.OnStartGame,OnStartGame);
+        }
+
+        private void Update()
+        {
+            if (m_NetworkManager != null)
+            {
+                NetworkManager.Update(Time.deltaTime, Time.unscaledDeltaTime);;
+            }
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            if (NetworkManager != null)
+            {
+                NetworkManager.Shutdown();
+            }
+        }
+
+        private void OnStartGame()
+        {
             m_NetworkManager = new NetworkManager();
+            NetworkManager = m_NetworkManager as NetworkManager;
             if (m_NetworkManager == null)
             {
                 Log.Fatal("Network manager is invalid.");
@@ -39,12 +68,8 @@ namespace TEngine.Runtime
             m_NetworkManager.NetworkMissHeartBeat += OnNetworkMissHeartBeat;
             m_NetworkManager.NetworkError += OnNetworkError;
             m_NetworkManager.NetworkCustomError += OnNetworkCustomError;
-        }
-
-        protected override void OnLoad()
-        {
-            base.OnLoad();
-            if (m_NetEvent == null)
+            
+            if (NetEvent.Instance == null)
             {
                 Log.Fatal("Event component is invalid.");
                 return;
@@ -113,27 +138,27 @@ namespace TEngine.Runtime
 
         private void OnNetworkConnected(object sender, NetworkConnectedEventArgs e)
         {
-            m_NetEvent.Fire(this, e);
+            NetEvent.Instance.Fire(this, e);
         }
 
         private void OnNetworkClosed(object sender, NetworkClosedEventArgs e)
         {
-            m_NetEvent.Fire(this, e);
+            NetEvent.Instance.Fire(this, e);
         }
 
         private void OnNetworkMissHeartBeat(object sender, NetworkMissHeartBeatEventArgs e)
         {
-            m_NetEvent.Fire(this, e);
+            NetEvent.Instance.Fire(this, e);
         }
 
         private void OnNetworkError(object sender, NetworkErrorEventArgs e)
         {
-            m_NetEvent.Fire(this, e);
+            NetEvent.Instance.Fire(this, e);
         }
 
         private void OnNetworkCustomError(object sender, NetworkCustomErrorEventArgs e)
         {
-            m_NetEvent.Fire(this, e);
+            NetEvent.Instance.Fire(this, e);
         }
     }
 }
