@@ -29,10 +29,10 @@ namespace TEngine.Runtime
             }
 
 #if UNITY_EDITOR
-            Assembly hotfixAssembly = System.AppDomain.CurrentDomain.GetAssemblies().First(assembly => assembly.GetName().Name == "Game.Hotfix");
+            Assembly hotfixAssembly = System.AppDomain.CurrentDomain.GetAssemblies().First(assembly => assembly.GetName().Name == "HotFix");
             StartHotfix(hotfixAssembly);
 #else
-            TResources.LoadAsync("Assets/Game/Hotfix/Game.Hotfix.dll.bytes", (data =>
+            TResources.LoadAsync("Dll/HotFix.dll.bytes", (data =>
             {
                 if (data == null)
                 {
@@ -69,7 +69,7 @@ namespace TEngine.Runtime
 
         private void StartHotfix(Assembly hotfixAssembly)
         {
-            var hotfixEntry = hotfixAssembly.GetType("Game.Hotfix.GameHotfixEntry");
+            var hotfixEntry = hotfixAssembly.GetType("HotFix.GameHotfixEntry");
             var start = hotfixEntry.GetMethod("Start");
             start?.Invoke(null, null);
             ChangeState<ProcedureStartGame>(m_procedureOwner);
