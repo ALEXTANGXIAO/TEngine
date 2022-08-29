@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEditor;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 namespace HybridCLR.Editor
 {
@@ -17,8 +10,8 @@ namespace HybridCLR.Editor
         /// </summary>
         public static List<string> HotUpdateAssemblies { get; } = new List<string>
         {
+            "TEngine.Runtime.dll",
             "HotFix.dll",
-            "HotFix2.dll",
         };
 
         public static List<string> AOTMetaAssemblies { get; } = new List<string>()
