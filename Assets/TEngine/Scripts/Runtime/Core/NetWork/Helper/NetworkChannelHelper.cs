@@ -57,11 +57,11 @@ namespace TEngine.Runtime
                 }
             }
 
-            NetEvent.Instance.Subscribe(NetworkConnectedEventArgs.EventId, OnNetworkConnected);
-            NetEvent.Instance.Subscribe(NetworkClosedEventArgs.EventId, OnNetworkClosed);
-            NetEvent.Instance.Subscribe(NetworkMissHeartBeatEventArgs.EventId, OnNetworkMissHeartBeat);
-            NetEvent.Instance.Subscribe(NetworkErrorEventArgs.EventId, OnNetworkError);
-            NetEvent.Instance.Subscribe(NetworkCustomErrorEventArgs.EventId, OnNetworkCustomError);
+            NetEvent.Instance.Subscribe(NetworkConnectedEvent.EventId, OnNetworkConnected);
+            NetEvent.Instance.Subscribe(NetworkClosedEvent.EventId, OnNetworkClosed);
+            NetEvent.Instance.Subscribe(NetworkMissHeartBeatEvent.EventId, OnNetworkMissHeartBeat);
+            NetEvent.Instance.Subscribe(NetworkErrorEvent.EventId, OnNetworkError);
+            NetEvent.Instance.Subscribe(NetworkCustomErrorEvent.EventId, OnNetworkCustomError);
         }
 
         /// <summary>
@@ -182,11 +182,11 @@ namespace TEngine.Runtime
         /// </summary>
         public void Shutdown()
         {
-            NetEvent.Instance.Unsubscribe(NetworkConnectedEventArgs.EventId, OnNetworkConnected);
-            NetEvent.Instance.Unsubscribe(NetworkClosedEventArgs.EventId, OnNetworkClosed);
-            NetEvent.Instance.Unsubscribe(NetworkMissHeartBeatEventArgs.EventId, OnNetworkMissHeartBeat);
-            NetEvent.Instance.Unsubscribe(NetworkErrorEventArgs.EventId, OnNetworkError);
-            NetEvent.Instance.Unsubscribe(NetworkCustomErrorEventArgs.EventId, OnNetworkCustomError);
+            NetEvent.Instance.Unsubscribe(NetworkConnectedEvent.EventId, OnNetworkConnected);
+            NetEvent.Instance.Unsubscribe(NetworkClosedEvent.EventId, OnNetworkClosed);
+            NetEvent.Instance.Unsubscribe(NetworkMissHeartBeatEvent.EventId, OnNetworkMissHeartBeat);
+            NetEvent.Instance.Unsubscribe(NetworkErrorEvent.EventId, OnNetworkError);
+            NetEvent.Instance.Unsubscribe(NetworkCustomErrorEvent.EventId, OnNetworkCustomError);
 
             m_NetworkChannel = null;
         }
@@ -194,7 +194,7 @@ namespace TEngine.Runtime
         #region Handle
         private void OnNetworkConnected(object sender, GameEventArgs e)
         {
-            NetworkConnectedEventArgs ne = (NetworkConnectedEventArgs)e;
+            NetworkConnectedEvent ne = (NetworkConnectedEvent)e;
             if (ne.NetworkChannel != m_NetworkChannel)
             {
                 return;
@@ -204,7 +204,7 @@ namespace TEngine.Runtime
 
         private void OnNetworkClosed(object sender, GameEventArgs e)
         {
-            NetworkClosedEventArgs ne = (NetworkClosedEventArgs)e;
+            NetworkClosedEvent ne = (NetworkClosedEvent)e;
             if (ne.NetworkChannel != m_NetworkChannel)
             {
                 return;
@@ -214,7 +214,7 @@ namespace TEngine.Runtime
 
         private void OnNetworkMissHeartBeat(object sender, GameEventArgs e)
         {
-            NetworkMissHeartBeatEventArgs ne = (NetworkMissHeartBeatEventArgs)e;
+            NetworkMissHeartBeatEvent ne = (NetworkMissHeartBeatEvent)e;
             if (ne.NetworkChannel != m_NetworkChannel)
             {
                 return;
@@ -231,7 +231,7 @@ namespace TEngine.Runtime
 
         private void OnNetworkError(object sender, GameEventArgs e)
         {
-            NetworkErrorEventArgs ne = (NetworkErrorEventArgs)e;
+            NetworkErrorEvent ne = (NetworkErrorEvent)e;
             if (ne.NetworkChannel != m_NetworkChannel)
             {
                 return;
@@ -244,7 +244,7 @@ namespace TEngine.Runtime
 
         private void OnNetworkCustomError(object sender, GameEventArgs e)
         {
-            NetworkCustomErrorEventArgs ne = (NetworkCustomErrorEventArgs)e;
+            NetworkCustomErrorEvent ne = (NetworkCustomErrorEvent)e;
             if (ne.NetworkChannel != m_NetworkChannel)
             {
                 return;

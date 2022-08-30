@@ -41,7 +41,7 @@ namespace TEngine.Runtime
             }
             catch (IOException ex)
             {
-                Log.Error(($"[DeSerialize] 错误：{ex.Message}, {ex.Data["StackTrace"]}"));
+                Log.Error(($"[DeSerialize] Error：{ex.Message}, {ex.Data["StackTrace"]}"));
                 return null;
             }
         }

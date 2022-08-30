@@ -44,7 +44,7 @@ namespace TEngine.Runtime
         /// </summary>
         /// <param name="elapseSeconds">逻辑流逝时间，以秒为单位。</param>
         /// <param name="realElapseSeconds">真实流逝时间，以秒为单位。</param>
-        internal void Update(float elapseSeconds, float realElapseSeconds)
+        public void Update(float elapseSeconds, float realElapseSeconds)
         {
             m_EventPool.Update(elapseSeconds, realElapseSeconds);
         }
@@ -52,7 +52,7 @@ namespace TEngine.Runtime
         /// <summary>
         /// 关闭并清理事件管理器。
         /// </summary>
-        internal void Shutdown()
+        public void Shutdown()
         {
             m_EventPool.Shutdown();
         }

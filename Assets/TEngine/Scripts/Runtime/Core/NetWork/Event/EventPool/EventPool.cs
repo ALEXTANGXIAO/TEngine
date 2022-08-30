@@ -188,7 +188,7 @@ namespace TEngine.Runtime
                 }
             }
 
-            if (!m_EventHandlers.Remove(id, handler))
+            if (m_EventHandlers.Count >=0 && !m_EventHandlers.Remove(id, handler))
             {
                 throw new Exception(Utility.Text.Format("Event '{0}' not exists specified handler.", id));
             }

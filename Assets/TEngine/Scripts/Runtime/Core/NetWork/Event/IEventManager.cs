@@ -71,5 +71,17 @@ namespace TEngine.Runtime
         /// <param name="sender">事件源。</param>
         /// <param name="e">事件参数。</param>
         void FireNow(object sender, GameEventArgs e);
+
+        /// <summary>
+        /// 事件管理器轮询。
+        /// </summary>
+        /// <param name="elapseSeconds">逻辑流逝时间，以秒为单位。</param>
+        /// <param name="realElapseSeconds">真实流逝时间，以秒为单位。</param>
+        void Update(float elapseSeconds, float realElapseSeconds);
+
+        /// <summary>
+        /// 关闭并清理事件管理器。
+        /// </summary>
+        void Shutdown();
     }
 }

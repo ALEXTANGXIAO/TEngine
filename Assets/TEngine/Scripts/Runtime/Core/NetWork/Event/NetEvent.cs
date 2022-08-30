@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace TEngine.Runtime
 {
@@ -38,7 +39,24 @@ namespace TEngine.Runtime
                 Log.Fatal("Event manager is invalid.");
                 return;
             }
-        }/// <summary>
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            
+            if (m_EventManager != null)
+            {
+                m_EventManager.Update(Time.deltaTime, Time.unscaledDeltaTime);;
+            }
+        }
+
+        public override void Destroy()
+        {
+            base.Destroy();
+        }
+
+        /// <summary>
         /// 获取事件处理函数的数量。
         /// </summary>
         /// <param name="id">事件类型编号。</param>

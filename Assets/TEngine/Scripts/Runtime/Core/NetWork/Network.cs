@@ -34,6 +34,26 @@ namespace TEngine.Runtime
             base.OnLoad();
             
             GameEventMgr.Instance.AddEventListener(TEngineEvent.OnStartGame,OnStartGame);
+            
+            m_NetworkManager = new NetworkManager();
+            NetworkManager = m_NetworkManager as NetworkManager;
+            if (m_NetworkManager == null)
+            {
+                Log.Fatal("Network manager is invalid.");
+                return;
+            }
+
+            m_NetworkManager.NetworkConnected += OnNetworkConnected;
+            m_NetworkManager.NetworkClosed += OnNetworkClosed;
+            m_NetworkManager.NetworkMissHeartBeat += OnNetworkMissHeartBeat;
+            m_NetworkManager.NetworkError += OnNetworkError;
+            m_NetworkManager.NetworkCustomError += OnNetworkCustomError;
+            
+            if (NetEvent.Instance == null)
+            {
+                Log.Fatal("Event component is invalid.");
+                return;
+            }
         }
 
         private void Update()
@@ -55,25 +75,7 @@ namespace TEngine.Runtime
 
         private void OnStartGame()
         {
-            m_NetworkManager = new NetworkManager();
-            NetworkManager = m_NetworkManager as NetworkManager;
-            if (m_NetworkManager == null)
-            {
-                Log.Fatal("Network manager is invalid.");
-                return;
-            }
-
-            m_NetworkManager.NetworkConnected += OnNetworkConnected;
-            m_NetworkManager.NetworkClosed += OnNetworkClosed;
-            m_NetworkManager.NetworkMissHeartBeat += OnNetworkMissHeartBeat;
-            m_NetworkManager.NetworkError += OnNetworkError;
-            m_NetworkManager.NetworkCustomError += OnNetworkCustomError;
             
-            if (NetEvent.Instance == null)
-            {
-                Log.Fatal("Event component is invalid.");
-                return;
-            }
         }
         
         /// <summary>
@@ -138,27 +140,27 @@ namespace TEngine.Runtime
 
         private void OnNetworkConnected(object sender, NetworkConnectedEventArgs e)
         {
-            NetEvent.Instance.Fire(this, e);
+            NetEvent.Instance.Fire(this, NetworkConnectedEvent.Create(e));
         }
 
         private void OnNetworkClosed(object sender, NetworkClosedEventArgs e)
         {
-            NetEvent.Instance.Fire(this, e);
+            NetEvent.Instance.Fire(this, NetworkClosedEvent.Create(e));
         }
 
         private void OnNetworkMissHeartBeat(object sender, NetworkMissHeartBeatEventArgs e)
         {
-            NetEvent.Instance.Fire(this, e);
+            NetEvent.Instance.Fire(this, NetworkMissHeartBeatEvent.Create(e));
         }
 
         private void OnNetworkError(object sender, NetworkErrorEventArgs e)
         {
-            NetEvent.Instance.Fire(this, e);
+            NetEvent.Instance.Fire(this, NetworkErrorEvent.Create(e));
         }
 
         private void OnNetworkCustomError(object sender, NetworkCustomErrorEventArgs e)
         {
-            NetEvent.Instance.Fire(this, e);
+            NetEvent.Instance.Fire(this, NetworkCustomErrorEvent.Create(e));
         }
     }
 }
