@@ -189,6 +189,7 @@ namespace TEngine.Runtime
         private RuntimeMemoryInformationWindow<ScriptableObject> m_RuntimeMemoryScriptableObjectInformationWindow = new RuntimeMemoryInformationWindow<ScriptableObject>();
 
         private MemoryPoolInformationWindow m_MemoryPoolInformationWindow = new MemoryPoolInformationWindow();
+        private NetworkInformationWindow m_NetworkInformationWindow = new NetworkInformationWindow();
 
         private SettingsWindow m_SettingsWindow = new SettingsWindow();
         #endregion
@@ -228,6 +229,7 @@ namespace TEngine.Runtime
             RegisterDebuggerWindow("Profiler/Memory/ScriptableObject", m_RuntimeMemoryScriptableObjectInformationWindow);
 
             RegisterDebuggerWindow("Profiler/Memory Pool", m_MemoryPoolInformationWindow);
+            RegisterDebuggerWindow("Profiler/Network", m_NetworkInformationWindow);
 
             RegisterDebuggerWindow("Other/Settings", m_SettingsWindow);
 
