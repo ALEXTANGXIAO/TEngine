@@ -1,6 +1,9 @@
 ﻿namespace TEngine.Runtime
 {
-    public class SCHeartBeatHandler : PacketHandlerBase
+    /// <summary>
+    /// 心跳Handler
+    /// </summary>
+    public class CSHeartBeatHandler : PacketHandlerBase
     {
         public override int Id
         {
@@ -12,7 +15,12 @@
 
         public override void Handle(object sender, Packet packet)
         {
-            SCHeartBeat packetImpl = (SCHeartBeat)packet;
+            CSHeartBeat packetImpl = (CSHeartBeat)packet;
+            if (packetImpl == null)
+            {
+                Log.Fatal("Receive CSHeartBeat Failed !!!");
+                return;
+            }
             Log.Info("Receive packet '{0}'.", packetImpl.Id.ToString());
         }
     }

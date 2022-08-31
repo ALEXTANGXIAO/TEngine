@@ -27,7 +27,7 @@ namespace TEngine.Runtime
             m_NetworkChannel = networkChannel;
 
             // 反射注册包和包处理函数。
-            Type packetBaseType = typeof(SCPacketBase);
+            Type packetBaseType = typeof(CSPacketBase);
             Type packetHandlerBaseType = typeof(PacketHandlerBase);
             Assembly assembly = Assembly.GetExecutingAssembly();
             Type[] types = assembly.GetTypes();
@@ -99,12 +99,6 @@ namespace TEngine.Runtime
                 return false;
             }
 
-            if (packetImpl.PacketType != PacketType.ClientToServer)
-            {
-                Log.Warning("Send packet invalid.");
-                return false;
-            }
-
             m_CachedStream.SetLength(m_CachedStream.Capacity); // 此行防止 Array.Copy 的数据无法写入
             m_CachedStream.Position = 0L;
 
@@ -131,24 +125,24 @@ namespace TEngine.Runtime
             // 注意：此函数并不在主线程调用！
             customErrorData = null;
 
-            SCPacketHeader scPacketHeader = packetHeader as SCPacketHeader;
-            if (scPacketHeader == null)
+            CSPacketHeader csPacketHeader = packetHeader as CSPacketHeader;
+            if (csPacketHeader == null)
             {
                 Log.Warning("Packet header is invalid.");
                 return null;
             }
 
             Packet packet = null;
-            if (scPacketHeader.IsValid)
+            if (csPacketHeader.IsValid)
             {
-                Type packetType = GetServerToClientPacketType(scPacketHeader.Id);
+                Type packetType = GetServerToClientPacketType(csPacketHeader.Id);
                 if (packetType != null)
                 {
                     packet = (Packet)RuntimeTypeModel.Default.DeserializeWithLengthPrefix(source, MemoryPool.Acquire(packetType), packetType, PrefixStyle.Fixed32, 0);
                 }
                 else
                 {
-                    Log.Warning("Can not deserialize packet for packet id '{0}'.", scPacketHeader.Id.ToString());
+                    Log.Warning("Can not deserialize packet for packet id '{0}'.", csPacketHeader.Id.ToString());
                 }
             }
             else
@@ -156,7 +150,7 @@ namespace TEngine.Runtime
                 Log.Warning("Packet header is invalid.");
             }
 
-            MemoryPool.Release(scPacketHeader);
+            MemoryPool.Release(csPacketHeader);
             return packet;
         }
 
@@ -164,7 +158,7 @@ namespace TEngine.Runtime
         {
             // 注意：此函数并不在主线程调用！
             customErrorData = null;
-            return (IPacketHeader)RuntimeTypeModel.Default.Deserialize(source, MemoryPool.Acquire<SCPacketHeader>(), typeof(SCPacketHeader));
+            return (IPacketHeader)RuntimeTypeModel.Default.Deserialize(source, MemoryPool.Acquire<CSPacketHeader>(), typeof(CSPacketHeader));
         }
 
         private Type GetServerToClientPacketType(int id)
@@ -225,7 +219,7 @@ namespace TEngine.Runtime
                 return;
             }
 
-            Log.Info("Network channel '{0}' miss heart beat '{1}' times.", ne.NetworkChannel.Name, ne.MissCount.ToString());
+            Log.Warning("Network channel '{0}' miss heart beat '{1}' times.", ne.NetworkChannel.Name, ne.MissCount.ToString());
 
             if (ne.MissCount < 2)
             {

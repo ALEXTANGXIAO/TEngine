@@ -12,7 +12,12 @@ namespace TEngine.Runtime
     public class Network : UnitySingleton<Network>
     {
         private INetworkManager m_NetworkManager = null;
-        public NetworkManager NetworkManager;
+
+        public NetworkManager NetworkManager
+        {
+            private set;
+            get;
+        }
 
         /// <summary>
         /// 获取网络频道数量。
@@ -32,9 +37,6 @@ namespace TEngine.Runtime
         protected override void OnLoad()
         {
             base.OnLoad();
-            
-            GameEventMgr.Instance.AddEventListener(TEngineEvent.OnStartGame,OnStartGame);
-            
             m_NetworkManager = new NetworkManager();
             NetworkManager = m_NetworkManager as NetworkManager;
             if (m_NetworkManager == null)
@@ -73,11 +75,6 @@ namespace TEngine.Runtime
             }
         }
 
-        private void OnStartGame()
-        {
-            
-        }
-        
         /// <summary>
         /// 检查是否存在网络频道。
         /// </summary>

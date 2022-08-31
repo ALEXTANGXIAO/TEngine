@@ -2,11 +2,6 @@
 {
     public abstract class PacketHeaderBase : IPacketHeader, IMemory
     {
-        public abstract PacketType PacketType
-        {
-            get;
-        }
-
         public int Id
         {
             get;
@@ -23,7 +18,7 @@
         {
             get
             {
-                return PacketType != PacketType.Undefined && Id > 0 && PacketLength >= 0;
+                return Id > 0 && PacketLength >= 0;
             }
         }
 
