@@ -112,7 +112,15 @@ namespace TEngine.Runtime
         /// </summary>
         /// <param name="actionId"></param>
         /// <param name="msgDelegate"></param>
-        void RegisterHandler(int actionId, CsMsgDelegate msgDelegate);
+        /// <param name="checkRepeat"></param>
+        void RegisterHandler(int actionId, CsMsgDelegate msgDelegate,bool checkRepeat = true);
+        
+        /// <summary>
+        /// 注销网络消息包处理函数。
+        /// </summary>
+        /// <param name="actionId"></param>
+        /// <param name="msgDelegate"></param>
+        void RmvHandler(int actionId, CsMsgDelegate msgDelegate);
 
         /// <summary>
         /// 连接到远程主机。
@@ -139,6 +147,14 @@ namespace TEngine.Runtime
         /// </summary>
         /// <typeparam name="T">消息包类型。</typeparam>
         /// <param name="packet">要发送的消息包。</param>
-        void Send<T>(T packet) where T : Packet;
+        bool Send<T>(T packet) where T : Packet;
+
+        /// <summary>
+        /// 向远程主机发送消息包并注册回调
+        /// </summary>
+        /// <param name="pack"></param>
+        /// <param name="resHandler"></param>
+        /// <returns></returns>
+        bool SendCsMsg(TEngineProto.MainPack pack, CsMsgDelegate resHandler = null);
     }
 }

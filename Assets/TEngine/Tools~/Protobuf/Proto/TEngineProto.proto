@@ -41,7 +41,7 @@ message MainPack
     string extstr = 5;
     repeated RoomPack roompack = 6;         //房间包，repeated加上为list
     PlayerPack playerpack = 7;
-    long HeatEchoTime = 8;                 //心跳包回包时间
+    float HeatEchoTime = 8;                 //心跳包回包时间
 }
 
 message LoginPack

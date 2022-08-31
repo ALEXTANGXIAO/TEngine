@@ -15,7 +15,7 @@ namespace TEngine.Runtime
         /// </summary>
         private abstract class NetworkChannelBase : INetworkChannel, IDisposable
         {
-            private const float DefaultHeartBeatInterval = 30f;
+            private const float DefaultHeartBeatInterval = 30;
             private const int MAX_MSG_HANDLE = 256;
 
             private readonly string m_Name;
@@ -292,8 +292,9 @@ namespace TEngine.Runtime
             /// </summary>
             /// <param name="actionId"></param>
             /// <param name="msgDelegate"></param>
+            /// <param name="checkRepeat"></param>
             /// <exception cref="Exception"></exception>
-            public void RegisterHandler(int actionId, CsMsgDelegate msgDelegate)
+            public void RegisterHandler(int actionId, CsMsgDelegate msgDelegate,bool checkRepeat = true)
             {
                 if (msgDelegate == null)
                 {
@@ -315,7 +316,10 @@ namespace TEngine.Runtime
                     }
                     else
                     {
-                        Log.Warning("-------------repeat RegCmdHandle ActionCode:{0}-----------", (ActionCode)actionId);
+                        if (checkRepeat)
+                        {
+                            Log.Warning("-------------repeat RegCmdHandle ActionCode:{0}-----------", (ActionCode)actionId);
+                        }
                     }
                 }
             }
@@ -434,13 +438,39 @@ namespace TEngine.Runtime
                     }
                 }
             }
+            
+            /// <summary>
+            /// 发送消息包并注册回调
+            /// </summary>
+            /// <param name="pack"></param>
+            /// <param name="resHandler"></param>
+            /// <param name="needShowWaitUI"></param>
+            /// <returns></returns>
+            public bool SendCsMsg(MainPack pack, CsMsgDelegate resHandler = null)
+            {
+                var ret = Send(pack);
+                if (!ret)
+                {
+                    TLogger.LogError("SendCSMsg Error");
+                }
+                else
+                {
+                    if (resHandler != null)
+                    {
+                        RegTimeOutHandle((uint)pack.actioncode, resHandler);
+                        RegisterHandler((int)pack.actioncode, resHandler, false);
+                    }
+                }
+
+                return ret;
+            }
 
             /// <summary>
             /// 向远程主机发送消息包。
             /// </summary>
             /// <typeparam name="T">消息包类型。</typeparam>
             /// <param name="packet">要发送的消息包。</param>
-            public void Send<T>(T packet) where T : Packet
+            public bool Send<T>(T packet) where T : Packet
             {
                 if (m_Socket == null)
                 {
@@ -448,7 +478,7 @@ namespace TEngine.Runtime
                     if (NetworkChannelError != null)
                     {
                         NetworkChannelError(this, NetworkErrorCode.SendError, SocketError.Success, errorMessage);
-                        return;
+                        return false;
                     }
 
                     throw new Exception(errorMessage);
@@ -460,7 +490,7 @@ namespace TEngine.Runtime
                     if (NetworkChannelError != null)
                     {
                         NetworkChannelError(this, NetworkErrorCode.SendError, SocketError.Success, errorMessage);
-                        return;
+                        return false;
                     }
 
                     throw new Exception(errorMessage);
@@ -472,7 +502,7 @@ namespace TEngine.Runtime
                     if (NetworkChannelError != null)
                     {
                         NetworkChannelError(this, NetworkErrorCode.SendError, SocketError.Success, errorMessage);
-                        return;
+                        return false;
                     }
 
                     throw new Exception(errorMessage);
@@ -482,6 +512,8 @@ namespace TEngine.Runtime
                 {
                     m_SendPacketPool.Enqueue(packet);
                 }
+
+                return true;
             }
 
             /// <summary>
