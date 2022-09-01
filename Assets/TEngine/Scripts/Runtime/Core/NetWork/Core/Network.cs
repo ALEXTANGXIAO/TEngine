@@ -153,5 +153,41 @@ namespace TEngine.Runtime
         {
             GameEventMgr.Instance.Send(NetWorkEventId.NetworkCustomErrorEvent,channel,message);
         }
+
+        /// <summary>
+        /// 注册网络消息包处理函数。
+        /// </summary>
+        /// <param name="channelName"></param>
+        /// <param name="actionId"></param>
+        /// <param name="msgDelegate"></param>
+        /// <param name="checkRepeat"></param>
+        public void RegisterHandler(string channelName, int actionId, CsMsgDelegate msgDelegate,
+            bool checkRepeat = true)
+        {
+            var channel = this.GetNetworkChannel(channelName);
+            if (channel == null)
+            {
+                Log.Warning($"Channel is null :{channelName}");
+                return;
+            }
+            channel.RegisterHandler(actionId,msgDelegate);
+        }
+
+        /// <summary>
+        /// 注销网络消息包处理函数。
+        /// </summary>
+        /// <param name="channelName"></param>
+        /// <param name="actionId"></param>
+        /// <param name="msgDelegate"></param>
+        public void RmvHandler(string channelName, int actionId, CsMsgDelegate msgDelegate)
+        {
+            var channel = this.GetNetworkChannel(channelName);
+            if (channel == null)
+            {
+                Log.Warning($"Channel is null :{channelName}");
+                return;
+            }
+            channel.RmvHandler(actionId,msgDelegate);
+        }
     }
 }
