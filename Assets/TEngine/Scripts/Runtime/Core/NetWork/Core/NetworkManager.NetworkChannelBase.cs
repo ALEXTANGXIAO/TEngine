@@ -15,7 +15,7 @@ namespace TEngine.Runtime
         /// </summary>
         private abstract class NetworkChannelBase : INetworkChannel, IDisposable
         {
-            private const float DefaultHeartBeatInterval = 3;
+            private const float DefaultHeartBeatInterval = 30;
             private const int MAX_MSG_HANDLE = 256;
 
             private readonly string m_Name;
