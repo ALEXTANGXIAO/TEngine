@@ -48,20 +48,11 @@ namespace TEngine.Runtime
         bool Serialize(MainPack packet, Stream destination);
 
         /// <summary>
-        /// 反序列化消息包头。
-        /// </summary>
-        /// <param name="source">要反序列化的来源流。</param>
-        /// <param name="customErrorData">用户自定义错误数据。</param>
-        /// <returns>反序列化后的消息包头。</returns>
-        IPacketHeader DeserializePacketHeader(Stream source, out object customErrorData);
-
-        /// <summary>
         /// 反序列化消息包。
         /// </summary>
-        /// <param name="packetHeader">消息包头。</param>
         /// <param name="source">要反序列化的来源流。</param>
         /// <param name="customErrorData">用户自定义错误数据。</param>
         /// <returns>反序列化后的消息包。</returns>
-        MainPack DeserializePacket(IPacketHeader packetHeader, Stream source, out object customErrorData);
+        MainPack DeserializePacket(Stream source, out object customErrorData);
     }
 }

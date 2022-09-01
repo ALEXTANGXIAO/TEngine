@@ -600,54 +600,6 @@ namespace TEngine.Runtime
             {
             }
 
-            protected virtual bool ProcessPacketHeader()
-            {
-                try
-                {
-                    object customErrorData = null;
-                    IPacketHeader packetHeader = m_NetworkChannelHelper.DeserializePacketHeader(m_ReceiveState.Stream, out customErrorData);
-
-                    if (customErrorData != null && NetworkChannelCustomError != null)
-                    {
-                        NetworkChannelCustomError(this, customErrorData);
-                    }
-
-                    if (packetHeader == null)
-                    {
-                        string errorMessage = "Packet header is invalid.";
-                        if (NetworkChannelError != null)
-                        {
-                            NetworkChannelError(this, NetworkErrorCode.DeserializePacketHeaderError, SocketError.Success, errorMessage);
-                            return false;
-                        }
-
-                        throw new Exception(errorMessage);
-                    }
-
-                    m_ReceiveState.PrepareForPacket(packetHeader);
-                    if (packetHeader.PacketLength <= 0)
-                    {
-                        bool processSuccess = ProcessPacket();
-                        m_ReceivedPacketCount++;
-                        return processSuccess;
-                    }
-                }
-                catch (Exception exception)
-                {
-                    m_Active = false;
-                    if (NetworkChannelError != null)
-                    {
-                        SocketException socketException = exception as SocketException;
-                        NetworkChannelError(this, NetworkErrorCode.DeserializePacketHeaderError, socketException != null ? socketException.SocketErrorCode : SocketError.Success, exception.ToString());
-                        return false;
-                    }
-
-                    throw;
-                }
-
-                return true;
-            }
-
             protected virtual bool ProcessPacket()
             {
                 lock (m_HeartBeatState)
@@ -658,7 +610,7 @@ namespace TEngine.Runtime
                 try
                 {
                     object customErrorData = null;
-                    MainPack packet = m_NetworkChannelHelper.DeserializePacket(m_ReceiveState.PacketHeader, m_ReceiveState.Stream, out customErrorData);
+                    MainPack packet = m_NetworkChannelHelper.DeserializePacket(m_ReceiveState.Stream, out customErrorData);
 
                     if (customErrorData != null && NetworkChannelCustomError != null)
                     {

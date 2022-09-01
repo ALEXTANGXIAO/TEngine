@@ -260,15 +260,8 @@ namespace TEngine.Runtime
                 m_ReceiveState.Stream.Position = 0L;
 
                 bool processSuccess = false;
-                if (m_ReceiveState.PacketHeader != null)
-                {
-                    processSuccess = ProcessPacket();
-                    m_ReceivedPacketCount++;
-                }
-                else
-                {
-                    processSuccess = ProcessPacketHeader();
-                }
+                processSuccess = ProcessPacket();
+                m_ReceivedPacketCount++;
 
                 if (processSuccess)
                 {

@@ -9,13 +9,11 @@ namespace TEngine.Runtime
         {
             private const int DefaultBufferLength = 1024 * 64;
             private MemoryStream m_Stream;
-            private IPacketHeader m_PacketHeader;
             private bool m_Disposed;
 
             public ReceiveState()
             {
                 m_Stream = new MemoryStream(DefaultBufferLength);
-                m_PacketHeader = null;
                 m_Disposed = false;
             }
 
@@ -27,27 +25,9 @@ namespace TEngine.Runtime
                 }
             }
 
-            public IPacketHeader PacketHeader
-            {
-                get
-                {
-                    return m_PacketHeader;
-                }
-            }
-
             public void PrepareForPacketHeader(int packetHeaderLength)
             {
-                Reset(packetHeaderLength, null);
-            }
-
-            public void PrepareForPacket(IPacketHeader packetHeader)
-            {
-                if (packetHeader == null)
-                {
-                    throw new Exception("Packet header is invalid.");
-                }
-
-                Reset(packetHeader.PacketLength, packetHeader);
+                Reset(packetHeaderLength);
             }
 
             public void Dispose()
@@ -75,7 +55,7 @@ namespace TEngine.Runtime
                 m_Disposed = true;
             }
 
-            private void Reset(int targetLength, IPacketHeader packetHeader)
+            private void Reset(int targetLength)
             {
                 if (targetLength < 0)
                 {
@@ -84,7 +64,6 @@ namespace TEngine.Runtime
 
                 m_Stream.Position = 0L;
                 m_Stream.SetLength(targetLength);
-                m_PacketHeader = packetHeader;
             }
         }
     }

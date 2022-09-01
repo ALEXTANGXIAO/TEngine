@@ -68,9 +68,6 @@ namespace TEngine.Runtime
         {
             m_CachedStream.SetLength(m_CachedStream.Capacity); // 此行防止 Array.Copy 的数据无法写入
             m_CachedStream.Position = 0L;
-            CSPacketHeader packetHeader = MemoryPool.Acquire<CSPacketHeader>();
-            Serializer.Serialize(m_CachedStream, packetHeader);
-            MemoryPool.Release(packetHeader);
             Serializer.SerializeWithLengthPrefix(m_CachedStream, packet, PrefixStyle.Fixed32);
             MemoryPool.Release((IMemory)packet);
             m_CachedStream.WriteTo(destination);
@@ -84,45 +81,22 @@ namespace TEngine.Runtime
         /// <param name="source">要反序列化的来源流。</param>
         /// <param name="customErrorData">用户自定义错误数据。</param>
         /// <returns>反序列化后的消息包。</returns>
-        public MainPack DeserializePacket(IPacketHeader packetHeader, Stream source, out object customErrorData)
+        public MainPack DeserializePacket(Stream source, out object customErrorData)
         {
             // 注意：此函数并不在主线程调用！
             customErrorData = null;
 
-            CSPacketHeader csPacketHeader = packetHeader as CSPacketHeader;
-            if (csPacketHeader == null)
-            {
-                Log.Warning("Packet header is invalid.");
-                return null;
-            }
-
             MainPack packet = null;
-            if (csPacketHeader.IsValid)
+            Type packetType = typeof(MainPack);
+            if (packetType != null)
             {
-                Type packetType = typeof(MainPack);
-                if (packetType != null)
-                {
-                    packet = (MainPack)RuntimeTypeModel.Default.DeserializeWithLengthPrefix(source, MemoryPool.Acquire(packetType), packetType, PrefixStyle.Fixed32, 0);
-                }
-                else
-                {
-                    Log.Warning("Can not deserialize packet for packet id '{0}'.", csPacketHeader.Id.ToString());
-                }
+                packet = (MainPack)RuntimeTypeModel.Default.DeserializeWithLengthPrefix(source, MemoryPool.Acquire(packetType), packetType, PrefixStyle.Fixed32, 0);
             }
             else
             {
-                Log.Warning("Packet header is invalid.");
+                Log.Warning("Can not deserialize packet for packet id '{0}'.", packet.actioncode.ToString());
             }
-
-            MemoryPool.Release(csPacketHeader);
             return packet;
-        }
-
-        public IPacketHeader DeserializePacketHeader(Stream source, out object customErrorData)
-        {
-            // 注意：此函数并不在主线程调用！
-            customErrorData = null;
-            return (IPacketHeader)RuntimeTypeModel.Default.Deserialize(source, MemoryPool.Acquire<CSPacketHeader>(), typeof(CSPacketHeader));
         }
 
         /// <summary>
