@@ -15,11 +15,11 @@ namespace TEngine.Runtime
         /// </summary>
         private abstract class NetworkChannelBase : INetworkChannel, IDisposable
         {
-            private const float DefaultHeartBeatInterval = 30;
+            private const float DefaultHeartBeatInterval = 3;
             private const int MAX_MSG_HANDLE = 256;
 
             private readonly string m_Name;
-            protected readonly Queue<Packet> m_SendPacketPool;
+            protected readonly Queue<MainPack> m_SendPacketPool;
             protected readonly INetworkChannelHelper m_NetworkChannelHelper;
             protected AddressFamily m_AddressFamily;
             protected bool m_ResetHeartBeatElapseSecondsWhenReceivePacket;
@@ -61,7 +61,7 @@ namespace TEngine.Runtime
             public NetworkChannelBase(string name, INetworkChannelHelper networkChannelHelper)
             {
                 m_Name = name ?? string.Empty;
-                m_SendPacketPool = new Queue<Packet>();
+                m_SendPacketPool = new Queue<MainPack>();
                 m_NetworkChannelHelper = networkChannelHelper;
                 m_AddressFamily = AddressFamily.Unknown;
                 m_ResetHeartBeatElapseSecondsWhenReceivePacket = false;
@@ -470,7 +470,7 @@ namespace TEngine.Runtime
             /// </summary>
             /// <typeparam name="T">消息包类型。</typeparam>
             /// <param name="packet">要发送的消息包。</param>
-            public bool Send<T>(T packet) where T : Packet
+            public bool Send(MainPack packet)
             {
                 if (m_Socket == null)
                 {
@@ -555,7 +555,7 @@ namespace TEngine.Runtime
 
                 while (m_SendPacketPool.Count > 0)
                 {
-                    Packet packet = null;
+                    MainPack packet = null;
                     lock (m_SendPacketPool)
                     {
                         packet = m_SendPacketPool.Dequeue();
@@ -658,7 +658,7 @@ namespace TEngine.Runtime
                 try
                 {
                     object customErrorData = null;
-                    Packet packet = m_NetworkChannelHelper.DeserializePacket(m_ReceiveState.PacketHeader, m_ReceiveState.Stream, out customErrorData);
+                    MainPack packet = m_NetworkChannelHelper.DeserializePacket(m_ReceiveState.PacketHeader, m_ReceiveState.Stream, out customErrorData);
 
                     if (customErrorData != null && NetworkChannelCustomError != null)
                     {
@@ -667,7 +667,7 @@ namespace TEngine.Runtime
 
                     if (packet != null)
                     {
-                        HandleResponse(packet as MainPack);
+                        HandleResponse(packet);
                     }
 
                     m_ReceiveState.PrepareForPacketHeader(m_NetworkChannelHelper.PacketHeaderLength);

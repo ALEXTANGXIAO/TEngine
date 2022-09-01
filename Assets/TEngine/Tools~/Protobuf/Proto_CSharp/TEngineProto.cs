@@ -1,3 +1,4 @@
+using System;
 using ProtoBuf;
 using TEngine.Runtime;
 using System.Collections.Generic;
@@ -56,7 +57,7 @@ namespace TEngineProto
 
 	}
 
-	[global::ProtoBuf.ProtoContract()]
+	[Serializable,global::ProtoBuf.ProtoContract(Name = @"MainPack")]
 	public partial class MainPack
 	{
 		[global::ProtoBuf.ProtoMember(1)]
@@ -82,11 +83,11 @@ namespace TEngineProto
 		public PlayerPack playerpack { get; set; }
 
 		[global::ProtoBuf.ProtoMember(8)]
-		public long HeatEchoTime { get; set; }
+		public float HeatEchoTime { get; set; }
 
 	}
 
-	[global::ProtoBuf.ProtoContract()]
+	[Serializable,global::ProtoBuf.ProtoContract(Name = @"LoginPack")]
 	public partial class LoginPack
 	{
 		[global::ProtoBuf.ProtoMember(1)]
@@ -99,7 +100,7 @@ namespace TEngineProto
 
 	}
 
-	[global::ProtoBuf.ProtoContract()]
+	[Serializable,global::ProtoBuf.ProtoContract(Name = @"RoomPack")]
 	public partial class RoomPack
 	{
 		[global::ProtoBuf.ProtoMember(1)]
@@ -120,7 +121,7 @@ namespace TEngineProto
 
 	}
 
-	[global::ProtoBuf.ProtoContract()]
+	[Serializable,global::ProtoBuf.ProtoContract(Name = @"PlayerPack")]
 	public partial class PlayerPack
 	{
 		[global::ProtoBuf.ProtoMember(1)]
@@ -139,7 +140,7 @@ namespace TEngineProto
 
 	}
 
-	[global::ProtoBuf.ProtoContract()]
+	[Serializable,global::ProtoBuf.ProtoContract(Name = @"PosPack")]
 	public partial class PosPack
 	{
 		[global::ProtoBuf.ProtoMember(1)]

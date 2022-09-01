@@ -1,3 +1,4 @@
+using System;
 using ProtoBuf;
 using TEngine.Runtime;
 using System.Collections.Generic;
@@ -56,7 +57,7 @@ namespace TEngineProto
 
 	}
 
-	[global::ProtoBuf.ProtoContract()]
+	[Serializable,global::ProtoBuf.ProtoContract(Name = @"MainPack")]
 	public partial class MainPack
 	{
 		[global::ProtoBuf.ProtoMember(1)]
@@ -82,10 +83,11 @@ namespace TEngineProto
 		public PlayerPack playerpack { get; set; }
 
 		[global::ProtoBuf.ProtoMember(8)]
-		public long HeatEchoTime { get; set; }
+		public float HeatEchoTime { get; set; }
+
 	}
 
-	[global::ProtoBuf.ProtoContract()]
+	[Serializable,global::ProtoBuf.ProtoContract(Name = @"LoginPack")]
 	public partial class LoginPack
 	{
 		[global::ProtoBuf.ProtoMember(1)]
@@ -98,7 +100,7 @@ namespace TEngineProto
 
 	}
 
-	[global::ProtoBuf.ProtoContract()]
+	[Serializable,global::ProtoBuf.ProtoContract(Name = @"RoomPack")]
 	public partial class RoomPack
 	{
 		[global::ProtoBuf.ProtoMember(1)]
@@ -111,28 +113,15 @@ namespace TEngineProto
 		[global::ProtoBuf.ProtoMember(3)]
 		public int curnum { get; set; }
 
-		[global::ProtoBuf.ProtoMember(4)]
-		public int state { get; set; }
-
 		[global::ProtoBuf.ProtoMember(6)]
 		public int roomID { get; set; }
-
-		[global::ProtoBuf.ProtoMember(9)]
-		public int visable { get; set; }
-
-		[global::ProtoBuf.ProtoMember(10)]
-		public int usePassword { get; set; }
-
-		[global::ProtoBuf.ProtoMember(11)]
-		[global::System.ComponentModel.DefaultValue("")]
-		public string password { get; set; }
 
 		[global::ProtoBuf.ProtoMember(12)]
 		public List<PlayerPack> playerpack = new List<PlayerPack>();
 
 	}
 
-	[global::ProtoBuf.ProtoContract()]
+	[Serializable,global::ProtoBuf.ProtoContract(Name = @"PlayerPack")]
 	public partial class PlayerPack
 	{
 		[global::ProtoBuf.ProtoMember(1)]
@@ -151,7 +140,7 @@ namespace TEngineProto
 
 	}
 
-	[global::ProtoBuf.ProtoContract()]
+	[Serializable,global::ProtoBuf.ProtoContract(Name = @"PosPack")]
 	public partial class PosPack
 	{
 		[global::ProtoBuf.ProtoMember(1)]

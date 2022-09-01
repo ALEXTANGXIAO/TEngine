@@ -57,6 +57,7 @@ namespace TEngine.Editor
             string s = File.ReadAllText(proto);
 
             StringBuilder sb = new StringBuilder();
+            sb.Append("using System;\n");
             sb.Append("using ProtoBuf;\n");
             sb.Append("using TEngine.Runtime;\n");
             sb.Append("using System.Collections.Generic;\n");
@@ -100,7 +101,8 @@ namespace TEngine.Editor
                     }
 
                     msgOpcode.Add(new OpcodeInfo() { Name = msgName, Opcode = ++startOpcode });
-                    sb.Append($"\t[global::ProtoBuf.ProtoContract()]\n");
+                    sb.Append($"\t[Serializable,global::ProtoBuf.ProtoContract(Name = @\"{msgName}\")]\n");
+                    // sb.Append($"\t[global::ProtoBuf.ProtoContract()]\n");
                     if (useMemoryPool)
                     {
                         sb.Append($"\tpublic partial class {msgName}: IMemory");

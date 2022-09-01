@@ -2,9 +2,9 @@
 
 namespace TEngineProto
 {
-    public partial class MainPack:Packet
+    public partial class MainPack:IMemory
     {
-        public override void Clear()
+        public void Clear()
         {
             requestcode = RequestCode.RequestNone;
             actioncode = ActionCode.ActionNone;

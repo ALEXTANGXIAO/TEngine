@@ -64,18 +64,15 @@ namespace TEngine.Runtime
         /// <param name="packet">要序列化的消息包。</param>
         /// <param name="destination">要序列化的目标流。</param>
         /// <returns>是否序列化成功。</returns>
-        public bool Serialize<T>(T packet, Stream destination) where T : Packet
+        public bool Serialize(MainPack packet, Stream destination)
         {
             m_CachedStream.SetLength(m_CachedStream.Capacity); // 此行防止 Array.Copy 的数据无法写入
             m_CachedStream.Position = 0L;
-
             CSPacketHeader packetHeader = MemoryPool.Acquire<CSPacketHeader>();
             Serializer.Serialize(m_CachedStream, packetHeader);
             MemoryPool.Release(packetHeader);
-
             Serializer.SerializeWithLengthPrefix(m_CachedStream, packet, PrefixStyle.Fixed32);
             MemoryPool.Release((IMemory)packet);
-
             m_CachedStream.WriteTo(destination);
             return true;
         }
@@ -87,7 +84,7 @@ namespace TEngine.Runtime
         /// <param name="source">要反序列化的来源流。</param>
         /// <param name="customErrorData">用户自定义错误数据。</param>
         /// <returns>反序列化后的消息包。</returns>
-        public Packet DeserializePacket(IPacketHeader packetHeader, Stream source, out object customErrorData)
+        public MainPack DeserializePacket(IPacketHeader packetHeader, Stream source, out object customErrorData)
         {
             // 注意：此函数并不在主线程调用！
             customErrorData = null;
@@ -99,13 +96,13 @@ namespace TEngine.Runtime
                 return null;
             }
 
-            Packet packet = null;
+            MainPack packet = null;
             if (csPacketHeader.IsValid)
             {
                 Type packetType = typeof(MainPack);
                 if (packetType != null)
                 {
-                    packet = (Packet)RuntimeTypeModel.Default.DeserializeWithLengthPrefix(source, MemoryPool.Acquire(packetType), packetType, PrefixStyle.Fixed32, 0);
+                    packet = (MainPack)RuntimeTypeModel.Default.DeserializeWithLengthPrefix(source, MemoryPool.Acquire(packetType), packetType, PrefixStyle.Fixed32, 0);
                 }
                 else
                 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using TEngineProto;
 
 namespace TEngine.Runtime
 {
@@ -147,7 +148,7 @@ namespace TEngine.Runtime
         /// </summary>
         /// <typeparam name="T">消息包类型。</typeparam>
         /// <param name="packet">要发送的消息包。</param>
-        bool Send<T>(T packet) where T : Packet;
+        bool Send(MainPack packet);
 
         /// <summary>
         /// 向远程主机发送消息包并注册回调
