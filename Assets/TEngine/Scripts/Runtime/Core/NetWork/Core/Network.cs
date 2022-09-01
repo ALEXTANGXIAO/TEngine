@@ -189,5 +189,40 @@ namespace TEngine.Runtime
             }
             channel.RmvHandler(actionId,msgDelegate);
         }
+
+        /// <summary>
+        /// 向远程主机发送消息包。
+        /// </summary>
+        /// <param name="channelName"></param>
+        /// <param name="packet"></param>
+        /// <returns></returns>
+        public bool Send(string channelName, TEngineProto.MainPack packet)
+        {
+            var channel = this.GetNetworkChannel(channelName);
+            if (channel == null)
+            {
+                Log.Warning($"Channel is null :{channelName}");
+                return false;
+            }
+            return channel.Send(packet);
+        }
+
+        /// <summary>
+        /// 向远程主机发送消息包并注册回调
+        /// </summary>
+        /// <param name="channelName"></param>
+        /// <param name="pack"></param>
+        /// <param name="resHandler"></param>
+        /// <returns></returns>
+        public bool SendCsMsg(string channelName, TEngineProto.MainPack pack, CsMsgDelegate resHandler = null)
+        {
+            var channel = this.GetNetworkChannel(channelName);
+            if (channel == null)
+            {
+                Log.Warning($"Channel is null :{channelName}");
+                return false;
+            }
+            return channel.SendCsMsg(pack,resHandler);
+        }
     }
 }
