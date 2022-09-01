@@ -7,6 +7,7 @@ using UnityEngine.Networking;
 
 namespace TEngine.Runtime.HotUpdate
 {
+#pragma warning disable CS0162
 #pragma warning disable CS0649
     public class FileunzipManager
     {

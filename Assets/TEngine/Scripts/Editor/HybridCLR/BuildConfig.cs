@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace HybridCLR.Editor
 {
+#pragma warning disable CS0162
     public static partial class BuildConfig
     {
 #if !UNITY_IOS

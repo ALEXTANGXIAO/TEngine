@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace TEngine.Runtime
 {
+#pragma warning disable CS0649
     /// <summary>
     /// 封装的AssetBundle Plus
     /// </summary>

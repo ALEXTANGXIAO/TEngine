@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace TEngine.Runtime.HotUpdate
 {
+#pragma warning disable CS0162
     public class LoadMgr : TSingleton<LoadMgr>
     {
         /// <summary>
