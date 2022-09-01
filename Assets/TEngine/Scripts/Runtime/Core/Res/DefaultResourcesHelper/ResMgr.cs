@@ -225,6 +225,37 @@ namespace TEngine.Runtime
             onComplete(GetGameObject(path));
 #endif
         }
+        
+        public void GetAssetAtPathAsync<T>(string path, bool withSubAssets, System.Action<T> onComplete) where T : class
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                onComplete(null);
+            }
+#if ASSETBUNDLE_ENABLE
+            void CallBack(AssetData assetData)
+            {
+                if (assetData != null)
+                {
+                    if (assetData.AssetObject is GameObject)
+                    {
+                        GameObject go = Object.Instantiate(assetData.AssetObject) as GameObject;
+                        BindAssetData(go, assetData);
+                    }
+                    else
+                    {
+                        assetData.AddRef();
+                    }
+                    assetData.OnAsyncLoadComplete -= CallBack;
+
+                    onComplete(assetData.AssetObject as T);
+                }
+                _assetConfig.GetAssetAtPathAsync(path, withSubAssets, CallBack);
+            }
+#else
+            onComplete(GetAsset(path,withSubAssets)?.AssetObject as T);
+#endif
+        }
 
         public void GetAssetAtPathAsync(string path, bool withSubAssets, System.Action<AssetData> onComplete)
         {

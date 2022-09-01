@@ -29,7 +29,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3463045026180535779}
-  m_RootOrder: 0
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3463045025307533305
 MonoBehaviour:
@@ -95,7 +95,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3463045026180535779}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3463045025737563820
 MonoBehaviour:
@@ -151,7 +151,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3463045026180535779}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3463045025836799504
 MonoBehaviour:
@@ -195,7 +195,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3463045026180535779}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3463045025974401033
 MonoBehaviour:
@@ -209,7 +209,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f010c29093f111146bfc776d19c8fb27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_BuildInfoTextAsset: {fileID: 4900000, guid: d231f7a19087f02418363f9a6d5cb2c7, type: 3}
+  m_BuildInfoTextAsset: {fileID: 4900000, guid: d231f7a19087f02418363f9a6d5cb2c7,
+    type: 3}
 --- !u!1 &3463045026010536328
 GameObject:
   m_ObjectHideFlags: 0
@@ -239,7 +240,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3463045026180535779}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3463045026010536330
 MonoBehaviour:
@@ -254,7 +255,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ResourceMode: 1
-  EditorResourceMode: 1
+  m_ResourceHelperTypeName: TEngine.Runtime.DefaultResourceHelper
+  m_CustomResourceHelper: {fileID: 0}
 --- !u!1 &3463045026180535776
 GameObject:
   m_ObjectHideFlags: 0
@@ -282,12 +284,12 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 3463045025307533286}
   - {fileID: 3463045025974401142}
   - {fileID: 3463045026377943188}
   - {fileID: 3463045025737563821}
   - {fileID: 3463045025836799505}
   - {fileID: 3463045026010536331}
+  - {fileID: 3463045025307533286}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -320,7 +322,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3463045026180535779}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3463045026377943191
 MonoBehaviour:

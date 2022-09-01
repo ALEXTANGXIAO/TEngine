@@ -27,12 +27,7 @@ namespace TEngine.Runtime
 
             // TODO: 这里可以播放一个 Splash 动画
             // ...
-            if (ResourceComponent.Instance.EditorResourceMode == true)
-            {
-                Log.Info("编辑器模式 ChangeState<ProcedureStartGame>");
-                ChangeState<ProcedureStartGame>(procedureOwner);
-            }
-            else if (ResourceComponent.Instance.ResourceMode == ResourceMode.Package)
+            if (ResourceComponent.Instance.ResourceMode == ResourceMode.Package)
             {
                 Log.Info("单机模式 ChangeState<ProcedureInitResources>");
                 ChangeState<ProcedureResourcesInit>(procedureOwner);
