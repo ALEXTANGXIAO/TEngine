@@ -9,6 +9,7 @@ namespace TEngine.Runtime
     public class TResources
     {
         private static IResourceHelper m_ResourceHelper;
+
         /// <summary>
         /// 设置游戏资源加载辅助器。
         /// </summary>
@@ -22,7 +23,7 @@ namespace TEngine.Runtime
 
             m_ResourceHelper = resourceHelper;
         }
-        
+
         public static GameObject Load(string path)
         {
             if (m_ResourceHelper == null)
@@ -30,8 +31,10 @@ namespace TEngine.Runtime
                 Log.Error("Resources helper is invalid.");
                 return null;
             }
+
             return m_ResourceHelper.Load(path);
         }
+
         public static GameObject Load(string path, Transform parent)
         {
             if (m_ResourceHelper == null)
@@ -39,8 +42,10 @@ namespace TEngine.Runtime
                 Log.Error("Resources helper is invalid.");
                 return null;
             }
-            return m_ResourceHelper.Load(path,parent);
+
+            return m_ResourceHelper.Load(path, parent);
         }
+
         public static T Load<T>(string path) where T : UnityEngine.Object
         {
             if (m_ResourceHelper == null)
@@ -48,6 +53,7 @@ namespace TEngine.Runtime
                 Log.Error("Resources helper is invalid.");
                 return null;
             }
+
             return m_ResourceHelper.Load<T>(path);
         }
 
@@ -58,16 +64,20 @@ namespace TEngine.Runtime
                 Log.Error("Resources helper is invalid.");
                 return;
             }
-            m_ResourceHelper.LoadAsync(path,callBack);
+
+            m_ResourceHelper.LoadAsync(path, callBack);
         }
-        public static void LoadAsync(string path, Action<AssetData> callBack, bool withSubAsset = false)
+
+        public static void LoadAsync<T>(string path, Action<T> callBack, bool withSubAsset = false)
+            where T : UnityEngine.Object
         {
             if (m_ResourceHelper == null)
             {
                 Log.Error("Resources helper is invalid.");
                 return;
             }
-            m_ResourceHelper.LoadAsync(path,callBack,withSubAsset);
+
+            m_ResourceHelper.LoadAsync<T>(path, callBack, withSubAsset);
         }
     }
 }

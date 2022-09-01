@@ -45,7 +45,7 @@ namespace TEngine.Runtime
         /// <param name="callBack"></param>
         /// <param name="withSubAsset"></param>
         /// <typeparam name="T"></typeparam>
-        void LoadAsync<T>(string path, Action<T> callBack, bool withSubAsset = false) where T : class;
+        void LoadAsync<T>(string path, Action<T> callBack, bool withSubAsset = false) where T : UnityEngine.Object;
     }
 
     /// <summary>
@@ -90,6 +90,7 @@ namespace TEngine.Runtime
         /// <param name="callBack"></param>
         /// <param name="withSubAsset"></param>
         /// <typeparam name="T"></typeparam>
-        public abstract void LoadAsync<T>(string path, Action<T> callBack, bool withSubAsset = false) where T : class;
+        public abstract void LoadAsync<T>(string path, Action<T> callBack, bool withSubAsset = false)
+            where T : UnityEngine.Object;
     }
 }

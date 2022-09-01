@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace TEngine.Runtime
 {
-    public class DefaultResourceHelper:ResourceHelperBase
+    public class DefaultResourceHelper : ResourceHelperBase
     {
         public override GameObject Load(string path)
         {
