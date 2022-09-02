@@ -32,7 +32,7 @@
 </p>
 
 
-# <strong>TEngine v1.2.0
+# <strong>TEngine v2.0.0
 
 #### TEngine是一个简单(新手友好)且强大的Unity框架,对于需要一套上手快、文档清晰、高性能且可拓展性极强的开发者或者团队来说是一个很好的游戏开发框架解决方案。
 
@@ -279,7 +279,23 @@ TEngine
  如果您觉得感兴趣想期待关注一下或者有眼前一亮的模块，不妨给个Star~
 
 ---
+
+## <strong>友情链接：
+
+#### <a href="https://github.com/asdfg314284230/TengineBilibilDemo"><strong>TengineBilibilDemo</strong></a> - 基于Tengine实现的Bilibili直播间访问的Demo。
+
+---
 ## <strong>优质开源项目推荐
 #### <a href="https://github.com/JasonXuDeveloper/JEngine"><strong>JEngine</strong></a> - 使Unity开发的游戏支持热更新的解决方案。
 
 #### <a href="https://github.com/focus-creative-games/hybridclr"><strong>HybridCLR</strong></a> - 特性完整、零成本、高性能、低内存的近乎完美的Unity全平台原生c#热更方案
+
+
+## <strong>Buy me a coffee.
+您的赞助会让我们做得更快更好，如果觉得TEngine有帮助，不妨赞助我买杯咖啡吧~
+<p align="center">
+    <img src="http://1.12.241.46:8081/TEngine/微信.png" alt="logo" width="384" height="384">
+</p>
+<p align="center">
+    <img src="http://1.12.241.46:8081/TEngine/支付宝.jpg" alt="logo" width="384" height="384">
+</p>
