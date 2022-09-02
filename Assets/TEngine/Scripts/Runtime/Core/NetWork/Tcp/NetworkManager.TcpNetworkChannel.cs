@@ -272,7 +272,10 @@ namespace TEngine.Runtime
                 if (processSuccess)
                 {
                     ReceiveAsync();
-                    return;
+                }
+                else
+                {
+                    ReceiveAsync();
                 }
             }
         }
