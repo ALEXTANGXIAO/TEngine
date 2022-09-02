@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 
 namespace TEngine.Runtime
 {
@@ -44,6 +45,34 @@ namespace TEngine.Runtime
                 Log.Error(($"[DeSerialize] Error：{ex.Message}, {ex.Data["StackTrace"]}"));
                 return null;
             }
+        }
+
+        private static StringBuilder _stringBuilder = new StringBuilder();
+
+        public static string GetBuffer(byte[] buffer)
+        {
+            _stringBuilder.Length = 0;
+            _stringBuilder.Append("[");
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                if (i == buffer.Length - 1)
+                {
+                    _stringBuilder.Append(buffer[i]);
+                    _stringBuilder.Append("]");
+                }
+                else
+                {
+                    _stringBuilder.Append(buffer[i]);
+                    _stringBuilder.Append(",");
+                }
+            }
+
+            return _stringBuilder.ToString();
+        }
+
+        public static void PrintBuffer(byte[] buffer)
+        {
+            Log.Debug(GetBuffer(buffer));
         }
     }
 }
