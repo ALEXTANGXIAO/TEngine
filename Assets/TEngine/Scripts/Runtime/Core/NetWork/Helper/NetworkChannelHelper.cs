@@ -35,7 +35,7 @@ namespace TEngine.Runtime
 
         private void HandleHeartBeat(MainPack mainPack)
         {
-            
+            Log.Debug("------------------ HeartBeat ------------------");
         }
 
         /// <summary>
