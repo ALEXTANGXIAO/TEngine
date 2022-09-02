@@ -33,10 +33,7 @@ namespace TEngine.Runtime
             /// </summary>
             public override ServiceType ServiceType
             {
-                get
-                {
-                    return ServiceType.Tcp;
-                }
+                get { return ServiceType.Tcp; }
             }
 
             /// <summary>
@@ -87,7 +84,9 @@ namespace TEngine.Runtime
                     if (NetworkChannelError != null)
                     {
                         SocketException socketException = exception as SocketException;
-                        NetworkChannelError(this, NetworkErrorCode.ConnectError, socketException != null ? socketException.SocketErrorCode : SocketError.Success, exception.ToString());
+                        NetworkChannelError(this, NetworkErrorCode.ConnectError,
+                            socketException != null ? socketException.SocketErrorCode : SocketError.Success,
+                            exception.ToString());
                         return;
                     }
 
@@ -112,7 +111,9 @@ namespace TEngine.Runtime
                     if (NetworkChannelError != null)
                     {
                         SocketException socketException = exception as SocketException;
-                        NetworkChannelError(this, NetworkErrorCode.ConnectError, socketException != null ? socketException.SocketErrorCode : SocketError.Success, exception.ToString());
+                        NetworkChannelError(this, NetworkErrorCode.ConnectError,
+                            socketException != null ? socketException.SocketErrorCode : SocketError.Success,
+                            exception.ToString());
                         return;
                     }
 
@@ -149,7 +150,7 @@ namespace TEngine.Runtime
                     var buffBodyCount = buffer[0];
                     var buffTotalCount = m_NetworkChannelHelper.PacketHeaderLength + buffBodyCount;
                     m_SendState.Stream.SetLength(buffTotalCount);
-                    m_Socket.BeginSend(buffer,0,buffTotalCount, SocketFlags.None, m_SendCallback, m_Socket);
+                    m_Socket.BeginSend(buffer, 0, buffTotalCount, SocketFlags.None, m_SendCallback, m_Socket);
                 }
                 catch (Exception exception)
                 {
@@ -157,7 +158,9 @@ namespace TEngine.Runtime
                     if (NetworkChannelError != null)
                     {
                         SocketException socketException = exception as SocketException;
-                        NetworkChannelError(this, NetworkErrorCode.SendError, socketException != null ? socketException.SocketErrorCode : SocketError.Success, exception.ToString());
+                        NetworkChannelError(this, NetworkErrorCode.SendError,
+                            socketException != null ? socketException.SocketErrorCode : SocketError.Success,
+                            exception.ToString());
                         return;
                     }
 
@@ -184,19 +187,14 @@ namespace TEngine.Runtime
                     if (NetworkChannelError != null)
                     {
                         SocketException socketException = exception as SocketException;
-                        NetworkChannelError(this, NetworkErrorCode.SendError, socketException != null ? socketException.SocketErrorCode : SocketError.Success, exception.ToString());
+                        NetworkChannelError(this, NetworkErrorCode.SendError,
+                            socketException != null ? socketException.SocketErrorCode : SocketError.Success,
+                            exception.ToString());
                         return;
                     }
 
                     throw;
                 }
-
-                // m_SendState.Stream.Position += bytesSent;
-                // if (m_SendState.Stream.Position < m_SendState.Stream.Length)
-                // {
-                //     SendAsync();
-                //     return;
-                // }
 
                 m_SentPacketCount++;
                 m_SendState.Reset();
@@ -207,7 +205,9 @@ namespace TEngine.Runtime
                 m_ReceiveState.Stream.SetLength(ReceiveState.DefaultBufferLength);
                 try
                 {
-                    m_Socket.BeginReceive(m_ReceiveState.Stream.GetBuffer(), (int)m_ReceiveState.Stream.Position, (int)(m_ReceiveState.Stream.Length - m_ReceiveState.Stream.Position), SocketFlags.None, m_ReceiveCallback, m_Socket);
+                    m_Socket.BeginReceive(m_ReceiveState.Stream.GetBuffer(), (int)m_ReceiveState.Stream.Position,
+                        (int)(m_ReceiveState.Stream.Length - m_ReceiveState.Stream.Position), SocketFlags.None,
+                        m_ReceiveCallback, m_Socket);
                 }
                 catch (Exception exception)
                 {
@@ -215,7 +215,9 @@ namespace TEngine.Runtime
                     if (NetworkChannelError != null)
                     {
                         SocketException socketException = exception as SocketException;
-                        NetworkChannelError(this, NetworkErrorCode.ReceiveError, socketException != null ? socketException.SocketErrorCode : SocketError.Success, exception.ToString());
+                        NetworkChannelError(this, NetworkErrorCode.ReceiveError,
+                            socketException != null ? socketException.SocketErrorCode : SocketError.Success,
+                            exception.ToString());
                         return;
                     }
 
@@ -242,7 +244,9 @@ namespace TEngine.Runtime
                     if (NetworkChannelError != null)
                     {
                         SocketException socketException = exception as SocketException;
-                        NetworkChannelError(this, NetworkErrorCode.ReceiveError, socketException != null ? socketException.SocketErrorCode : SocketError.Success, exception.ToString());
+                        NetworkChannelError(this, NetworkErrorCode.ReceiveError,
+                            socketException != null ? socketException.SocketErrorCode : SocketError.Success,
+                            exception.ToString());
                         return;
                     }
 
@@ -256,9 +260,9 @@ namespace TEngine.Runtime
                 }
 
                 m_ReceiveState.Stream.Position = 0L;
-                
+
                 m_ReceiveState.Stream.SetLength(bytesReceived);
-                
+
                 ProtoUtils.PrintBuffer(m_ReceiveState.Stream.GetBuffer());
 
                 bool processSuccess = false;
