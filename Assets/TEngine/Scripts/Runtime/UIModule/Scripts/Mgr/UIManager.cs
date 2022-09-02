@@ -34,7 +34,7 @@ namespace TEngine.Runtime.UIModule
 
         public UIManager()
         {
-            m_uiManagerGo = TResources.Load("UI/UIRoot.prefab");
+            m_uiManagerGo = GameObject.Instantiate(Resources.Load<GameObject>("UIRoot"));
             Object.DontDestroyOnLoad(m_uiManagerGo);
             m_uiManagerTransform = m_uiManagerGo.transform;
             m_uiCamera = UnityUtil.FindChildComponent<Camera>(m_uiManagerTransform, "Camera");
