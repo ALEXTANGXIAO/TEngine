@@ -25,6 +25,17 @@ namespace TEngine.Runtime
                 }
             }
 
+            public void SetLength(int targetLength)
+            {
+                if (targetLength < 0)
+                {
+                    throw new Exception("Target length is invalid.");
+                }
+
+                m_Stream.Position = 0L;
+                m_Stream.SetLength(targetLength);
+            }
+
             public void Reset()
             {
                 m_Stream.Position = 0L;

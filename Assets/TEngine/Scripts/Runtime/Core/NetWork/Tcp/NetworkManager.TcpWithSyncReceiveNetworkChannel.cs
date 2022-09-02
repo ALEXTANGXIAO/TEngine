@@ -225,6 +225,7 @@ namespace TEngine.Runtime
                     }
 
                     m_ReceiveState.Stream.Position = 0L;
+                    m_ReceiveState.Stream.SetLength(bytesReceived);
 
                     bool processSuccess = false;
                     processSuccess = ProcessPacket();

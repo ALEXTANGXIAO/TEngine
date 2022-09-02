@@ -389,7 +389,7 @@ namespace TEngine.Runtime
                 }
 
                 m_SendState.Reset();
-                m_ReceiveState.PrepareForPacketHeader(m_NetworkChannelHelper.PacketHeaderLength);
+                m_ReceiveState.SetLength(ReceiveState.DefaultBufferLength);
             }
 
             /// <summary>
@@ -622,7 +622,7 @@ namespace TEngine.Runtime
                         HandleResponse(packet);
                     }
 
-                    m_ReceiveState.PrepareForPacketHeader(m_NetworkChannelHelper.PacketHeaderLength);
+                    m_ReceiveState.SetLength(ReceiveState.DefaultBufferLength);
                 }
                 catch (Exception exception)
                 {

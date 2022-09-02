@@ -7,7 +7,7 @@ namespace TEngine.Runtime
     {
         private sealed class ReceiveState : IDisposable
         {
-            private const int DefaultBufferLength = 1024 * 64;
+            public const int DefaultBufferLength = 1024 * 64;
             private MemoryStream m_Stream;
             private bool m_Disposed;
 
@@ -25,7 +25,7 @@ namespace TEngine.Runtime
                 }
             }
 
-            public void PrepareForPacketHeader(int packetHeaderLength)
+            public void SetLength(int packetHeaderLength)
             {
                 Reset(packetHeaderLength);
             }

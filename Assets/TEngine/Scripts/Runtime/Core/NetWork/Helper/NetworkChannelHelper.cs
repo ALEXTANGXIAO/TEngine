@@ -60,7 +60,6 @@ namespace TEngine.Runtime
         /// <summary>
         /// 序列化消息包。
         /// </summary>
-        /// <typeparam name="T">消息包类型。</typeparam>
         /// <param name="packet">要序列化的消息包。</param>
         /// <param name="destination">要序列化的目标流。</param>
         /// <returns>是否序列化成功。</returns>
@@ -77,7 +76,6 @@ namespace TEngine.Runtime
         /// <summary>
         /// 反序列化消息包。
         /// </summary>
-        /// <param name="packetHeader">消息包头。</param>
         /// <param name="source">要反序列化的来源流。</param>
         /// <param name="customErrorData">用户自定义错误数据。</param>
         /// <returns>反序列化后的消息包。</returns>
@@ -86,17 +84,13 @@ namespace TEngine.Runtime
             // 注意：此函数并不在主线程调用！
             customErrorData = null;
 
-            MainPack packet = null;
-            Type packetType = typeof(MainPack);
-            if (packetType != null)
+            var buffer = (source as MemoryStream).GetBuffer();
+            int count = BitConverter.ToInt32(buffer, 0);
+            using (var stream = new System.IO.MemoryStream(buffer,4,count))
             {
-                packet = (MainPack)RuntimeTypeModel.Default.DeserializeWithLengthPrefix(source, MemoryPool.Acquire(packetType), packetType, PrefixStyle.Fixed32, 0);
+                var result = RuntimeTypeModel.Default.Deserialize(stream,MemoryPool.Acquire(typeof(MainPack)), typeof(MainPack));
+                return result as MainPack;
             }
-            else
-            {
-                Log.Warning("Can not deserialize packet for packet id '{0}'.", packet.actioncode.ToString());
-            }
-            return packet;
         }
 
         /// <summary>
