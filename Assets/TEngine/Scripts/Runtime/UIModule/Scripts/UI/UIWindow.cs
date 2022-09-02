@@ -234,8 +234,8 @@ namespace TEngine.Runtime.UIModule
             }
             if (m_modalAlpha > 0)
             {
-                string path = "UI/ModalSprite.prefab";
-                GameObject modal = TResources.Load(path);
+                string path = "ModalSprite";
+                GameObject modal = UnityEngine.Object.Instantiate(Resources.Load<GameObject>(path));
                 modal.transform.SetParent(transform);
                 modal.transform.SetAsFirstSibling();
                 modal.transform.localScale = Vector3.one;
