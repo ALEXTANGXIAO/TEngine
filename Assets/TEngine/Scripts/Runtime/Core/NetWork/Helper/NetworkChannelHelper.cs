@@ -86,7 +86,7 @@ namespace TEngine.Runtime
 
             var buffer = (source as MemoryStream).GetBuffer();
             int count = BitConverter.ToInt32(buffer, 0);
-            using (var stream = new System.IO.MemoryStream(buffer,4,count))
+            using (var stream = new System.IO.MemoryStream(buffer,this.PacketHeaderLength,count))
             {
                 var result = RuntimeTypeModel.Default.Deserialize(stream,MemoryPool.Acquire(typeof(MainPack)), typeof(MainPack));
                 return result as MainPack;
