@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Text;
 
 namespace TEngine.Runtime
@@ -49,13 +50,16 @@ namespace TEngine.Runtime
 
         private static StringBuilder _stringBuilder = new StringBuilder();
 
-        public static string GetBuffer(byte[] buffer)
+        public static string GetBuffer(byte[] buffer,int count = -1)
         {
             _stringBuilder.Length = 0;
             _stringBuilder.Append("[");
-            for (int i = 0; i < buffer.Length; i++)
+
+            var length = count <= 0 ? buffer.Length : count;
+            
+            for (int i = 0; i < length; i++)
             {
-                if (i == buffer.Length - 1)
+                if (i == length - 1)
                 {
                     _stringBuilder.Append(buffer[i]);
                     _stringBuilder.Append("]");
@@ -70,9 +74,10 @@ namespace TEngine.Runtime
             return _stringBuilder.ToString();
         }
 
-        public static void PrintBuffer(byte[] buffer)
+        [Conditional("UNITY_EDITOR")][Conditional("ENABLE_LOG_BUFFER")]
+        public static void PrintBuffer(byte[] buffer,int count = -1)
         {
-            Log.Debug(GetBuffer(buffer));
+            Log.Debug(GetBuffer(buffer,count));
         }
     }
 }
