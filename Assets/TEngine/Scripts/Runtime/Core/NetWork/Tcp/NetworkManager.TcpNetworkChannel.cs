@@ -263,8 +263,8 @@ namespace TEngine.Runtime
 
                 m_ReceiveState.Stream.SetLength(bytesReceived);
 
-                ProtoUtils.PrintBuffer(m_ReceiveState.Stream.GetBuffer());
-
+                ProtoUtils.PrintBuffer(m_ReceiveState.Stream.GetBuffer(),m_NetworkChannelHelper.PacketHeaderLength + m_ReceiveState.Stream.GetBuffer()[0]);
+                
                 bool processSuccess = false;
                 processSuccess = ProcessPacket();
                 m_ReceivedPacketCount++;
