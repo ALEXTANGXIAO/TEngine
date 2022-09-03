@@ -44,8 +44,8 @@ namespace TEngine.Runtime
                     Log.Warning("Type '{0}' is not assignable from '{1}'.", typeof(T).FullName, helperType.FullName);
                     return null;
                 }
-
                 helper = (T)new GameObject().AddComponent(helperType);
+                helper.name = helperTypeName;
             }
             else if (customHelper == null)
             {
@@ -55,10 +55,12 @@ namespace TEngine.Runtime
             else if (customHelper.gameObject.InScene())
             {
                 helper = index > 0 ? Object.Instantiate(customHelper) : customHelper;
+                helper.name = customHelper.name;
             }
             else
             {
                 helper = Object.Instantiate(customHelper);
+                helper.name = customHelper.name;
             }
 
             return helper;

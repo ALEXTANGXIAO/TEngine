@@ -28,6 +28,7 @@ namespace TEngine.Runtime
             if (resourceHelper != null)
             {
                 TResources.SetResourceHelper(resourceHelper);
+                resourceHelper.gameObject.transform.SetParent(this.gameObject.transform);
             }
         }
         
