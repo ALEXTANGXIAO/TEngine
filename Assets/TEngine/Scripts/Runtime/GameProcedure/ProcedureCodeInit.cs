@@ -32,14 +32,14 @@ namespace TEngine.Runtime
             Assembly hotfixAssembly = System.AppDomain.CurrentDomain.GetAssemblies().First(assembly => assembly.GetName().Name == "HotFix");
             StartHotfix(hotfixAssembly);
 #else
-            TResources.LoadAsync("Dll/HotFix.dll.bytes", (data =>
+            TResources.LoadAsync<TextAsset>("Dll/HotFix.dll.bytes", (data =>
             {
                 if (data == null)
                 {
                     OnLoadAssetFail();
                     return;
                 }
-                var obj = data.AssetObject as TextAsset;
+                var obj = data as TextAsset;
 
                 if (obj == null)
                 {
