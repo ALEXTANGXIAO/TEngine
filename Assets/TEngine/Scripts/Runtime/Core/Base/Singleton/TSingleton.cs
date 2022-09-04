@@ -9,9 +9,22 @@ namespace TEngine.Runtime
     /// </summary>
     public interface ISingleton
     {
+        /// <summary>
+        /// 激活
+        /// </summary>
         void Active();
 
+        /// <summary>
+        /// 释放
+        /// </summary>
         void Release();
+    }
+
+    public interface IUnitySingleton
+    {
+        int GetPriority();
+        
+        void OnUpdate(float elapseSeconds, float realElapseSeconds);
     }
 
     /// <summary>
@@ -21,6 +34,7 @@ namespace TEngine.Runtime
     {
         private static List<ISingleton> _iSingletonList;
         private static Dictionary<string, GameObject> _gameObjects;
+        private static List<IUnitySingleton> _unitySingletons;
         private static GameObject _root;
         public static GameObject Root
         {
@@ -119,7 +133,7 @@ namespace TEngine.Runtime
             return go;
         }
 
-        internal static bool CointansKey(string name)
+        internal static bool ContainsKey(string name)
         {
             if (_gameObjects != null)
             {

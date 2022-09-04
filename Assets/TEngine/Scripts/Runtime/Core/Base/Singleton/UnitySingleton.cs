@@ -6,7 +6,7 @@ namespace TEngine.Runtime
     /// 具备Unity完整生命周期的单例
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class UnitySingleton<T> : MonoBehaviour where T : MonoBehaviour
+    public class UnitySingleton<T> : MonoBehaviour,IUnitySingleton where T : MonoBehaviour
     {
 
         private static T _instance;
@@ -86,6 +86,7 @@ namespace TEngine.Runtime
         {
             if (CheckInstance())
             {
+                UpdateInstance.Instance.Retain(this);
                 OnLoad();
             }
 #if UNITY_EDITOR
@@ -98,8 +99,42 @@ namespace TEngine.Runtime
             }
         }
 
-        protected virtual void OnDestroy()
+        /// <summary>
+        /// 获取游戏框架模块优先级。实现Interface
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>优先级较高的模块会优先轮询，并且关闭操作会后进行。</remarks>
+        public int GetPriority()
         {
+            return Priority;
+        }
+        
+        /// <summary>
+        /// 获取游戏框架模块优先级。
+        /// </summary>
+        /// <remarks>优先级较高的模块会优先轮询，并且关闭操作会后进行。</remarks>
+        public virtual int Priority
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
+
+        /// <summary>
+        /// OnUpdate通过TEngine统一驱动,舍弃Unity的Update
+        /// </summary>
+        /// <param name="elapseSeconds"></param>
+        /// <param name="realElapseSeconds"></param>
+        public virtual void OnUpdate(float elapseSeconds, float realElapseSeconds)
+        {
+            
+        }
+
+        public virtual void OnDestroy()
+        {
+            UpdateInstance.Instance.Release(this);
             Release();
         }
 

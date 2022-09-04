@@ -143,7 +143,7 @@ namespace TEngine.Runtime
             }
         }
 
-        protected override void OnDestroy()
+        public override void OnDestroy()
         {
             for (int i = 0; i < m_LogicMgrList.Count; i++)
             {
@@ -151,7 +151,6 @@ namespace TEngine.Runtime
                 logicSys.OnDestroy();
             }
             base.OnDestroy();
-            SingletonMgr.Release();
         }
         #endregion
     }

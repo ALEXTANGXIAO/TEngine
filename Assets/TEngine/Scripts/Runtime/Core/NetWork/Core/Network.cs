@@ -20,6 +20,13 @@ namespace TEngine.Runtime
         }
 
         /// <summary>
+        /// 获取游戏框架模块优先级。
+        /// </summary>
+        /// <remarks>优先级较高的模块会优先轮询，并且关闭操作会后进行。</remarks>
+        public override int Priority => 10;
+        
+
+        /// <summary>
         /// 获取网络频道数量。
         /// </summary>
         public int NetworkChannelCount
@@ -52,15 +59,15 @@ namespace TEngine.Runtime
             m_NetworkManager.NetworkCustomError += OnNetworkCustomError;
         }
 
-        private void Update()
+        public override void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
             if (m_NetworkManager != null)
             {
-                NetworkManager.Update(Time.deltaTime, Time.unscaledDeltaTime);;
+                NetworkManager.Update(elapseSeconds, realElapseSeconds);;
             }
         }
 
-        protected override void OnDestroy()
+        public override void OnDestroy()
         {
             base.OnDestroy();
             if (NetworkManager != null)

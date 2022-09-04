@@ -403,13 +403,13 @@ namespace TEngine.Runtime
             AudioClipPool.Clear();
         }
 
-        private void Update()
+        public override void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
             for (int i = 0; i < _audioAgents.Length; ++i)
             {
                 if (_audioAgents[i] != null)
                 {
-                    _audioAgents[i].Update(Time.deltaTime);
+                    _audioAgents[i].Update(realElapseSeconds);
                 }
             }
         }
