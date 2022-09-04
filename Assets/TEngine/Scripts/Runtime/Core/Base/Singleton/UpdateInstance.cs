@@ -26,11 +26,6 @@ namespace TEngine.Runtime
 
                 UnitySingletons.Sort((x, y) => -x.GetPriority().CompareTo(y.GetPriority()));
             }
-
-            for (int i = 0; i < UnitySingletons.Count; i++)
-            {
-                Log.Fatal(UnitySingletons[i].ToString());
-            }
         }
 
         public void Release(IUnitySingleton unitySingleton)
@@ -66,7 +61,6 @@ namespace TEngine.Runtime
 
         public override void Destroy()
         {
-            ReleaseAll();
             base.Destroy();
         }
     }
