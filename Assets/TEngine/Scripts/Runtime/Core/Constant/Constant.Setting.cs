@@ -2,6 +2,11 @@ namespace TEngine
 {
     public static partial class Constant
     {
+        /// <summary>
+        /// 默认优先级。
+        /// </summary>
+        internal const int DefaultPriority = 0;
+        
         public static class Setting
         {
             public const string HotFixedDllName = "GameHotFixed";
