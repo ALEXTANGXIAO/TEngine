@@ -11,6 +11,8 @@ namespace TEngine.Runtime.ObjectPool
     [AddComponentMenu("TEngine/Object Pool")]
     public sealed class ObjectPoolComponent : UnitySingleton<ObjectPoolComponent>
     {
+        public IObjectPoolManager PoolManager => m_ObjectPoolManager;
+        
         private IObjectPoolManager m_ObjectPoolManager = null;
 
         /// <summary>
@@ -1025,11 +1027,11 @@ namespace TEngine.Runtime.ObjectPool
         {
             return m_ObjectPoolManager.DestroyObjectPool(objectPool);
         }
-
+        
         /// <summary>
         /// 释放对象池中的可释放对象。
         /// </summary>
-        public void Release()
+        public void ReleaseObject()
         {
             Log.Info("Object pool release...");
             m_ObjectPoolManager.Release();

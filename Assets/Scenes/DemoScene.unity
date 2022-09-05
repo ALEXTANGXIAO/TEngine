@@ -254,6 +254,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 96376813, guid: 161ff7c8132079c4a95e2e4e70ddd41b, type: 3}
+      propertyPath: m_EntityHelperTypeName
+      value: TEngine.Runtime.Entity.DefaultEntityHelper
+      objectReference: {fileID: 0}
+    - target: {fileID: 96376813, guid: 161ff7c8132079c4a95e2e4e70ddd41b, type: 3}
+      propertyPath: m_EntityGroupHelperTypeName
+      value: TEngine.Runtime.Entity.DefaultEntityGroupHelper
+      objectReference: {fileID: 0}
     - target: {fileID: 3463045026180535776, guid: 161ff7c8132079c4a95e2e4e70ddd41b,
         type: 3}
       propertyPath: m_Name
