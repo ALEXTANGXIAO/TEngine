@@ -1,7 +1,7 @@
 @SET EXCEL_FOLDER=xls
-@SET JSON_FOLDER=..\..\TResources\Config
+@SET JSON_FOLDER=..\..\..\TResources\Config
 @SET EXE= Tools\excel2json\excel2json.exe
-@SET CsharpPath=..\..\ConfigStruct
+@SET CsharpPath=..\..\..\ConfigStruct
 
 @ECHO Del old Config...
 del %JSON_FOLDER% /S /Q
