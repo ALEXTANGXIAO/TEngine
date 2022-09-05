@@ -26,6 +26,7 @@ namespace TEngine.Runtime
         }
 
         #region AddEventListener
+
         public void AddEventListener<T>(int eventId, Action<T> action)
         {
             _gameEvent.AddEventListener(eventId, action);
@@ -41,13 +42,25 @@ namespace TEngine.Runtime
             _gameEvent.AddEventListener(eventId, action);
         }
 
+        public void AddEventListener<T, U, W, X>(int eventId, Action<T, U, W, X> action)
+        {
+            _gameEvent.AddEventListener(eventId, action);
+        }
+
+        public void AddEventListener<T, U, W, X, Y>(int eventId, Action<T, U, W, X, Y> action)
+        {
+            _gameEvent.AddEventListener(eventId, action);
+        }
+
         public void AddEventListener(int eventId, Action action)
         {
             _gameEvent.AddEventListener(eventId, action);
         }
+
         #endregion
 
         #region RemoveEventListener
+
         public void RemoveEventListener<T>(int eventId, Action<T> action)
         {
             _gameEvent.RemoveEventListener(eventId, action);
@@ -63,13 +76,25 @@ namespace TEngine.Runtime
             _gameEvent.RemoveEventListener(eventId, action);
         }
 
+        public void RemoveEventListener<T, U, W, X>(int eventId, Action<T, U, W, X> action)
+        {
+            _gameEvent.RemoveEventListener(eventId, action);
+        }
+
+        public void RemoveEventListener<T, U, W, X, Y>(int eventId, Action<T, U, W, X, Y> action)
+        {
+            _gameEvent.RemoveEventListener(eventId, action);
+        }
+
         public void RemoveEventListener(int eventId, Action action)
         {
             _gameEvent.RemoveEventListener(eventId, action);
         }
+
         #endregion
 
         #region Send
+
         public void Send<T>(int eventId, T info)
         {
             _gameEvent.Send(eventId, info);
@@ -85,14 +110,27 @@ namespace TEngine.Runtime
             _gameEvent.Send(eventId, info, info2, info3);
         }
 
+        public void Send<T, U, W, X>(int eventId, T info, U info2, W info3, X info4)
+        {
+            _gameEvent.Send(eventId, info, info2, info3, info4);
+        }
+
+        public void Send<T, U, W, X, Y>(int eventId, T info, U info2, W info3, X info4, Y info5)
+        {
+            _gameEvent.Send(eventId, info, info2, info3, info4, info5);
+        }
+
         public void Send(int eventId)
         {
             _gameEvent.Send(eventId);
         }
+
         #endregion
 
         #region StringEvent
+
         #region AddEventListener
+
         public void AddEventListener<T>(string eventId, Action<T> action)
         {
             _gameEvent.AddEventListener(eventId, action);
@@ -112,9 +150,11 @@ namespace TEngine.Runtime
         {
             _gameEvent.AddEventListener(eventId, action);
         }
+
         #endregion
 
         #region RemoveEventListener
+
         public void RemoveEventListener<T>(string eventId, Action<T> action)
         {
             _gameEvent.RemoveEventListener(eventId, action);
@@ -134,9 +174,11 @@ namespace TEngine.Runtime
         {
             _gameEvent.RemoveEventListener(eventId, action);
         }
+
         #endregion
 
         #region Send
+
         public void Send<T>(string eventId, T info)
         {
             _gameEvent.Send(eventId, info);
@@ -156,15 +198,18 @@ namespace TEngine.Runtime
         {
             _gameEvent.Send(eventId);
         }
+
         #endregion
+
         #endregion
 
         #region Clear
+
         public void Clear()
         {
             _gameEvent.Clear();
         }
+
         #endregion
     }
-
 }
