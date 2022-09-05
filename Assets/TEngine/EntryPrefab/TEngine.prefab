@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1672025514}
-  - component: {fileID: 1672025515}
+  - component: {fileID: 1198523775}
   m_Layer: 0
   m_Name: ObjectPool
   m_TagString: Untagged
@@ -31,7 +31,7 @@ Transform:
   m_Father: {fileID: 3463045026180535779}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1672025515
+--- !u!114 &1198523775
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -40,10 +40,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1672025513}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bef095b963a40b54fa82ba105bd1e98e, type: 3}
+  m_Script: {fileID: 11500000, guid: 07d1c5a0df477d549a3a5799e3f81ad0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Limit: 100
 --- !u!1 &3463045025307533287
 GameObject:
   m_ObjectHideFlags: 0
