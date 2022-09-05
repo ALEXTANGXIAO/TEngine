@@ -4,6 +4,7 @@ using System.Collections.Generic;
 namespace TEngine.Runtime
 {
     #region EventInfo
+
     internal interface IEventInfo
     {
         void Free();
@@ -15,11 +16,7 @@ namespace TEngine.Runtime
 
         public Action Actions => _actions;
 
-        public int EventCount
-        {
-            set;
-            get;
-        }
+        public int EventCount { set; get; }
 
         public void AddAction(Action action)
         {
@@ -45,18 +42,13 @@ namespace TEngine.Runtime
         }
     }
 
-
     public class EventInfo<T> : IEventInfo, IMemory
     {
         private Action<T> _actions;
 
         public Action<T> Actions => _actions;
 
-        public int EventCount
-        {
-            set;
-            get;
-        }
+        public int EventCount { set; get; }
 
         public void AddAction(Action<T> action)
         {
@@ -88,11 +80,7 @@ namespace TEngine.Runtime
 
         public Action<T, U> Actions => _actions;
 
-        public int EventCount
-        {
-            set;
-            get;
-        }
+        public int EventCount { set; get; }
 
         public void AddAction(Action<T, U> action)
         {
@@ -124,11 +112,7 @@ namespace TEngine.Runtime
 
         public Action<T, U, W> Actions => _actions;
 
-        public int EventCount
-        {
-            set;
-            get;
-        }
+        public int EventCount { set; get; }
 
         public void AddAction(Action<T, U, W> action)
         {
@@ -153,6 +137,71 @@ namespace TEngine.Runtime
             MemoryPool.Release(this);
         }
     }
+
+    public class EventInfo<T, U, W, X> : IEventInfo, IMemory
+    {
+        private Action<T, U, W, X> _actions;
+
+        public Action<T, U, W, X> Actions => _actions;
+
+        public int EventCount { set; get; }
+
+        public void AddAction(Action<T, U, W, X> action)
+        {
+            _actions += action;
+            EventCount++;
+        }
+
+        public void RmvAction(Action<T, U, W, X> action)
+        {
+            _actions -= action;
+            EventCount--;
+        }
+
+        public void Clear()
+        {
+            EventCount = 0;
+            _actions = null;
+        }
+
+        public void Free()
+        {
+            MemoryPool.Release(this);
+        }
+    }
+
+    public class EventInfo<T, U, W, X, Y> : IEventInfo, IMemory
+    {
+        private Action<T, U, W, X, Y> _actions;
+
+        public Action<T, U, W, X, Y> Actions => _actions;
+
+        public int EventCount { set; get; }
+
+        public void AddAction(Action<T, U, W, X, Y> action)
+        {
+            _actions += action;
+            EventCount++;
+        }
+
+        public void RmvAction(Action<T, U, W, X, Y> action)
+        {
+            _actions -= action;
+            EventCount--;
+        }
+
+        public void Clear()
+        {
+            EventCount = 0;
+            _actions = null;
+        }
+
+        public void Free()
+        {
+            MemoryPool.Release(this);
+        }
+    }
+
     #endregion
 
     public class GameEvent : IMemory
@@ -173,6 +222,7 @@ namespace TEngine.Runtime
         private Dictionary<string, IEventInfo> m_eventStrDic = new Dictionary<string, IEventInfo>();
 
         #region AddEventListener
+
         public void AddEventListener<T>(int eventId, Action<T> action)
         {
             if (_eventDic.ContainsKey(eventId))
@@ -239,6 +289,50 @@ namespace TEngine.Runtime
             }
         }
 
+        public void AddEventListener<T, U, W, X>(int eventId, Action<T, U, W, X> action)
+        {
+            if (_eventDic.ContainsKey(eventId))
+            {
+                var eventInfo = _eventDic[eventId] as EventInfo<T, U, W, X>;
+                if (eventInfo != null)
+                {
+                    eventInfo.AddAction(action);
+                }
+                else
+                {
+                    throw new Exception("The Same GameEventId AddEventListener Need Same Args");
+                }
+            }
+            else
+            {
+                var eventInfo = MemoryPool.Acquire<EventInfo<T, U, W, X>>();
+                eventInfo.AddAction(action);
+                _eventDic.Add(eventId, eventInfo);
+            }
+        }
+
+        public void AddEventListener<T, U, W, X, Y>(int eventId, Action<T, U, W, X, Y> action)
+        {
+            if (_eventDic.ContainsKey(eventId))
+            {
+                var eventInfo = _eventDic[eventId] as EventInfo<T, U, W, X, Y>;
+                if (eventInfo != null)
+                {
+                    eventInfo.AddAction(action);
+                }
+                else
+                {
+                    throw new Exception("The Same GameEventId AddEventListener Need Same Args");
+                }
+            }
+            else
+            {
+                var eventInfo = MemoryPool.Acquire<EventInfo<T, U, W, X, Y>>();
+                eventInfo.AddAction(action);
+                _eventDic.Add(eventId, eventInfo);
+            }
+        }
+
         public void AddEventListener(int eventId, Action action)
         {
             if (_eventDic.ContainsKey(eventId))
@@ -260,9 +354,11 @@ namespace TEngine.Runtime
                 _eventDic.Add(eventId, eventInfo);
             }
         }
+
         #endregion
 
         #region RemoveEventListener
+
         public void RemoveEventListener<T>(int eventId, Action<T> action)
         {
             if (action == null)
@@ -341,6 +437,58 @@ namespace TEngine.Runtime
             }
         }
 
+        public void RemoveEventListener<T, U, W, X>(int eventId, Action<T, U, W, X> action)
+        {
+            if (action == null)
+            {
+                return;
+            }
+
+            if (_eventDic.ContainsKey(eventId))
+            {
+                var eventInfo = _eventDic[eventId] as EventInfo<T, U, W, X>;
+                if (eventInfo != null)
+                {
+                    eventInfo.RmvAction(action);
+                    if (eventInfo.EventCount <= 0)
+                    {
+                        _eventDic.Remove(eventId);
+                        MemoryPool.Release(eventInfo);
+                    }
+                }
+                else
+                {
+                    throw new Exception("The Same GameEventId RemoveEventListener Need Same Args");
+                }
+            }
+        }
+
+        public void RemoveEventListener<T, U, W, X, Y>(int eventId, Action<T, U, W, X, Y> action)
+        {
+            if (action == null)
+            {
+                return;
+            }
+
+            if (_eventDic.ContainsKey(eventId))
+            {
+                var eventInfo = _eventDic[eventId] as EventInfo<T, U, W, X, Y>;
+                if (eventInfo != null)
+                {
+                    eventInfo.RmvAction(action);
+                    if (eventInfo.EventCount <= 0)
+                    {
+                        _eventDic.Remove(eventId);
+                        MemoryPool.Release(eventInfo);
+                    }
+                }
+                else
+                {
+                    throw new Exception("The Same GameEventId RemoveEventListener Need Same Args");
+                }
+            }
+        }
+
         public void RemoveEventListener(int eventId, Action action)
         {
             if (action == null)
@@ -366,9 +514,11 @@ namespace TEngine.Runtime
                 }
             }
         }
+
         #endregion
 
         #region Send
+
         public void Send<T>(int eventId, T info)
         {
             if (_eventDic.ContainsKey(eventId))
@@ -405,6 +555,30 @@ namespace TEngine.Runtime
             }
         }
 
+        public void Send<T, U, W, X>(int eventId, T info, U info2, W info3, X info4)
+        {
+            if (_eventDic.ContainsKey(eventId))
+            {
+                var eventInfo = _eventDic[eventId] as EventInfo<T, U, W, X>;
+                if (eventInfo != null)
+                {
+                    eventInfo.Actions?.Invoke(info, info2, info3, info4);
+                }
+            }
+        }
+
+        public void Send<T, U, W, X, Y>(int eventId, T info, U info2, W info3, X info4, Y Info5)
+        {
+            if (_eventDic.ContainsKey(eventId))
+            {
+                var eventInfo = _eventDic[eventId] as EventInfo<T, U, W, X, Y>;
+                if (eventInfo != null)
+                {
+                    eventInfo.Actions?.Invoke(info, info2, info3, info4, Info5);
+                }
+            }
+        }
+
         public void Send(int eventId)
         {
             if (_eventDic.ContainsKey(eventId))
@@ -416,10 +590,13 @@ namespace TEngine.Runtime
                 }
             }
         }
+
         #endregion
 
         #region StringEvent
+
         #region AddEventListener
+
         public void AddEventListener<T>(string eventId, Action<T> action)
         {
             if (m_eventStrDic.ContainsKey(eventId))
@@ -507,9 +684,11 @@ namespace TEngine.Runtime
                 m_eventStrDic.Add(eventId, eventInfo);
             }
         }
+
         #endregion
 
         #region RemoveEventListener
+
         public void RemoveEventListener<T>(string eventId, Action<T> action)
         {
             if (action == null)
@@ -613,9 +792,11 @@ namespace TEngine.Runtime
                 }
             }
         }
+
         #endregion
 
         #region Send
+
         public void Send<T>(string eventId, T info)
         {
             if (m_eventStrDic.ContainsKey(eventId))
@@ -663,10 +844,13 @@ namespace TEngine.Runtime
                 }
             }
         }
+
         #endregion
+
         #endregion
 
         #region Clear
+
         public void Clear()
         {
             var etr = _eventDic.GetEnumerator();
@@ -675,6 +859,7 @@ namespace TEngine.Runtime
                 var eventInfo = etr.Current.Value;
                 eventInfo.Free();
             }
+
             etr.Dispose();
 
             var etrStr = m_eventStrDic.GetEnumerator();
@@ -683,11 +868,13 @@ namespace TEngine.Runtime
                 var eventInfo = etrStr.Current.Value;
                 eventInfo.Free();
             }
+
             etrStr.Dispose();
 
             _eventDic.Clear();
             m_eventStrDic.Clear();
         }
+
         #endregion
     }
 }
