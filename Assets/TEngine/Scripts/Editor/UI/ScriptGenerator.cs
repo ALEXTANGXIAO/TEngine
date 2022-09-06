@@ -55,6 +55,7 @@ namespace TEngine.Editor
                     strFile.Append("using TEngine;\n");
                     strFile.Append("using UnityEngine;\n");
                     strFile.Append("using UnityEngine.UI;\n\n");
+                    strFile.Append("using TEngine.Runtime.UIModule;\n\n");
                     strFile.Append("\tclass " + root.name + " : UIWindow\n");
                     strFile.Append("\t{\n");
                 }
