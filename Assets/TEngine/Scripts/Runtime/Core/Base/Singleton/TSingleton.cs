@@ -20,13 +20,6 @@ namespace TEngine.Runtime
         void Release();
     }
 
-    public interface IUnitySingleton
-    {
-        int GetPriority();
-        
-        void OnUpdate(float elapseSeconds, float realElapseSeconds);
-    }
-
     /// <summary>
     /// 单例管理器(统一化持久和释放)
     /// </summary>
@@ -34,7 +27,6 @@ namespace TEngine.Runtime
     {
         private static List<ISingleton> _iSingletonList;
         private static Dictionary<string, GameObject> _gameObjects;
-        private static List<IUnitySingleton> _unitySingletons;
         private static GameObject _root;
         public static GameObject Root
         {

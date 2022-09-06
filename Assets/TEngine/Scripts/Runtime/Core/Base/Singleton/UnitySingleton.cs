@@ -6,7 +6,7 @@ namespace TEngine.Runtime
     /// 具备Unity完整生命周期的单例
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class UnitySingleton<T> : MonoBehaviour,IUnitySingleton where T : MonoBehaviour
+    public class UnitySingleton<T> : MonoBehaviour,IUpdateSystem where T : MonoBehaviour
     {
 
         private static T _instance;

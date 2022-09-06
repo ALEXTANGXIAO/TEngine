@@ -2,55 +2,62 @@
 
 namespace TEngine.Runtime
 {
+    public interface IUpdateSystem
+    {
+        int GetPriority();
+        
+        void OnUpdate(float elapseSeconds, float realElapseSeconds);
+    }
+    
     /// <summary>
     /// 实现UnitySingleton的OnUpdate
     /// </summary>
     internal class UpdateInstance : BehaviourSingleton<UpdateInstance>
     {
-        public List<IUnitySingleton> UnitySingletons;
+        public List<IUpdateSystem> UpdateSystems;
 
         public UpdateInstance()
         {
-            UnitySingletons = new List<IUnitySingleton>();
+            UpdateSystems = new List<IUpdateSystem>();
         }
 
-        public void Retain(IUnitySingleton unitySingleton)
+        public void Retain(IUpdateSystem updateSystem)
         {
-            if (UnitySingletons.Contains(unitySingleton))
+            if (UpdateSystems.Contains(updateSystem))
             {
-                Log.Fatal($"Repeat Retain UnitySingleton{unitySingleton}");
+                Log.Fatal($"Repeat Retain UnitySingleton{updateSystem}");
             }
             else
             {
-                UnitySingletons.Add(unitySingleton);
+                UpdateSystems.Add(updateSystem);
 
-                UnitySingletons.Sort((x, y) => -x.GetPriority().CompareTo(y.GetPriority()));
+                UpdateSystems.Sort((x, y) => -x.GetPriority().CompareTo(y.GetPriority()));
             }
         }
 
-        public void Release(IUnitySingleton unitySingleton)
+        public void Release(IUpdateSystem updateSystem)
         {
-            if (UnitySingletons.Contains(unitySingleton))
+            if (UpdateSystems.Contains(updateSystem))
             {
-                UnitySingletons.Remove(unitySingleton);
+                UpdateSystems.Remove(updateSystem);
             }
         }
 
         public void ReleaseAll()
         {
-            var count = UnitySingletons.Count;
-            for (int i = 0; i < count; i++)
+            var count = UpdateSystems.Count;
+            for (int i = count-1; i >= 0; i--)
             {
-                Release(UnitySingletons[i]);
+                Release(UpdateSystems[i]);
             }
         }
 
         public override void Update()
         {
-            var count = UnitySingletons.Count;
+            var count = UpdateSystems.Count;
             for (int i = 0; i < count; i++)
             {
-                UnitySingletons[i].OnUpdate(UnityEngine.Time.deltaTime, UnityEngine.Time.unscaledDeltaTime);
+                UpdateSystems[i].OnUpdate(UnityEngine.Time.deltaTime, UnityEngine.Time.unscaledDeltaTime);
             }
         }
 
