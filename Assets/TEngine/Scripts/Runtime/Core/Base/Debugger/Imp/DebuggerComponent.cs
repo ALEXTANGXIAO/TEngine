@@ -34,7 +34,7 @@ namespace TEngine.Runtime
     /// </summary>
     [DisallowMultipleComponent]
     [AddComponentMenu("TEngine/Debugger")]
-    partial class DebuggerComponent : MonoBehaviour
+    partial class DebuggerComponent : UnitySingleton<DebuggerComponent>
     {
         /// <summary>
         /// 默认调试器漂浮框大小。
@@ -147,8 +147,9 @@ namespace TEngine.Runtime
             }
         }
 
-        private void Awake()
+        public override void Awake()
         {
+            base.Awake();
             Object.DontDestroyOnLoad(gameObject.transform.parent);
             m_DebuggerManager = DebuggerManager.Instance;
             if (m_DebuggerManager == null)
@@ -158,7 +159,6 @@ namespace TEngine.Runtime
             }
             m_FpsCounter = new FpsCounter(0.5f);
         }
-
 
         #region Debug系统
         private SystemInformationWindow m_SystemInformationWindow = new SystemInformationWindow();
@@ -187,7 +187,7 @@ namespace TEngine.Runtime
         private RuntimeMemoryInformationWindow<Font> m_RuntimeMemoryFontInformationWindow = new RuntimeMemoryInformationWindow<Font>();
         private RuntimeMemoryInformationWindow<TextAsset> m_RuntimeMemoryTextAssetInformationWindow = new RuntimeMemoryInformationWindow<TextAsset>();
         private RuntimeMemoryInformationWindow<ScriptableObject> m_RuntimeMemoryScriptableObjectInformationWindow = new RuntimeMemoryInformationWindow<ScriptableObject>();
-
+        private ObjectPoolInformationWindow m_ObjectPoolInformationWindow = new ObjectPoolInformationWindow();
         private MemoryPoolInformationWindow m_MemoryPoolInformationWindow = new MemoryPoolInformationWindow();
         private NetworkInformationWindow m_NetworkInformationWindow = new NetworkInformationWindow();
 
@@ -228,6 +228,7 @@ namespace TEngine.Runtime
             RegisterDebuggerWindow("Profiler/Memory/TextAsset", m_RuntimeMemoryTextAssetInformationWindow);
             RegisterDebuggerWindow("Profiler/Memory/ScriptableObject", m_RuntimeMemoryScriptableObjectInformationWindow);
 
+            RegisterDebuggerWindow("Profiler/Object Pool", m_ObjectPoolInformationWindow);
             RegisterDebuggerWindow("Profiler/Memory Pool", m_MemoryPoolInformationWindow);
             RegisterDebuggerWindow("Profiler/Network", m_NetworkInformationWindow);
 
@@ -264,9 +265,9 @@ namespace TEngine.Runtime
             m_DebuggerManager.RegisterDebuggerWindow(path, debuggerWindow, args);
         }
 
-        private void Update()
+        public override void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            m_FpsCounter.Update(Time.deltaTime, Time.unscaledDeltaTime);
+            m_FpsCounter.Update(elapseSeconds,realElapseSeconds);
         }
 
         private void OnGUI()
