@@ -6,7 +6,7 @@ namespace TEngine.Runtime.Entity
     /// <summary>
     /// 实体。
     /// </summary>
-    public sealed class Entity : MonoBehaviour, IEntity
+    public partial class Entity : MonoBehaviour, IEntity
     {
         private int m_Id;
         private string m_EntityAssetName;

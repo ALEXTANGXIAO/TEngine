@@ -4,8 +4,8 @@ using TEngine.Runtime.Entity;
 
 namespace TEngine.Editor
 {
-    [CustomEditor(typeof(EntityComponent))]
-    internal sealed class EntityComponentInspector : TEngineInspector
+    [CustomEditor(typeof(EntitySystem))]
+    internal sealed class EntitySystemInspector : TEngineInspector
     {
         private SerializedProperty m_EnableShowEntityUpdateEvent = null;
         private SerializedProperty m_EnableShowEntityDependencyAssetEvent = null;
@@ -23,7 +23,7 @@ namespace TEngine.Editor
 
             serializedObject.Update();
 
-            EntityComponent t = (EntityComponent)target;
+            EntitySystem t = (EntitySystem)target;
 
             EditorGUI.BeginDisabledGroup(EditorApplication.isPlayingOrWillChangePlaymode);
             {

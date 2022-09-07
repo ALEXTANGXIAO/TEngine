@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace TEngine.Runtime.Entity
 {
-    public sealed partial class EntityComponent
+    public sealed partial class EntitySystem
     {
         [Serializable]
         private sealed class EntityGroup

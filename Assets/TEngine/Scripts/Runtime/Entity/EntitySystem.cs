@@ -9,8 +9,8 @@ namespace TEngine.Runtime.Entity
     /// 实体组件。
     /// </summary>
     [DisallowMultipleComponent]
-    [AddComponentMenu("TEngine/EntityManager")]
-    public sealed partial class EntityComponent : UnitySingleton<EntityComponent>
+    [AddComponentMenu("TEngine/EntitySys")]
+    public sealed partial class EntitySystem : UnitySingleton<EntitySystem>
     {
         private const int DefaultPriority = 0;
 
