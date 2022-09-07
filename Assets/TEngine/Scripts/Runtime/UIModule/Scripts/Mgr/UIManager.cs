@@ -51,9 +51,9 @@ namespace TEngine.Runtime.UIModule
             for (int i = 0; i < (int)WindowStackIndex.StackMax; i++)
             {
                 m_listWindowStack[i] = new UIWindowStack();
-                m_listWindowStack[i].m_stackIndex = (WindowStackIndex)i;
-                m_listWindowStack[i].m_baseOrder = baseOrder;
-                m_listWindowStack[i].m_parentTrans = windowRoot;
+                m_listWindowStack[i].StackIndex = (WindowStackIndex)i;
+                m_listWindowStack[i].BaseOrder = baseOrder;
+                m_listWindowStack[i].ParentTrans = windowRoot;
                 baseOrder += 1000;
             }
 
@@ -65,7 +65,7 @@ namespace TEngine.Runtime.UIModule
             CanvasScaler canvasScale = m_canvas.GetComponent<CanvasScaler>();
             if (canvasScale != null)
             {
-                canvasScale.referenceResolution = new Vector2(UISys.DesginWidth, UISys.DesginHeight);
+                canvasScale.referenceResolution = new Vector2(UISys.DesignWidth, UISys.DesignHeight);
                 float sceneScale = Screen.width / (float)Screen.height;
                 float designScale = canvasScale.referenceResolution.x / canvasScale.referenceResolution.y;
                 canvasScale.matchWidthOrHeight = sceneScale > designScale ? 1 : 0;
@@ -109,8 +109,7 @@ namespace TEngine.Runtime.UIModule
         }
 
         #region Methods
-
-        public T ShowWindow<T>(bool isAsync = false) where T : UIWindow, new()
+        public T ShowWindow<T>() where T : UIWindow, new()
         {
             string typeName = GetWindowTypeName<T>();
 
@@ -118,12 +117,11 @@ namespace TEngine.Runtime.UIModule
             if (window == null)
             {
                 window = new T();
-                if (!CreateWindowByType(window, typeName, isAsync))
+                if (!CreateWindowByType(window, typeName))
                 {
                     return null;
                 }
             }
-
             ShowWindow(window, -1);
             return window;
         }
@@ -171,7 +169,7 @@ namespace TEngine.Runtime.UIModule
 
         #endregion
 
-        private bool CreateWindowByType(UIWindow window, string typeName, bool async = false)
+        private bool CreateWindowByType(UIWindow window, string typeName)
         {
             //先判断是否有缓存
             GameObject uiGo = null;
@@ -184,59 +182,12 @@ namespace TEngine.Runtime.UIModule
             }
 
             UIWindowStack windowStack = GetUIWindowStack(window);
+            uiGo = TResources.Load(resPath, windowStack.ParentTrans);
 
-            if (async)
-            {
-                TResources.LoadAsync(resPath, (obj) =>
-                {
-                    if (obj == null)
-                    {
-                        Debug.LogErrorFormat("CreateWindowByType failed, typeName:{0}, load prefab failed: {1}",
-                            typeName, resPath);
-                    }
-
-                    if (obj != null && windowStack.m_parentTrans != null)
-                    {
-                        obj.transform.SetParent(windowStack.m_parentTrans);
-                    }
-
-                    obj.name = typeName;
-
-                    window.AllocWindowId();
-
-                    var rectTrans_ = obj.transform as RectTransform;
-                    if (window.NeedCenterUI())
-                    {
-                        rectTrans_.SetMax(); //localPosition = new Vector3(0, 0, 0);
-                    }
-
-                    rectTrans_.localRotation = Quaternion.identity;
-                    rectTrans_.localScale = Vector3.one;
-
-                    if (!window.Create(this, obj))
-                    {
-                        Debug.LogErrorFormat("window create failed, typeName:{0}", typeName);
-                        if (obj != null)
-                        {
-                            Object.Destroy(obj);
-                            obj = null;
-                        }
-                    }
-
-                    m_typeToInst[typeName] = window;
-                    m_allWindow[window.WindowId] = window;
-                    m_tmpWindowListDirty = true;
-                });
-                return true;
-            }
-
-            uiGo = TResources.Load(resPath, windowStack.m_parentTrans);
             if (uiGo == null)
             {
                 Debug.LogErrorFormat("CreateWindowByType failed, typeName:{0}, load prefab failed: {1}", typeName,
                     resPath);
-                //UISys.Mgr.ShowTipMsg(TextDefine.DOWNLOAD_TIP_UI);
-                //GameEvent.Get<IHomePageUI>().ShowDownloadUI();
                 return false;
             }
 
@@ -247,7 +198,7 @@ namespace TEngine.Runtime.UIModule
             RectTransform rectTrans = uiGo.transform as RectTransform;
             if (window.NeedCenterUI())
             {
-                rectTrans.SetMax(); //localPosition = new Vector3(0, 0, 0);
+                rectTrans.SetMax();
             }
 
             rectTrans.localRotation = Quaternion.identity;
@@ -289,7 +240,7 @@ namespace TEngine.Runtime.UIModule
         private void ShowWindow(UIWindow window, int showIndex)
         {
             UIWindowStack windowStack = GetUIWindowStack(window);
-            List<uint> windowList = windowStack.m_windowList;
+            List<uint> windowList = windowStack.WindowsList;
             int resortIndex = -1;
             int findIndex = windowList.IndexOf(window.WindowId);
             if (findIndex >= 0)
@@ -306,23 +257,23 @@ namespace TEngine.Runtime.UIModule
 
         private void ResortStackUI(UIWindowStack stack, int startIdx)
         {
-            if (stack.m_windowList.Count > 0)
+            if (stack.WindowsList.Count > 0)
             {
-                startIdx = startIdx < 0 ? (stack.m_windowList.Count - 1) : startIdx;
-                for (int i = startIdx; i < stack.m_windowList.Count; i++)
+                startIdx = startIdx < 0 ? (stack.WindowsList.Count - 1) : startIdx;
+                for (int i = startIdx; i < stack.WindowsList.Count; i++)
                 {
-                    uint windowId = stack.m_windowList[i];
+                    uint windowId = stack.WindowsList[i];
                     UIWindow window = FindWindow(windowId);
                     if (window != null)
                     {
                         int order;
                         if (window.IsFixedSortingOrder)
                         {
-                            order = stack.m_baseOrder + window.FixedAdditionalOrder;
+                            order = stack.BaseOrder + window.FixedAdditionalOrder;
                         }
                         else
                         {
-                            order = stack.m_baseOrder + i * UIWindow.MaxCanvasSortingOrder;
+                            order = stack.BaseOrder + i * UIWindow.MaxCanvasSortingOrder;
                         }
 
                         window.SortingOrder = order;
@@ -333,12 +284,12 @@ namespace TEngine.Runtime.UIModule
 
         private void ShowTopUI(UIWindowStack stack)
         {
-            if (stack.m_windowList.Count > 0)
+            if (stack.WindowsList.Count > 0)
             {
                 bool hasTop = false;
-                for (int i = stack.m_windowList.Count - 1; i >= 0; i--)
+                for (int i = stack.WindowsList.Count - 1; i >= 0; i--)
                 {
-                    uint windowId = stack.m_windowList[i];
+                    uint windowId = stack.WindowsList[i];
                     UIWindow window = FindWindow(windowId);
                     if (window != null)
                     {
@@ -370,7 +321,7 @@ namespace TEngine.Runtime.UIModule
                     continue;
                 }
 
-                var listWindow = stack.m_windowList;
+                var listWindow = stack.WindowsList;
                 for (int k = 0; k < listWindow.Count; k++)
                 {
                     var winId = listWindow[k];
@@ -387,7 +338,6 @@ namespace TEngine.Runtime.UIModule
                     }
                 }
             }
-            //SceneSys.Instance.CameraMgr.SetSceneCameraEnableByUI(true);
         }
 
         public UIWindow FindWindow(uint windowId)
@@ -422,7 +372,6 @@ namespace TEngine.Runtime.UIModule
 
             int findIndex = windowStack.FindIndex(window.WindowId);
 
-            //window.Destroy();
             DestroyWindowObject(window);
 
             ResortStackUI(windowStack, findIndex);
@@ -441,7 +390,7 @@ namespace TEngine.Runtime.UIModule
             uint windowId = window.WindowId;
             m_allWindow.Remove(windowId);
             UIWindowStack windowStack = GetUIWindowStack(window);
-            windowStack.m_windowList.Remove(windowId);
+            windowStack.WindowsList.Remove(windowId);
             window.Destroy();
             m_tmpWindowListDirty = true;
         }

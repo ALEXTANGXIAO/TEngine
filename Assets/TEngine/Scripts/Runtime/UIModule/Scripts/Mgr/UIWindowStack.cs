@@ -12,21 +12,20 @@ namespace TEngine.Runtime.UIModule
 
     public class UIWindowStack
     {
-        public WindowStackIndex m_stackIndex;
-        public int m_baseOrder = 0;
-        public List<uint> m_windowList = new List<uint>();
-        public Transform m_parentTrans;
+        public WindowStackIndex StackIndex;
+        public int BaseOrder = 0;
+        public readonly List<uint> WindowsList = new List<uint>();
+        public Transform ParentTrans;
 
         public int FindIndex(uint windowId)
         {
-            for (int i = 0; i < m_windowList.Count; i++)
+            for (int i = 0; i < WindowsList.Count; i++)
             {
-                if (m_windowList[i] == windowId)
+                if (WindowsList[i] == windowId)
                 {
                     return i;
                 }
             }
-
             return -1;
         }
     }
