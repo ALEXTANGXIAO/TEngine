@@ -291,11 +291,18 @@ TEngine
 #### <a href="https://github.com/focus-creative-games/hybridclr"><strong>HybridCLR</strong></a> - 特性完整、零成本、高性能、低内存的近乎完美的Unity全平台原生c#热更方案
 
 
-## <strong>Buy me a coffee.
-您的赞助会让我们做得更快更好，如果觉得TEngine有帮助，不妨赞助我买杯咖啡吧~
-<p align="center">
-    <img src="http://1.12.241.46:8081/TEngine/微信.png" alt="logo" width="384" height="384">
-</p>
-<p align="center">
-    <img src="http://1.12.241.46:8081/TEngine/支付宝.jpg" alt="logo" width="384" height="384">
-</p>
+[//]: # (## <strong>Buy me a coffee.)
+
+[//]: # (您的赞助会让我们做得更快更好，如果觉得TEngine有帮助，不妨赞助我买杯咖啡吧~)
+
+[//]: # (<p align="center">)
+
+[//]: # (    <img src="http://1.12.241.46:8081/TEngine/微信.png" alt="logo" width="384" height="384">)
+
+[//]: # (</p>)
+
+[//]: # (<p align="center">)
+
+[//]: # (    <img src="http://1.12.241.46:8081/TEngine/支付宝.jpg" alt="logo" width="384" height="384">)
+
+[//]: # (</p>)
