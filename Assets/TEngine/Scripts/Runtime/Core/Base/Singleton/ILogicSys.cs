@@ -15,6 +15,8 @@
         void OnPause();
 
         void OnResume();
+
+        void OnDrawGizmos();
     }
 
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TEngine.Runtime
@@ -152,6 +153,16 @@ namespace TEngine.Runtime
             }
             base.OnDestroy();
         }
+
+        public void OnDrawGizmos()
+        {
+            for (int i = 0; i < m_LogicMgrList.Count; i++)
+            {
+                var logicSys = m_LogicMgrList[i];
+                logicSys.OnDrawGizmos();
+            }
+        }
+
         #endregion
     }
 }

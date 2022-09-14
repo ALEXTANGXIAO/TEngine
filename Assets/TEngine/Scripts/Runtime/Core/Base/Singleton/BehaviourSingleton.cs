@@ -72,6 +72,10 @@ namespace TEngine.Runtime
         public virtual void OnResume()
         {
         }
+        
+        public virtual void OnDrawGizmos()
+        {
+        }
     }
 
     public class BehaviourSingleSystem : BaseLogicSys<BehaviourSingleSystem>
@@ -205,6 +209,15 @@ namespace TEngine.Runtime
             {
                 var inst = m_listInst[i];
                 inst.OnResume();
+            }
+        }
+        
+        public override void OnDrawGizmos()
+        {
+            for (int i = 0; i < m_listInst.Count; i++)
+            {
+                var inst = m_listInst[i];
+                inst.OnDrawGizmos();
             }
         }
     }
