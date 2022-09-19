@@ -17,25 +17,25 @@ namespace TEngine.Runtime.Actor
 
         #region component
 
-        public T AddComponent<T>() where T : ActorComponent, new()
+        public T Attach<T>() where T : ActorComponent, new()
         {
             if (IsDestroyed || _isDestroying)
             {
-                Log.Fatal("Actor is destroyed, cant add component: {0}, Is Destroying[{1}]",
+                Log.Fatal("Actor is destroyed, cant attach component: {0}, Is Destroying[{1}]",
                     GetClassName(typeof(T)), _isDestroying);
                 return null;
             }
 
-            T component = GetComponent<T>();
+            T component = Get<T>();
             if (component != null)
             {
                 return component;
             }
 
             component = ActorComponentPool.Instance.AllocComponent<T>();
-            if (!AddComponentImp(component))
+            if (!AttachImp(component))
             {
-                Log.Warning("AddComponent failed, Component name: {0}", GetClassName(typeof(T)));
+                Log.Warning("Attach failed, Component name: {0}", GetClassName(typeof(T)));
                 component.BeforeDestroy();
                 ActorComponentPool.Instance.FreeComponent(component);
                 return null;
@@ -44,7 +44,7 @@ namespace TEngine.Runtime.Actor
             return component;
         }
 
-        public T GetComponent<T>() where T : ActorComponent
+        public T Get<T>() where T : ActorComponent
         {
             ActorComponent component;
             if (_mapComponents.TryGetValue(GetClassName(typeof(T)), out component))
@@ -55,7 +55,7 @@ namespace TEngine.Runtime.Actor
             return null;
         }
 
-        public void RemoveComponent<T>() where T : ActorComponent
+        public void Detach<T>() where T : ActorComponent
         {
             if (_isDestroying)
             {
@@ -77,9 +77,9 @@ namespace TEngine.Runtime.Actor
             }
         }
 
-        private bool AddComponentImp<T>(T component) where T : ActorComponent
+        private bool AttachImp<T>(T component) where T : ActorComponent
         {
-            if (!component.BeforeAddToActor(this))
+            if (!component.BeforeAttachToActor(this))
             {
                 return false;
             }
