@@ -75,12 +75,6 @@ namespace TEngine.Runtime.Actor
             return "UNNAMED";
         }
         #endregion
-
-        #region Actions
-        public Action Awake;
-        public Action OnInit;
-        public Action AfterInit;
-        #endregion
         
         #region Transform
         public Transform transform
@@ -184,9 +178,27 @@ namespace TEngine.Runtime.Actor
         #endregion
 
         #region Init
-        public GameActor()
+        internal void Init()
         {
-                        
+            Awake();
+            BaseInit();
+            OnInit();
+            AfterInit();
+        }
+
+        public virtual void Awake()
+        {
+            
+        }
+        
+        public virtual void OnInit()
+        {
+            
+        }
+        
+        public virtual void AfterInit()
+        {
+            
         }
         
         protected virtual GameObject CreateGameObject()
