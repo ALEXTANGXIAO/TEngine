@@ -9,8 +9,8 @@ namespace TEngine.Runtime.Actor
     /// </summary>
     public abstract class ActorComponent
     {
-        public bool m_callStart = false;
-        private bool m_calledOnDestroy = false;
+        internal bool m_callStart = false;
+        internal bool m_calledOnDestroy = false;
         protected GameActor m_actor;
 
         private List<RegisterAttrChangeData> m_registAttrChanged = new List<RegisterAttrChangeData>();
@@ -69,7 +69,6 @@ namespace TEngine.Runtime.Actor
 
         protected void StopLoopUpdate()
         {
-            ///如果是持久update的类型
             if (!m_callStart)
             {
                 m_needLoopUpdate = false;
@@ -154,7 +153,7 @@ namespace TEngine.Runtime.Actor
         /// </summary>
         /// <param name="actor"></param>
         /// <returns></returns>
-        public bool BeforeAddToActor(GameActor actor)
+        public bool BeforeAttachToActor(GameActor actor)
         {
             m_actor = actor;
             m_callStart = false;
