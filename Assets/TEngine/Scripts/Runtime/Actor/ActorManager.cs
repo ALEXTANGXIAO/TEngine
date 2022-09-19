@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+
 namespace TEngine.Runtime.Actor
 {
     public partial class ActorType
@@ -25,12 +26,7 @@ namespace TEngine.Runtime.Actor
         private Dictionary<int, System.Type> _actorTypes = new Dictionary<int, System.Type>();
         public Transform ActorRootTrans { get; set; }
 
-        /// <summary>
-        /// 注册Actor类型便于创建
-        /// </summary>
-        /// <param name="actorType"></param>
-        /// <param name="type"></param>
-        public void RegisterActorTypes(int actorType,System.Type type)
+        public void RegisterActorType(int actorType,System.Type type)
         {
             if (!_actorTypes.ContainsKey(actorType))
             {
@@ -38,9 +34,31 @@ namespace TEngine.Runtime.Actor
             }
         }
 
+        private void RegisterAllTypes()
+        {
+            System.Type baseType = typeof(GameActor);
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            System.Type[] types = assembly.GetTypes();
+            for (int i = 0; i < types.Length; i++)
+            {
+                if (!types[i].IsClass || types[i].IsAbstract)
+                {
+                    continue;
+                }
+                if (types[i].BaseType == baseType)
+                {
+                    GameActor actor = (GameActor)System.Activator.CreateInstance(types[i]);
+                    RegisterActorType(actor.GetActorType(),actor.GetType());
+                    actor = null;
+                }
+            }
+        }
+
         public override void Awake()
         {
             InitActorRoot();
+
+            RegisterAllTypes();
 
             _tickRefreshVisible = TimerMgr.Instance.AddTimer(o => { RefreshActorVisible(); }, 1f, true, true);
         }
@@ -156,8 +174,7 @@ namespace TEngine.Runtime.Actor
         {
             GameActor ret = null;
 
-            GameActor actorSave;
-            if (_actorPool.TryGetValue(actorID, out actorSave))
+            if (_actorPool.ContainsKey(actorID))
             {
                 var oldActor = _actorPool[actorID];
                 var oldActorType = oldActor.GetActorType();
@@ -187,6 +204,8 @@ namespace TEngine.Runtime.Actor
             {
                 SetMainPlayer(ret);
             }
+            
+            ret.Init();
 
             return ret;
         }
