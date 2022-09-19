@@ -10,18 +10,19 @@ namespace TEngine.Runtime.Actor
     public abstract partial class GameActor
     {
         #region Propreties
+
         public uint ActorId { get; set; }
 
         public bool IsCreated { get; set; }
-        
+
         public byte ActorSide;
-        
+
         public abstract int GetActorType();
 
         public bool IsDestroyed { get; set; }
 
         public string Name = string.Empty;
-        
+
         private ActorEventDispatcher _event = new ActorEventDispatcher();
 
         public ActorEventDispatcher Event => _event;
@@ -29,11 +30,11 @@ namespace TEngine.Runtime.Actor
         private GameObject _gameObject;
 
         public GameObject gameObject => _gameObject;
-        
+
         private float _visibleTime = 0;
-        
+
         private bool _visible;
-        
+
         public bool Visible
         {
             get { return _visible; }
@@ -51,16 +52,17 @@ namespace TEngine.Runtime.Actor
                     {
                         _visibleTime = Time.time;
                     }
+
                     Event.SendEvent(ActorEventType.ModelVisibleChange, _visible);
                 }
             }
         }
-        
+
         public virtual bool CheckActorCanVisible()
         {
             return true;
         }
-        
+
         public string GetGameObjectName()
         {
 #if UNITY_EDITOR
@@ -69,14 +71,16 @@ namespace TEngine.Runtime.Actor
             return "GameActor";
 #endif
         }
-        
+
         public virtual string GetActorName()
         {
             return "UNNAMED";
         }
+
         #endregion
-        
+
         #region Transform
+
         public Transform transform
         {
             get
@@ -85,7 +89,7 @@ namespace TEngine.Runtime.Actor
                 {
                     throw new Exception("Runtime GameActor gameObject is Null");
                 }
-                
+
                 return gameObject.transform;
             }
         }
@@ -133,7 +137,7 @@ namespace TEngine.Runtime.Actor
                 transform.forward = value;
             }
         }
-        
+
         public Vector3 LocalScale
         {
             get
@@ -155,7 +159,7 @@ namespace TEngine.Runtime.Actor
                 transform.localScale = value;
             }
         }
-        
+
         public Quaternion Rotation
         {
             get
@@ -175,9 +179,11 @@ namespace TEngine.Runtime.Actor
                 }
             }
         }
+
         #endregion
 
         #region Init
+
         internal void Init()
         {
             Awake();
@@ -188,19 +194,16 @@ namespace TEngine.Runtime.Actor
 
         public virtual void Awake()
         {
-            
         }
-        
+
         public virtual void OnInit()
         {
-            
         }
-        
+
         public virtual void AfterInit()
         {
-            
         }
-        
+
         protected virtual GameObject CreateGameObject()
         {
             return ActorManager.Instance.CreateGameObject(this);
@@ -213,12 +216,12 @@ namespace TEngine.Runtime.Actor
                 _visible = false;
 
                 _gameObject = CreateGameObject();
-                
-                ActorManager.Instance.BindGameActorGo(this,_gameObject);
+
+                ActorManager.Instance.BindGameActorGo(this, _gameObject);
             }
+
             InitExt();
         }
-        
 
         #endregion
 
@@ -237,18 +240,20 @@ namespace TEngine.Runtime.Actor
             if (gameObject != null)
             {
                 Object.Destroy(_gameObject);
-                
+
                 _gameObject = null;
             }
 
             IsDestroyed = true;
             _isDestroying = false;
         }
+
         #endregion
 
         #region Expand
 
         #region Base
+
         public static bool operator ==(GameActor obj1, GameActor obj2)
         {
             if (ReferenceEquals(obj1, obj2))
@@ -282,6 +287,7 @@ namespace TEngine.Runtime.Actor
         {
             return base.GetHashCode();
         }
+
         #endregion
 
         #endregion
