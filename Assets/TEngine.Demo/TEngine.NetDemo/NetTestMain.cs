@@ -7,6 +7,10 @@ using UnityEngine;
 public class NetTestMain : MonoBehaviour
 {
     public const string MainTcp = "MainTcp";
+
+    public string Ip = "127.0.0.1";
+
+    public int Port = 8080;
     
     void Start()
     {
@@ -32,7 +36,7 @@ public class NetTestMain : MonoBehaviour
         _networkChannel = TEngine.Runtime.Network.Instance.CreateNetworkChannel(MainTcp, ServiceType.Tcp, new NetworkChannelHelper());
          
         //连接Channel 本地8081 需要开启服务器
-        _networkChannel.Connect(IPAddress.Parse("127.0.0.1"),8081);
+        _networkChannel.Connect(IPAddress.Parse(Ip),Port);
         
         //注册消息包回调 ActionCode.Login -> Action Login
         TEngine.Runtime.Network.Instance.RegisterHandler(MainTcp,(int)ActionCode.Login,Login);
