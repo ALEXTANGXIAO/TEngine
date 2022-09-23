@@ -6,15 +6,20 @@ namespace TEngine.Runtime.Actor
 {
     public class ActorEntity : EntityLogicEx
     {
-        protected override void OnInit(object userData)
+        protected override void OnShow(object userData)
         {
             base.OnInit(userData);
 
             var entityData = (EntityData)userData;
 
-            var actor = ActorManager.Instance.GetActor((uint)entityData.UserData);
-
+            GameActor actor = (GameActor)entityData.UserData;
+            
             actor.Get<ModelComponent>().BindModel(gameObject);
+        }
+
+        protected override void OnHide(bool isShutdown, object userData)
+        {
+            
         }
     }
     
@@ -77,7 +82,7 @@ namespace TEngine.Runtime.Actor
             // _model = Object.Instantiate(obj);
             
             //通过Entity创建实体
-            PlayEntityMgr.Instance.CreatePlayerEntity((int)OwnActor.ActorId,"Capsule",Vector3.zero, Quaternion.identity);
+            PlayEntityMgr.Instance.CreatePlayerEntity(OwnActor,"Capsule",Vector3.zero, Quaternion.identity);
         }
 
         public void BindModel(GameObject gameObject)

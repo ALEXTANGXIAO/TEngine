@@ -65,9 +65,9 @@ namespace TEngine.Runtime.Actor
         /// <param name="lightType"></param>
         /// <param name="position"></param>
         /// <param name="quaternion"></param>
-        public void CreatePlayerEntity(int actorId,string entityPath, Vector3 position,Quaternion quaternion)
+        public void CreatePlayerEntity(GameActor actor,string entityPath, Vector3 position,Quaternion quaternion)
         {
-            EntityData data = EntityData.Create(position,quaternion,actorId);
+            EntityData data = EntityData.Create(position,quaternion,actor);
 
             EntitySystem.Instance.CreateEntity<ActorEntity>(entityPath, data);
         }

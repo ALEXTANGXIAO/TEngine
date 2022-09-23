@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ActorTestMain : MonoBehaviour
 {
-    private uint _actorId = 0;
+    private uint _actorId = 1000;
     
     void Start()
     {
