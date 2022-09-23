@@ -22,7 +22,7 @@ MonoBehaviour:
   - heading: <b>1.TEngine.NetDemo</b>
     text: '网络模块demo.'
   - heading: <b>2.TEngine.EntityDemo</b>
-    text: '实体模块demo.'
+    text: '实体模块demo. 注意：资源加载使用了UnityResourceHelper通过Resource加载'
     linkText: 
     url: 
   - heading: <b>3.TEngine.UIDemo</b>
@@ -30,7 +30,7 @@ MonoBehaviour:
     linkText: 
     url: 
   - heading: <b>4.TEngine.ActorDemo</b>
-    text: 'Actor模块demo 示例以及常用用法'
+    text: 'Actor模块demo 示例以及常用用法  注意：资源加载使用了UnityResourceHelper通过Resource加载'
     linkText: 
     url: 
   - heading: 在线文档
