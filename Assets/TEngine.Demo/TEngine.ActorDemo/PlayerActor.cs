@@ -66,6 +66,9 @@ namespace TEngine.Runtime.Actor
     {
         private GameObject _model;
         
+        /// <summary>
+        /// Awake
+        /// </summary>
         protected override void Awake()
         {
             base.Awake();
@@ -77,6 +80,9 @@ namespace TEngine.Runtime.Actor
             BindOwnActor();
         }
 
+        /// <summary>
+        /// 注册组件事件
+        /// </summary>
         private void RegisterEvent()
         {
             OwnActor.Event.AddEventListener<GameObject>(StringId.StringToHash("ActorEntityOnShow"),OnLoadModel,OwnActor);
