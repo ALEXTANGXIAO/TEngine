@@ -1,7 +1,9 @@
 ﻿using System;
+using TEngine.Demo.TEngine.EntityDemo;
 using TEngine.Runtime;
 using TEngine.Runtime.Entity;
 using UnityEngine;
+using LightType = TEngine.Demo.TEngine.EntityDemo.LightType;
 
 public class EntityTestMain : MonoBehaviour
 {
@@ -25,6 +27,8 @@ public class EntityTestMain : MonoBehaviour
             //实体系统创建实体，自动创建实体组
             EntitySystem.Instance.CreateEntity<EntityCube>("Cube",entityData);
         }
+        
+        LightEntityMgr.Instance.CreateLight(LightType.DirectionalLight,Vector3.zero, Quaternion.identity);
     }
     
     /// <summary>
