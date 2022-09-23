@@ -227,6 +227,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e575ce9b8ae601544aa839e78d837d96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Ip: 127.0.0.1
+  Port: 8080
 --- !u!4 &1247649845
 Transform:
   m_ObjectHideFlags: 0
