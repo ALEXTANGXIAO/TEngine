@@ -14,7 +14,7 @@ namespace TEngine.Runtime.Actor
 
             GameActor actor = (GameActor)entityData.UserData;
             
-            actor.Get<ModelComponent>().BindModel(gameObject);
+            actor.Event.SendEvent(StringId.StringToHash("ActorEntityOnShow"),gameObject);
         }
 
         protected override void OnHide(bool isShutdown, object userData)
@@ -69,10 +69,17 @@ namespace TEngine.Runtime.Actor
         protected override void Awake()
         {
             base.Awake();
+            
+            RegisterEvent();
 
             InitModel();
 
             BindOwnActor();
+        }
+
+        private void RegisterEvent()
+        {
+            OwnActor.Event.AddEventListener<GameObject>(StringId.StringToHash("ActorEntityOnShow"),OnLoadModel,OwnActor);
         }
 
         private void InitModel()
@@ -85,7 +92,7 @@ namespace TEngine.Runtime.Actor
             PlayEntityMgr.Instance.CreatePlayerEntity(OwnActor,"Capsule",Vector3.zero, Quaternion.identity);
         }
 
-        public void BindModel(GameObject gameObject)
+        public void OnLoadModel(GameObject gameObject)
         {
             _model = gameObject;
             
