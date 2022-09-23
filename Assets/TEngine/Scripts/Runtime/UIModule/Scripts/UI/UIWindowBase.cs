@@ -23,7 +23,7 @@ namespace TEngine.Runtime.UIModule
         Widget,
     }
     
-    public class UIWindowBase : UIBase
+    public partial class UIWindowBase : UIBase
     {
         /// <summary>
         /// 所属的window
