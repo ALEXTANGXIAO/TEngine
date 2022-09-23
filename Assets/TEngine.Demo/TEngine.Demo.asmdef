@@ -1,0 +1,15 @@
+{
+    "name": "TEngine.Demo",
+    "references": [
+        "GUID:f4ecd6f7bd8993043b6cec60dd0cf2b2"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

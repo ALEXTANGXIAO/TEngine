@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcf7219bab7fe46a1ad266029b2fee19, type: 3}
+  m_Name: Readme
+  m_EditorClassIdentifier: 
+  icon: {fileID: 2800000, guid: 9b84c330de497af4793fd7b376afed13, type: 3}
+  title: TEngine Demo
+  sections:
+  - heading: 
+    text: '<b>这些案例是基于TEngine2.0的Demo </b>'
+    linkText: 
+    url: 
+  - heading: <b>1.TEngine.NetDemo</b>
+    text: '网络模块demo.'
+  - heading: <b>2.TEngine.EntityDemo</b>
+    text: '实体模块demo.'
+    linkText: 
+    url: 
+  - heading: <b>3.TEngine.UIDemo</b>
+    text: 'UI模块demo 示例以及常用用法'
+    linkText: 
+    url: 
+  - heading: <b>4.TEngine.ActorDemo</b>
+    text: 'Actor模块demo 示例以及常用用法'
+    linkText: 
+    url: 
+  - heading: 在线文档
+    text: 'To read more about TEngine please see the <b>TEngine documentation</b> :'
+    linkText: TEngine documentation
+    url: http://1.12.241.46:5000/
+  loadedLayout: 1
