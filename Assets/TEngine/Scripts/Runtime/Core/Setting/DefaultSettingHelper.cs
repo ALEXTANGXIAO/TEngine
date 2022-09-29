@@ -12,8 +12,8 @@ namespace TEngine.Runtime
     {
         private const string SettingFileName = "TEngineSetting.dat";
 
-        private string m_FilePath = null;
-        private DefaultSetting m_Settings = null;
+        private string _filePath = null;
+        private DefaultSetting _settings = null;
 
         /// <summary>
         /// 获取游戏配置项数量。
@@ -22,7 +22,7 @@ namespace TEngine.Runtime
         {
             get
             {
-                return m_Settings != null ? m_Settings.Count : 0;
+                return _settings != null ? _settings.Count : 0;
             }
         }
 
@@ -33,7 +33,7 @@ namespace TEngine.Runtime
         {
             get
             {
-                return m_FilePath;
+                return _filePath;
             }
         }
 
@@ -44,7 +44,7 @@ namespace TEngine.Runtime
         {
             get
             {
-                return m_Settings;
+                return _settings;
             }
         }
         /// <summary>
@@ -55,12 +55,12 @@ namespace TEngine.Runtime
         {
             try
             {
-                if (!File.Exists(m_FilePath))
+                if (!File.Exists(_filePath))
                 {
                     return true;
                 }
 
-                using (FileStream fileStream = new FileStream(m_FilePath, FileMode.Open, FileAccess.Read))
+                using (FileStream fileStream = new FileStream(_filePath, FileMode.Open, FileAccess.Read))
                 {
                     Deserialize(fileStream);
                     return true;
@@ -81,9 +81,9 @@ namespace TEngine.Runtime
         {
             try
             {
-                using (FileStream fileStream = new FileStream(m_FilePath, FileMode.Create, FileAccess.Write))
+                using (FileStream fileStream = new FileStream(_filePath, FileMode.Create, FileAccess.Write))
                 {
-                    return Serialize(fileStream, m_Settings);
+                    return Serialize(fileStream, _settings);
                 }
             }
             catch (Exception exception)
@@ -99,7 +99,7 @@ namespace TEngine.Runtime
         /// <returns>所有游戏配置项的名称。</returns>
         public override string[] GetAllSettingNames()
         {
-            return m_Settings.GetAllSettingNames();
+            return _settings.GetAllSettingNames();
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace TEngine.Runtime
         /// <param name="results">所有游戏配置项的名称。</param>
         public override void GetAllSettingNames(List<string> results)
         {
-            m_Settings.GetAllSettingNames(results);
+            _settings.GetAllSettingNames(results);
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace TEngine.Runtime
         /// <returns>指定的游戏配置项是否存在。</returns>
         public override bool HasSetting(string settingName)
         {
-            return m_Settings.HasSetting(settingName);
+            return _settings.HasSetting(settingName);
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace TEngine.Runtime
         /// <returns>是否移除指定游戏配置项成功。</returns>
         public override bool RemoveSetting(string settingName)
         {
-            return m_Settings.RemoveSetting(settingName);
+            return _settings.RemoveSetting(settingName);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace TEngine.Runtime
         /// </summary>
         public override void RemoveAllSettings()
         {
-            m_Settings.RemoveAllSettings();
+            _settings.RemoveAllSettings();
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace TEngine.Runtime
         /// <returns>读取的布尔值。</returns>
         public override bool GetBool(string settingName)
         {
-            return m_Settings.GetBool(settingName);
+            return _settings.GetBool(settingName);
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace TEngine.Runtime
         /// <returns>读取的布尔值。</returns>
         public override bool GetBool(string settingName, bool defaultValue)
         {
-            return m_Settings.GetBool(settingName, defaultValue);
+            return _settings.GetBool(settingName, defaultValue);
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace TEngine.Runtime
         /// <param name="value">要写入的布尔值。</param>
         public override void SetBool(string settingName, bool value)
         {
-            m_Settings.SetBool(settingName, value);
+            _settings.SetBool(settingName, value);
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace TEngine.Runtime
         /// <returns>读取的整数值。</returns>
         public override int GetInt(string settingName)
         {
-            return m_Settings.GetInt(settingName);
+            return _settings.GetInt(settingName);
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace TEngine.Runtime
         /// <returns>读取的整数值。</returns>
         public override int GetInt(string settingName, int defaultValue)
         {
-            return m_Settings.GetInt(settingName, defaultValue);
+            return _settings.GetInt(settingName, defaultValue);
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace TEngine.Runtime
         /// <param name="value">要写入的整数值。</param>
         public override void SetInt(string settingName, int value)
         {
-            m_Settings.SetInt(settingName, value);
+            _settings.SetInt(settingName, value);
         }
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace TEngine.Runtime
         /// <returns>读取的浮点数值。</returns>
         public override float GetFloat(string settingName)
         {
-            return m_Settings.GetFloat(settingName);
+            return _settings.GetFloat(settingName);
         }
 
         /// <summary>
@@ -219,7 +219,7 @@ namespace TEngine.Runtime
         /// <returns>读取的浮点数值。</returns>
         public override float GetFloat(string settingName, float defaultValue)
         {
-            return m_Settings.GetFloat(settingName, defaultValue);
+            return _settings.GetFloat(settingName, defaultValue);
         }
 
         /// <summary>
@@ -229,7 +229,7 @@ namespace TEngine.Runtime
         /// <param name="value">要写入的浮点数值。</param>
         public override void SetFloat(string settingName, float value)
         {
-            m_Settings.SetFloat(settingName, value);
+            _settings.SetFloat(settingName, value);
         }
 
         /// <summary>
@@ -239,7 +239,7 @@ namespace TEngine.Runtime
         /// <returns>读取的字符串值。</returns>
         public override string GetString(string settingName)
         {
-            return m_Settings.GetString(settingName);
+            return _settings.GetString(settingName);
         }
 
         /// <summary>
@@ -250,7 +250,7 @@ namespace TEngine.Runtime
         /// <returns>读取的字符串值。</returns>
         public override string GetString(string settingName, string defaultValue)
         {
-            return m_Settings.GetString(settingName, defaultValue);
+            return _settings.GetString(settingName, defaultValue);
         }
 
         /// <summary>
@@ -260,7 +260,7 @@ namespace TEngine.Runtime
         /// <param name="value">要写入的字符串值。</param>
         public override void SetString(string settingName, string value)
         {
-            m_Settings.SetString(settingName, value);
+            _settings.SetString(settingName, value);
         }
 
         /// <summary>
@@ -344,8 +344,8 @@ namespace TEngine.Runtime
 
         private void Awake()
         {
-            m_FilePath = Utility.Path.GetRegularPath(Path.Combine(Application.persistentDataPath, SettingFileName));
-            m_Settings = new DefaultSetting();
+            _filePath = Utility.Path.GetRegularPath(Path.Combine(Application.persistentDataPath, SettingFileName));
+            _settings = new DefaultSetting();
         }
         
         private static readonly byte[] Header = new byte[] { (byte)'T', (byte)'E', (byte)'G' };
@@ -361,8 +361,8 @@ namespace TEngine.Runtime
             byte num3 = (byte) stream.ReadByte();
             if ((int) num1 != (int) header[0] || (int) num2 != (int) header[1] || (int) num3 != (int) header[2])
                 throw new Exception(Utility.Text.Format("Header is invalid, need '{0}{1}{2}', current '{3}{4}{5}'.", (char) header[0], (char) header[1], (char) header[2], (char) num1, (char) num2, (char) num3));
-            m_Settings.Deserialize(stream);
-            return m_Settings;
+            _settings.Deserialize(stream);
+            return _settings;
         }
         
         /// <summary>序列化数据到目标流中。</summary>
@@ -375,7 +375,7 @@ namespace TEngine.Runtime
             stream.WriteByte(header[0]);
             stream.WriteByte(header[1]);
             stream.WriteByte(header[2]);
-            m_Settings.Serialize(stream);
+            _settings.Serialize(stream);
             return true;
         }
     }
