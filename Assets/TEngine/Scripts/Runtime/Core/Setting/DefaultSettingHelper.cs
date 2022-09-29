@@ -11,7 +11,6 @@ namespace TEngine.Runtime
     public class DefaultSettingHelper : SettingHelperBase
     {
         private const string SettingFileName = "TEngineSetting.dat";
-
         private string _filePath = null;
         private DefaultSetting _settings = null;
 

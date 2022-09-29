@@ -10,7 +10,7 @@ namespace TEngine.Runtime
     /// </summary>
     public sealed class DefaultSetting
     {
-        private readonly SortedDictionary<string, string> m_Settings = new SortedDictionary<string, string>(StringComparer.Ordinal);
+        private readonly SortedDictionary<string, string> _settings = new SortedDictionary<string, string>(StringComparer.Ordinal);
 
         /// <summary>
         /// 初始化本地版本资源列表的新实例。
@@ -26,7 +26,7 @@ namespace TEngine.Runtime
         {
             get
             {
-                return m_Settings.Count;
+                return _settings.Count;
             }
         }
 
@@ -37,8 +37,8 @@ namespace TEngine.Runtime
         public string[] GetAllSettingNames()
         {
             int index = 0;
-            string[] allSettingNames = new string[m_Settings.Count];
-            foreach (KeyValuePair<string, string> setting in m_Settings)
+            string[] allSettingNames = new string[_settings.Count];
+            foreach (KeyValuePair<string, string> setting in _settings)
             {
                 allSettingNames[index++] = setting.Key;
             }
@@ -58,7 +58,7 @@ namespace TEngine.Runtime
             }
 
             results.Clear();
-            foreach (KeyValuePair<string, string> setting in m_Settings)
+            foreach (KeyValuePair<string, string> setting in _settings)
             {
                 results.Add(setting.Key);
             }
@@ -71,7 +71,7 @@ namespace TEngine.Runtime
         /// <returns>指定的游戏配置项是否存在。</returns>
         public bool HasSetting(string settingName)
         {
-            return m_Settings.ContainsKey(settingName);
+            return _settings.ContainsKey(settingName);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace TEngine.Runtime
         /// <returns>是否移除指定游戏配置项成功。</returns>
         public bool RemoveSetting(string settingName)
         {
-            return m_Settings.Remove(settingName);
+            return _settings.Remove(settingName);
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace TEngine.Runtime
         /// </summary>
         public void RemoveAllSettings()
         {
-            m_Settings.Clear();
+            _settings.Clear();
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace TEngine.Runtime
         public bool GetBool(string settingName)
         {
             string value = null;
-            if (!m_Settings.TryGetValue(settingName, out value))
+            if (!_settings.TryGetValue(settingName, out value))
             {
                 Log.Warning("Setting '{0}' is not exist.", settingName);
                 return false;
@@ -118,7 +118,7 @@ namespace TEngine.Runtime
         public bool GetBool(string settingName, bool defaultValue)
         {
             string value = null;
-            if (!m_Settings.TryGetValue(settingName, out value))
+            if (!_settings.TryGetValue(settingName, out value))
             {
                 return defaultValue;
             }
@@ -133,7 +133,7 @@ namespace TEngine.Runtime
         /// <param name="value">要写入的布尔值。</param>
         public void SetBool(string settingName, bool value)
         {
-            m_Settings[settingName] = value ? "1" : "0";
+            _settings[settingName] = value ? "1" : "0";
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace TEngine.Runtime
         public int GetInt(string settingName)
         {
             string value = null;
-            if (!m_Settings.TryGetValue(settingName, out value))
+            if (!_settings.TryGetValue(settingName, out value))
             {
                 Log.Warning("Setting '{0}' is not exist.", settingName);
                 return 0;
@@ -162,7 +162,7 @@ namespace TEngine.Runtime
         public int GetInt(string settingName, int defaultValue)
         {
             string value = null;
-            if (!m_Settings.TryGetValue(settingName, out value))
+            if (!_settings.TryGetValue(settingName, out value))
             {
                 return defaultValue;
             }
@@ -177,7 +177,7 @@ namespace TEngine.Runtime
         /// <param name="value">要写入的整数值。</param>
         public void SetInt(string settingName, int value)
         {
-            m_Settings[settingName] = value.ToString();
+            _settings[settingName] = value.ToString();
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace TEngine.Runtime
         public float GetFloat(string settingName)
         {
             string value = null;
-            if (!m_Settings.TryGetValue(settingName, out value))
+            if (!_settings.TryGetValue(settingName, out value))
             {
                 Log.Warning("Setting '{0}' is not exist.", settingName);
                 return 0f;
@@ -206,7 +206,7 @@ namespace TEngine.Runtime
         public float GetFloat(string settingName, float defaultValue)
         {
             string value = null;
-            if (!m_Settings.TryGetValue(settingName, out value))
+            if (!_settings.TryGetValue(settingName, out value))
             {
                 return defaultValue;
             }
@@ -221,7 +221,7 @@ namespace TEngine.Runtime
         /// <param name="value">要写入的浮点数值。</param>
         public void SetFloat(string settingName, float value)
         {
-            m_Settings[settingName] = value.ToString();
+            _settings[settingName] = value.ToString();
         }
 
         /// <summary>
@@ -232,7 +232,7 @@ namespace TEngine.Runtime
         public string GetString(string settingName)
         {
             string value = null;
-            if (!m_Settings.TryGetValue(settingName, out value))
+            if (!_settings.TryGetValue(settingName, out value))
             {
                 Log.Warning("Setting '{0}' is not exist.", settingName);
                 return null;
@@ -250,7 +250,7 @@ namespace TEngine.Runtime
         public string GetString(string settingName, string defaultValue)
         {
             string value = null;
-            if (!m_Settings.TryGetValue(settingName, out value))
+            if (!_settings.TryGetValue(settingName, out value))
             {
                 return defaultValue;
             }
@@ -265,7 +265,7 @@ namespace TEngine.Runtime
         /// <param name="value">要写入的字符串值。</param>
         public void SetString(string settingName, string value)
         {
-            m_Settings[settingName] = value;
+            _settings[settingName] = value;
         }
 
         /// <summary>
@@ -276,8 +276,8 @@ namespace TEngine.Runtime
         {
             using (BinaryWriter binaryWriter = new BinaryWriter(stream, Encoding.UTF8))
             {
-                binaryWriter.Write7BitEncodedInt32(m_Settings.Count);
-                foreach (KeyValuePair<string, string> setting in m_Settings)
+                binaryWriter.Write7BitEncodedInt32(_settings.Count);
+                foreach (KeyValuePair<string, string> setting in _settings)
                 {
                     binaryWriter.Write(setting.Key);
                     binaryWriter.Write(setting.Value);
@@ -291,13 +291,13 @@ namespace TEngine.Runtime
         /// <param name="stream">指定流。</param>
         public void Deserialize(Stream stream)
         {
-            m_Settings.Clear();
+            _settings.Clear();
             using (BinaryReader binaryReader = new BinaryReader(stream, Encoding.UTF8))
             {
                 int settingCount = binaryReader.Read7BitEncodedInt32();
                 for (int i = 0; i < settingCount; i++)
                 {
-                    m_Settings.Add(binaryReader.ReadString(), binaryReader.ReadString());
+                    _settings.Add(binaryReader.ReadString(), binaryReader.ReadString());
                 }
             }
         }
