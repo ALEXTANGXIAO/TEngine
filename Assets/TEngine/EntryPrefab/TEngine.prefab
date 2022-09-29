@@ -46,9 +46,9 @@ MonoBehaviour:
   m_EnableShowEntityUpdateEvent: 0
   m_EnableShowEntityDependencyAssetEvent: 0
   m_InstanceRoot: {fileID: 0}
-  m_EntityHelperTypeName: UnityGameFramework.Runtime.DefaultEntityHelper
+  m_EntityHelperTypeName: TEngine.Runtime.Entity.DefaultEntityHelper
   m_CustomEntityHelper: {fileID: 0}
-  m_EntityGroupHelperTypeName: UnityGameFramework.Runtime.DefaultEntityGroupHelper
+  m_EntityGroupHelperTypeName: TEngine.Runtime.Entity.DefaultEntityGroupHelper
   m_CustomEntityGroupHelper: {fileID: 0}
   m_EntityGroups: []
 --- !u!1 &1672025513
@@ -168,7 +168,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3463045025737563821}
-  - component: {fileID: 3463045025737563820}
   - component: {fileID: 3463045025737563823}
   m_Layer: 0
   m_Name: Setting
@@ -191,18 +190,6 @@ Transform:
   m_Father: {fileID: 3463045026180535779}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3463045025737563820
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3463045025737563818}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a8153343c6698c40a65333865e0e5b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &3463045025737563823
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -215,7 +202,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1735f945f64ce2049b684dfdb90c1f67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_CustomSettingHelper: {fileID: 3463045025737563820}
+  m_SettingHelperTypeName: TEngine.Runtime.DefaultSettingHelper
+  m_CustomSettingHelper: {fileID: 0}
 --- !u!1 &3463045025836799518
 GameObject:
   m_ObjectHideFlags: 0
