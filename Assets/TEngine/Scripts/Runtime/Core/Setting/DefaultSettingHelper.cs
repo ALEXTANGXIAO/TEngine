@@ -1,102 +1,114 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 namespace TEngine.Runtime
 {
     /// <summary>
-    /// 游戏配置组件。
+    /// 默认游戏配置辅助器。
     /// </summary>
-    [DisallowMultipleComponent]
-    [AddComponentMenu("TEngine/Setting")]
-    public sealed class SettingComponent : UnitySingleton<SettingComponent>
+    public class DefaultSettingHelper : SettingHelperBase
     {
-        private SettingManager m_SettingManager = null;
+        private const string SettingFileName = "GameFrameworkSetting.dat";
 
-        [SerializeField]
-        private string m_SettingHelperTypeName = "TEngine.Runtime.DefaultSettingHelper";
-
-        [SerializeField]
-        private SettingHelperBase m_CustomSettingHelper = null;
+        private string m_FilePath = null;
+        private DefaultSetting m_Settings = null;
 
         /// <summary>
         /// 获取游戏配置项数量。
         /// </summary>
-        public int Count
+        public override int Count
         {
             get
             {
-                return m_SettingManager.Count;
+                return m_Settings != null ? m_Settings.Count : 0;
             }
         }
 
         /// <summary>
-        /// 游戏框架组件初始化。
+        /// 获取游戏配置存储文件路径。
         /// </summary>
-        public override void Awake()
+        public string FilePath
         {
-            base.Awake();
-            
-            SettingHelperBase settingHelper = null;
-
-            settingHelper = Helper.CreateHelper(m_SettingHelperTypeName, m_CustomSettingHelper);
-            
-            if (settingHelper == null)
+            get
             {
-                Log.Error("Can not create setting helper.");
-                return;
-            }
-            else
-            {
-                settingHelper.gameObject.transform.SetParent(gameObject.transform);
-            }
-            
-            m_SettingManager = SettingManager.Instance;
-            
-            if (m_SettingManager == null)
-            {
-                Log.Fatal("Setting manager is invalid.");
-                return;
-            }
-
-            if (settingHelper != null)
-            {
-                m_SettingManager.SetSettingHelper(settingHelper);
+                return m_FilePath;
             }
         }
 
-        private void Start()
+        /// <summary>
+        /// 获取游戏配置。
+        /// </summary>
+        public DefaultSetting Setting
         {
-            if (!m_SettingManager.Load())
+            get
             {
-                Log.Error("Load settings failure.");
+                return m_Settings;
+            }
+        }
+        /// <summary>
+        /// 加载游戏配置。
+        /// </summary>
+        /// <returns>是否加载游戏配置成功。</returns>
+        public override bool Load()
+        {
+            try
+            {
+                if (!File.Exists(m_FilePath))
+                {
+                    return true;
+                }
+
+                using (FileStream fileStream = new FileStream(m_FilePath, FileMode.Open, FileAccess.Read))
+                {
+                    Deserialize(fileStream);
+                    return true;
+                }
+            }
+            catch (Exception exception)
+            {
+                Log.Warning("Load settings failure with exception '{0}'.", exception);
+                return false;
             }
         }
 
         /// <summary>
         /// 保存游戏配置。
         /// </summary>
-        public void Save()
+        /// <returns>是否保存游戏配置成功。</returns>
+        public override bool Save()
         {
-            m_SettingManager.Save();
+            try
+            {
+                using (FileStream fileStream = new FileStream(m_FilePath, FileMode.Create, FileAccess.Write))
+                {
+                    return Serialize(fileStream, m_Settings);
+                }
+            }
+            catch (Exception exception)
+            {
+                Log.Warning("Save settings failure with exception '{0}'.", exception);
+                return false;
+            }
         }
 
         /// <summary>
         /// 获取所有游戏配置项的名称。
         /// </summary>
         /// <returns>所有游戏配置项的名称。</returns>
-        public string[] GetAllSettingNames()
+        public override string[] GetAllSettingNames()
         {
-            return m_SettingManager.GetAllSettingNames();
+            return m_Settings.GetAllSettingNames();
         }
 
         /// <summary>
         /// 获取所有游戏配置项的名称。
         /// </summary>
         /// <param name="results">所有游戏配置项的名称。</param>
-        public void GetAllSettingNames(List<string> results)
+        public override void GetAllSettingNames(List<string> results)
         {
-            m_SettingManager.GetAllSettingNames(results);
+            m_Settings.GetAllSettingNames(results);
         }
 
         /// <summary>
@@ -104,26 +116,27 @@ namespace TEngine.Runtime
         /// </summary>
         /// <param name="settingName">要检查游戏配置项的名称。</param>
         /// <returns>指定的游戏配置项是否存在。</returns>
-        public bool HasSetting(string settingName)
+        public override bool HasSetting(string settingName)
         {
-            return m_SettingManager.HasSetting(settingName);
+            return m_Settings.HasSetting(settingName);
         }
 
         /// <summary>
         /// 移除指定游戏配置项。
         /// </summary>
         /// <param name="settingName">要移除游戏配置项的名称。</param>
-        public void RemoveSetting(string settingName)
+        /// <returns>是否移除指定游戏配置项成功。</returns>
+        public override bool RemoveSetting(string settingName)
         {
-            m_SettingManager.RemoveSetting(settingName);
+            return m_Settings.RemoveSetting(settingName);
         }
 
         /// <summary>
         /// 清空所有游戏配置项。
         /// </summary>
-        public void RemoveAllSettings()
+        public override void RemoveAllSettings()
         {
-            m_SettingManager.RemoveAllSettings();
+            m_Settings.RemoveAllSettings();
         }
 
         /// <summary>
@@ -131,9 +144,9 @@ namespace TEngine.Runtime
         /// </summary>
         /// <param name="settingName">要获取游戏配置项的名称。</param>
         /// <returns>读取的布尔值。</returns>
-        public bool GetBool(string settingName)
+        public override bool GetBool(string settingName)
         {
-            return m_SettingManager.GetBool(settingName);
+            return m_Settings.GetBool(settingName);
         }
 
         /// <summary>
@@ -142,9 +155,9 @@ namespace TEngine.Runtime
         /// <param name="settingName">要获取游戏配置项的名称。</param>
         /// <param name="defaultValue">当指定的游戏配置项不存在时，返回此默认值。</param>
         /// <returns>读取的布尔值。</returns>
-        public bool GetBool(string settingName, bool defaultValue)
+        public override bool GetBool(string settingName, bool defaultValue)
         {
-            return m_SettingManager.GetBool(settingName, defaultValue);
+            return m_Settings.GetBool(settingName, defaultValue);
         }
 
         /// <summary>
@@ -152,9 +165,9 @@ namespace TEngine.Runtime
         /// </summary>
         /// <param name="settingName">要写入游戏配置项的名称。</param>
         /// <param name="value">要写入的布尔值。</param>
-        public void SetBool(string settingName, bool value)
+        public override void SetBool(string settingName, bool value)
         {
-            m_SettingManager.SetBool(settingName, value);
+            m_Settings.SetBool(settingName, value);
         }
 
         /// <summary>
@@ -162,9 +175,9 @@ namespace TEngine.Runtime
         /// </summary>
         /// <param name="settingName">要获取游戏配置项的名称。</param>
         /// <returns>读取的整数值。</returns>
-        public int GetInt(string settingName)
+        public override int GetInt(string settingName)
         {
-            return m_SettingManager.GetInt(settingName);
+            return m_Settings.GetInt(settingName);
         }
 
         /// <summary>
@@ -173,9 +186,9 @@ namespace TEngine.Runtime
         /// <param name="settingName">要获取游戏配置项的名称。</param>
         /// <param name="defaultValue">当指定的游戏配置项不存在时，返回此默认值。</param>
         /// <returns>读取的整数值。</returns>
-        public int GetInt(string settingName, int defaultValue)
+        public override int GetInt(string settingName, int defaultValue)
         {
-            return m_SettingManager.GetInt(settingName, defaultValue);
+            return m_Settings.GetInt(settingName, defaultValue);
         }
 
         /// <summary>
@@ -183,9 +196,9 @@ namespace TEngine.Runtime
         /// </summary>
         /// <param name="settingName">要写入游戏配置项的名称。</param>
         /// <param name="value">要写入的整数值。</param>
-        public void SetInt(string settingName, int value)
+        public override void SetInt(string settingName, int value)
         {
-            m_SettingManager.SetInt(settingName, value);
+            m_Settings.SetInt(settingName, value);
         }
 
         /// <summary>
@@ -193,9 +206,9 @@ namespace TEngine.Runtime
         /// </summary>
         /// <param name="settingName">要获取游戏配置项的名称。</param>
         /// <returns>读取的浮点数值。</returns>
-        public float GetFloat(string settingName)
+        public override float GetFloat(string settingName)
         {
-            return m_SettingManager.GetFloat(settingName);
+            return m_Settings.GetFloat(settingName);
         }
 
         /// <summary>
@@ -204,9 +217,9 @@ namespace TEngine.Runtime
         /// <param name="settingName">要获取游戏配置项的名称。</param>
         /// <param name="defaultValue">当指定的游戏配置项不存在时，返回此默认值。</param>
         /// <returns>读取的浮点数值。</returns>
-        public float GetFloat(string settingName, float defaultValue)
+        public override float GetFloat(string settingName, float defaultValue)
         {
-            return m_SettingManager.GetFloat(settingName, defaultValue);
+            return m_Settings.GetFloat(settingName, defaultValue);
         }
 
         /// <summary>
@@ -214,9 +227,9 @@ namespace TEngine.Runtime
         /// </summary>
         /// <param name="settingName">要写入游戏配置项的名称。</param>
         /// <param name="value">要写入的浮点数值。</param>
-        public void SetFloat(string settingName, float value)
+        public override void SetFloat(string settingName, float value)
         {
-            m_SettingManager.SetFloat(settingName, value);
+            m_Settings.SetFloat(settingName, value);
         }
 
         /// <summary>
@@ -224,9 +237,9 @@ namespace TEngine.Runtime
         /// </summary>
         /// <param name="settingName">要获取游戏配置项的名称。</param>
         /// <returns>读取的字符串值。</returns>
-        public string GetString(string settingName)
+        public override string GetString(string settingName)
         {
-            return m_SettingManager.GetString(settingName);
+            return m_Settings.GetString(settingName);
         }
 
         /// <summary>
@@ -235,9 +248,9 @@ namespace TEngine.Runtime
         /// <param name="settingName">要获取游戏配置项的名称。</param>
         /// <param name="defaultValue">当指定的游戏配置项不存在时，返回此默认值。</param>
         /// <returns>读取的字符串值。</returns>
-        public string GetString(string settingName, string defaultValue)
+        public override string GetString(string settingName, string defaultValue)
         {
-            return m_SettingManager.GetString(settingName, defaultValue);
+            return m_Settings.GetString(settingName, defaultValue);
         }
 
         /// <summary>
@@ -245,9 +258,9 @@ namespace TEngine.Runtime
         /// </summary>
         /// <param name="settingName">要写入游戏配置项的名称。</param>
         /// <param name="value">要写入的字符串值。</param>
-        public void SetString(string settingName, string value)
+        public override void SetString(string settingName, string value)
         {
-            m_SettingManager.SetString(settingName, value);
+            m_Settings.SetString(settingName, value);
         }
 
         /// <summary>
@@ -256,9 +269,9 @@ namespace TEngine.Runtime
         /// <typeparam name="T">要读取对象的类型。</typeparam>
         /// <param name="settingName">要获取游戏配置项的名称。</param>
         /// <returns>读取的对象。</returns>
-        public T GetObject<T>(string settingName)
+        public override T GetObject<T>(string settingName)
         {
-            return m_SettingManager.GetObject<T>(settingName);
+            return Utility.Json.ToObject<T>(GetString(settingName));
         }
 
         /// <summary>
@@ -267,9 +280,9 @@ namespace TEngine.Runtime
         /// <param name="objectType">要读取对象的类型。</param>
         /// <param name="settingName">要获取游戏配置项的名称。</param>
         /// <returns>读取的对象。</returns>
-        public object GetObject(Type objectType, string settingName)
+        public override object GetObject(Type objectType, string settingName)
         {
-            return m_SettingManager.GetObject(objectType, settingName);
+            return Utility.Json.ToObject(objectType, GetString(settingName));
         }
 
         /// <summary>
@@ -279,9 +292,15 @@ namespace TEngine.Runtime
         /// <param name="settingName">要获取游戏配置项的名称。</param>
         /// <param name="defaultObj">当指定的游戏配置项不存在时，返回此默认对象。</param>
         /// <returns>读取的对象。</returns>
-        public T GetObject<T>(string settingName, T defaultObj)
+        public override T GetObject<T>(string settingName, T defaultObj)
         {
-            return m_SettingManager.GetObject(settingName, defaultObj);
+            string json = GetString(settingName, null);
+            if (json == null)
+            {
+                return defaultObj;
+            }
+
+            return Utility.Json.ToObject<T>(json);
         }
 
         /// <summary>
@@ -291,9 +310,15 @@ namespace TEngine.Runtime
         /// <param name="settingName">要获取游戏配置项的名称。</param>
         /// <param name="defaultObj">当指定的游戏配置项不存在时，返回此默认对象。</param>
         /// <returns>读取的对象。</returns>
-        public object GetObject(Type objectType, string settingName, object defaultObj)
+        public override object GetObject(Type objectType, string settingName, object defaultObj)
         {
-            return m_SettingManager.GetObject(objectType, settingName, defaultObj);
+            string json = GetString(settingName, null);
+            if (json == null)
+            {
+                return defaultObj;
+            }
+
+            return Utility.Json.ToObject(objectType, json);
         }
 
         /// <summary>
@@ -302,9 +327,9 @@ namespace TEngine.Runtime
         /// <typeparam name="T">要写入对象的类型。</typeparam>
         /// <param name="settingName">要写入游戏配置项的名称。</param>
         /// <param name="obj">要写入的对象。</param>
-        public void SetObject<T>(string settingName, T obj)
+        public override void SetObject<T>(string settingName, T obj)
         {
-            m_SettingManager.SetObject(settingName, obj);
+            SetString(settingName, Utility.Json.ToJson(obj));
         }
 
         /// <summary>
@@ -312,9 +337,46 @@ namespace TEngine.Runtime
         /// </summary>
         /// <param name="settingName">要写入游戏配置项的名称。</param>
         /// <param name="obj">要写入的对象。</param>
-        public void SetObject(string settingName, object obj)
+        public override void SetObject(string settingName, object obj)
         {
-            m_SettingManager.SetObject(settingName, obj);
+            SetString(settingName, Utility.Json.ToJson(obj));
+        }
+
+        private void Awake()
+        {
+            m_FilePath = Utility.Path.GetRegularPath(Path.Combine(Application.persistentDataPath, SettingFileName));
+            m_Settings = new DefaultSetting();
+        }
+        
+        private static readonly byte[] Header = new byte[] { (byte)'T', (byte)'E', (byte)'G' };
+        
+        /// <summary>从指定流反序列化数据。</summary>
+        /// <param name="stream">指定流。</param>
+        /// <returns>反序列化的数据。</returns>
+        private DefaultSetting Deserialize(Stream stream)
+        {
+            byte[] header = Header;
+            byte num1 = (byte) stream.ReadByte();
+            byte num2 = (byte) stream.ReadByte();
+            byte num3 = (byte) stream.ReadByte();
+            if ((int) num1 != (int) header[0] || (int) num2 != (int) header[1] || (int) num3 != (int) header[2])
+                throw new Exception(Utility.Text.Format("Header is invalid, need '{0}{1}{2}', current '{3}{4}{5}'.", (char) header[0], (char) header[1], (char) header[2], (char) num1, (char) num2, (char) num3));
+            m_Settings.Deserialize(stream);
+            return m_Settings;
+        }
+        
+        /// <summary>序列化数据到目标流中。</summary>
+        /// <param name="stream">目标流。</param>
+        /// <param name="data">要序列化的数据。</param>
+        /// <returns>是否序列化数据成功。</returns>
+        private bool Serialize(Stream stream, DefaultSetting data)
+        {
+            byte[] header = Header;
+            stream.WriteByte(header[0]);
+            stream.WriteByte(header[1]);
+            stream.WriteByte(header[2]);
+            m_Settings.Serialize(stream);
+            return true;
         }
     }
 }

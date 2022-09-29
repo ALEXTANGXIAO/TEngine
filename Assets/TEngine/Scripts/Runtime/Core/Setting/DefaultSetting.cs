@@ -1,23 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
+using System.IO;
+using System.Text;
 
 namespace TEngine.Runtime
 {
     /// <summary>
-    /// 游戏配置组件。
+    /// 默认游戏配置。
     /// </summary>
-    [DisallowMultipleComponent]
-    [AddComponentMenu("TEngine/Setting")]
-    public sealed class SettingComponent : UnitySingleton<SettingComponent>
+    public sealed class DefaultSetting
     {
-        private SettingManager m_SettingManager = null;
+        private readonly SortedDictionary<string, string> m_Settings = new SortedDictionary<string, string>(StringComparer.Ordinal);
 
-        [SerializeField]
-        private string m_SettingHelperTypeName = "TEngine.Runtime.DefaultSettingHelper";
-
-        [SerializeField]
-        private SettingHelperBase m_CustomSettingHelper = null;
+        /// <summary>
+        /// 初始化本地版本资源列表的新实例。
+        /// </summary>
+        public DefaultSetting()
+        {
+        }
 
         /// <summary>
         /// 获取游戏配置项数量。
@@ -26,59 +26,8 @@ namespace TEngine.Runtime
         {
             get
             {
-                return m_SettingManager.Count;
+                return m_Settings.Count;
             }
-        }
-
-        /// <summary>
-        /// 游戏框架组件初始化。
-        /// </summary>
-        public override void Awake()
-        {
-            base.Awake();
-            
-            SettingHelperBase settingHelper = null;
-
-            settingHelper = Helper.CreateHelper(m_SettingHelperTypeName, m_CustomSettingHelper);
-            
-            if (settingHelper == null)
-            {
-                Log.Error("Can not create setting helper.");
-                return;
-            }
-            else
-            {
-                settingHelper.gameObject.transform.SetParent(gameObject.transform);
-            }
-            
-            m_SettingManager = SettingManager.Instance;
-            
-            if (m_SettingManager == null)
-            {
-                Log.Fatal("Setting manager is invalid.");
-                return;
-            }
-
-            if (settingHelper != null)
-            {
-                m_SettingManager.SetSettingHelper(settingHelper);
-            }
-        }
-
-        private void Start()
-        {
-            if (!m_SettingManager.Load())
-            {
-                Log.Error("Load settings failure.");
-            }
-        }
-
-        /// <summary>
-        /// 保存游戏配置。
-        /// </summary>
-        public void Save()
-        {
-            m_SettingManager.Save();
         }
 
         /// <summary>
@@ -87,7 +36,14 @@ namespace TEngine.Runtime
         /// <returns>所有游戏配置项的名称。</returns>
         public string[] GetAllSettingNames()
         {
-            return m_SettingManager.GetAllSettingNames();
+            int index = 0;
+            string[] allSettingNames = new string[m_Settings.Count];
+            foreach (KeyValuePair<string, string> setting in m_Settings)
+            {
+                allSettingNames[index++] = setting.Key;
+            }
+
+            return allSettingNames;
         }
 
         /// <summary>
@@ -96,7 +52,16 @@ namespace TEngine.Runtime
         /// <param name="results">所有游戏配置项的名称。</param>
         public void GetAllSettingNames(List<string> results)
         {
-            m_SettingManager.GetAllSettingNames(results);
+            if (results == null)
+            {
+                throw new Exception("Results is invalid.");
+            }
+
+            results.Clear();
+            foreach (KeyValuePair<string, string> setting in m_Settings)
+            {
+                results.Add(setting.Key);
+            }
         }
 
         /// <summary>
@@ -106,16 +71,17 @@ namespace TEngine.Runtime
         /// <returns>指定的游戏配置项是否存在。</returns>
         public bool HasSetting(string settingName)
         {
-            return m_SettingManager.HasSetting(settingName);
+            return m_Settings.ContainsKey(settingName);
         }
 
         /// <summary>
         /// 移除指定游戏配置项。
         /// </summary>
         /// <param name="settingName">要移除游戏配置项的名称。</param>
-        public void RemoveSetting(string settingName)
+        /// <returns>是否移除指定游戏配置项成功。</returns>
+        public bool RemoveSetting(string settingName)
         {
-            m_SettingManager.RemoveSetting(settingName);
+            return m_Settings.Remove(settingName);
         }
 
         /// <summary>
@@ -123,7 +89,7 @@ namespace TEngine.Runtime
         /// </summary>
         public void RemoveAllSettings()
         {
-            m_SettingManager.RemoveAllSettings();
+            m_Settings.Clear();
         }
 
         /// <summary>
@@ -133,7 +99,14 @@ namespace TEngine.Runtime
         /// <returns>读取的布尔值。</returns>
         public bool GetBool(string settingName)
         {
-            return m_SettingManager.GetBool(settingName);
+            string value = null;
+            if (!m_Settings.TryGetValue(settingName, out value))
+            {
+                Log.Warning("Setting '{0}' is not exist.", settingName);
+                return false;
+            }
+
+            return int.Parse(value) != 0;
         }
 
         /// <summary>
@@ -144,7 +117,13 @@ namespace TEngine.Runtime
         /// <returns>读取的布尔值。</returns>
         public bool GetBool(string settingName, bool defaultValue)
         {
-            return m_SettingManager.GetBool(settingName, defaultValue);
+            string value = null;
+            if (!m_Settings.TryGetValue(settingName, out value))
+            {
+                return defaultValue;
+            }
+
+            return int.Parse(value) != 0;
         }
 
         /// <summary>
@@ -154,7 +133,7 @@ namespace TEngine.Runtime
         /// <param name="value">要写入的布尔值。</param>
         public void SetBool(string settingName, bool value)
         {
-            m_SettingManager.SetBool(settingName, value);
+            m_Settings[settingName] = value ? "1" : "0";
         }
 
         /// <summary>
@@ -164,7 +143,14 @@ namespace TEngine.Runtime
         /// <returns>读取的整数值。</returns>
         public int GetInt(string settingName)
         {
-            return m_SettingManager.GetInt(settingName);
+            string value = null;
+            if (!m_Settings.TryGetValue(settingName, out value))
+            {
+                Log.Warning("Setting '{0}' is not exist.", settingName);
+                return 0;
+            }
+
+            return int.Parse(value);
         }
 
         /// <summary>
@@ -175,7 +161,13 @@ namespace TEngine.Runtime
         /// <returns>读取的整数值。</returns>
         public int GetInt(string settingName, int defaultValue)
         {
-            return m_SettingManager.GetInt(settingName, defaultValue);
+            string value = null;
+            if (!m_Settings.TryGetValue(settingName, out value))
+            {
+                return defaultValue;
+            }
+
+            return int.Parse(value);
         }
 
         /// <summary>
@@ -185,7 +177,7 @@ namespace TEngine.Runtime
         /// <param name="value">要写入的整数值。</param>
         public void SetInt(string settingName, int value)
         {
-            m_SettingManager.SetInt(settingName, value);
+            m_Settings[settingName] = value.ToString();
         }
 
         /// <summary>
@@ -195,7 +187,14 @@ namespace TEngine.Runtime
         /// <returns>读取的浮点数值。</returns>
         public float GetFloat(string settingName)
         {
-            return m_SettingManager.GetFloat(settingName);
+            string value = null;
+            if (!m_Settings.TryGetValue(settingName, out value))
+            {
+                Log.Warning("Setting '{0}' is not exist.", settingName);
+                return 0f;
+            }
+
+            return float.Parse(value);
         }
 
         /// <summary>
@@ -206,7 +205,13 @@ namespace TEngine.Runtime
         /// <returns>读取的浮点数值。</returns>
         public float GetFloat(string settingName, float defaultValue)
         {
-            return m_SettingManager.GetFloat(settingName, defaultValue);
+            string value = null;
+            if (!m_Settings.TryGetValue(settingName, out value))
+            {
+                return defaultValue;
+            }
+
+            return float.Parse(value);
         }
 
         /// <summary>
@@ -216,7 +221,7 @@ namespace TEngine.Runtime
         /// <param name="value">要写入的浮点数值。</param>
         public void SetFloat(string settingName, float value)
         {
-            m_SettingManager.SetFloat(settingName, value);
+            m_Settings[settingName] = value.ToString();
         }
 
         /// <summary>
@@ -226,7 +231,14 @@ namespace TEngine.Runtime
         /// <returns>读取的字符串值。</returns>
         public string GetString(string settingName)
         {
-            return m_SettingManager.GetString(settingName);
+            string value = null;
+            if (!m_Settings.TryGetValue(settingName, out value))
+            {
+                Log.Warning("Setting '{0}' is not exist.", settingName);
+                return null;
+            }
+
+            return value;
         }
 
         /// <summary>
@@ -237,7 +249,13 @@ namespace TEngine.Runtime
         /// <returns>读取的字符串值。</returns>
         public string GetString(string settingName, string defaultValue)
         {
-            return m_SettingManager.GetString(settingName, defaultValue);
+            string value = null;
+            if (!m_Settings.TryGetValue(settingName, out value))
+            {
+                return defaultValue;
+            }
+
+            return value;
         }
 
         /// <summary>
@@ -247,74 +265,41 @@ namespace TEngine.Runtime
         /// <param name="value">要写入的字符串值。</param>
         public void SetString(string settingName, string value)
         {
-            m_SettingManager.SetString(settingName, value);
+            m_Settings[settingName] = value;
         }
 
         /// <summary>
-        /// 从指定游戏配置项中读取对象。
+        /// 序列化数据。
         /// </summary>
-        /// <typeparam name="T">要读取对象的类型。</typeparam>
-        /// <param name="settingName">要获取游戏配置项的名称。</param>
-        /// <returns>读取的对象。</returns>
-        public T GetObject<T>(string settingName)
+        /// <param name="stream">目标流。</param>
+        public void Serialize(Stream stream)
         {
-            return m_SettingManager.GetObject<T>(settingName);
+            using (BinaryWriter binaryWriter = new BinaryWriter(stream, Encoding.UTF8))
+            {
+                binaryWriter.Write7BitEncodedInt32(m_Settings.Count);
+                foreach (KeyValuePair<string, string> setting in m_Settings)
+                {
+                    binaryWriter.Write(setting.Key);
+                    binaryWriter.Write(setting.Value);
+                }
+            }
         }
 
         /// <summary>
-        /// 从指定游戏配置项中读取对象。
+        /// 反序列化数据。
         /// </summary>
-        /// <param name="objectType">要读取对象的类型。</param>
-        /// <param name="settingName">要获取游戏配置项的名称。</param>
-        /// <returns>读取的对象。</returns>
-        public object GetObject(Type objectType, string settingName)
+        /// <param name="stream">指定流。</param>
+        public void Deserialize(Stream stream)
         {
-            return m_SettingManager.GetObject(objectType, settingName);
-        }
-
-        /// <summary>
-        /// 从指定游戏配置项中读取对象。
-        /// </summary>
-        /// <typeparam name="T">要读取对象的类型。</typeparam>
-        /// <param name="settingName">要获取游戏配置项的名称。</param>
-        /// <param name="defaultObj">当指定的游戏配置项不存在时，返回此默认对象。</param>
-        /// <returns>读取的对象。</returns>
-        public T GetObject<T>(string settingName, T defaultObj)
-        {
-            return m_SettingManager.GetObject(settingName, defaultObj);
-        }
-
-        /// <summary>
-        /// 从指定游戏配置项中读取对象。
-        /// </summary>
-        /// <param name="objectType">要读取对象的类型。</param>
-        /// <param name="settingName">要获取游戏配置项的名称。</param>
-        /// <param name="defaultObj">当指定的游戏配置项不存在时，返回此默认对象。</param>
-        /// <returns>读取的对象。</returns>
-        public object GetObject(Type objectType, string settingName, object defaultObj)
-        {
-            return m_SettingManager.GetObject(objectType, settingName, defaultObj);
-        }
-
-        /// <summary>
-        /// 向指定游戏配置项写入对象。
-        /// </summary>
-        /// <typeparam name="T">要写入对象的类型。</typeparam>
-        /// <param name="settingName">要写入游戏配置项的名称。</param>
-        /// <param name="obj">要写入的对象。</param>
-        public void SetObject<T>(string settingName, T obj)
-        {
-            m_SettingManager.SetObject(settingName, obj);
-        }
-
-        /// <summary>
-        /// 向指定游戏配置项写入对象。
-        /// </summary>
-        /// <param name="settingName">要写入游戏配置项的名称。</param>
-        /// <param name="obj">要写入的对象。</param>
-        public void SetObject(string settingName, object obj)
-        {
-            m_SettingManager.SetObject(settingName, obj);
+            m_Settings.Clear();
+            using (BinaryReader binaryReader = new BinaryReader(stream, Encoding.UTF8))
+            {
+                int settingCount = binaryReader.Read7BitEncodedInt32();
+                for (int i = 0; i < settingCount; i++)
+                {
+                    m_Settings.Add(binaryReader.ReadString(), binaryReader.ReadString());
+                }
+            }
         }
     }
 }
