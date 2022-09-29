@@ -10,7 +10,7 @@ namespace TEngine.Runtime
     /// </summary>
     public class DefaultSettingHelper : SettingHelperBase
     {
-        private const string SettingFileName = "GameFrameworkSetting.dat";
+        private const string SettingFileName = "TEngineSetting.dat";
 
         private string m_FilePath = null;
         private DefaultSetting m_Settings = null;
