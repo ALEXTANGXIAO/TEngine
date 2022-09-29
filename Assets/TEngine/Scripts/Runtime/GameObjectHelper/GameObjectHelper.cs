@@ -59,7 +59,7 @@ namespace TEngine.Runtime
             }
             else
             {
-                ret = UnityEngine.Object.Instantiate(Resources.Load<GameObject>(objectName));
+                ret = UnityEngine.Object.Instantiate(TResources.Load<GameObject>(objectName));
                 ret.name = objectName;
             }
 
