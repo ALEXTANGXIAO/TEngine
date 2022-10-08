@@ -15,8 +15,8 @@ namespace TEngine.Runtime
             {
                 if (null == sInstance)
                 {
-                    BehaviourSingleSystem.Instance.CheckInstance();
                     sInstance = new T();
+                    BehaviourSingleSystem.Instance.CheckInstance();
                     TLogger.LogAssert(sInstance != null);
                     sInstance.Awake();
                     RegSingleton(sInstance);
