@@ -253,6 +253,33 @@ namespace TEngine.Runtime.UIModule
 
             ResortStackUI(windowStack, resortIndex);
             ShowTopUI(windowStack);
+            CheckGraphicRaycaster(window);
+        }
+
+        private void CheckGraphicRaycaster(UIWindow window)
+        {
+            if (window == null)
+            {
+                Log.Fatal($" UIWindow Is NUll");
+                return;
+            }
+
+            if (window.gameObject == null)
+            {
+                Log.Fatal($" UIWindow's gameObject Is NUll");
+                return;
+            }
+            
+            var listCanvas = window.gameObject.GetComponentsInChildren<Canvas>(true);
+            for (int i = 0; i < listCanvas.Length; i++)
+            {
+                var childCanvas = listCanvas[i];
+                GraphicRaycaster graphicRaycaster;
+                if (!childCanvas.gameObject.TryGetComponent<GraphicRaycaster>(out graphicRaycaster))
+                {
+                    graphicRaycaster = childCanvas.gameObject.AddComponent<GraphicRaycaster>();
+                }
+            }
         }
 
         private void ResortStackUI(UIWindowStack stack, int startIdx)
