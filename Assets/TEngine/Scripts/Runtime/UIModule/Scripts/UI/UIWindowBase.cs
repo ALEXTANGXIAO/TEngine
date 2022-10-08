@@ -143,8 +143,9 @@ namespace TEngine.Runtime.UIModule
 
             m_destroyed = true;
 
-            OnDestroy();
             DestroyAllChild();
+            
+            OnDestroy();
 
             if (m_parent != null)
             {
