@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game.Editor {
     public sealed class GenProto {
-        [MenuItem("TEngine/生成Sproto|GenSproto(需自行安装lua)", false, 11)]
+        [MenuItem("TEngine/生成Sproto|GenSproto", false, 11)]
         private static void GenProtoFunc() {
             RunBat("GenSproto.bat", Application.dataPath + "/TEngine/Tools~/Sproto/");
         }
