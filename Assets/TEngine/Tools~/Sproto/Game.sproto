@@ -1,0 +1,38 @@
+.package {
+	type 0 : integer
+	session 1 : integer
+}
+
+c2s_login 1001 {
+    request {
+        account 0 : string
+        pwd 1 : string
+        channel 2 : string
+    }
+	response {
+		msg 0  : string
+	}
+}
+
+get 1002 {
+	request {
+		what 0 : string
+	}
+	response {
+		result 0 : string
+	}
+}
+
+set 1003 {
+	request {
+		what 0 : string
+		value 1 : string
+	}
+}
+
+quit 1004 {}
+
+
+heartbeat 2001 {}
+
+
