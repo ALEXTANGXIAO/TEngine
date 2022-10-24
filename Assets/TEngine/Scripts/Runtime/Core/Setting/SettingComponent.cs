@@ -62,15 +62,17 @@ namespace TEngine.Runtime
             if (settingHelper != null)
             {
                 m_SettingManager.SetSettingHelper(settingHelper);
+                
+                if (!m_SettingManager.Load())
+                {
+                    Log.Error("Load settings failure.");
+                }
             }
         }
 
         private void Start()
         {
-            if (!m_SettingManager.Load())
-            {
-                Log.Error("Load settings failure.");
-            }
+            
         }
 
         /// <summary>
@@ -315,6 +317,12 @@ namespace TEngine.Runtime
         public void SetObject(string settingName, object obj)
         {
             m_SettingManager.SetObject(settingName, obj);
+        }
+
+        public override void OnDestroy()
+        {
+            this.Save();
+            base.OnDestroy();
         }
     }
 }
