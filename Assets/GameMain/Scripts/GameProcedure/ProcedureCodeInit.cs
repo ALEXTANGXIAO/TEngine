@@ -32,7 +32,7 @@ namespace TEngine.Runtime
             // 热更新dll不缺元数据，不需要补充，如果调用LoadMetadataForAOTAssembly会返回错误
             foreach (var aotDllName in AOTMetaAssemblyNames)
             {
-                byte[] dllBytes = TResources.Load<TextAsset>(aotDllName).bytes;
+                byte[] dllBytes = TResources.Load<TextAsset>(aotDllName)?.bytes;
                 if (dllBytes == null)
                 {
                     Log.Fatal($"{aotDllName} is null");
