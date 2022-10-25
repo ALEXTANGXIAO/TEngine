@@ -29,7 +29,7 @@ namespace TEngine.Runtime
             UILoadMgr.Show(UIDefine.UILoadUpdate);
         }
 
-        protected internal override void OnEnter(IFsm<IProcedureManager> procedureOwner)
+        protected override void OnEnter(IFsm<IProcedureManager> procedureOwner)
         {
             base.OnEnter(procedureOwner);
             m_CheckVersionComplete = false;
@@ -163,7 +163,7 @@ namespace TEngine.Runtime
             return data;
         }
 
-        protected internal override void OnUpdate(IFsm<IProcedureManager> procedureOwner, float elapseSeconds, float realElapseSeconds)
+        protected override void OnUpdate(IFsm<IProcedureManager> procedureOwner, float elapseSeconds, float realElapseSeconds)
         {
             base.OnUpdate(procedureOwner, elapseSeconds, realElapseSeconds);
             if (m_result == null || !m_result.isDone)

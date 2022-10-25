@@ -9,12 +9,7 @@ namespace TEngine.Runtime
     {
         private bool m_initResourceComplete = false;
 
-        protected internal override void OnInit(IFsm<IProcedureManager> procedureOwner)
-        {
-            base.OnInit(procedureOwner);
-        }
-
-        protected internal override void OnEnter(IFsm<IProcedureManager> procedureOwner)
+        protected override void OnEnter(IFsm<IProcedureManager> procedureOwner)
         {
 
             base.OnEnter(procedureOwner);
@@ -26,7 +21,7 @@ namespace TEngine.Runtime
             }),new WaitForSeconds(1f));
         }
 
-        protected internal override void OnUpdate(IFsm<IProcedureManager> procedureOwner, float elapseSeconds, float realElapseSeconds)
+        protected override void OnUpdate(IFsm<IProcedureManager> procedureOwner, float elapseSeconds, float realElapseSeconds)
         {
             base.OnUpdate(procedureOwner, elapseSeconds, realElapseSeconds);
 
@@ -37,15 +32,10 @@ namespace TEngine.Runtime
         }
 
 
-        protected internal override void OnLeave(IFsm<IProcedureManager> procedureOwner, bool isShutdown)
+        protected override void OnLeave(IFsm<IProcedureManager> procedureOwner, bool isShutdown)
         {
             base.OnLeave(procedureOwner, isShutdown);
             GameEventMgr.Instance.RemoveEventListener("OnInitResourceComplete", OnInitResourceComplete);
-        }
-
-        protected internal override void OnDestroy(IFsm<IProcedureManager> procedureOwner)
-        {
-            base.OnDestroy(procedureOwner);
         }
 
         private void OnInitResourceComplete()

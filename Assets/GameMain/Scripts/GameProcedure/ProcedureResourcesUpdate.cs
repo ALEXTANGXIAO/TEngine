@@ -14,7 +14,7 @@ namespace TEngine.Runtime
         private IFsm<IProcedureManager> _procedureOwner;
         private bool _dllLoad = false;
 
-        protected internal override void OnEnter(IFsm<IProcedureManager> procedureOwner)
+        protected override void OnEnter(IFsm<IProcedureManager> procedureOwner)
         {
             base.OnEnter(procedureOwner);
 

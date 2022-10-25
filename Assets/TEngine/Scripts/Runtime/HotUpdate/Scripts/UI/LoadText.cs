@@ -73,7 +73,7 @@ namespace TEngine.Runtime.HotUpdate
             get { return _instance ?? (_instance = new LoadText()); }
         }
 
-        internal void InitConfigData(TextAsset asset)
+        public void InitConfigData(TextAsset asset)
         {
             if (asset == null)
                 return;

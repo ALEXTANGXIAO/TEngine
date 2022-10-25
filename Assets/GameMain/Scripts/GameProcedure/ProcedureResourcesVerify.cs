@@ -8,17 +8,7 @@ namespace TEngine.Runtime
     {
         private bool m_VerifyResourcesComplete = false;
 
-        protected internal override void OnEnter(IFsm<IProcedureManager> procedureOwner)
-        {
-            base.OnEnter(procedureOwner);
-        }
-
-        protected internal override void OnLeave(IFsm<IProcedureManager> procedureOwner, bool isShutdown)
-        {
-            base.OnLeave(procedureOwner, isShutdown);
-        }
-
-        protected internal override void OnUpdate(IFsm<IProcedureManager> procedureOwner, float elapseSeconds, float realElapseSeconds)
+        protected override void OnUpdate(IFsm<IProcedureManager> procedureOwner, float elapseSeconds, float realElapseSeconds)
         {
             base.OnUpdate(procedureOwner, elapseSeconds, realElapseSeconds);
 
