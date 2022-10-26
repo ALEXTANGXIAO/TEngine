@@ -16,7 +16,7 @@ public class NetTestMain : MonoBehaviour
     {
         //Demo示例，监听TEngine流程加载器OnStartGame事件
         //抛出这个事件说明框架流程加载完成（热更新，初始化等）
-        GameEventMgr.Instance.AddEventListener(TEngineEvent.OnStartGame,OnStartGame);
+        GameEvent.AddEventListener(TEngineEvent.OnStartGame,OnStartGame);
 
     }
 

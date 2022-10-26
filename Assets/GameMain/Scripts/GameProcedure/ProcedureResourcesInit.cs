@@ -7,17 +7,19 @@ namespace TEngine.Runtime
     /// </summary>
     public class ProcedureResourcesInit : ProcedureBase
     {
+        public static int OnInitResourceCompleteEvent = StringId.StringToHash("OnInitResourceComplete");
+        
         private bool m_initResourceComplete = false;
 
         protected override void OnEnter(IFsm<IProcedureManager> procedureOwner)
         {
 
             base.OnEnter(procedureOwner);
-            GameEventMgr.Instance.AddEventListener("OnInitResourceComplete", OnInitResourceComplete);
+            GameEvent.AddEventListener(OnInitResourceCompleteEvent, OnInitResourceComplete);
             m_initResourceComplete = false;
             LoaderUtilities.DelayFun((() =>
             {
-                GameEventMgr.Instance.Send("OnInitResourceComplete");
+                GameEvent.Send(OnInitResourceCompleteEvent);
             }),new WaitForSeconds(1f));
         }
 
@@ -35,7 +37,7 @@ namespace TEngine.Runtime
         protected override void OnLeave(IFsm<IProcedureManager> procedureOwner, bool isShutdown)
         {
             base.OnLeave(procedureOwner, isShutdown);
-            GameEventMgr.Instance.RemoveEventListener("OnInitResourceComplete", OnInitResourceComplete);
+            GameEvent.RemoveEventListener(OnInitResourceCompleteEvent, OnInitResourceComplete);
         }
 
         private void OnInitResourceComplete()

@@ -9,6 +9,7 @@ namespace TEngine.Runtime.HotUpdate
 #pragma warning disable CS0162
     public class LoadMgr : TSingleton<LoadMgr>
     {
+        public static int DownLoadFinish = StringId.StringToHash("DownLoadResult.AllDownLoaded");
         /// <summary>
         /// 资源版本号
         /// </summary>
@@ -31,7 +32,7 @@ namespace TEngine.Runtime.HotUpdate
             if (result == (int)DownLoadResult.AllDownLoaded)
             {
                 _UnPackCallback(100, status, 100);
-                GameEventMgr.Instance.Send("DownLoadResult.AllDownLoaded", true);
+                GameEvent.Send(DownLoadFinish, true);
                 _StopLoadingCheck();
             }
             else

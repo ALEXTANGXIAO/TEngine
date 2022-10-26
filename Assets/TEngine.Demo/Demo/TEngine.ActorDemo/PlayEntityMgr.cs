@@ -17,9 +17,9 @@ namespace TEngine.Runtime.Actor
         /// </summary>
         void RegisterEvent()
         {
-            GameEventMgr.Instance.AddEventListener<IEntity, float, object>(EntityEvent.ShowEntitySuccess, OnShowEntitySuccess);
-            GameEventMgr.Instance.AddEventListener<int, string, string, string, object>(EntityEvent.ShowEntityFailure, OnShowEntityFailure);
-            GameEventMgr.Instance.AddEventListener<int, string, IEntityGroup, object>(EntityEvent.HideEntityComplete, OnHideEntityComplete);
+            GameEvent.AddEventListener<IEntity, float, object>(EntityEvent.ShowEntitySuccess, OnShowEntitySuccess);
+            GameEvent.AddEventListener<int, string, string, string, object>(EntityEvent.ShowEntityFailure, OnShowEntityFailure);
+            GameEvent.AddEventListener<int, string, IEntityGroup, object>(EntityEvent.HideEntityComplete, OnHideEntityComplete);
         }
 
         /// <summary>

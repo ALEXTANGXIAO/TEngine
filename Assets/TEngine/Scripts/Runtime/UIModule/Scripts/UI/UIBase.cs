@@ -19,7 +19,7 @@ namespace TEngine.Runtime.UIModule
             {
                 if (m_eventMgr == null)
                 {
-                    m_eventMgr = GameEventMgr.Instance;
+                    m_eventMgr = MemoryPool.Acquire<GameEventMgr>();
                 }
 
                 return m_eventMgr;
@@ -61,42 +61,29 @@ namespace TEngine.Runtime.UIModule
 
         #region Event
 
-        private Dictionary<int, Delegate> m_eventTable = new Dictionary<int, Delegate>();
-
         protected void ClearAllRegisterEvent()
         {
-            var element = m_eventTable.GetEnumerator();
-            while (element.MoveNext())
-            {
-                var m_event = element.Current.Value;
-                //GameEventMgr.Instance.RemoveEventListener(element.Current.Key, m_event);
-            }
-
-            m_eventTable.Clear();
+            MemoryPool.Release(m_eventMgr);
         }
 
         protected void AddUIEvent(int eventType, Action handler)
         {
-            m_eventTable.Add(eventType, handler);
-            EventMgr.AddEventListener(eventType, handler);
+            EventMgr.AddUIEvent(eventType, handler);
         }
 
         protected void AddUIEvent<T>(int eventType, Action<T> handler)
         {
-            m_eventTable.Add(eventType, handler);
-            EventMgr.AddEventListener(eventType, handler);
+            EventMgr.AddUIEvent(eventType, handler);
         }
 
         protected void AddUIEvent<T, U>(int eventType, Action<T, U> handler)
         {
-            m_eventTable.Add(eventType, handler);
-            EventMgr.AddEventListener(eventType, handler);
+            EventMgr.AddUIEvent(eventType, handler);
         }
 
         protected void AddUIEvent<T, U, V>(int eventType, Action<T, U, V> handler)
         {
-            m_eventTable.Add(eventType, handler);
-            EventMgr.AddEventListener(eventType, handler);
+            EventMgr.AddUIEvent(eventType, handler);
         }
 
         #endregion

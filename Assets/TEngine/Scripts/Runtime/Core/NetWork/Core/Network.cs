@@ -138,27 +138,27 @@ namespace TEngine.Runtime
 
         private void OnNetworkConnected(INetworkChannel channel, object obj)
         {
-            GameEventMgr.Instance.Send(NetWorkEventId.NetworkConnectedEvent,channel, obj);
+            GameEvent.Send(NetWorkEventId.NetworkConnectedEvent,channel, obj);
         }
 
         private void OnNetworkClosed(INetworkChannel channel)
         {
-            GameEventMgr.Instance.Send(NetWorkEventId.NetworkClosedEvent,channel);
+            GameEvent.Send(NetWorkEventId.NetworkClosedEvent,channel);
         }
 
         private void OnNetworkMissHeartBeat(INetworkChannel channel, int missCount)
         {
-            GameEventMgr.Instance.Send(NetWorkEventId.NetworkMissHeartBeatEvent,channel,missCount);
+            GameEvent.Send(NetWorkEventId.NetworkMissHeartBeatEvent,channel,missCount);
         }
 
         private void OnNetworkError(INetworkChannel channel, NetworkErrorCode errorCode, string message)
         {
-            GameEventMgr.Instance.Send(NetWorkEventId.NetworkErrorEvent,channel,errorCode,message);
+            GameEvent.Send(NetWorkEventId.NetworkErrorEvent,channel,errorCode,message);
         }
 
         private void OnNetworkCustomError(INetworkChannel channel,object message)
         {
-            GameEventMgr.Instance.Send(NetWorkEventId.NetworkCustomErrorEvent,channel,message);
+            GameEvent.Send(NetWorkEventId.NetworkCustomErrorEvent,channel,message);
         }
 
         /// <summary>

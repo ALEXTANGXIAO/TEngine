@@ -18,7 +18,7 @@ namespace TEngine.Runtime
         {
             base.OnEnter(procedureOwner);
 
-            GameEventMgr.Instance.AddEventListener<bool>("DownLoadResult.AllDownLoaded",AllDownLoaded);
+            GameEvent.AddEventListener<bool>(LoadMgr.DownLoadFinish,AllDownLoaded);
 
             _procedureOwner = procedureOwner;
 

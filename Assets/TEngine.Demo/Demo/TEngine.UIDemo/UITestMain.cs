@@ -10,9 +10,10 @@ public class UITestMain : MonoBehaviour
     {
         //Demo示例，监听TEngine流程加载器OnStartGame事件
         //抛出这个事件说明框架流程加载完成（热更新，初始化等）
-        GameEventMgr.Instance.AddEventListener(TEngineEvent.OnStartGame,OnStartGame);
+        GameEvent.AddEventListener(TEngineEvent.OnStartGame,OnStartGame);
     }
 
+    private int _loopTime = 0;
     /// <summary>
     /// OnStartGame
     /// </summary>
@@ -20,5 +21,17 @@ public class UITestMain : MonoBehaviour
     {
         // 激活UI系统
         UISys.Instance.Active();
+
+        UISys.Mgr.ShowWindow<TestUI>();
+
+        TimerMgr.Instance.AddTimer((args =>
+        {
+            _loopTime++;
+            GameEvent.Send(TestUI.TestEvent);
+            if (_loopTime > 7)
+            {
+                UISys.Mgr.CloseWindow<TestUI>();
+            }
+        }), 1f, true);
     }
 }

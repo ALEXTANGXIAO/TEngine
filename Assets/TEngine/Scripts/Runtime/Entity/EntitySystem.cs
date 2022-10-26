@@ -1091,7 +1091,7 @@ namespace TEngine.Runtime.Entity
         /// <param name="userData">用户自定义数据。</param>
         private void OnShowEntitySuccess(IEntity entity, float duration, object userData)
         {
-            GameEventMgr.Instance.Send(EntityEvent.ShowEntitySuccess,entity,duration,userData);
+            GameEvent.Send(EntityEvent.ShowEntitySuccess,entity,duration,userData);
         }
 
         /// <summary>
@@ -1109,7 +1109,7 @@ namespace TEngine.Runtime.Entity
                 entityAssetName, 
                 entityGroupName,
                 errorMessage);
-            GameEventMgr.Instance.Send(EntityEvent.ShowEntityFailure,entityId,entityAssetName,entityGroupName,errorMessage,userData);
+            GameEvent.Send(EntityEvent.ShowEntityFailure,entityId,entityAssetName,entityGroupName,errorMessage,userData);
         }
 
         /// <summary>
@@ -1122,7 +1122,7 @@ namespace TEngine.Runtime.Entity
         /// <param name="userData">用户自定义数据。</param>
         private void OnShowEntityUpdate(int entityId, string entityAssetName, string entityGroupName, float progress, object userData)
         {
-            GameEventMgr.Instance.Send(EntityEvent.ShowEntityUpdate,entityId,entityAssetName,entityGroupName,progress,userData);
+            GameEvent.Send(EntityEvent.ShowEntityUpdate,entityId,entityAssetName,entityGroupName,progress,userData);
         }
 
         /// <summary>
@@ -1137,7 +1137,7 @@ namespace TEngine.Runtime.Entity
         /// <param name="userData">用户自定义数据。</param>
         private void OnShowEntityDependencyAsset(int entityId, string entityAssetName, string entityGroupName, string dependencyAssetName, int loadedCount, int totalCount, object userData)
         {
-            GameEventMgr.Instance.Send(EntityEvent.ShowEntityDependency,entityId,entityAssetName,entityGroupName,userData);
+            GameEvent.Send(EntityEvent.ShowEntityDependency,entityId,entityAssetName,entityGroupName,userData);
         }
 
         /// <summary>
@@ -1149,7 +1149,7 @@ namespace TEngine.Runtime.Entity
         /// <param name="userData">用户自定义数据。</param>
         private void OnHideEntityComplete(int entityId, string entityAssetName, IEntityGroup entityGroup, object userData)
         {
-            GameEventMgr.Instance.Send(EntityEvent.HideEntityComplete,entityId,entityAssetName,entityGroup,userData);
+            GameEvent.Send(EntityEvent.HideEntityComplete,entityId,entityAssetName,entityGroup,userData);
         }
 
         public override void OnUpdate(float elapseSeconds, float realElapseSeconds)

@@ -13,7 +13,7 @@
         protected override void OnEnter(IFsm<IProcedureManager> procedureOwner)
         {
             base.OnEnter(procedureOwner);
-            GameEventMgr.Instance.Send(TEngineEvent.OnStartGame);
+            GameEvent.Send(TEngineEvent.OnStartGame);
         }
     }
 }

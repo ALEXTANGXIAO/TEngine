@@ -24,11 +24,11 @@ namespace TEngine.Runtime
         {
             m_NetworkChannel = networkChannel;
 
-            GameEventMgr.Instance.AddEventListener<INetworkChannel,object>(NetWorkEventId.NetworkConnectedEvent,OnNetworkConnected);
-            GameEventMgr.Instance.AddEventListener<INetworkChannel>(NetWorkEventId.NetworkClosedEvent,OnNetworkClosed);
-            GameEventMgr.Instance.AddEventListener<INetworkChannel,int>(NetWorkEventId.NetworkMissHeartBeatEvent,OnNetworkMissHeartBeat);
-            GameEventMgr.Instance.AddEventListener<INetworkChannel,NetworkErrorCode,string>(NetWorkEventId.NetworkErrorEvent,OnNetworkError);
-            GameEventMgr.Instance.AddEventListener<INetworkChannel,object>(NetWorkEventId.NetworkCustomErrorEvent,OnNetworkCustomError);
+            GameEvent.AddEventListener<INetworkChannel,object>(NetWorkEventId.NetworkConnectedEvent,OnNetworkConnected);
+            GameEvent.AddEventListener<INetworkChannel>(NetWorkEventId.NetworkClosedEvent,OnNetworkClosed);
+            GameEvent.AddEventListener<INetworkChannel,int>(NetWorkEventId.NetworkMissHeartBeatEvent,OnNetworkMissHeartBeat);
+            GameEvent.AddEventListener<INetworkChannel,NetworkErrorCode,string>(NetWorkEventId.NetworkErrorEvent,OnNetworkError);
+            GameEvent.AddEventListener<INetworkChannel,object>(NetWorkEventId.NetworkCustomErrorEvent,OnNetworkCustomError);
             
             m_NetworkChannel.RegisterHandler((int)ActionCode.HeartBeat,HandleHeartBeat);
         }
@@ -98,11 +98,11 @@ namespace TEngine.Runtime
         /// </summary>
         public void Shutdown()
         {
-            GameEventMgr.Instance.RemoveEventListener<INetworkChannel,object>(NetWorkEventId.NetworkConnectedEvent,OnNetworkConnected);
-            GameEventMgr.Instance.RemoveEventListener<INetworkChannel>(NetWorkEventId.NetworkClosedEvent,OnNetworkClosed);
-            GameEventMgr.Instance.RemoveEventListener<INetworkChannel,int>(NetWorkEventId.NetworkMissHeartBeatEvent,OnNetworkMissHeartBeat);
-            GameEventMgr.Instance.RemoveEventListener<INetworkChannel,NetworkErrorCode,string>(NetWorkEventId.NetworkErrorEvent,OnNetworkError);
-            GameEventMgr.Instance.RemoveEventListener<INetworkChannel,object>(NetWorkEventId.NetworkCustomErrorEvent,OnNetworkCustomError);
+            GameEvent.RemoveEventListener<INetworkChannel,object>(NetWorkEventId.NetworkConnectedEvent,OnNetworkConnected);
+            GameEvent.RemoveEventListener<INetworkChannel>(NetWorkEventId.NetworkClosedEvent,OnNetworkClosed);
+            GameEvent.RemoveEventListener<INetworkChannel,int>(NetWorkEventId.NetworkMissHeartBeatEvent,OnNetworkMissHeartBeat);
+            GameEvent.RemoveEventListener<INetworkChannel,NetworkErrorCode,string>(NetWorkEventId.NetworkErrorEvent,OnNetworkError);
+            GameEvent.RemoveEventListener<INetworkChannel,object>(NetWorkEventId.NetworkCustomErrorEvent,OnNetworkCustomError);
             m_NetworkChannel = null;
         }
 
