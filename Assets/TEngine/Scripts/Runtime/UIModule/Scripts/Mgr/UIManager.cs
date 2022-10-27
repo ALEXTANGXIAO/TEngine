@@ -125,6 +125,73 @@ namespace TEngine.Runtime.UIModule
             ShowWindow(window, -1);
             return window;
         }
+        
+        public void ShowWindowAsync<T>(params object[] args) where T : UIWindow, new()
+        {
+            string typeName = GetWindowTypeName<T>();
+
+            T window = GetUIWindowByType(typeName) as T;
+            if (window == null)
+            {
+                window = new T();
+                
+                GameObject uiGo = null;
+
+                string resPath = string.Format("{0}.prefab", GetUIResourcePath(typeName));
+                if (string.IsNullOrEmpty(resPath))
+                {
+                    Debug.LogErrorFormat("CreateWindowByType failed, typeName:{0}, cant find respath", typeName);
+                    return;
+                }
+
+                UIWindowStack windowStack = GetUIWindowStack(window);
+                TResources.LoadAsync<GameObject>(resPath, (go) =>
+                {
+                    go.transform.SetParent(windowStack.ParentTrans);
+                    uiGo = go;
+                    if (uiGo == null)
+                    {
+                        Debug.LogErrorFormat("CreateWindowByType failed, typeName:{0}, load prefab failed: {1}", typeName,
+                            resPath);
+                        return;
+                    }
+
+                    uiGo.name = typeName;
+
+                    window.AllocWindowId();
+
+                    RectTransform rectTrans = uiGo.transform as RectTransform;
+                    if (window.NeedCenterUI())
+                    {
+                        rectTrans.SetMax();
+                    }
+
+                    rectTrans.localRotation = Quaternion.identity;
+                    rectTrans.localScale = Vector3.one;
+
+                    if (!window.Create(this, uiGo))
+                    {
+                        Debug.LogErrorFormat("window create failed, typeName:{0}", typeName);
+                        if (uiGo != null)
+                        {
+                            Object.Destroy(uiGo);
+                            uiGo = null;
+                        }
+
+                        return;
+                    }
+
+                    m_typeToInst[typeName] = window;
+                    m_allWindow[window.WindowId] = window;
+                    m_tmpWindowListDirty = true;
+                    
+                    window.InitData(args);
+                    ShowWindow(window, -1);
+                });
+
+                
+            }
+        }
 
         public string GetWindowTypeName<T>()
         {

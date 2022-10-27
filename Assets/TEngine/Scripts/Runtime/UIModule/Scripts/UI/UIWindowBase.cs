@@ -246,6 +246,10 @@ namespace TEngine.Runtime.UIModule
         {
         }
 
+        public virtual void InitData(params object[] args)
+        {
+            
+        }
         #endregion
 
         public void AddChild(UIWindowBase child)
