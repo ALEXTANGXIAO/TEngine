@@ -1,15 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace TEngine.Runtime
 {
+    internal class SceneAssetData
+    {
+        public AssetData _assetData;
+        public LoadSceneMode _loadSceneMode = LoadSceneMode.Single;
+    }
+    
     internal class ResMgr : TSingleton<ResMgr>
     {
         AssetConfig _assetConfig = new AssetConfig();
         private Dictionary<ScriptableObject, AssetData> _scriptableObjects = new Dictionary<ScriptableObject, AssetData>();
         public ResMgr()
         {
+            MonoUtility.AddUpdateListener(Update);
             _assetConfig.Load();
         }
 
@@ -25,6 +33,15 @@ namespace TEngine.Runtime
         public void MaxUnloadNumPerFrame(int value)
         {
             _assetConfig.MaxUnloadNumPerFrame = value;
+        }
+
+        /// <summary>
+        /// 资源更新重载。
+        /// </summary>
+        public void ReLoad()
+        {
+            _assetConfig.Unload();
+            _assetConfig.Load();
         }
 
         /// <summary>
@@ -355,5 +372,131 @@ namespace TEngine.Runtime
             return $"{Application.dataPath}/TResources/{rawPath}";
 #endif
         }
+
+        #region Scene
+        //已经加载好的场景
+        private List<SceneAssetData> _loadedScenes = new List<SceneAssetData>();
+        
+        //加载中的场景
+        private List<SceneAssetData> _loadingScenes = new List<SceneAssetData>();
+
+        private List<SceneAssetData> _cachedDeleteFromLoadingScenes = new List<SceneAssetData>();
+        /// <summary>
+        /// 场景加载
+        /// </summary>
+        /// <param name="sceneName">场景名</param>
+        /// /// <param name="mode">加载模式</param>
+        /// <returns>异步操作对象</returns>
+        /// <seealso>SceneLoader</seealso>提供了加载进度展示，也可以自定义包装来加载场景
+        public AsyncOperation LoadScene(string sceneName, LoadSceneMode mode = LoadSceneMode.Single)
+        {
+            AssetData assetData = _assetConfig.GetSceneAsset(sceneName, mode);
+            SceneAssetData sData = new SceneAssetData();
+            sData._assetData = assetData;
+            sData._loadSceneMode = mode;
+            if(assetData != null)
+            {
+                _loadingScenes.Add(sData);
+                assetData.AddRef();
+
+                return assetData.AsyncOp;
+            }
+            else
+                return null;
+        }
+
+        /// <summary>
+        /// 场景是否已经加载过了
+        /// </summary>
+        /// <param name="sceneName"></param>
+        /// <returns></returns>
+        public bool IsSceneLoaded(string sceneName)
+        {
+            foreach (SceneAssetData loadedScene in _loadedScenes)
+            {
+                if (loadedScene != null 
+                    && loadedScene._assetData != null 
+                    && !string.IsNullOrEmpty(loadedScene._assetData.Name)
+                    && loadedScene._assetData.Name.Equals(sceneName))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        /// <summary>
+        /// 场景是否在加载过程中
+        /// </summary>
+        /// <param name="sceneName"></param>
+        /// <returns></returns>
+        public bool IsSceneLoading(string sceneName)
+        {
+            foreach (SceneAssetData loadingScene in _loadingScenes)
+            {
+                if (loadingScene._assetData != null 
+                    && !string.IsNullOrEmpty(loadingScene._assetData.Name)
+                    && loadingScene._assetData.Name.Equals(sceneName))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        /// <summary>
+        /// 清理掉已经加载的场景
+        /// </summary>
+        void UnloadLoadedScenes()
+        {
+            foreach (SceneAssetData loadedScene in _loadedScenes)
+            {
+                if (loadedScene != null && loadedScene._assetData != null)
+                {
+                    loadedScene._assetData.DecRef(true);
+                }
+            }
+            _loadedScenes.Clear();
+            Resources.UnloadUnusedAssets();
+        }
+
+        /// <summary>
+        /// 轮询资源。
+        /// </summary>
+        private void Update()
+        { 
+            _assetConfig.Update(Time.deltaTime);
+
+            foreach (SceneAssetData loadingScene in _loadingScenes)
+            {
+                if (loadingScene._assetData != null &&loadingScene._assetData.AsyncOp != null)
+                {
+                    if (!loadingScene._assetData.AsyncOp.isDone)
+                    {
+                        if (loadingScene._assetData.AsyncOp.progress >= 0.9f)
+                        {
+                            if (loadingScene._loadSceneMode == LoadSceneMode.Single)
+                            {
+                                UnloadLoadedScenes();
+                            }
+                            // 激活新场景
+                            loadingScene._assetData.AsyncOp.allowSceneActivation = true;
+                            _cachedDeleteFromLoadingScenes.Add(loadingScene);
+                            _loadedScenes.Add(loadingScene);
+                        }
+                    }
+                }
+            }
+
+            //从Loading队列中删除掉加载完成的场景
+            foreach (SceneAssetData deleteScene in _cachedDeleteFromLoadingScenes)
+            {
+                _loadingScenes.Remove(deleteScene);
+            }
+            _cachedDeleteFromLoadingScenes.Clear();
+            
+        }
+        
+        #endregion
     }
 }

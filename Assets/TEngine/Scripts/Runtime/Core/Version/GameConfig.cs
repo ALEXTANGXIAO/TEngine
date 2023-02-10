@@ -64,9 +64,7 @@ namespace TEngine.Runtime
                 if (configContent == string.Empty)
                 {
 #if !UNITY_EDITOR
-#if RELEASE_BUILD || _DEVELOPMENT_BUILD_
                     TLogger.LogError($"version config not find in InnerPath,please check it");
-#endif
                     return false;
 #endif
                 }
@@ -146,6 +144,10 @@ namespace TEngine.Runtime
         {
             get
             {
+                if (string.IsNullOrEmpty(_versionConfig.ResVersion))
+                {
+                    return "0";
+                }
                 return _versionConfig.ResVersion;
             }
             set

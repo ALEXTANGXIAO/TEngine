@@ -56,6 +56,7 @@ namespace TEngine.Runtime
                 {
                     assetPaths[j] = reader.ReadString();
                     _assetPath2BundleDatas.Add(assetPaths[j], bundleName);
+                    Log.Error($"Init Ab {assetPaths[j]} bundleName {bundleName}");
                 }
                 depCount = reader.ReadInt32();
                 if (!_bundleDatas.TryGetValue(bundleName, out assetBundleData))

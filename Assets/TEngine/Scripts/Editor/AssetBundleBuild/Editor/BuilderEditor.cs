@@ -1,11 +1,13 @@
 ﻿using System;
 using System.IO;
 using TEngine;
+using TEngine.Editor;
 using TEngine.Runtime;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Object = UnityEngine.Object;
+using Type = System.Type;
 
 namespace TEngineCore.Editor
 {
@@ -222,7 +224,7 @@ namespace TEngineCore.Editor
         #endregion
 
         #region 打包按钮
-        [BuilderEditor("Copy And Encrpt DLL", ContentType.Button, ",CB:CopyDLL,FlowA:disPlayType:1")]
+        [BuilderEditor("Generate DLL", ContentType.Button, ",CB:GenerateDLL,FlowA:disPlayType:1")]
         private int copydll;
 
         [BuilderEditor("Build AssetBundle", ContentType.Button, ",CB:BuildAssetBundle,FlowA:disPlayType:1")]
@@ -649,6 +651,24 @@ namespace TEngineCore.Editor
             }
         }
 
+        private void GenerateDLL(string args)
+        {
+            if (EditorApplication.isCompiling)
+            {
+                EditorUtility.DisplayDialog("Build AssetBundle", "请等待编译完成", "ok");
+                return;
+            }
+
+            ApplyArgs("");
+
+            BuildAssetsCommand.BuildAndCopyABAOTHotUpdateDlls();
+            
+            TLogger.LogInfoSuccessd("1.生成DLL的bytes成功");
+
+            AssetDatabase.Refresh();
+
+            GUIUtility.ExitGUI();
+        }
 
         private void CopyDLL(string args)
         {

@@ -72,7 +72,7 @@ namespace TEngineCore.Editor
         /// <summary>
         /// 文件过滤
         /// </summary>
-        private string[] fileExcludeFilter = new[] { ".cs", ".meta", ".dll", ".DS_Store", ".unity" };
+        private string[] fileExcludeFilter = new[] { ".cs", ".meta", ".dll", ".DS_Store"/*, ".unity" */};
 
         /// <summary>
         /// 资源环信息初始化

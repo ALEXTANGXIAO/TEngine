@@ -29,6 +29,7 @@
             {
                 if (s_VersionHelper == null)
                 {
+                    Log.Fatal("s_VersionHelper is null GameVersion");
                     return string.Empty;
                 }
 
@@ -45,6 +46,7 @@
             {
                 if (s_VersionHelper == null)
                 {
+                    Log.Fatal("s_VersionHelper is null InternalGameVersion");
                     return 0;
                 }
 
