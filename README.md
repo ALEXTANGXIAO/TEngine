@@ -36,7 +36,6 @@
 
 #### TEngine是一个简单(新手友好)且强大的Unity框架,对于需要一套上手快、文档清晰、高性能且可拓展性极强的开发者或者团队来说是一个很好的游戏开发框架解决方案。
 
-## 2.0版本主线开发中！！！稳定版本请到分支v1.2.0
 
 ## <a href="http://1.12.241.46:5000/"><strong>文档快速入门 »</strong></a>
 ## <a href="https://github.com/ALEXTANGXIAO/TEngineServer"><strong>服务端GitHub入口 »</strong></a>
@@ -47,12 +46,12 @@
 ```Csharp
 public void Test()
 {
-  TLogger.LogInfo();
-  TLogger.LogAssert();
-  TLogger.LogInfoSuccessd();
+  Log.Info("some things");
+  Log.Assert(bool:condition,"assert log");
+  Log.Error("error some things");
 ...
 }
-[TLogger][INFO][2022-05-20 23:44:19 871] - DevicePerformanceLevel 设备性能评级:High
+[TEngine][INFO][2022-05-20 23:44:19 871] - DevicePerformanceLevel 设备性能评级:High
 ```
 2. <strong>高效的事件系统GameEventMgr，可以指定事件ID/事件String监听和分发事件。通过事件来驱动模块，如战斗的角色身上的事件流、UI和网络以及Model的数据流、开发中的绝大部分情况都可以通过事件来进行驱动。(配合UI模块或者拓展的战斗模块实现MVE[Model - View - Event]事件驱动架构)
 ```Csharp
@@ -64,9 +63,9 @@ class A
    public A()
    {
      //添加事件监听string
-     GameEventMgr.Instance.AddEventListener("TEngine很好用",TodoSomeThings);
+     GameEvent.AddEventListener("TEngine很好用",TodoSomeThings);
      //添加事件监听int 事件ID
-     GameEventMgr.Instance.AddEventListener(Hellp,TodoSomeThings2);
+     GameEvent.AddEventListener(Hellp,TodoSomeThings2);
    }
 }
 
@@ -75,8 +74,8 @@ class B
   private void SaySomeThings()
   {
       //发送事件流
-      GameEventMgr.Instance.Send("TEngine很好用");
-      GameEventMgr.Instance.Send(Hellp);
+      GameEvent.Send("TEngine很好用");
+      GameEvent.Send(Hellp);
   }
 }
 
@@ -95,7 +94,7 @@ class ClientHandle
     var player = PlayerMgr.Instance.GetPlayer(playerId);
     if(player != null){
       player.Event.Send("Hpchange",hpPack);       //局部的事件管理器
-      GameEventMgr.Instance.Send("Hpchange",hpPack);  //全局事件中心
+      GameEvent.Send("Hpchange",hpPack);  //全局事件中心
     }
   }
 }
@@ -111,14 +110,14 @@ class PlayerHp
 class PlayerHpUI
 {
   PlayerHpUI(){
-    GameEventMgr.Instance.AddEventListener<HpPack>(Hellp,HandleUpChange);
+    GameEvent.AddEventListener<HpPack>(Hellp,HandleUpChange);
   }
 }
 ```
 3. 健壮的资源模块TResources,开发者只用关注一个接口便可以通用的在编辑器进行资源加载或者真机加载AB，包括打包AB等等。通过类AssetConfig统一配置本地资源加载和AB打包的路径(AssetRootPath),AB加密偏移也在底层处理，更安全的保护了您的项目，测试无法被AssetStudio解密，并且经测试AB加密偏移性能几乎无影响。   
 增加了AB资源计数的概念，提供了AB桥接器IResourceHelper，你可以拓展此接口实现自己的资源管理器以便于接入XAssets或者是YooAssets等等。
 
-<strong>4.救世的<a href="https://github.com/focus-creative-games/hybridclr"><strong>HybirdCLR(huatuo)</strong></a>热更新！！！！！！！！(2022.5.19日huatuo的安卓和IOS单元测试已全部通过)(目前支持Unity2020.3.33f1等高版本，2019版本将在2022年6月份支持。)
+<strong>4.(已接入1.1.20)救世的<a href="https://github.com/focus-creative-games/hybridclr"><strong>HybirdCLR(huatuo)</strong></a>热更新！！！！！！！！(2022.5.19日huatuo的安卓和IOS单元测试已全部通过)(目前支持Unity2020.3.33f1等高版本，2019版本将在2022年6月份支持。)
 
 6. 可选择的高效网络模块，支持TCP/UDP异步网络管理器+Protobuf(增加了C#+DotNetty+Protobuf的服务器服务器案例)
 
