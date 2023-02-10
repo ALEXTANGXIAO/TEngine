@@ -35,6 +35,7 @@ namespace TEngine.Runtime
         public void Load()
         {
 #if ASSETBUNDLE_ENABLE
+            Log.Debug("AssetBundleData ASSETBUNDLE_ENABLE Mode");
             Stream stream = FileSystem.OpenRead(FileSystem.GetAssetBundlePathInVersion(AssetBundleMeta));
             BinaryReader reader = new BinaryReader(stream);
             uint resVersion = reader.ReadUInt32();
@@ -56,7 +57,6 @@ namespace TEngine.Runtime
                 {
                     assetPaths[j] = reader.ReadString();
                     _assetPath2BundleDatas.Add(assetPaths[j], bundleName);
-                    Log.Error($"Init Ab {assetPaths[j]} bundleName {bundleName}");
                 }
                 depCount = reader.ReadInt32();
                 if (!_bundleDatas.TryGetValue(bundleName, out assetBundleData))
@@ -85,6 +85,8 @@ namespace TEngine.Runtime
                 }
             }
             stream.Close();
+#else
+            Log.Debug("AssetBundleData Editor Mode");
 #endif
         }
 

@@ -1,7 +1,7 @@
 {
   "GameVersion": "0.1.0",
   "InternalGameVersion": 0,
-  "CheckVersionUrl": "http://1.12.241.46:8081/TEngine/Demo/{0}Version.txt",
+  "CheckVersionUrl": "http://127.0.0.1:8081/TEngine/Demo/{0}Version.txt",
   "WindowsAppUrl": "https://www.game.com",
   "MacOSAppUrl": "https://www.game.com",
   "IOSAppUrl": "https://www.game.com",

@@ -8,12 +8,12 @@ namespace TEngine.Runtime
     public class ProcedureResourcesInit : ProcedureBase
     {
         public static int OnInitResourceCompleteEvent = StringId.StringToHash("OnInitResourceComplete");
-        
+
         private bool m_initResourceComplete = false;
 
         protected internal override void OnEnter(IFsm<IProcedureManager> procedureOwner)
         {
-
+			ResMgr.Instance.Active();
             base.OnEnter(procedureOwner);
             GameEvent.AddEventListener(OnInitResourceCompleteEvent, OnInitResourceComplete);
             m_initResourceComplete = false;

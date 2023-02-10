@@ -9,6 +9,7 @@ namespace TEngine.Runtime
     public class TResources
     {
         private static IResourceHelper m_ResourceHelper;
+        public static bool Initalize => m_ResourceHelper != null;
 
         /// <summary>
         /// 设置游戏资源加载辅助器。

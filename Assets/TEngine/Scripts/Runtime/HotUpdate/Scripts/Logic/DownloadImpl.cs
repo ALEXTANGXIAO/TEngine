@@ -28,15 +28,15 @@ namespace TEngine.Runtime.HotUpdate
     {
         StartDownLoad = 0,      //开始下载
         HeadRequestFail = 1,    //请求头失败
-        DownLoadRequestFail = 2,    //现在请求失败            
+        DownLoadRequestFail = 2,    //现在请求失败
         AreadyDownLoaded = 3,       //已经下载过而且下载好了
-        DownLoading = 4,        //下载中            
+        DownLoading = 4,        //下载中
         NetChanged = 5,
-        DownLoaded = 6,         //下载完成            
-        DownLoadingError = 7,//接收数据的那个过程中出错            
+        DownLoaded = 6,         //下载完成
+        DownLoadingError = 7,//接收数据的那个过程中出错
         HeadRequestError = 8,//获取下载包大小报错
-        ReceiveNullData = 9,//接受到空数据            
-        DownError = 10,//数据没有接受完但是isDone为true            
+        ReceiveNullData = 9,//接受到空数据
+        DownError = 10,//数据没有接受完但是isDone为true
         ReceiveError = 11,//接收数据失败
         Md5Wrong = 12,//md5错误
         AllDownLoaded = 13//全部下载完成
@@ -119,7 +119,7 @@ namespace TEngine.Runtime.HotUpdate
 
         bool _DealWithDownLoadOk(DownLoadResult downloadType, BackgroundDownloadStatus status, LoadResource data)
         {
-            string fileLocalPath = _path + data.Url;
+            string fileLocalPath = _path + data.Url + "_md5_" + data.Md5;
 
             if (status == BackgroundDownloadStatus.NetworkError)
             {

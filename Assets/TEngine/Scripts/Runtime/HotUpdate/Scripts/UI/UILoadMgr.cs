@@ -13,7 +13,7 @@ namespace TEngine.Runtime.HotUpdate
         /// </summary>
         public static void Initialize()
         {
-            _uiLoad = GameObject.Find(FileSystem.AssetFolder);           
+            _uiLoad = GameObject.Find(FileSystem.AssetFolder);
             if (_uiLoad == null)
             {
                 var obj = Resources.Load($"{FileSystem.AssetFolder}/UILoad");
@@ -35,8 +35,8 @@ namespace TEngine.Runtime.HotUpdate
                 }
             }
             RegisitUI();
-        }     
-              
+        }
+
         public static void RegisitUI()
         {
             UIDefine.RegisitUI(_uiList);
@@ -60,7 +60,7 @@ namespace TEngine.Runtime.HotUpdate
 
             GameObject ui = null;
             if (!_uiMap.ContainsKey(uiinfo))
-            {                
+            {
                 Object obj = Resources.Load(_uiList[uiinfo]);
                 if (obj != null)
                 {
@@ -72,14 +72,19 @@ namespace TEngine.Runtime.HotUpdate
                         ui.transform.localPosition = Vector3.zero;
                         RectTransform rect = ui.GetComponent<RectTransform>();
                         rect.sizeDelta = Vector2.zero;
-                    }                   
+                    }
                 }
 
                 UIBase compenent = ui.GetComponent<UIBase>();
                 if (compenent != null)
                 {
                     _uiMap.Add(uiinfo, compenent);
-                }                
+                }
+            }
+
+            if (_uiMap[uiinfo] == null || _uiMap[uiinfo].gameObject == null)
+            {
+	            return;
             }
             _uiMap[uiinfo].gameObject.SetActive(true);
             if (param != null)
@@ -89,7 +94,7 @@ namespace TEngine.Runtime.HotUpdate
                 {
                     compenent.OnEnter(param);
                 }
-            }            
+            }
         }
         /// <summary>
         /// 隐藏ui对象
@@ -109,7 +114,7 @@ namespace TEngine.Runtime.HotUpdate
 
             _uiMap[uiinfo].gameObject.SetActive(false);
             Object.DestroyImmediate(_uiMap[uiinfo].gameObject);
-            _uiMap.Remove(uiinfo);            
+            _uiMap.Remove(uiinfo);
         }
 
         /// <summary>

@@ -2,7 +2,8 @@
     "name": "TEngine.Runtime",
     "rootNamespace": "",
     "references": [
-        "GUID:13ba8ce62aa80c74598530029cb2d649"
+        "GUID:13ba8ce62aa80c74598530029cb2d649",
+        "GUID:88d491a7059d6f24393c76d9a4cbf684"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -237,6 +237,24 @@ namespace TEngine.Runtime
         }
 
         /// <summary>
+        /// 写入App版本号
+        /// </summary>
+        /// <param name="appVersion"></param>
+        public void WriteAppVersion(string appVersion)
+        {
+	        if (string.IsNullOrEmpty(appVersion))
+	        {
+		        TLogger.LogWarning("ResVersion is null or empty,please check!");
+		        return;
+	        }
+
+	        _versionConfig.AppVersion = appVersion;
+	        UpdateConfig();
+	        SetLoadFilePath(FileSystem.ResourceRoot, ResId);
+	        TLogger.LogInfo("GameConfig,WriteVersion to sdk:" + GameConfig.Instance.GameBundleVersion);
+        }
+
+        /// <summary>
         /// 写入App内部资源版本号
         /// </summary>
         /// <param name="resId"></param>

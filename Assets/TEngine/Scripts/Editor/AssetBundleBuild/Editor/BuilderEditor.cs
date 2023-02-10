@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using TEngine;
 using TEngine.Editor;
 using TEngine.Runtime;
 using UnityEditor;
+using UnityEditor.Build.Reporting;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 using Type = System.Type;
 
@@ -110,7 +113,7 @@ namespace TEngineCore.Editor
         [FormerlySerializedAs("_scriptingBackend")]
         [SerializeField]
         [BuilderEditor("编译类型", ContentType.Enum, "FlowA:disPlayType:1&platform:0r1r2,CB:SwitchScriptingBackend")]
-        internal BuilderUtility.ScriptBackend scriptingBackend = BuilderUtility.ScriptBackend.Mono;
+        internal BuilderUtility.ScriptBackend scriptingBackend = BuilderUtility.ScriptBackend.IL2CPP;
 
 
         #endregion
@@ -215,7 +218,7 @@ namespace TEngineCore.Editor
 
         [FormerlySerializedAs("_ABVersion")]
         [SerializeField]
-        [BuilderEditor("资源版本号", ContentType.TextField, "FlowA:disPlayType:1,CB:ChangeABVersion")]
+        [BuilderEditor("内部资源版本号", ContentType.TextField, "FlowA:disPlayType:1,CB:ChangeABVersion")]
         internal string ABVersion = "0";
 
         [BuilderEditor("15", ContentType.Space)]
@@ -233,10 +236,10 @@ namespace TEngineCore.Editor
         [BuilderEditor("Gen Md5(生成MD5)", ContentType.Button, ",CB:GenMd5,FlowA:disPlayType:1")]
         private int genMd5;
 
-        [BuilderEditor("Build", ContentType.Button, "CB:BuildApk")]
+        [BuilderEditor("Build", ContentType.Button, "CB:BuildActive")]
         private int build;
 
-        [BuilderEditor("直接出包（跳过ab环节）", ContentType.Button, "CB:DirectBuildApk,FlowA:disPlayType:1")]
+        [BuilderEditor("直接出包（跳过ab环节）", ContentType.Button, "CB:DirectBuild,FlowA:disPlayType:1")]
         private int directBuild;
 
         #endregion
@@ -448,8 +451,8 @@ namespace TEngineCore.Editor
         /// <param name="args"></param>
         private void ChangeProductName(string args)
         {
-            if (!autoUdate)
-                return;
+	        if (!autoUdate)
+		        return;
             PlayerSettings.productName = args;
         }
 
@@ -459,9 +462,10 @@ namespace TEngineCore.Editor
         /// <param name="args"></param>
         private void ChangeBundleVersion(string args)
         {
-            if (!autoUdate)
-                return;
+	        if (!autoUdate)
+		        return;
             PlayerSettings.bundleVersion = args;
+            GameConfig.Instance.WriteAppVersion(args);
         }
 
         /// <summary>
@@ -470,8 +474,9 @@ namespace TEngineCore.Editor
         /// <param name="args"></param>
         private void ChangeABVersion(string args)
         {
-            if (!autoUdate)
-                return;
+	        if (!autoUdate)
+		        return;
+            GameConfig.Instance.WriteBaseResVersion(args);
             GameConfig.Instance.WriteResVersion(args);
         }
 
@@ -607,7 +612,7 @@ namespace TEngineCore.Editor
                 destFile = Path.Combine(targetFilePath, fileName);
                 File.Copy(s, destFile, true);
             }
-   
+
             string[] filefolders = Directory.GetFiles(sourceFilePath);
 
             DirectoryInfo dirinfo = new DirectoryInfo(sourceFilePath);
@@ -662,7 +667,7 @@ namespace TEngineCore.Editor
             ApplyArgs("");
 
             BuildAssetsCommand.BuildAndCopyABAOTHotUpdateDlls();
-            
+
             TLogger.LogInfoSuccessd("1.生成DLL的bytes成功");
 
             AssetDatabase.Refresh();
@@ -702,20 +707,14 @@ namespace TEngineCore.Editor
             GUIUtility.ExitGUI();
         }
 
-        private void BuildApk(string args)
+        private void BuildActive(string args)
         {
             if (EditorApplication.isCompiling)
             {
-                EditorUtility.DisplayDialog("Build Apk", "请等待编译完成", "ok");
+                EditorUtility.DisplayDialog("Build Active", "请等待编译完成", "ok");
                 return;
             }
             Save();
-
-            if (bundleVersion.Split('.').Length != 2)
-            {
-                Debug.LogError("版本号需要两位（*.*）");
-                return;
-            }
 
             if (buildType == (BuilderUtility.BuildType)BuilderUtility.BuildType.Editor)
             {
@@ -723,8 +722,7 @@ namespace TEngineCore.Editor
             }
             else
             {
-
-                if (!BuilderUtility.PolicyEasyCheck(builderBundlePolicy, bundleConfig))
+	            if (!BuilderUtility.PolicyEasyCheck(builderBundlePolicy, bundleConfig))
                 {
                     if (!EditorUtility.DisplayDialog("资源检查警告", "发现策略未覆盖到的资源，是否继续", "继续", "退出打包"))
                     {
@@ -734,7 +732,8 @@ namespace TEngineCore.Editor
 
                 ApplyArgs("");
                 Builder.Instance.SetBuilderConfig(this);
-                Builder.Instance.Build(false);
+                Builder.Instance.BuildActive(false);
+
 
             }
 
@@ -742,24 +741,18 @@ namespace TEngineCore.Editor
         }
 
         /// <summary>
-        /// 直接打APK包
+        /// 直接打包
         /// </summary>
         /// <param name="args"></param>
-        private void DirectBuildApk(string args)
+        private void DirectBuild(string args)
         {
             if (EditorApplication.isCompiling)
             {
-                EditorUtility.DisplayDialog("Direct Build Apk", "请等待编译完成", "ok");
+                EditorUtility.DisplayDialog("Direct Build", "请等待编译完成", "ok");
                 return;
             }
 
             Save();
-
-            if (bundleVersion.Split('.').Length != 2)
-            {
-                Debug.LogError("版本号需要两位（*.*）");
-                return;
-            }
 
             if (buildType == (BuilderUtility.BuildType)BuilderUtility.BuildType.Editor)
             {
@@ -775,7 +768,7 @@ namespace TEngineCore.Editor
 
                 ApplyArgs("");
                 Builder.Instance.SetBuilderConfig(this);
-                Builder.Instance.Build(true);
+                Builder.Instance.BuildActive(true);
             }
 
             GUIUtility.ExitGUI();

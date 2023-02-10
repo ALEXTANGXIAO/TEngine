@@ -73,8 +73,6 @@ namespace TEngine.Runtime
         {
             base.OnEnter(procedureOwner);
             
-            LoadJobManager.Instance.LoadSceneAsync("L2Scene");
-            
             m_procedureOwner = procedureOwner;
 
             if (!NeedLoadDll)

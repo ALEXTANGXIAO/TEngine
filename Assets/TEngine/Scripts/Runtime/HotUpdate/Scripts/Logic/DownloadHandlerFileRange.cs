@@ -31,6 +31,8 @@ namespace TEngine.Runtime.HotUpdate
             _path = path;
             _md5 = md5;
 
+            _path = path + "_md5_" + md5;
+
             var dirPath = Path.GetDirectoryName(_path);
             if (dirPath != null)
             {
@@ -119,7 +121,7 @@ namespace TEngine.Runtime.HotUpdate
                 _unityWebRequest = null;
             }
         }
-        #region 
+        #region
         public float Progress => _totalFileSize == 0 ? 0 : ((float)_curFileSize) / _totalFileSize;
 
         public long TotalSize => _totalFileSize;

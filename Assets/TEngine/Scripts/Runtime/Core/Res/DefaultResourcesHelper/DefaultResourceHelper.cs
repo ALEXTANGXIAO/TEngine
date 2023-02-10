@@ -5,6 +5,11 @@ namespace TEngine.Runtime
 {
     public class DefaultResourceHelper : ResourceHelperBase
     {
+        private void Start()
+        {
+            ResMgr.Instance.Active();
+        }
+
         public override GameObject Load(string path)
         {
             return ResMgr.Instance.Load(path);

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using TEngine.Runtime;
 using UnityEditor;
+using UnityEngine;
 
 namespace TEngine.Editor
 {
@@ -74,8 +76,27 @@ namespace TEngine.Editor
 
     public static class CusInjectorDemoEditor
     {
+	    [TEngineBuilderInjector(BuilderInjectorMoment.BeforeCollect_AssetBundle)]
+	    public static void CopyVersion()
+	    {
+		    var innerVersionFile = UnityEngine.Application.streamingAssetsPath + "/TEngine/version.json";
+
+		    string path = FileSystem.ResourceRoot + "/" + GameConfig.CONFIG;
+		    if (System.IO.File.Exists(innerVersionFile))
+		    {
+			    FileUtil.DeleteFileOrDirectory(innerVersionFile);
+			    FileUtil.CopyFileOrDirectory(path, innerVersionFile);
+		    }
+		    else
+		    {
+			    FileUtil.CopyFileOrDirectory(path, innerVersionFile);
+		    }
+
+		    Log.Debug("复制版本信息成功");
+	    }
+
         [TEngineBuilderInjector(BuilderInjectorMoment.AfterBuild_AssetBundle)]
-        public static void TestInjector()
+        public static void GenMd5List()
         {
             UnityEngine.Debug.Log($"productName: {PlayerSettings.productName}");
             UnityEngine.Debug.Log($"version:{GameConfig.Instance.GameBundleVersion}");
@@ -83,6 +104,7 @@ namespace TEngine.Editor
             long versionLong = long.Parse(versionStr);
             UnityEngine.Debug.Log($"versionStr:{versionStr}");
             UnityEngine.Debug.LogError("BuilderInjectorMoment.AfterBuild_AssetBundle");
+            TEngineCore.Editor.TEngineEditorUtil.GenMd5List();
         }
     }
 }
