@@ -1,45 +1,45 @@
 {
-	"name": "TEngine.Runtime",
-	"rootNamespace": "TEngine.Runtime",
-	"references": [],
-	"includePlatforms": [],
-	"excludePlatforms": [],
-	"allowUnsafeCode": true,
-	"overrideReferences": false,
-	"precompiledReferences": [],
-	"autoReferenced": true,
-	"defineConstraints": [],
-	"versionDefines": [
-		{
-			"name": "com.unity.modules.assetbundle",
-			"expression": "",
-			"define": "UNITASK_ASSETBUNDLE_SUPPORT"
-		},
-		{
-			"name": "com.unity.modules.physics",
-			"expression": "",
-			"define": "UNITASK_PHYSICS_SUPPORT"
-		},
-		{
-			"name": "com.unity.modules.physics2d",
-			"expression": "",
-			"define": "UNITASK_PHYSICS2D_SUPPORT"
-		},
-		{
-			"name": "com.unity.ugui",
-			"expression": "",
-			"define": "UNITASK_UGUI_SUPPORT"
-		},
-		{
-			"name": "com.unity.modules.unitywebrequest",
-			"expression": "",
-			"define": "UNITASK_WEBREQUEST_SUPPORT"
-		},
-		{
-			"name": "com.unity.modules.particlesystem",
-			"expression": "",
-			"define": "UNITASK_PARTICLESYSTEM_SUPPORT"
-		}
-	],
-	"noEngineReferences": false
+    "name": "TEngine.Runtime",
+    "rootNamespace": "",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.modules.assetbundle",
+            "expression": "",
+            "define": "UNITASK_ASSETBUNDLE_SUPPORT"
+        },
+        {
+            "name": "com.unity.modules.physics",
+            "expression": "",
+            "define": "UNITASK_PHYSICS_SUPPORT"
+        },
+        {
+            "name": "com.unity.modules.physics2d",
+            "expression": "",
+            "define": "UNITASK_PHYSICS2D_SUPPORT"
+        },
+        {
+            "name": "com.unity.ugui",
+            "expression": "",
+            "define": "UNITASK_UGUI_SUPPORT"
+        },
+        {
+            "name": "com.unity.modules.unitywebrequest",
+            "expression": "",
+            "define": "UNITASK_WEBREQUEST_SUPPORT"
+        },
+        {
+            "name": "com.unity.modules.particlesystem",
+            "expression": "",
+            "define": "UNITASK_PARTICLESYSTEM_SUPPORT"
+        }
+    ],
+    "noEngineReferences": false
 }
