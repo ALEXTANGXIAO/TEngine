@@ -29,7 +29,7 @@ namespace TEngine
         }
 
         /// <summary>
-        /// 注册wrap的函数
+        /// 注册wrap的函数。
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="callerWrap"></param>
@@ -42,9 +42,9 @@ namespace TEngine
             m_entry.Add(typeName, entry);
         }
 
-        public EventDispatcher GetDispatcher()
-        {
-            return m_dispatcher;
-        }
+        /// <summary>
+        /// 分发注册器。
+        /// </summary>
+        public EventDispatcher Dispatcher => m_dispatcher;
     }
 }

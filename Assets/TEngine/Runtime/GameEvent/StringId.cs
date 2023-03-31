@@ -2,7 +2,7 @@
 
 namespace TEngine
 {
-    public class StringId
+    public static class StringId
     {
         private static readonly Dictionary<string, int> eventTypeHashMap = new Dictionary<string, int>();
         private static readonly Dictionary<int, string> eventHashToStringMap = new Dictionary<int, string>();

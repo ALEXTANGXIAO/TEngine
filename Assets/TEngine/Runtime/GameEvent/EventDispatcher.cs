@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace TEngine
 {
+    /// <summary>
+    /// 游戏事件数据类。
+    /// </summary>
     class EventDelegateData
     {
         private int m_eventType = 0;
@@ -17,6 +20,11 @@ namespace TEngine
             m_eventType = evnetType;
         }
 
+        /// <summary>
+        /// 添加注册委托。
+        /// </summary>
+        /// <param name="handler"></param>
+        /// <returns></returns>
         public bool AddHandler(Delegate handler)
         {
             if (m_listExist.Contains(handler))
@@ -38,22 +46,29 @@ namespace TEngine
             return true;
         }
 
-        public void RmvHandler(Delegate hander)
+        /// <summary>
+        /// 移除反注册委托。
+        /// </summary>
+        /// <param name="handler"></param>
+        public void RmvHandler(Delegate handler)
         {
             if (m_isExcute)
             {
                 m_dirty = true;
-                m_deleteList.Add(hander);
+                m_deleteList.Add(handler);
             }
             else
             {
-                if (!m_listExist.Remove(hander))
+                if (!m_listExist.Remove(handler))
                 {
                     Log.Fatal("Delete handle failed, not exist, EventId: {0}", StringId.HashToString(m_eventType));
                 }
             }
         }
 
+        /// <summary>
+        /// 检测脏数据修正。
+        /// </summary>
         private void CheckModify()
         {
             m_isExcute = false;
@@ -75,14 +90,16 @@ namespace TEngine
             }
         }
 
+        /// <summary>
+        /// 回调调用。
+        /// </summary>
         public void Callback()
         {
             m_isExcute = true;
             for (var i = 0; i < m_listExist.Count; i++)
             {
                 var d = m_listExist[i];
-                Action action = d as Action;
-                if (action != null)
+                if (d is Action action)
                 {
                     action();
                 }
@@ -91,14 +108,18 @@ namespace TEngine
             CheckModify();
         }
 
-        public void Callback<T>(T arg1)
+        /// <summary>
+        /// 回调调用。
+        /// </summary>
+        /// <param name="arg1"></param>
+        /// <typeparam name="TArg1"></typeparam>
+        public void Callback<TArg1>(TArg1 arg1)
         {
             m_isExcute = true;
             for (var i = 0; i < m_listExist.Count; i++)
             {
                 var d = m_listExist[i];
-                var action = d as Action<T>;
-                if (action != null)
+                if (d is Action<TArg1> action)
                 {
                     action(arg1);
                 }
@@ -107,14 +128,20 @@ namespace TEngine
             CheckModify();
         }
 
-        public void Callback<T, U>(T arg1, U arg2)
+        /// <summary>
+        /// 回调调用。
+        /// </summary>
+        /// <param name="arg1"></param>
+        /// <param name="arg2"></param>
+        /// <typeparam name="TArg1"></typeparam>
+        /// <typeparam name="TArg2"></typeparam>
+        public void Callback<TArg1, TArg2>(TArg1 arg1, TArg2 arg2)
         {
             m_isExcute = true;
             for (var i = 0; i < m_listExist.Count; i++)
             {
                 var d = m_listExist[i];
-                var action = d as Action<T, U>;
-                if (action != null)
+                if (d is Action<TArg1, TArg2> action)
                 {
                     action(arg1, arg2);
                 }
@@ -123,14 +150,22 @@ namespace TEngine
             CheckModify();
         }
 
-        public void Callback<T, U, V>(T arg1, U arg2, V arg3)
+        /// <summary>
+        /// 回调调用。
+        /// </summary>
+        /// <param name="arg1"></param>
+        /// <param name="arg2"></param>
+        /// <param name="arg3"></param>
+        /// <typeparam name="TArg1"></typeparam>
+        /// <typeparam name="TArg2"></typeparam>
+        /// <typeparam name="TArg3"></typeparam>
+        public void Callback<TArg1, TArg2, TArg3>(TArg1 arg1, TArg2 arg2, TArg3 arg3)
         {
             m_isExcute = true;
             for (var i = 0; i < m_listExist.Count; i++)
             {
                 var d = m_listExist[i];
-                var action = d as Action<T, U, V>;
-                if (action != null)
+                if (d is Action<TArg1, TArg2, TArg3> action)
                 {
                     action(arg1, arg2, arg3);
                 }
@@ -139,14 +174,24 @@ namespace TEngine
             CheckModify();
         }
 
-        public void Callback<T, U, V, W>(T arg1, U arg2, V arg3, W arg4)
+        /// <summary>
+        /// 回调调用。
+        /// </summary>
+        /// <param name="arg1"></param>
+        /// <param name="arg2"></param>
+        /// <param name="arg3"></param>
+        /// <param name="arg4"></param>
+        /// <typeparam name="TArg1"></typeparam>
+        /// <typeparam name="TArg2"></typeparam>
+        /// <typeparam name="TArg3"></typeparam>
+        /// <typeparam name="TArg4"></typeparam>
+        public void Callback<TArg1, TArg2, TArg3, TArg4>(TArg1 arg1, TArg2 arg2, TArg3 arg3, TArg4 arg4)
         {
             m_isExcute = true;
             for (var i = 0; i < m_listExist.Count; i++)
             {
                 var d = m_listExist[i];
-                var action = d as Action<T, U, V, W>;
-                if (action != null)
+                if (d is Action<TArg1, TArg2, TArg3, TArg4> action)
                 {
                     action(arg1, arg2, arg3, arg4);
                 }
@@ -155,14 +200,26 @@ namespace TEngine
             CheckModify();
         }
 
-        public void Callback<T, U, V, W, X>(T arg1, U arg2, V arg3, W arg4, X arg5)
+        /// <summary>
+        /// 回调调用。
+        /// </summary>
+        /// <param name="arg1"></param>
+        /// <param name="arg2"></param>
+        /// <param name="arg3"></param>
+        /// <param name="arg4"></param>
+        /// <param name="arg5"></param>
+        /// <typeparam name="TArg1"></typeparam>
+        /// <typeparam name="TArg2"></typeparam>
+        /// <typeparam name="TArg3"></typeparam>
+        /// <typeparam name="TArg4"></typeparam>
+        /// <typeparam name="TArg5"></typeparam>
+        public void Callback<TArg1, TArg2, TArg3, TArg4, TArg5>(TArg1 arg1, TArg2 arg2, TArg3 arg3, TArg4 arg4, TArg5 arg5)
         {
             m_isExcute = true;
             for (var i = 0; i < m_listExist.Count; i++)
             {
                 var d = m_listExist[i];
-                var action = d as Action<T, U, V, W, X>;
-                if (action != null)
+                if (d is Action<TArg1, TArg2, TArg3, TArg4, TArg5> action)
                 {
                     action(arg1, arg2, arg3, arg4, arg5);
                 }
@@ -173,18 +230,22 @@ namespace TEngine
     }
 
     /// <summary>
-    /// 封装消息的底层分发和注册
+    /// 封装消息的底层分发和注册。
     /// </summary>
     class EventDispatcher
     {
         static Dictionary<int, EventDelegateData> m_eventTable = new Dictionary<int, EventDelegateData>();
 
         #region 事件管理接口
-
+        /// <summary>
+        /// 增加事件监听。
+        /// </summary>
+        /// <param name="eventType"></param>
+        /// <param name="handler"></param>
+        /// <returns></returns>
         public bool AddEventListener(int eventType, Delegate handler)
         {
-            EventDelegateData data;
-            if (!m_eventTable.TryGetValue(eventType, out data))
+            if (!m_eventTable.TryGetValue(eventType, out var data))
             {
                 data = new EventDelegateData(eventType);
                 m_eventTable.Add(eventType, data);
@@ -193,68 +254,118 @@ namespace TEngine
             return data.AddHandler(handler);
         }
 
+        /// <summary>
+        /// 移除事件监听。
+        /// </summary>
+        /// <param name="eventType"></param>
+        /// <param name="handler"></param>
         public void RemoveEventListener(int eventType, Delegate handler)
         {
-            EventDelegateData data;
-            if (m_eventTable.TryGetValue(eventType, out data))
+            if (m_eventTable.TryGetValue(eventType, out var data))
             {
                 data.RmvHandler(handler);
             }
         }
-
         #endregion
 
         #region 事件分发接口
-
+        /// <summary>
+        /// 发送事件。
+        /// </summary>
+        /// <param name="eventType">事件类型。</param>
         public void Send(int eventType)
         {
-            EventDelegateData d;
-            if (m_eventTable.TryGetValue(eventType, out d))
+            if (m_eventTable.TryGetValue(eventType, out var d))
             {
                 d.Callback();
             }
         }
 
-        public void Send<T>(int eventType, T arg1)
+        /// <summary>
+        /// 发送事件。
+        /// </summary>
+        /// <param name="eventType"></param>
+        /// <param name="arg1"></param>
+        /// <typeparam name="TArg1"></typeparam>
+        public void Send<TArg1>(int eventType, TArg1 arg1)
         {
-            EventDelegateData d;
-            if (m_eventTable.TryGetValue(eventType, out d))
+            if (m_eventTable.TryGetValue(eventType, out var d))
             {
                 d.Callback(arg1);
             }
         }
 
-        public void Send<T, U>(int eventType, T arg1, U arg2)
+        /// <summary>
+        /// 发送事件。
+        /// </summary>
+        /// <param name="eventType"></param>
+        /// <param name="arg1"></param>
+        /// <param name="arg2"></param>
+        /// <typeparam name="TArg1"></typeparam>
+        /// <typeparam name="TArg2"></typeparam>
+        public void Send<TArg1, TArg2>(int eventType, TArg1 arg1, TArg2 arg2)
         {
-            EventDelegateData d;
-            if (m_eventTable.TryGetValue(eventType, out d))
+            if (m_eventTable.TryGetValue(eventType, out var d))
             {
                 d.Callback(arg1, arg2);
             }
         }
 
-        public void Send<T, U, V>(int eventType, T arg1, U arg2, V arg3)
+        /// <summary>
+        /// 发送事件。
+        /// </summary>
+        /// <param name="eventType"></param>
+        /// <param name="arg1"></param>
+        /// <param name="arg2"></param>
+        /// <param name="arg3"></param>
+        /// <typeparam name="TArg1"></typeparam>
+        /// <typeparam name="TArg2"></typeparam>
+        /// <typeparam name="TArg3"></typeparam>
+        public void Send<TArg1, TArg2, TArg3>(int eventType, TArg1 arg1, TArg2 arg2, TArg3 arg3)
         {
-            EventDelegateData d;
-            if (m_eventTable.TryGetValue(eventType, out d))
+            if (m_eventTable.TryGetValue(eventType, out var d))
             {
                 d.Callback(arg1, arg2, arg3);
             }
         }
 
-        public void Send<T, U, V, W>(int eventType, T arg1, U arg2, V arg3, W arg4)
+        /// <summary>
+        /// 发送事件。
+        /// </summary>
+        /// <param name="eventType"></param>
+        /// <param name="arg1"></param>
+        /// <param name="arg2"></param>
+        /// <param name="arg3"></param>
+        /// <param name="arg4"></param>
+        /// <typeparam name="TArg1"></typeparam>
+        /// <typeparam name="TArg2"></typeparam>
+        /// <typeparam name="TArg3"></typeparam>
+        /// <typeparam name="TArg4"></typeparam>
+        public void Send<TArg1, TArg2, TArg3, TArg4>(int eventType, TArg1 arg1, TArg2 arg2, TArg3 arg3, TArg4 arg4)
         {
-            EventDelegateData d;
-            if (m_eventTable.TryGetValue(eventType, out d))
+            if (m_eventTable.TryGetValue(eventType, out var d))
             {
                 d.Callback(arg1, arg2, arg3, arg4);
             }
         }
 
-        public void Send<T, U, V, W, X>(int eventType, T arg1, U arg2, V arg3, W arg4, X arg5)
+        /// <summary>
+        /// 发送事件。
+        /// </summary>
+        /// <param name="eventType"></param>
+        /// <param name="arg1"></param>
+        /// <param name="arg2"></param>
+        /// <param name="arg3"></param>
+        /// <param name="arg4"></param>
+        /// <param name="arg5"></param>
+        /// <typeparam name="TArg1"></typeparam>
+        /// <typeparam name="TArg2"></typeparam>
+        /// <typeparam name="TArg3"></typeparam>
+        /// <typeparam name="TArg4"></typeparam>
+        /// <typeparam name="TArg5"></typeparam>
+        public void Send<TArg1, TArg2, TArg3, TArg4, TArg5>(int eventType, TArg1 arg1, TArg2 arg2, TArg3 arg3, TArg4 arg4, TArg5 arg5)
         {
-            EventDelegateData d;
-            if (m_eventTable.TryGetValue(eventType, out d))
+            if (m_eventTable.TryGetValue(eventType, out var d))
             {
                 d.Callback(arg1, arg2, arg3, arg4, arg5);
             }

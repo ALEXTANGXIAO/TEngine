@@ -2,9 +2,12 @@
 
 namespace TEngine
 {
-    public class GameEvent
+    /// <summary>
+    /// 游戏事件类。
+    /// </summary>
+    public static class GameEvent
     {
-        private static EventMgr m_mgr = new EventMgr();
+        private static readonly EventMgr EventMgr = new EventMgr();
 
         public static void Init()
         {
@@ -15,212 +18,212 @@ namespace TEngine
 
         public static bool AddEventListener(int eventType, Action handler)
         {
-            return m_mgr.GetDispatcher().AddEventListener(eventType, handler);
+            return EventMgr.Dispatcher.AddEventListener(eventType, handler);
         }
 
-        public static bool AddEventListener<T>(int eventType, Action<T> handler)
+        public static bool AddEventListener<TArg1>(int eventType, Action<TArg1> handler)
         {
-            return m_mgr.GetDispatcher().AddEventListener(eventType, handler);
+            return EventMgr.Dispatcher.AddEventListener(eventType, handler);
         }
 
-        public static bool AddEventListener<T, U>(int eventType, Action<T, U> handler)
+        public static bool AddEventListener<TArg1, TArg2>(int eventType, Action<TArg1, TArg2> handler)
         {
-            return m_mgr.GetDispatcher().AddEventListener(eventType, handler);
+            return EventMgr.Dispatcher.AddEventListener(eventType, handler);
         }
 
-        public static bool AddEventListener<T, U, V>(int eventType, Action<T, U, V> handler)
+        public static bool AddEventListener<TArg1, TArg2, TArg3>(int eventType, Action<TArg1, TArg2, TArg3> handler)
         {
-            return m_mgr.GetDispatcher().AddEventListener(eventType, handler);
+            return EventMgr.Dispatcher.AddEventListener(eventType, handler);
         }
 
-        public static bool AddEventListener<T, U, V, W>(int eventType, Action<T, U, V, W> handler)
+        public static bool AddEventListener<TArg1, TArg2, TArg3, TArg4>(int eventType, Action<TArg1, TArg2, TArg3, TArg4> handler)
         {
-            return m_mgr.GetDispatcher().AddEventListener(eventType, handler);
+            return EventMgr.Dispatcher.AddEventListener(eventType, handler);
         }
 
-        public static bool AddEventListener<T, U, V, W, X>(int eventType, Action<T, U, V, W, X> handler)
+        public static bool AddEventListener<TArg1, TArg2, TArg3, TArg4, TArg5>(int eventType, Action<TArg1, TArg2, TArg3, TArg4, TArg5> handler)
         {
-            return m_mgr.GetDispatcher().AddEventListener(eventType, handler);
+            return EventMgr.Dispatcher.AddEventListener(eventType, handler);
         }
 
         public static void RemoveEventListener(int eventType, Action handler)
         {
-            m_mgr.GetDispatcher().RemoveEventListener(eventType, handler);
+            EventMgr.Dispatcher.RemoveEventListener(eventType, handler);
         }
 
-        public static void RemoveEventListener<T>(int eventType, Action<T> handler)
+        public static void RemoveEventListener<TArg1>(int eventType, Action<TArg1> handler)
         {
-            m_mgr.GetDispatcher().RemoveEventListener(eventType, handler);
+            EventMgr.Dispatcher.RemoveEventListener(eventType, handler);
         }
 
-        public static void RemoveEventListener<T, U>(int eventType, Action<T, U> handler)
+        public static void RemoveEventListener<TArg1, TArg2>(int eventType, Action<TArg1, TArg2> handler)
         {
-            m_mgr.GetDispatcher().RemoveEventListener(eventType, handler);
+            EventMgr.Dispatcher.RemoveEventListener(eventType, handler);
         }
 
-        public static void RemoveEventListener<T, U, V>(int eventType, Action<T, U, V> handler)
+        public static void RemoveEventListener<TArg1, TArg2, TArg3>(int eventType, Action<TArg1, TArg2, TArg3> handler)
         {
-            m_mgr.GetDispatcher().RemoveEventListener(eventType, handler);
+            EventMgr.Dispatcher.RemoveEventListener(eventType, handler);
         }
 
-        public static void RemoveEventListener<T, U, V, W>(int eventType, Action<T, U, V, W> handler)
+        public static void RemoveEventListener<TArg1, TArg2, TArg3, TArg4>(int eventType, Action<TArg1, TArg2, TArg3, TArg4> handler)
         {
-            m_mgr.GetDispatcher().RemoveEventListener(eventType, handler);
+            EventMgr.Dispatcher.RemoveEventListener(eventType, handler);
         }
 
-        public static void RemoveEventListener<T, U, V, W, X>(int eventType, Action<T, U, V, W, X> handler)
+        public static void RemoveEventListener<TArg1, TArg2, TArg3, TArg4, TArg5>(int eventType, Action<TArg1, TArg2, TArg3, TArg4, TArg5> handler)
         {
-            m_mgr.GetDispatcher().RemoveEventListener(eventType, handler);
+            EventMgr.Dispatcher.RemoveEventListener(eventType, handler);
         }
 
         public static void RemoveEventListener(int eventType, Delegate handler)
         {
-            m_mgr.GetDispatcher().RemoveEventListener(eventType, handler);
+            EventMgr.Dispatcher.RemoveEventListener(eventType, handler);
         }
 
         //----------------------------string Event----------------------------//
         public static bool AddEventListener(string eventType, Action handler)
         {
-            return m_mgr.GetDispatcher().AddEventListener(StringId.StringToHash(eventType), handler);
+            return EventMgr.Dispatcher.AddEventListener(StringId.StringToHash(eventType), handler);
         }
 
-        public static bool AddEventListener<T>(string eventType, Action<T> handler)
+        public static bool AddEventListener<TArg1>(string eventType, Action<TArg1> handler)
         {
-            return m_mgr.GetDispatcher().AddEventListener(StringId.StringToHash(eventType), handler);
+            return EventMgr.Dispatcher.AddEventListener(StringId.StringToHash(eventType), handler);
         }
 
-        public static bool AddEventListener<T, U>(string eventType, Action<T, U> handler)
+        public static bool AddEventListener<TArg1, TArg2>(string eventType, Action<TArg1, TArg2> handler)
         {
-            return m_mgr.GetDispatcher().AddEventListener(StringId.StringToHash(eventType), handler);
+            return EventMgr.Dispatcher.AddEventListener(StringId.StringToHash(eventType), handler);
         }
 
-        public static bool AddEventListener<T, U, V>(string eventType, Action<T, U, V> handler)
+        public static bool AddEventListener<TArg1, TArg2, TArg3>(string eventType, Action<TArg1, TArg2, TArg3> handler)
         {
-            return m_mgr.GetDispatcher().AddEventListener(StringId.StringToHash(eventType), handler);
+            return EventMgr.Dispatcher.AddEventListener(StringId.StringToHash(eventType), handler);
         }
 
-        public static bool AddEventListener<T, U, V, W>(string eventType, Action<T, U, V, W> handler)
+        public static bool AddEventListener<TArg1, TArg2, TArg3, TArg4>(string eventType, Action<TArg1, TArg2, TArg3, TArg4> handler)
         {
-            return m_mgr.GetDispatcher().AddEventListener(StringId.StringToHash(eventType), handler);
+            return EventMgr.Dispatcher.AddEventListener(StringId.StringToHash(eventType), handler);
         }
 
-        public static bool AddEventListener<T, U, V, W, X>(string eventType, Action<T, U, V, W, X> handler)
+        public static bool AddEventListener<TArg1, TArg2, TArg3, TArg4, TArg5>(string eventType, Action<TArg1, TArg2, TArg3, TArg4, TArg5> handler)
         {
-            return m_mgr.GetDispatcher().AddEventListener(StringId.StringToHash(eventType), handler);
+            return EventMgr.Dispatcher.AddEventListener(StringId.StringToHash(eventType), handler);
         }
 
         public static void RemoveEventListener(string eventType, Action handler)
         {
-            m_mgr.GetDispatcher().RemoveEventListener(StringId.StringToHash(eventType), handler);
+            EventMgr.Dispatcher.RemoveEventListener(StringId.StringToHash(eventType), handler);
         }
 
-        public static void RemoveEventListener<T>(string eventType, Action<T> handler)
+        public static void RemoveEventListener<TArg1>(string eventType, Action<TArg1> handler)
         {
-            m_mgr.GetDispatcher().RemoveEventListener(StringId.StringToHash(eventType), handler);
+            EventMgr.Dispatcher.RemoveEventListener(StringId.StringToHash(eventType), handler);
         }
 
-        public static void RemoveEventListener<T, U>(string eventType, Action<T, U> handler)
+        public static void RemoveEventListener<TArg1, TArg2>(string eventType, Action<TArg1, TArg2> handler)
         {
-            m_mgr.GetDispatcher().RemoveEventListener(StringId.StringToHash(eventType), handler);
+            EventMgr.Dispatcher.RemoveEventListener(StringId.StringToHash(eventType), handler);
         }
 
-        public static void RemoveEventListener<T, U, V>(string eventType, Action<T, U, V> handler)
+        public static void RemoveEventListener<TArg1, TArg2, TArg3>(string eventType, Action<TArg1, TArg2, TArg3> handler)
         {
-            m_mgr.GetDispatcher().RemoveEventListener(StringId.StringToHash(eventType), handler);
+            EventMgr.Dispatcher.RemoveEventListener(StringId.StringToHash(eventType), handler);
         }
 
-        public static void RemoveEventListener<T, U, V, W>(string eventType, Action<T, U, V, W> handler)
+        public static void RemoveEventListener<TArg1, TArg2, TArg3, TArg4>(string eventType, Action<TArg1, TArg2, TArg3, TArg4> handler)
         {
-            m_mgr.GetDispatcher().RemoveEventListener(StringId.StringToHash(eventType), handler);
+            EventMgr.Dispatcher.RemoveEventListener(StringId.StringToHash(eventType), handler);
         }
 
-        public static void RemoveEventListener<T, U, V, W, X>(string eventType, Action<T, U, V, W, X> handler)
+        public static void RemoveEventListener<TArg1, TArg2, TArg3, TArg4, TArg5>(string eventType, Action<TArg1, TArg2, TArg3, TArg4, TArg5> handler)
         {
-            m_mgr.GetDispatcher().RemoveEventListener(StringId.StringToHash(eventType), handler);
+            EventMgr.Dispatcher.RemoveEventListener(StringId.StringToHash(eventType), handler);
         }
 
         public static void RemoveEventListener(string eventType, Delegate handler)
         {
-            m_mgr.GetDispatcher().RemoveEventListener(StringId.StringToHash(eventType), handler);
+            EventMgr.Dispatcher.RemoveEventListener(StringId.StringToHash(eventType), handler);
         }
         #endregion
 
         #region 分发消息接口
 
-        public static T Get<T>()
+        public static TArg1 Get<TArg1>()
         {
-            return m_mgr.GetInterface<T>();
+            return EventMgr.GetInterface<TArg1>();
         }
 
         public static void Send(int eventType)
         {
-            m_mgr.GetDispatcher().Send(eventType);
+            EventMgr.Dispatcher.Send(eventType);
         }
 
-        public static void Send<T>(int eventType, T arg1)
+        public static void Send<TArg1>(int eventType, TArg1 arg1)
         {
-            m_mgr.GetDispatcher().Send(eventType, arg1);
+            EventMgr.Dispatcher.Send(eventType, arg1);
         }
 
-        public static void Send<T, U>(int eventType, T arg1, U arg2)
+        public static void Send<TArg1, TArg2>(int eventType, TArg1 arg1, TArg2 arg2)
         {
-            m_mgr.GetDispatcher().Send(eventType, arg1, arg2);
+            EventMgr.Dispatcher.Send(eventType, arg1, arg2);
         }
 
-        public static void Send<T, U, V>(int eventType, T arg1, U arg2, V arg3)
+        public static void Send<TArg1, TArg2, TArg3>(int eventType, TArg1 arg1, TArg2 arg2, TArg3 arg3)
         {
-            m_mgr.GetDispatcher().Send(eventType, arg1, arg2, arg3);
+            EventMgr.Dispatcher.Send(eventType, arg1, arg2, arg3);
         }
 
-        public static void Send<T, U, V, W>(int eventType, T arg1, U arg2, V arg3, W arg4)
+        public static void Send<TArg1, TArg2, TArg3, TArg4>(int eventType, TArg1 arg1, TArg2 arg2, TArg3 arg3, TArg4 arg4)
         {
-            m_mgr.GetDispatcher().Send(eventType, arg1, arg2, arg3);
+            EventMgr.Dispatcher.Send(eventType, arg1, arg2, arg3);
         }
 
-        public static void Send<T, U, V, W, X>(int eventType, T arg1, U arg2, V arg3, W arg4, X arg5)
+        public static void Send<TArg1, TArg2, TArg3, TArg4, TArg5>(int eventType, TArg1 arg1, TArg2 arg2, TArg3 arg3, TArg4 arg4, TArg5 arg5)
         {
-            m_mgr.GetDispatcher().Send(eventType, arg1, arg2, arg3, arg4, arg5);
+            EventMgr.Dispatcher.Send(eventType, arg1, arg2, arg3, arg4, arg5);
         }
 
         public static void Send(int eventType, Delegate handler)
         {
-            m_mgr.GetDispatcher().Send(eventType, handler);
+            EventMgr.Dispatcher.Send(eventType, handler);
         }
 
         //-------------------------------string Send-------------------------------//
         public static void Send(string eventType)
         {
-            m_mgr.GetDispatcher().Send(StringId.StringToHash(eventType));
+            EventMgr.Dispatcher.Send(StringId.StringToHash(eventType));
         }
 
-        public static void Send<T>(string eventType, T arg1)
+        public static void Send<TArg1>(string eventType, TArg1 arg1)
         {
-            m_mgr.GetDispatcher().Send(StringId.StringToHash(eventType), arg1);
+            EventMgr.Dispatcher.Send(StringId.StringToHash(eventType), arg1);
         }
 
-        public static void Send<T, U>(string eventType, T arg1, U arg2)
+        public static void Send<TArg1, TArg2>(string eventType, TArg1 arg1, TArg2 arg2)
         {
-            m_mgr.GetDispatcher().Send(StringId.StringToHash(eventType), arg1, arg2);
+            EventMgr.Dispatcher.Send(StringId.StringToHash(eventType), arg1, arg2);
         }
 
-        public static void Send<T, U, V>(string eventType, T arg1, U arg2, V arg3)
+        public static void Send<TArg1, TArg2, TArg3>(string eventType, TArg1 arg1, TArg2 arg2, TArg3 arg3)
         {
-            m_mgr.GetDispatcher().Send(StringId.StringToHash(eventType), arg1, arg2, arg3);
+            EventMgr.Dispatcher.Send(StringId.StringToHash(eventType), arg1, arg2, arg3);
         }
 
-        public static void Send<T, U, V, W>(string eventType, T arg1, U arg2, V arg3, W arg4)
+        public static void Send<TArg1, TArg2, TArg3, TArg4>(string eventType, TArg1 arg1, TArg2 arg2, TArg3 arg3, TArg4 arg4)
         {
-            m_mgr.GetDispatcher().Send(StringId.StringToHash(eventType), arg1, arg2, arg3);
+            EventMgr.Dispatcher.Send(StringId.StringToHash(eventType), arg1, arg2, arg3);
         }
 
-        public static void Send<T, U, V, W, X>(string eventType, T arg1, U arg2, V arg3, W arg4, X arg5)
+        public static void Send<TArg1, TArg2, TArg3, TArg4, TArg5>(string eventType, TArg1 arg1, TArg2 arg2, TArg3 arg3, TArg4 arg4, TArg5 arg5)
         {
-            m_mgr.GetDispatcher().Send(StringId.StringToHash(eventType), arg1, arg2, arg3, arg4, arg5);
+            EventMgr.Dispatcher.Send(StringId.StringToHash(eventType), arg1, arg2, arg3, arg4, arg5);
         }
 
         public static void Send(string eventType, Delegate handler)
         {
-            m_mgr.GetDispatcher().Send(StringId.StringToHash(eventType), handler);
+            EventMgr.Dispatcher.Send(StringId.StringToHash(eventType), handler);
         }
         #endregion
     }
