@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+option java_package ="com.game.juhe.server.protobuf.proto";
+
+package ProtoBase;
+// 这个文件只放协议，和协议头
+
+// 协议头
+message BGProtocolHeader
+{
+    int32 uProtocolId  = 1;    // 协议号
+    int32 uKeyLen      = 2;    // 验证码长度
+    bytes szSessionKey = 3;    //[MAX_SESSIONKEY_LEN=64]
+}
+
+// 协议ID
+enum ProtocolID
+{
+	PTC_START							= 0;
+	
+	PTC_C2S_HeartBeat                        = 10001;   // 客户端向网关服务器的协议id
+	PTC_S2C_HeartBeat                        = 10002;   // 网关服务器向客户端的协议id
+	PTC_C2G_LOGININFO						= 10003;
+  	PTC_G2C_ACC_VERIFY_RESULT						= 1004;
+	PTC_C2S_LOGICLOGIN	= 10005;
+	PTC_S2C_LOGICLOIN_RET	= 10006;
+	PTC_G2C_ROLELIST_RESPONE	= 10007;
+	PTC_C2G_GAMELOGIN_REQUEST	= 10008;
+	PTC_C2G_CREATE_ROLE	= 1009;
+	PTC_G2C_CREATEROLE_RESULT	= 10010;
+	PTC_G2C_KICKOUTCLIENT	= 10011;
+	PTC_C2S_EXITACCOUNT	= 10012;
+	PTC_C2S_EXITROLE	= 10013;
+	PTC_END                             = 10000;
+}

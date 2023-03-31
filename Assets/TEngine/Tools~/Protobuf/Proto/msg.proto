@@ -1,8 +1,0 @@
-syntax = "proto3";
-
-package msg;
-
-message Msg {
-    string msgId         = 1;
-    bytes msgContent     = 2;
-}
