@@ -1,6 +1,6 @@
 {
     "name": "TEngine.Editor",
-    "rootNamespace": "TEngine.Editor",
+    "rootNamespace": "",
     "references": [
         "TEngine.Runtime"
     ],
@@ -8,7 +8,7 @@
         "Editor"
     ],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
