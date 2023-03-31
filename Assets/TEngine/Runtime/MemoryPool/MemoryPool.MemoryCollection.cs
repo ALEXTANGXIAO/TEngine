@@ -6,7 +6,7 @@ namespace TEngine
     public static partial class MemoryPool
     {
         /// <summary>
-        /// 内存池收集器
+        /// 内存池收集器。
         /// </summary>
         private sealed class MemoryCollection
         {
