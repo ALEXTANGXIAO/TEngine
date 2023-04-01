@@ -1,6 +1,6 @@
 ﻿using System;
-using TEngine.Localization;
 using UnityEngine;
+using TEngine.Localization;
 
 namespace TEngine
 {
