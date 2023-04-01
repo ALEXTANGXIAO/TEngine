@@ -73,7 +73,7 @@ namespace TEngine.Editor.UI
 
                     strFile.Append("using UnityEngine;\n");
                     strFile.Append("using UnityEngine.UI;\n");
-                    strFile.Append("using UnityGameFramework.Runtime;\n\n");
+                    strFile.Append("using TEngine;\n\n");
                     strFile.Append("namespace GameMain\n");
                     strFile.Append("{\n");
                     strFile.Append("\tclass " + root.name + " : UIFormLogic\n");

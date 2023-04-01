@@ -416,9 +416,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 2061060681}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b7cdcfd6cb40fe489faae0b85038cb9, type: 3}
+  m_Script: {fileID: 11500000, guid: 564a45007d8645cf96d33bb52471acd5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_EditorLanguage: 0
+  m_TextHelperTypeName: TEngine.DefaultTextHelper
+  m_VersionHelperTypeName: TEngine.DefaultVersionHelper
+  m_LogHelperTypeName: TEngine.TEngineLogHelper
+  m_CompressionHelperTypeName: TEngine.DefaultCompressionHelper
+  m_JsonHelperTypeName: TEngine.DefaultJsonHelper
+  m_FrameRate: 120
+  m_GameSpeed: 1
+  m_RunInBackground: 1
+  m_NeverSleep: 1
 --- !u!1 &2108959335
 GameObject:
   m_ObjectHideFlags: 0
