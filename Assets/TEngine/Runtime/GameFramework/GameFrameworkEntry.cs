@@ -48,12 +48,12 @@ namespace TEngine
         public static T GetModule<T>() where T : class
         {
             Type interfaceType = typeof(T);
-            // if (!interfaceType.IsInterface)
-            // {
-            //     throw new GameFrameworkException(Utility.Text.Format("You must get module by interface, but '{0}' is not.", interfaceType.FullName));
-            // }
+            if (!interfaceType.IsInterface)
+            {
+                throw new GameFrameworkException(Utility.Text.Format("You must get module by interface, but '{0}' is not.", interfaceType.FullName));
+            }
 
-            if (!interfaceType.FullName.StartsWith("GameFramework.", StringComparison.Ordinal))
+            if (!interfaceType.FullName.StartsWith("TEngine.", StringComparison.Ordinal))
             {
                 throw new GameFrameworkException(Utility.Text.Format("You must get a Game Framework module, but '{0}' is not.", interfaceType.FullName));
             }

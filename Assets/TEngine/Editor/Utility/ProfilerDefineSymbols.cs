@@ -16,7 +16,7 @@ namespace TEngine.Editor
         /// <summary>
         /// 禁用所有日志脚本宏定义。
         /// </summary>
-        [MenuItem("Game Framework/Profiler Define Symbols/Disable All Logs", false, 30)]
+        [MenuItem("TEngine/Profiler Define Symbols/Disable All Logs", false, 30)]
         public static void DisableAllLogs()
         {
             foreach (string aboveLogScriptingDefineSymbol in AllProfilerDefineSymbols)
@@ -28,7 +28,7 @@ namespace TEngine.Editor
         /// <summary>
         /// 开启所有日志脚本宏定义。
         /// </summary>
-        [MenuItem("Game Framework/Profiler Define Symbols/Enable All Logs", false, 31)]
+        [MenuItem("TEngine/Profiler Define Symbols/Enable All Logs", false, 31)]
         public static void EnableAllLogs()
         {
             DisableAllLogs();

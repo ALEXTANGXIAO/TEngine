@@ -40,7 +40,7 @@ namespace TEngine.Editor
         /// <summary>
         /// 禁用所有日志脚本宏定义。
         /// </summary>
-        [MenuItem("Game Framework/Log Scripting Define Symbols/Disable All Logs", false, 30)]
+        [MenuItem("TEngine/Log Scripting Define Symbols/Disable All Logs", false, 30)]
         public static void DisableAllLogs()
         {
             ScriptingDefineSymbols.RemoveScriptingDefineSymbol(EnableLogScriptingDefineSymbol);
@@ -59,7 +59,7 @@ namespace TEngine.Editor
         /// <summary>
         /// 开启所有日志脚本宏定义。
         /// </summary>
-        [MenuItem("Game Framework/Log Scripting Define Symbols/Enable All Logs", false, 31)]
+        [MenuItem("TEngine/Log Scripting Define Symbols/Enable All Logs", false, 31)]
         public static void EnableAllLogs()
         {
             DisableAllLogs();
@@ -69,7 +69,7 @@ namespace TEngine.Editor
         /// <summary>
         /// 开启调试及以上级别的日志脚本宏定义。
         /// </summary>
-        [MenuItem("Game Framework/Log Scripting Define Symbols/Enable Debug And Above Logs", false, 32)]
+        [MenuItem("TEngine/Log Scripting Define Symbols/Enable Debug And Above Logs", false, 32)]
         public static void EnableDebugAndAboveLogs()
         {
             SetAboveLogScriptingDefineSymbol(EnableDebugAndAboveLogScriptingDefineSymbol);
@@ -78,7 +78,7 @@ namespace TEngine.Editor
         /// <summary>
         /// 开启信息及以上级别的日志脚本宏定义。
         /// </summary>
-        [MenuItem("Game Framework/Log Scripting Define Symbols/Enable Info And Above Logs", false, 33)]
+        [MenuItem("TEngine/Log Scripting Define Symbols/Enable Info And Above Logs", false, 33)]
         public static void EnableInfoAndAboveLogs()
         {
             SetAboveLogScriptingDefineSymbol(EnableInfoAndAboveLogScriptingDefineSymbol);
@@ -87,7 +87,7 @@ namespace TEngine.Editor
         /// <summary>
         /// 开启警告及以上级别的日志脚本宏定义。
         /// </summary>
-        [MenuItem("Game Framework/Log Scripting Define Symbols/Enable Warning And Above Logs", false, 34)]
+        [MenuItem("TEngine/Log Scripting Define Symbols/Enable Warning And Above Logs", false, 34)]
         public static void EnableWarningAndAboveLogs()
         {
             SetAboveLogScriptingDefineSymbol(EnableWarningAndAboveLogScriptingDefineSymbol);
@@ -96,7 +96,7 @@ namespace TEngine.Editor
         /// <summary>
         /// 开启错误及以上级别的日志脚本宏定义。
         /// </summary>
-        [MenuItem("Game Framework/Log Scripting Define Symbols/Enable Error And Above Logs", false, 35)]
+        [MenuItem("TEngine/Log Scripting Define Symbols/Enable Error And Above Logs", false, 35)]
         public static void EnableErrorAndAboveLogs()
         {
             SetAboveLogScriptingDefineSymbol(EnableErrorAndAboveLogScriptingDefineSymbol);
@@ -105,7 +105,7 @@ namespace TEngine.Editor
         /// <summary>
         /// 开启严重错误及以上级别的日志脚本宏定义。
         /// </summary>
-        [MenuItem("Game Framework/Log Scripting Define Symbols/Enable Fatal And Above Logs", false, 36)]
+        [MenuItem("TEngine/Log Scripting Define Symbols/Enable Fatal And Above Logs", false, 36)]
         public static void EnableFatalAndAboveLogs()
         {
             SetAboveLogScriptingDefineSymbol(EnableFatalAndAboveLogScriptingDefineSymbol);
