@@ -299,7 +299,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 352db63f3a7b449bac6e5de8bb32141a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SettingHelperTypeName: TEngine.PlayerPrefsSettingHelper
+  m_SettingHelperTypeName: TEngine.DefaultSettingHelper
   m_CustomSettingHelper: {fileID: 0}
 --- !u!1 &1947304784
 GameObject:
