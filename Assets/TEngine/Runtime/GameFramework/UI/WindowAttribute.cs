@@ -6,7 +6,12 @@ namespace TEngine
     public class WindowAttribute : Attribute
     {
         /// <summary>
-        /// 资源实体可寻址路径/路径。
+        /// 窗口层级
+        /// </summary>
+        public int WindowLayer;
+        
+        /// <summary>
+        /// 资源定位地址。
         /// </summary>
         public string AssetName;
 
@@ -15,8 +20,9 @@ namespace TEngine
         /// </summary>
         public bool FullScreen;
 
-        public WindowAttribute(string assetName, bool fullScreen = false)
+        public WindowAttribute(int windowLayer,string assetName = "", bool fullScreen = false)
         {
+            WindowLayer = windowLayer;
             AssetName = assetName;
             FullScreen = fullScreen;
         }
