@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace TEngine
 {
@@ -22,6 +23,11 @@ namespace TEngine
         /// </summary>
         /// <param name="performGCCollect">是否使用垃圾回收。</param>
         public void ForceUnloadUnusedAssets(bool performGCCollect)
+        {
+            
+        }
+
+        private void Start()
         {
             
         }

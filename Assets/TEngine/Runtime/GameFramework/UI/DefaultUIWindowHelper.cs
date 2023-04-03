@@ -60,7 +60,7 @@ namespace TEngine
             rectTransform.anchorMax = m_Half;
             rectTransform.anchoredPosition = Vector2.zero;
             // return obj.GetOrAddComponent<UIWindow>();
-            return new UIWindow();
+            return null;
         }
 
         /// <summary>
