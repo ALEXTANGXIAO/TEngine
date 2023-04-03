@@ -109,6 +109,8 @@ namespace TEngine
         protected override void Awake()
         {
             base.Awake();
+            
+            GameTime.StartFrame();
 
             InitTextHelper();
             InitVersionHelper();
@@ -134,13 +136,10 @@ namespace TEngine
             Application.lowMemory += OnLowMemory;
         }
 
-        private void Start()
-        {
-        }
-
         private void Update()
         {
-            GameFrameworkEntry.Update(Time.deltaTime, Time.unscaledDeltaTime);
+            GameTime.StartFrame();
+            GameFrameworkEntry.Update(GameTime.deltaTime, GameTime.unscaledDeltaTime);
         }
 
         private void OnApplicationQuit()
