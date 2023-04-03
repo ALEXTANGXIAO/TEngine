@@ -78,11 +78,11 @@ namespace TEngine
         {
             Log.Info("Shutdown Game Framework ({0})...", shutdownType);
             Utility.Unity.Release();
-            BaseComponent baseComponent = GetComponent<BaseComponent>();
-            if (baseComponent != null)
+            RootComponent rootComponent = GetComponent<RootComponent>();
+            if (rootComponent != null)
             {
-                baseComponent.Shutdown();
-                baseComponent = null;
+                rootComponent.Shutdown();
+                rootComponent = null;
             }
 
             s_GameFrameworkComponents.Clear();

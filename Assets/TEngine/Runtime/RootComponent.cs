@@ -8,7 +8,7 @@ namespace TEngine
     /// 基础组件。
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class BaseComponent : GameFrameworkComponent
+    public sealed class RootComponent : GameFrameworkComponent
     {
         private const int DefaultDpi = 96;  // default windows dpi
 
@@ -33,7 +33,7 @@ namespace TEngine
         private string m_JsonHelperTypeName = "TEngine.DefaultJsonHelper";
 
         [SerializeField]
-        private int m_FrameRate = 30;
+        private int m_FrameRate = 120;
 
         [SerializeField]
         private float m_GameSpeed = 1f;

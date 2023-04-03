@@ -6,8 +6,8 @@ using UnityEngine;
 
 namespace TEngine.Editor
 {
-    [CustomEditor(typeof(BaseComponent))]
-    internal sealed class BaseComponentInspector : GameFrameworkInspector
+    [CustomEditor(typeof(RootComponent))]
+    internal sealed class RootComponentInspector : GameFrameworkInspector
     {
         private const string NoneOptionName = "<None>";
         private static readonly float[] GameSpeed = new float[] { 0f, 0.01f, 0.1f, 0.25f, 0.5f, 1f, 1.5f, 2f, 4f, 8f };
@@ -41,7 +41,7 @@ namespace TEngine.Editor
 
             serializedObject.Update();
 
-            BaseComponent t = (BaseComponent)target;
+            RootComponent t = (RootComponent)target;
 
             EditorGUI.BeginDisabledGroup(EditorApplication.isPlayingOrWillChangePlaymode);
             {
