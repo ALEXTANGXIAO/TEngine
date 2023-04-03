@@ -162,6 +162,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 43232120}
+  - component: {fileID: 43232121}
   m_Layer: 0
   m_Name: UI
   m_TagString: Untagged
@@ -183,6 +184,33 @@ Transform:
   m_Father: {fileID: 2061060682}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &43232121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 43232119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9497504d71104685ad1464b42219c763, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_InstanceRoot: {fileID: 88107082}
+  m_UICamera: {fileID: 110205813}
+  m_UIWindowHelperTypeName: TEngine.DefaultUIWindowHelper
+  mCustomUIWindowHelper: {fileID: 0}
+  m_UIGroupHelperTypeName: TEngine.DefaultUIGroupHelper
+  m_CustomUIGroupHelper: {fileID: 0}
+  m_UIGroups:
+  - m_Name: Bottom
+    m_Depth: 0
+  - m_Name: UI
+    m_Depth: 1
+  - m_Name: Top
+    m_Depth: 2
+  - m_Name: System
+    m_Depth: 3
 --- !u!1 &88107081
 GameObject:
   m_ObjectHideFlags: 0
