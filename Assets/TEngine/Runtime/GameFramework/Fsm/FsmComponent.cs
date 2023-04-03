@@ -38,10 +38,6 @@ namespace TEngine
             }
         }
 
-        private void Start()
-        {
-        }
-
         /// <summary>
         /// 检查是否存在有限状态机。
         /// </summary>
