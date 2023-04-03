@@ -84,5 +84,13 @@ namespace TEngine
                 AddEvent(eventType, handler);
             }
         }
+
+        public void AddUIEvent<T, U, V, W, X>(int eventType, Action<T, U, V, W, X> handler)
+        {
+            if (GameEvent.AddEventListener(eventType, handler))
+            {
+                AddEvent(eventType, handler);
+            }
+        }
     }
 }

@@ -7,15 +7,18 @@ namespace TEngine
     /// </summary>
     public static class GameEvent
     {
+        /// <summary>
+        /// 全局事件管理器。
+        /// </summary>
         private static readonly EventMgr EventMgr = new EventMgr();
 
-        public static void Init()
-        {
-            
-        }
-
         #region 细分的注册接口
-
+        /// <summary>
+        /// 增加事件监听。
+        /// </summary>
+        /// <param name="eventType">事件类型。</param>
+        /// <param name="handler">事件Handler。</param>
+        /// <returns>是否监听成功。</returns>
         public static bool AddEventListener(int eventType, Action handler)
         {
             return EventMgr.Dispatcher.AddEventListener(eventType, handler);

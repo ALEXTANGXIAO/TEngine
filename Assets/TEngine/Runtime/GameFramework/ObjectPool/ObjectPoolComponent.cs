@@ -38,10 +38,6 @@ namespace TEngine
             }
         }
 
-        private void Start()
-        {
-        }
-
         /// <summary>
         /// 检查是否存在对象池。
         /// </summary>

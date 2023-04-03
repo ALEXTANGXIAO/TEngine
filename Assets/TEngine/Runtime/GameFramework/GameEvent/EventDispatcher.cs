@@ -9,15 +9,19 @@ namespace TEngine
     class EventDelegateData
     {
         private int m_eventType = 0;
-        public List<Delegate> m_listExist = new List<Delegate>();
+        private List<Delegate> m_listExist = new List<Delegate>();
         private List<Delegate> m_addList = new List<Delegate>();
         private List<Delegate> m_deleteList = new List<Delegate>();
         private bool m_isExcute = false;
         private bool m_dirty = false;
 
-        public EventDelegateData(int evnetType)
+        /// <summary>
+        /// 构造函数。
+        /// </summary>
+        /// <param name="eventType"></param>
+        public EventDelegateData(int eventType)
         {
-            m_eventType = evnetType;
+            m_eventType = eventType;
         }
 
         /// <summary>
@@ -232,9 +236,12 @@ namespace TEngine
     /// <summary>
     /// 封装消息的底层分发和注册。
     /// </summary>
-    class EventDispatcher
+    public class EventDispatcher
     {
-        static Dictionary<int, EventDelegateData> m_eventTable = new Dictionary<int, EventDelegateData>();
+        /// <summary>
+        /// 事件Table
+        /// </summary>
+        private static Dictionary<int, EventDelegateData> s_eventTable = new Dictionary<int, EventDelegateData>();
 
         #region 事件管理接口
         /// <summary>
@@ -245,10 +252,10 @@ namespace TEngine
         /// <returns></returns>
         public bool AddEventListener(int eventType, Delegate handler)
         {
-            if (!m_eventTable.TryGetValue(eventType, out var data))
+            if (!s_eventTable.TryGetValue(eventType, out var data))
             {
                 data = new EventDelegateData(eventType);
-                m_eventTable.Add(eventType, data);
+                s_eventTable.Add(eventType, data);
             }
 
             return data.AddHandler(handler);
@@ -261,7 +268,7 @@ namespace TEngine
         /// <param name="handler"></param>
         public void RemoveEventListener(int eventType, Delegate handler)
         {
-            if (m_eventTable.TryGetValue(eventType, out var data))
+            if (s_eventTable.TryGetValue(eventType, out var data))
             {
                 data.RmvHandler(handler);
             }
@@ -275,7 +282,7 @@ namespace TEngine
         /// <param name="eventType">事件类型。</param>
         public void Send(int eventType)
         {
-            if (m_eventTable.TryGetValue(eventType, out var d))
+            if (s_eventTable.TryGetValue(eventType, out var d))
             {
                 d.Callback();
             }
@@ -289,7 +296,7 @@ namespace TEngine
         /// <typeparam name="TArg1"></typeparam>
         public void Send<TArg1>(int eventType, TArg1 arg1)
         {
-            if (m_eventTable.TryGetValue(eventType, out var d))
+            if (s_eventTable.TryGetValue(eventType, out var d))
             {
                 d.Callback(arg1);
             }
@@ -305,7 +312,7 @@ namespace TEngine
         /// <typeparam name="TArg2"></typeparam>
         public void Send<TArg1, TArg2>(int eventType, TArg1 arg1, TArg2 arg2)
         {
-            if (m_eventTable.TryGetValue(eventType, out var d))
+            if (s_eventTable.TryGetValue(eventType, out var d))
             {
                 d.Callback(arg1, arg2);
             }
@@ -323,7 +330,7 @@ namespace TEngine
         /// <typeparam name="TArg3"></typeparam>
         public void Send<TArg1, TArg2, TArg3>(int eventType, TArg1 arg1, TArg2 arg2, TArg3 arg3)
         {
-            if (m_eventTable.TryGetValue(eventType, out var d))
+            if (s_eventTable.TryGetValue(eventType, out var d))
             {
                 d.Callback(arg1, arg2, arg3);
             }
@@ -343,7 +350,7 @@ namespace TEngine
         /// <typeparam name="TArg4"></typeparam>
         public void Send<TArg1, TArg2, TArg3, TArg4>(int eventType, TArg1 arg1, TArg2 arg2, TArg3 arg3, TArg4 arg4)
         {
-            if (m_eventTable.TryGetValue(eventType, out var d))
+            if (s_eventTable.TryGetValue(eventType, out var d))
             {
                 d.Callback(arg1, arg2, arg3, arg4);
             }
@@ -365,7 +372,7 @@ namespace TEngine
         /// <typeparam name="TArg5"></typeparam>
         public void Send<TArg1, TArg2, TArg3, TArg4, TArg5>(int eventType, TArg1 arg1, TArg2 arg2, TArg3 arg3, TArg4 arg4, TArg5 arg5)
         {
-            if (m_eventTable.TryGetValue(eventType, out var d))
+            if (s_eventTable.TryGetValue(eventType, out var d))
             {
                 d.Callback(arg1, arg2, arg3, arg4, arg5);
             }
