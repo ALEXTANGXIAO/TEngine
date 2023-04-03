@@ -317,10 +317,9 @@ namespace TEngine
 
         private void OnLowMemory()
         {
-            Log.Info("Low memory reported...");
+            Log.Warning("Low memory reported...");
 
-            //TODO 
-            /*ObjectPoolComponent objectPoolComponent = GameEntry.GetComponent<ObjectPoolComponent>();
+            ObjectPoolComponent objectPoolComponent = GameEntry.GetComponent<ObjectPoolComponent>();
             if (objectPoolComponent != null)
             {
                 objectPoolComponent.ReleaseAllUnused();
@@ -330,7 +329,7 @@ namespace TEngine
             if (resourceComponent != null)
             {
                 resourceComponent.ForceUnloadUnusedAssets(true);
-            }*/
+            }
         }
     }
 }
