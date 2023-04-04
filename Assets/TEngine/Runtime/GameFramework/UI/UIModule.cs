@@ -16,10 +16,10 @@ namespace TEngine
     }
 
     /// <summary>
-    /// UI组件。
+    /// UI模块。
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed partial class UIComponent : GameFrameworkComponent
+    public sealed partial class UIModule : GameFrameworkComponent
     {
         private const int DefaultPriority = 0;
 

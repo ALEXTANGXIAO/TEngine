@@ -40,9 +40,9 @@ public class GameModule:MonoBehaviour
     public static SettingComponent Setting { get; private set; }
 
     /// <summary>
-    /// 获取界面组件。
+    /// 获取UI模块。
     /// </summary>
-    public static UIComponent UI { get; private set; }
+    public static UIModule UI { get; private set; }
 
     #endregion
 
@@ -57,7 +57,7 @@ public class GameModule:MonoBehaviour
         ObjectPool = Get<ObjectPoolComponent>();
         Resource = Get<ResourceComponent>();
         Setting = Get<SettingComponent>();
-        UI = Get<UIComponent>();
+        UI = Get<UIModule>();
     }
 
     public static void InitCustomComponents()

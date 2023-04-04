@@ -139,7 +139,7 @@ namespace TEngine
             {
                 if (_canvas != null)
                 {
-                    return _canvas.gameObject.layer == UIComponent.WINDOW_SHOW_LAYER;
+                    return _canvas.gameObject.layer == UIModule.WINDOW_SHOW_LAYER;
                 }
                 else
                 {
@@ -151,7 +151,7 @@ namespace TEngine
             {
                 if (_canvas != null)
                 {
-                    int setLayer = value ? UIComponent.WINDOW_SHOW_LAYER : UIComponent.WINDOW_HIDE_LAYER;
+                    int setLayer = value ? UIModule.WINDOW_SHOW_LAYER : UIModule.WINDOW_HIDE_LAYER;
                     if (_canvas.gameObject.layer == setLayer)
                         return;
 
@@ -361,7 +361,7 @@ namespace TEngine
             }
 
             // 实例化对象
-            _panel = handle.InstantiateSync(UIComponent.UIRootStatic);
+            _panel = handle.InstantiateSync(UIModule.UIRootStatic);
             _panel.transform.localPosition = Vector3.zero;
 
             // 获取组件

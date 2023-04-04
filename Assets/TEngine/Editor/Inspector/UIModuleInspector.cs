@@ -2,8 +2,8 @@
 
 namespace TEngine.Editor.Inspector
 {
-    [CustomEditor(typeof(UIComponent))]
-    internal sealed class UIComponentInspector : GameFrameworkInspector
+    [CustomEditor(typeof(UIModule))]
+    internal sealed class UIModuleInspector : GameFrameworkInspector
     {
         private SerializedProperty m_InstanceRoot = null;
         private SerializedProperty m_UICamera = null;
@@ -18,7 +18,7 @@ namespace TEngine.Editor.Inspector
 
             serializedObject.Update();
 
-            UIComponent t = (UIComponent)target;
+            UIModule t = (UIModule)target;
 
             EditorGUI.BeginDisabledGroup(EditorApplication.isPlayingOrWillChangePlaymode);
             {
