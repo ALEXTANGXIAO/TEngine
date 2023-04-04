@@ -7,7 +7,7 @@ namespace TEngine
     /// </summary>
     public class DefaultUIWindowHelper : UIWindowHelperBase
     {
-        private ResourceModuleBase _mResourceModuleBase = null;
+        private ResourceModule _mResourceModule = null;
 
         private Vector2 m_Half = new Vector2(0.5f,0.5f);
 
@@ -16,8 +16,8 @@ namespace TEngine
         private void Start()
         {
             m_UILayer = LayerMask.NameToLayer("UI");
-            _mResourceModuleBase = GameEntry.GetModule<ResourceModuleBase>();
-            if (_mResourceModuleBase == null)
+            _mResourceModule = GameEntry.GetModule<ResourceModule>();
+            if (_mResourceModule == null)
             {
                 Log.Fatal("Resource component is invalid.");
                 return;

@@ -32,7 +32,7 @@ public class GameModule:MonoBehaviour
     /// <summary>
     /// 获取资源模块。
     /// </summary>
-    public static ResourceModuleBase Resource { get; private set; }
+    public static ResourceModule Resource { get; private set; }
 
     /// <summary>
     /// 获取配置模块。
@@ -55,7 +55,7 @@ public class GameModule:MonoBehaviour
         Debugger = Get<DebuggerModule>();
         Fsm = Get<FsmModule>();
         ObjectPool = Get<ObjectPoolModule>();
-        Resource = Get<ResourceModuleBase>();
+        Resource = Get<ResourceModule>();
         Setting = Get<SettingModule>();
         UI = Get<UIModule>();
     }

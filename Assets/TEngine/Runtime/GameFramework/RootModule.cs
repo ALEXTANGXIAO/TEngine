@@ -235,13 +235,13 @@ namespace TEngine
                 throw new GameFrameworkException(Utility.Text.Format("Can not find version helper type '{0}'.", m_VersionHelperTypeName));
             }
 
-            TEngine.Version.IVersionHelper versionHelper = (TEngine.Version.IVersionHelper)Activator.CreateInstance(versionHelperType);
+            Version.IVersionHelper versionHelper = (Version.IVersionHelper)Activator.CreateInstance(versionHelperType);
             if (versionHelper == null)
             {
                 throw new GameFrameworkException(Utility.Text.Format("Can not create version helper instance '{0}'.", m_VersionHelperTypeName));
             }
 
-            TEngine.Version.SetVersionHelper(versionHelper);
+            Version.SetVersionHelper(versionHelper);
         }
 
         private void InitLogHelper()
@@ -324,10 +324,10 @@ namespace TEngine
                 objectPoolModule.ReleaseAllUnused();
             }
 
-            ResourceModuleBase resourceModuleBase = GameEntry.GetModule<ResourceModuleBase>();
-            if (resourceModuleBase != null)
+            ResourceModule ResourceModule = GameEntry.GetModule<ResourceModule>();
+            if (ResourceModule != null)
             {
-                resourceModuleBase.ForceUnloadUnusedAssets(true);
+                ResourceModule.ForceUnloadUnusedAssets(true);
             }
         }
     }

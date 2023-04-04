@@ -165,12 +165,12 @@ namespace TEngine
             throw new System.NotImplementedException();
         }
 
-        public T LoadAsset<T>(string assetName) where T : Object
+        public T LoadAsset<T>(string assetName,out AssetOperationHandle handle) where T : Object
         {
             throw new System.NotImplementedException();
         }
 
-        public T LoadAsset<T>(string assetName, Transform parent) where T : Object
+        public T LoadAsset<T>(string assetName, Transform parent,out AssetOperationHandle handle) where T : Object
         {
             throw new System.NotImplementedException();
         }

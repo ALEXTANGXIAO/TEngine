@@ -25,7 +25,7 @@ namespace TEngine
                         }
                     }
 
-                    ResourceModuleBase resourceCompoent = GameEntry.GetModule<ResourceModuleBase>();
+                    ResourceModule resourceCompoent = GameEntry.GetModule<ResourceModule>();
                     if (resourceCompoent != null)
                     {
                         if (GUILayout.Button("Unload Unused Assets", GUILayout.Height(30f)))

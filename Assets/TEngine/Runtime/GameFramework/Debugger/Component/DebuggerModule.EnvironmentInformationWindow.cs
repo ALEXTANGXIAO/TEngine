@@ -11,7 +11,7 @@ namespace TEngine
         {
             private RootModule _mRootModule = null;
 
-            private ResourceModuleBase _mResourceModuleBase = null;
+            private ResourceModule _mResourceModule = null;
 
             public override void Initialize(params object[] args)
             {
@@ -22,8 +22,8 @@ namespace TEngine
                     return;
                 }
 
-                _mResourceModuleBase = GameEntry.GetModule<ResourceModuleBase>();
-                if (_mResourceModuleBase == null)
+                _mResourceModule = GameEntry.GetModule<ResourceModule>();
+                if (_mResourceModule == null)
                 {
                     Log.Fatal("Resource component is invalid.");
                     return;
@@ -44,7 +44,7 @@ namespace TEngine
 #endif
                     DrawItem("Game Framework Version", Version.GameFrameworkVersion);
                     DrawItem("Game Version", Utility.Text.Format("{0} ({1})", Version.GameVersion, Version.InternalGameVersion));
-                    DrawItem("Resource Version", (string.IsNullOrEmpty(_mResourceModuleBase.ApplicableGameVersion) ? "Unknown" : Utility.Text.Format("{0} ({1})", _mResourceModuleBase.ApplicableGameVersion, _mResourceModuleBase.InternalResourceVersion)));
+                    DrawItem("Resource Version", (string.IsNullOrEmpty(_mResourceModule.ApplicableGameVersion) ? "Unknown" : Utility.Text.Format("{0} ({1})", _mResourceModule.ApplicableGameVersion, _mResourceModule.InternalResourceVersion)));
                     DrawItem("Application Version", Application.version);
                     DrawItem("Unity Version", Application.unityVersion);
                     DrawItem("Platform", Application.platform.ToString());

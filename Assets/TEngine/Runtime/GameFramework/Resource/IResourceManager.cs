@@ -106,19 +106,21 @@ namespace TEngine
         /// <summary>
         /// 同步加载资源。
         /// </summary>
+        /// <param name="handle">资源操作句柄。</param>
         /// <param name="assetName">要加载资源的名称。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        T LoadAsset<T>(string assetName) where T : UnityEngine.Object;
+        T LoadAsset<T>(string assetName,out AssetOperationHandle handle) where T : UnityEngine.Object;
 
         /// <summary>
         /// 同步加载资源。
         /// </summary>
         /// <param name="assetName">要加载资源的名称。</param>
+        /// <param name="handle">资源操作句柄。</param>
         /// <param name="parent">父节点位置。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        T LoadAsset<T>(string assetName, Transform parent) where T : UnityEngine.Object;
+        T LoadAsset<T>(string assetName, Transform parent,out AssetOperationHandle handle) where T : UnityEngine.Object;
         
         /// <summary>
         /// 异步加载资源。
