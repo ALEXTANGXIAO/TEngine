@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using YooAsset;
@@ -6,7 +7,7 @@ using Object = UnityEngine.Object;
 
 namespace TEngine
 {
-    public abstract class UIWindow : UIBase, IUIBehaviour
+    public abstract class UIWindow : UIBase
     {
         private System.Action<UIWindow> _prepareCallback;
 
@@ -29,12 +30,12 @@ namespace TEngine
         /// <summary>
         /// 窗口矩阵位置组件。
         /// </summary>
-        public RectTransform transform => _panel.transform as RectTransform;
+        public override RectTransform rectTransform => _panel.transform as RectTransform;
 
         /// <summary>
         /// 窗口的实例资源对象。
         /// </summary>
-        public GameObject gameObject => _panel;
+        public override GameObject gameObject => _panel;
 
         /// <summary>
         /// 窗口名称。
@@ -204,15 +205,9 @@ namespace TEngine
         }
 
         /// <summary>
-        /// 是否加载完毕
+        /// 是否加载完毕。
         /// </summary>
         internal bool IsLoadDone => Handle.IsDone;
-
-        /// <summary>
-        /// 是否准备完毕
-        /// </summary>
-        public bool IsPrepare { private set; get; }
-
 
         public void Init(string name, int layer, bool fullScreen, string assetName)
         {
@@ -221,75 +216,7 @@ namespace TEngine
             FullScreen = fullScreen;
             AssetName = assetName;
         }
-
-        /// <summary>
-        /// 代码自动生成绑定。
-        /// </summary>
-        public virtual void ScriptGenerator()
-        {
-        }
-
-        /// <summary>
-        /// 绑定UI成员元素。
-        /// </summary>
-        public virtual void BindMemberProperty()
-        {
-        }
-
-        /// <summary>
-        /// 注册事件。
-        /// </summary>
-        public virtual void RegisterEvent()
-        {
-        }
-
-        /// <summary>
-        /// 窗口创建。
-        /// </summary>
-        public virtual void OnCreate()
-        {
-        }
-
-        /// <summary>
-        /// 窗口刷新
-        /// </summary>
-        public virtual void OnRefresh()
-        {
-        }
-
-        /// <summary>
-        /// 窗口更新
-        /// </summary>
-        public virtual void OnUpdate()
-        {
-        }
-
-        /// <summary>
-        /// 窗口销毁
-        /// </summary>
-        public virtual void OnDestroy()
-        {
-        }
-
-        protected virtual void Close()
-        {
-            GameModule.UI.CloseWindow(this.GetType());
-        }
-
-        /// <summary>
-        /// 当触发窗口的层级排序
-        /// </summary>
-        protected virtual void OnSortDepth(int depth)
-        {
-        }
-
-        /// <summary>
-        /// 当因为全屏遮挡触发窗口的显隐
-        /// </summary>
-        protected virtual void OnSetVisible(bool visible)
-        {
-        }
-
+        
         internal void TryInvoke(System.Action<UIWindow> prepareCallback, System.Object[] userDatas)
         {
             _userDatas = userDatas;
@@ -330,12 +257,75 @@ namespace TEngine
             OnRefresh();
         }
 
-        internal void InternalUpdate()
+        internal bool InternalUpdate()
         {
-            if (IsPrepare)
+            if (!IsPrepare ||!Visible)
+            {
+                return false;
+            }
+            
+            List<UIWidget> listNextUpdateChild = null;
+            if (ListChild != null && ListChild.Count > 0)
+            {
+                listNextUpdateChild = m_listUpdateChild;
+                var updateListValid = m_updateListValid;
+                List<UIWidget> listChild = null;
+                if (!updateListValid)
+                {
+                    if (listNextUpdateChild == null)
+                    {
+                        listNextUpdateChild = new List<UIWidget>();
+                        m_listUpdateChild = listNextUpdateChild;
+                    }
+                    else
+                    {
+                        listNextUpdateChild.Clear();
+                    }
+
+                    listChild = ListChild;
+                }
+                else
+                {
+                    listChild = listNextUpdateChild;
+                }
+
+                for (int i = 0; i < listChild.Count; i++)
+                {
+                    var uiWidget = listChild[i];
+
+                    UnityEngine.Profiling.Profiler.BeginSample(uiWidget.name);
+                    var needValid = uiWidget.InternalUpdate();
+                    UnityEngine.Profiling.Profiler.EndSample();
+
+                    if (!updateListValid && needValid)
+                    {
+                        listNextUpdateChild.Add(uiWidget);
+                    }
+                }
+
+                if (!updateListValid) 
+                {
+                    m_updateListValid = true;
+                }
+            }
+
+            UnityEngine.Profiling.Profiler.BeginSample("OnUpdate");
+
+            bool needUpdate = false;
+            if (listNextUpdateChild == null || listNextUpdateChild.Count <= 0)
+            {
+                HasOverrideUpdate = true;
+                OnUpdate();
+                needUpdate = HasOverrideUpdate;
+            }
+            else
             {
                 OnUpdate();
+                needUpdate = true;
             }
+            UnityEngine.Profiling.Profiler.EndSample();
+            
+            return needUpdate;
         }
 
         internal void InternalDestroy()
@@ -394,81 +384,11 @@ namespace TEngine
             IsPrepare = true;
             _prepareCallback?.Invoke(this);
         }
-
-        #region FindChildComponent
-
-        public Transform FindChild(string path)
+        
+        
+        protected virtual void Close()
         {
-            return DUnityUtil.FindChild(transform, path);
+            GameModule.UI.CloseWindow(this.GetType());
         }
-
-        public Transform FindChild(Transform trans, string path)
-        {
-            return DUnityUtil.FindChild(trans, path);
-        }
-
-        public T FindChildComponent<T>(string path) where T : Component
-        {
-            return DUnityUtil.FindChildComponent<T>(transform, path);
-        }
-
-        public T FindChildComponent<T>(Transform trans, string path) where T : Component
-        {
-            return DUnityUtil.FindChildComponent<T>(trans, path);
-        }
-
-        #endregion
-
-        #region UIEvent
-
-        private GameEventMgr _eventMgr;
-
-        protected GameEventMgr EventMgr
-        {
-            get
-            {
-                if (_eventMgr == null)
-                {
-                    _eventMgr = MemoryPool.Acquire<GameEventMgr>();
-                }
-
-                return _eventMgr;
-            }
-        }
-
-        public void AddUIEvent(int eventType, Action handler)
-        {
-            EventMgr.AddUIEvent(eventType, handler);
-        }
-
-        protected void AddUIEvent<T>(int eventType, Action<T> handler)
-        {
-            EventMgr.AddUIEvent(eventType, handler);
-        }
-
-        protected void AddUIEvent<T, U>(int eventType, Action<T, U> handler)
-        {
-            EventMgr.AddUIEvent(eventType, handler);
-        }
-
-        protected void AddUIEvent<T, U, V>(int eventType, Action<T, U, V> handler)
-        {
-            EventMgr.AddUIEvent(eventType, handler);
-        }
-
-        protected void AddUIEvent<T, U, V, W>(int eventType, Action<T, U, V, W> handler)
-        {
-            EventMgr.AddUIEvent(eventType, handler);
-        }
-
-        private void RemoveAllUIEvent()
-        {
-            if (_eventMgr != null)
-            {
-                MemoryPool.Release(_eventMgr);
-            }
-        }
-
-        #endregion
     }
 }

@@ -1,7 +1,30 @@
-﻿namespace TEngine
+﻿using System.Collections.Generic;
+using UnityEngine;
+
+namespace TEngine
 {
     public abstract class UIWidget:UIBase,IUIBehaviour
     {
+        /// <summary>
+        /// 窗口组件的实例资源对象。
+        /// </summary>
+        public override GameObject gameObject { protected set; get; }
+        
+        /// <summary>
+        /// 窗口组件矩阵位置组件。
+        /// </summary>
+        public override RectTransform rectTransform { protected set; get; }
+
+        /// <summary>
+        /// 窗口组件名称。
+        /// </summary>
+        public string name { private set; get; } = nameof(UIWidget);
+        
+        /// <summary>
+        /// UI类型。
+        /// </summary>
+        public override UIBaseType BaseType => UIBaseType.Widget;
+        
         /// <summary>
         /// 所属的窗口。
         /// </summary>
@@ -24,39 +47,137 @@
             }
         }
         
-        public virtual void ScriptGenerator()
+        internal bool InternalUpdate()
         {
-            throw new System.NotImplementedException();
+            if (!IsPrepare)
+            {
+                return false;
+            }
+            
+            List<UIWidget> listNextUpdateChild = null;
+            if (ListChild != null && ListChild.Count > 0)
+            {
+                listNextUpdateChild = m_listUpdateChild;
+                var updateListValid = m_updateListValid;
+                List<UIWidget> listChild = null;
+                if (!updateListValid)
+                {
+                    if (listNextUpdateChild == null)
+                    {
+                        listNextUpdateChild = new List<UIWidget>();
+                        m_listUpdateChild = listNextUpdateChild;
+                    }
+                    else
+                    {
+                        listNextUpdateChild.Clear();
+                    }
+
+                    listChild = ListChild;
+                }
+                else
+                {
+                    listChild = listNextUpdateChild;
+                }
+
+                for (int i = 0; i < listChild.Count; i++)
+                {
+                    var uiWidget = listChild[i];
+
+                    UnityEngine.Profiling.Profiler.BeginSample(uiWidget.name);
+                    var needValid = uiWidget.InternalUpdate();
+                    UnityEngine.Profiling.Profiler.EndSample();
+
+                    if (!updateListValid && needValid)
+                    {
+                        listNextUpdateChild.Add(uiWidget);
+                    }
+                }
+
+                if (!updateListValid) 
+                {
+                    m_updateListValid = true;
+                }
+            }
+
+            UnityEngine.Profiling.Profiler.BeginSample("OnUpdate");
+
+            bool needUpdate = false;
+            if (listNextUpdateChild == null || listNextUpdateChild.Count <= 0)
+            {
+                HasOverrideUpdate = true;
+                OnUpdate();
+                needUpdate = HasOverrideUpdate;
+            }
+            else
+            {
+                OnUpdate();
+                needUpdate = true;
+            }
+            UnityEngine.Profiling.Profiler.EndSample();
+                
+            return needUpdate;
         }
 
-        public virtual void BindMemberProperty()
+        #region Create
+        /// <summary>
+        /// 创建窗口内嵌的界面。
+        /// </summary>
+        /// <param name="parentUI">父节点UI。</param>
+        /// <param name="widgetRoot">组件根节点。</param>
+        /// <param name="visible">是否可见。</param>
+        /// <returns></returns>
+        public bool Create(UIBase parentUI, GameObject widgetRoot, bool visible = true)
         {
-            throw new System.NotImplementedException();
+            return CreateImp(parentUI, widgetRoot, false, visible);
         }
+        
 
-        public virtual void RegisterEvent()
+        private bool CreateImp(UIBase parentUI, GameObject widgetRoot, bool bindGo, bool visible = true)
         {
-            throw new System.NotImplementedException();
+            if (!CreateBase(widgetRoot, bindGo))
+            {
+                return false;
+            }
+            RestChildCanvas(parentUI);
+            parent = parentUI;
+            Parent.ListChild.Add(this);
+            ScriptGenerator();
+            BindMemberProperty();
+            RegisterEvent();
+            OnCreate();
+            
+            if (!visible)
+            {
+                gameObject.SetActive(false);
+            }
+            return true;
         }
-
-        public virtual void OnCreate()
+        
+        protected bool CreateBase(GameObject go, bool bindGo)
         {
-            throw new System.NotImplementedException();
+            if (go == null)
+            {
+                return false;
+            }
+            rectTransform = go.GetComponent<RectTransform>();
+            Log.Assert(rectTransform != null, $"{go.name} ui base element need to be RectTransform");
+            return true;
         }
-
-        public virtual void OnRefresh()
+        
+        protected void RestChildCanvas(UIBase parentUI)
         {
-            throw new System.NotImplementedException();
+            Canvas parentCanvas = parentUI.gameObject.GetComponentInParent<Canvas>();
+            if (parentCanvas == null)
+            {
+                return;
+            }
+            var listCanvas = gameObject.GetComponentsInChildren<Canvas>(true);
+            for (var index = 0; index < listCanvas.Length; index++)
+            {
+                var childCanvas = listCanvas[index];
+                childCanvas.sortingOrder = parentCanvas.sortingOrder + childCanvas.sortingOrder % UIComponent.WINDOW_DEEP;
+            }
         }
-
-        public virtual void OnUpdate()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public virtual void OnDestroy()
-        {
-            throw new System.NotImplementedException();
-        }
+        #endregion
     }
 }
