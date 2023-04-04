@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using YooAsset;
 
 namespace TEngine
@@ -104,13 +105,77 @@ namespace TEngine
         HasAssetResult HasAsset(string assetName);
 
         /// <summary>
+        /// 设置默认资源包。
+        /// </summary>
+        /// <param name="package">资源包。</param>
+        void SetDefaultPackage(ResourcePackage package);
+
+        /// <summary>
+        /// 是否需要从远端更新下载。
+        /// </summary>
+        /// <param name="location">资源的定位地址。</param>
+        /// <returns></returns>
+        bool IsNeedDownloadFromRemote(string location);
+
+        /// <summary>
+        /// 是否需要从远端更新下载。
+        /// </summary>
+        /// <param name="assetInfo">资源信息。</param>
+        /// <returns></returns>
+        bool IsNeedDownloadFromRemote(AssetInfo assetInfo);
+
+        /// <summary>
+        /// 获取资源信息列表。
+        /// </summary>
+        /// <param name="tag">资源标签。</param>
+        /// <returns>资源信息列表。</returns>
+        AssetInfo[] GetAssetInfos(string tag);
+
+        /// <summary>
+        /// 获取资源信息列表。
+        /// </summary>
+        /// <param name="tags">资源标签列表。</param>
+        /// <returns>资源信息列表。</returns>
+        AssetInfo[] GetAssetInfos(string[] tags);
+
+        /// <summary>
+        /// 获取资源信息。
+        /// </summary>
+        /// <param name="location">资源的定位地址。</param>
+        /// <returns>资源信息。</returns>
+        AssetInfo GetAssetInfo(string location);
+
+        /// <summary>
+        /// 检查资源定位地址是否有效。
+        /// </summary>
+        /// <param name="location">资源的定位地址</param>
+        bool CheckLocationValid(string location);
+        
+        /// <summary>
+        /// 同步加载资源。
+        /// </summary>
+        /// <param name="assetName">要加载资源的名称。</param>
+        /// <typeparam name="T">要加载资源的类型。</typeparam>
+        /// <returns>资源实例。</returns>
+        T LoadAsset<T>(string assetName) where T : Object;
+        
+        /// <summary>
+        /// 同步加载资源。
+        /// </summary>
+        /// <param name="assetName">要加载资源的名称。</param>
+        /// <param name="parent">父节点位置。</param>
+        /// <typeparam name="T">要加载资源的类型。</typeparam>
+        /// <returns>资源实例。</returns>
+        T LoadAsset<T>(string assetName, Transform parent) where T :Object;
+        
+        /// <summary>
         /// 同步加载资源。
         /// </summary>
         /// <param name="handle">资源操作句柄。</param>
         /// <param name="assetName">要加载资源的名称。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        T LoadAsset<T>(string assetName,out AssetOperationHandle handle) where T : UnityEngine.Object;
+        T LoadAsset<T>(string assetName,out AssetOperationHandle handle) where T : Object;
 
         /// <summary>
         /// 同步加载资源。
@@ -120,7 +185,7 @@ namespace TEngine
         /// <param name="parent">父节点位置。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        T LoadAsset<T>(string assetName, Transform parent,out AssetOperationHandle handle) where T : UnityEngine.Object;
+        T LoadAsset<T>(string assetName, Transform parent,out AssetOperationHandle handle) where T :Object;
         
         /// <summary>
         /// 异步加载资源。
@@ -129,7 +194,7 @@ namespace TEngine
         /// <param name="cancellationToken">取消操作Token。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>异步资源实例。</returns>
-        UniTask<T> LoadAssetAsync<T>(string assetName,CancellationToken cancellationToken) where T : UnityEngine.Object;
+        UniTask<T> LoadAssetAsync<T>(string assetName,CancellationToken cancellationToken) where T : Object;
 
         /// <summary>
         /// 异步加载游戏物体。
@@ -145,14 +210,34 @@ namespace TEngine
         /// <param name="assetName">要加载资源的名称。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>同步加载资源句柄。</returns>
-        AssetOperationHandle LoadAssetGetOperation<T>(string assetName) where T : UnityEngine.Object;
+        AssetOperationHandle LoadAssetGetOperation<T>(string assetName) where T : Object;
 
         /// <summary>
         /// 异步加载资源并获取句柄。
         /// </summary>
         /// <param name="assetName">要加载资源的名称。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
-        /// <returns>同步加载资源句柄。</returns>
-        AssetOperationHandle LoadAssetAsyncHandle<T>(string assetName) where T : UnityEngine.Object;
+        /// <returns>异步加载资源句柄。</returns>
+        AssetOperationHandle LoadAssetAsyncHandle<T>(string assetName) where T : Object;
+
+        /// <summary>
+        /// 异步加载场景。
+        /// </summary>
+        /// <param name="location">场景的定位地址</param>
+        /// <param name="sceneMode">场景加载模式</param>
+        /// <param name="activateOnLoad">加载完毕时是否主动激活</param>
+        /// <param name="priority">优先级</param>
+        /// <returns>异步加载场景句柄。</returns>
+        SceneOperationHandle LoadSceneAsync(string location, LoadSceneMode sceneMode = LoadSceneMode.Single, bool activateOnLoad = true, int priority = 100);
+
+        /// <summary>
+        /// 异步加载场景
+        /// </summary>
+        /// <param name="assetInfo">场景的资源信息</param>
+        /// <param name="sceneMode">场景加载模式</param>
+        /// <param name="activateOnLoad">加载完毕时是否主动激活</param>
+        /// <param name="priority">优先级</param>
+        /// <returns>异步加载场景句柄。</returns>
+        SceneOperationHandle LoadSceneAsync(AssetInfo assetInfo, LoadSceneMode sceneMode = LoadSceneMode.Single, bool activateOnLoad = true, int priority = 100);
     }
 }

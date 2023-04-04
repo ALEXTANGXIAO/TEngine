@@ -11,9 +11,9 @@
         NotExist = 0,
 
         /// <summary>
-        /// 资源尚未准备完毕。
+        /// 资源需要从远端更新下载。
         /// </summary>
-        NotReady,
+        AssetOnline,
 
         /// <summary>
         /// 存在资源且存储在磁盘上。
@@ -33,6 +33,11 @@
         /// <summary>
         /// 存在二进制资源且存储在文件系统里。
         /// </summary>
-        BinaryOnFileSystem
+        BinaryOnFileSystem,
+        
+        /// <summary>
+        /// 资源定位地址无效。
+        /// </summary>
+        Valid,
     }
 }

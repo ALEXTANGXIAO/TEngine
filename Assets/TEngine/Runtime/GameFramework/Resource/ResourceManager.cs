@@ -1,7 +1,7 @@
-﻿using System.Diagnostics;
-using System.Threading;
+﻿using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using YooAsset;
 
 namespace TEngine
@@ -71,39 +71,27 @@ namespace TEngine
         public long Milliseconds { get; set; }
         
         /// <summary>
-        /// The total number of frames since the start of the game (Read Only).
-        /// </summary>
-        private static int _lastUpdateFrame = 0;
-        
-        /// <summary>
         /// 获取游戏框架模块优先级。
         /// </summary>
         /// <remarks>优先级较高的模块会优先轮询，并且关闭操作会后进行。</remarks>
         internal override int Priority => 4;
+        
+        /// <summary>
+        /// 资源服务器地址。
+        /// </summary>
+        public string HostServerURL { get; set; }
         #endregion
 
+        #region 生命周期
         internal override void Update(float elapseSeconds, float realElapseSeconds)
         {
-            DebugCheckDuplicateDriver();
-            YooAssets.Update();
-        }
-        
-        [Conditional("DEBUG")]
-        private void DebugCheckDuplicateDriver()
-        {
-            if (_lastUpdateFrame > 0)
-            {
-                if (_lastUpdateFrame == Time.frameCount)
-                    YooLogger.Warning($"There are two {nameof(YooAssetsDriver)} in the scene. Please ensure there is always exactly one driver in the scene.");
-            }
-
-            _lastUpdateFrame = Time.frameCount;
         }
 
         internal override void Shutdown()
         {
             YooAssets.Destroy();
         }
+        #endregion
 
         #region 设置接口
         /// <summary>
@@ -137,14 +125,63 @@ namespace TEngine
 
         public void Initialize()
         {
-            throw new System.NotImplementedException();
+            // 初始化资源系统
+            YooAssets.Initialize(new YooAssetsLogger());
+            YooAssets.SetOperationSystemMaxTimeSlice(Milliseconds);
+            YooAssets.SetCacheSystemCachedFileVerifyLevel(VerifyLevel);
+
+            // 创建默认的资源包
+            string packageName = PackageName;
+            var defaultPackage = YooAssets.TryGetPackage(packageName);
+            if (defaultPackage == null)
+            {
+                defaultPackage = YooAssets.CreatePackage(packageName);
+                YooAssets.SetDefaultPackage(defaultPackage);
+            }
         }
 
         public InitializationOperation InitPackage()
         {
-            throw new System.NotImplementedException();
-        }
+            // 创建默认的资源包
+            string packageName = PackageName;
+            var package = YooAssets.TryGetPackage(packageName);
+            if (package == null)
+            {
+                package = YooAssets.CreatePackage(packageName);
+                YooAssets.SetDefaultPackage(package);
+            }
 
+            // 编辑器下的模拟模式
+            InitializationOperation initializationOperation = null;
+            if (PlayMode == EPlayMode.EditorSimulateMode)
+            {
+                var createParameters = new EditorSimulateModeParameters();
+                createParameters.SimulateManifestFilePath = EditorSimulateModeHelper.SimulateBuild(packageName);
+                initializationOperation = package.InitializeAsync(createParameters);
+            }
+
+            // 单机运行模式
+            if (PlayMode == EPlayMode.OfflinePlayMode)
+            {
+                var createParameters = new OfflinePlayModeParameters();
+                createParameters.DecryptionServices = new GameDecryptionServices();
+                initializationOperation = package.InitializeAsync(createParameters);
+            }
+
+            // 联机运行模式
+            if (PlayMode == EPlayMode.HostPlayMode)
+            {
+                var createParameters = new HostPlayModeParameters();
+                createParameters.DecryptionServices = new GameDecryptionServices();
+                createParameters.QueryServices = new GameQueryServices();
+                createParameters.DefaultHostServer = HostServerURL;
+                createParameters.FallbackHostServer = HostServerURL;
+                initializationOperation = package.InitializeAsync(createParameters);
+            }
+
+            return initializationOperation;
+        }
+        
         public void UnloadAsset(object asset)
         {
             throw new System.NotImplementedException();
@@ -152,47 +189,318 @@ namespace TEngine
 
         public void UnloadUnusedAssets()
         {
-            throw new System.NotImplementedException();
+            YooAssets.UnloadUnusedAssets();
         }
 
         public void ForceUnloadAllAssets()
         {
-            throw new System.NotImplementedException();
+            YooAssets.ForceUnloadAllAssets();
         }
 
         public HasAssetResult HasAsset(string assetName)
         {
-            throw new System.NotImplementedException();
+            if (string.IsNullOrEmpty(assetName))
+            {
+                throw new GameFrameworkException("Asset name is invalid.");
+            }
+            
+            AssetInfo assetInfo = YooAssets.GetAssetInfo(assetName);
+            
+            if (!CheckLocationValid(assetName))
+            {
+                return HasAssetResult.Valid;
+            }
+            
+            if (assetInfo == null)
+            {
+                return HasAssetResult.NotExist;
+            }
+
+            if (IsNeedDownloadFromRemote(assetInfo))
+            {
+                return HasAssetResult.AssetOnline;
+            }
+
+            return HasAssetResult.AssetOnDisk;
         }
 
+        /// <summary>
+        /// 设置默认的资源包。
+        /// </summary>
+        public void SetDefaultPackage(ResourcePackage package)
+        {
+            YooAssets.SetDefaultPackage(package);
+        }
+
+        #region 资源信息
+
+        /// <summary>
+        /// 是否需要从远端更新下载。
+        /// </summary>
+        /// <param name="location">资源的定位地址</param>
+        public bool IsNeedDownloadFromRemote(string location)
+        {
+            return YooAssets.IsNeedDownloadFromRemote(location);
+        }
+
+        /// <summary>
+        /// 是否需要从远端更新下载。
+        /// </summary>
+        /// <param name="assetInfo">资源信息。</param>
+        public bool IsNeedDownloadFromRemote(AssetInfo assetInfo)
+        {
+            return YooAssets.IsNeedDownloadFromRemote(assetInfo);
+        }
+
+        /// <summary>
+        /// 获取资源信息列表。
+        /// </summary>
+        /// <param name="tag">资源标签。</param>
+        /// <returns>资源信息列表。</returns>
+        public AssetInfo[] GetAssetInfos(string tag)
+        {
+            return YooAssets.GetAssetInfos(tag);
+        }
+
+        /// <summary>
+        /// 获取资源信息列表。
+        /// </summary>
+        /// <param name="tags">资源标签列表。</param>
+        /// <returns>资源信息列表。</returns>
+        public AssetInfo[] GetAssetInfos(string[] tags)
+        {
+            return YooAssets.GetAssetInfos(tags);
+        }
+
+        /// <summary>
+        /// 获取资源信息。
+        /// </summary>
+        /// <param name="location">资源的定位地址。</param>
+        /// <returns>资源信息。</returns>
+        public AssetInfo GetAssetInfo(string location)
+        {
+            return YooAssets.GetAssetInfo(location);
+        }
+
+        /// <summary>
+        /// 检查资源定位地址是否有效。
+        /// </summary>
+        /// <param name="location">资源的定位地址</param>
+        public bool CheckLocationValid(string location)
+        {
+            return YooAssets.CheckLocationValid(location);
+        }
+
+        #endregion
+        /// <summary>
+        /// 同步加载资源。
+        /// </summary>
+        /// <param name="assetName">要加载资源的名称。</param>
+        /// <typeparam name="T">要加载资源的类型。</typeparam>
+        /// <returns>资源实例。</returns>
+        public T LoadAsset<T>(string assetName) where T : Object
+        {
+            if (string.IsNullOrEmpty(assetName))
+            {
+                Log.Error("Asset name is invalid.");
+                return default;
+            }
+            AssetOperationHandle handle = YooAssets.LoadAssetSync<T>(assetName);
+
+            if (typeof(T) == typeof(GameObject))
+            {
+                GameObject ret = handle.InstantiateSync();
+                BindAssetTag(ret, handle, assetName);
+                return ret as T;
+            }
+            else
+            {
+                return handle.AssetObject as T;
+            }
+        }
+
+        /// <summary>
+        /// 同步加载资源。
+        /// </summary>
+        /// <param name="assetName">要加载资源的名称。</param>
+        /// <param name="parent">父节点位置。</param>
+        /// <typeparam name="T">要加载资源的类型。</typeparam>
+        /// <returns>资源实例。</returns>
+        public T LoadAsset<T>(string assetName, Transform parent) where T : Object
+        {
+            if (string.IsNullOrEmpty(assetName))
+            {
+                Log.Error("Asset name is invalid.");
+                return default;
+            }
+            AssetOperationHandle handle = YooAssets.LoadAssetSync<T>(assetName);
+
+            if (typeof(T) == typeof(GameObject))
+            {
+                GameObject ret = handle.InstantiateSync(parent);
+                BindAssetTag(ret, handle, assetName);
+                return ret as T;
+            }
+            else
+            {
+                return handle.AssetObject as T;
+            }
+        }
+
+        /// <summary>
+        /// 同步加载资源。
+        /// </summary>
+        /// <param name="handle">资源操作句柄。</param>
+        /// <param name="assetName">要加载资源的名称。</param>
+        /// <typeparam name="T">要加载资源的类型。</typeparam>
+        /// <returns>资源实例。</returns>
         public T LoadAsset<T>(string assetName,out AssetOperationHandle handle) where T : Object
         {
-            throw new System.NotImplementedException();
+            handle = YooAssets.LoadAssetSync<T>(assetName);
+
+            if (string.IsNullOrEmpty(assetName))
+            {
+                Log.Error("Asset name is invalid.");
+                return default;
+            }
+
+            if (typeof(T) == typeof(GameObject))
+            {
+                GameObject ret = handle.InstantiateSync();
+                return ret as T;
+            }
+            else
+            {
+                return handle.AssetObject as T;
+            }
         }
 
+        /// <summary>
+        /// 同步加载资源。
+        /// </summary>
+        /// <param name="assetName">要加载资源的名称。</param>
+        /// <param name="handle">资源操作句柄。</param>
+        /// <param name="parent">父节点位置。</param>
+        /// <typeparam name="T">要加载资源的类型。</typeparam>
+        /// <returns>资源实例。</returns>
         public T LoadAsset<T>(string assetName, Transform parent,out AssetOperationHandle handle) where T : Object
         {
-            throw new System.NotImplementedException();
+            handle = YooAssets.LoadAssetSync<T>(assetName);
+
+            if (string.IsNullOrEmpty(assetName))
+            {
+                Log.Error("Asset name is invalid.");
+                return default;
+            }
+
+            if (typeof(T) == typeof(GameObject))
+            {
+                GameObject ret = handle.InstantiateSync(parent);
+                return ret as T;
+            }
+            else
+            {
+                return handle.AssetObject as T;
+            }
         }
 
-        public UniTask<T> LoadAssetAsync<T>(string assetName, CancellationToken cancellationToken) where T : Object
+        /// <summary>
+        /// 异步加载资源实例。
+        /// </summary>
+        /// <param name="assetName">要加载的实例名称。</param>
+        /// <param name="cancellationToken">取消操作Token。</param>
+        /// <returns>资源实实例。</returns>
+        public async UniTask<T> LoadAssetAsync<T>(string assetName, CancellationToken cancellationToken) where T : Object
         {
-            throw new System.NotImplementedException();
+            AssetOperationHandle handle = LoadAssetAsyncHandle<GameObject>(assetName);
+
+            await handle.ToUniTask(cancellationToken:cancellationToken);
+
+            return handle.AssetObject as T;
         }
 
-        public UniTask<GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken)
+        /// <summary>
+        /// 异步加载游戏物体。
+        /// </summary>
+        /// <param name="assetName">要加载的游戏物体名称。</param>
+        /// <param name="cancellationToken">取消操作Token。</param>
+        /// <returns>异步游戏物体实例。</returns>
+        public async UniTask<GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            AssetOperationHandle handle = LoadAssetAsyncHandle<GameObject>(assetName);
+
+            await handle.ToUniTask(cancellationToken:cancellationToken);
+
+            GameObject ret = handle.InstantiateSync();
+
+            BindAssetTag(ret, handle, assetName);
+            
+            return ret;
         }
 
+        /// <summary>
+        /// 同步加载资源并获取句柄。
+        /// </summary>
+        /// <param name="assetName">要加载资源的名称。</param>
+        /// <typeparam name="T">要加载资源的类型。</typeparam>
+        /// <returns>同步加载资源句柄。</returns>
         public AssetOperationHandle LoadAssetGetOperation<T>(string assetName) where T : Object
         {
-            throw new System.NotImplementedException();
+            return YooAssets.LoadAssetSync<T>(assetName);
         }
 
+        /// <summary>
+        /// 异步加载资源并获取句柄。
+        /// </summary>
+        /// <param name="assetName">要加载资源的名称。</param>
+        /// <typeparam name="T">要加载资源的类型。</typeparam>
+        /// <returns>异步加载资源句柄。</returns>
         public AssetOperationHandle LoadAssetAsyncHandle<T>(string assetName) where T : Object
         {
-            throw new System.NotImplementedException();
+            return YooAssets.LoadAssetAsync<T>(assetName);
+        }
+
+        /// <summary>
+        /// 异步加载场景。
+        /// </summary>
+        /// <param name="location">场景的定位地址</param>
+        /// <param name="sceneMode">场景加载模式</param>
+        /// <param name="activateOnLoad">加载完毕时是否主动激活</param>
+        /// <param name="priority">优先级</param>
+        /// <returns>异步加载场景句柄。</returns>
+        public SceneOperationHandle LoadSceneAsync(string location, LoadSceneMode sceneMode = LoadSceneMode.Single, bool activateOnLoad = true, int priority = 100)
+        {
+            return YooAssets.LoadSceneAsync(location,sceneMode,activateOnLoad,priority);
+        }
+
+        /// <summary>
+        /// 异步加载场景
+        /// </summary>
+        /// <param name="assetInfo">场景的资源信息</param>
+        /// <param name="sceneMode">场景加载模式</param>
+        /// <param name="activateOnLoad">加载完毕时是否主动激活</param>
+        /// <param name="priority">优先级</param>
+        /// <returns>异步加载场景句柄。</returns>
+        public SceneOperationHandle LoadSceneAsync(AssetInfo assetInfo, LoadSceneMode sceneMode = LoadSceneMode.Single, bool activateOnLoad = true, int priority = 100)
+        {
+            return YooAssets.LoadSceneAsync(assetInfo,sceneMode,activateOnLoad,priority);
+        }
+
+        private bool BindAssetTag(GameObject go,AssetOperationHandle handle,string location)
+        {
+            if (go == null)
+            {
+                throw new GameFrameworkException($"ResourceMgr BindAssetTag Failed! GameObject is null!");
+            }
+
+            if (handle == null)
+            {
+                throw new GameFrameworkException($"ResourceMgr BindAssetTag Failed! AssetOperationHandle is null!");
+            }
+
+            go.AddComponent<AssetTag>().Bind(handle,location);
+
+            return true;
         }
     }
 }

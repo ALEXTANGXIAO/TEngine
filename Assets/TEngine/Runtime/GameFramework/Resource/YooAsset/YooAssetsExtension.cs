@@ -405,6 +405,28 @@ namespace YooAsset
 			return _defaultPackage.CreateResourceUnpacker(unpackingMaxNumber, failedTryAgain);
 		}
 		#endregion
+		
+		#region 资源卸载
+
+		/// <summary>
+		/// 资源回收（卸载引用计数为零的资源）
+		/// </summary>
+		public static void UnloadUnusedAssets()
+		{
+			DebugCheckDefaultPackageValid();
+			_defaultPackage.UnloadUnusedAssets();
+		}
+
+		/// <summary>
+		/// 强制回收所有资源
+		/// </summary>
+		public static void ForceUnloadAllAssets()
+		{
+			DebugCheckDefaultPackageValid();
+			_defaultPackage.ForceUnloadAllAssets();
+		}
+
+		#endregion
 
 		#region 调试方法
 		[Conditional("DEBUG")]
