@@ -12,7 +12,7 @@ public class GameModule:MonoBehaviour
     /// <summary>
     /// 获取游戏基础模块。
     /// </summary>
-    public static RootComponent Base { get; private set; }
+    public static RootModule Base { get; private set; }
 
     /// <summary>
     /// 获取调试模块。
@@ -51,7 +51,7 @@ public class GameModule:MonoBehaviour
     /// </summary>
     public static void InitFrameWorkComponents()
     {
-        Base = Get<RootComponent>();
+        Base = Get<RootModule>();
         Debugger = Get<DebuggerComponent>();
         Fsm = Get<FsmComponent>();
         ObjectPool = Get<ObjectPoolComponent>();

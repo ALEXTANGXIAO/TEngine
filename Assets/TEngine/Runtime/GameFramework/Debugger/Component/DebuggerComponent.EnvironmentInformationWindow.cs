@@ -9,14 +9,14 @@ namespace TEngine
     {
         private sealed class EnvironmentInformationWindow : ScrollableDebuggerWindowBase
         {
-            private RootComponent m_RootComponent = null;
+            private RootModule _mRootModule = null;
 
             private ResourceComponent m_ResourceComponent = null;
 
             public override void Initialize(params object[] args)
             {
-                m_RootComponent = GameEntry.GetComponent<RootComponent>();
-                if (m_RootComponent == null)
+                _mRootModule = GameEntry.GetComponent<RootModule>();
+                if (_mRootModule == null)
                 {
                     Log.Fatal("Base component is invalid.");
                     return;

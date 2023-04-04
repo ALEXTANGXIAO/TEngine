@@ -8,7 +8,7 @@ namespace TEngine
     /// 基础组件。
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class RootComponent : GameFrameworkComponent
+    public sealed class RootModule : GameFrameworkComponent
     {
         private const int DefaultDpi = 96;  // default windows dpi
 
