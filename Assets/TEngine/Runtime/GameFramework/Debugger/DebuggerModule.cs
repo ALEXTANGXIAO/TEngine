@@ -5,7 +5,7 @@ using Object = UnityEngine.Object;
 namespace TEngine
 {
     /// <summary>
-    /// 调试器组件。
+    /// 调试器模块。
     /// </summary>
     [DisallowMultipleComponent]
     public sealed partial class DebuggerModule : GameFrameworkModuleBase
@@ -157,7 +157,7 @@ namespace TEngine
         private SettingModule _mSettingModule = null;
         
         /// <summary>
-        /// 游戏框架组件初始化。
+        /// 游戏框架模块初始化。
         /// </summary>
         protected override void Awake()
         {

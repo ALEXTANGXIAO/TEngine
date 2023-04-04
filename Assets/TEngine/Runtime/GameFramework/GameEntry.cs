@@ -20,8 +20,8 @@ namespace TEngine
         /// <summary>
         /// 获取游戏框架模块。
         /// </summary>
-        /// <typeparam name="T">要获取的游戏框架组件类型。</typeparam>
-        /// <returns>要获取的游戏框架组件。</returns>
+        /// <typeparam name="T">要获取的游戏框架模块类型。</typeparam>
+        /// <returns>要获取的游戏框架模块。</returns>
         public static T GetModule<T>() where T : GameFrameworkModuleBase
         {
             return (T)GetModule(typeof(T));
@@ -30,8 +30,8 @@ namespace TEngine
         /// <summary>
         /// 获取游戏框架模块。
         /// </summary>
-        /// <param name="type">要获取的游戏框架组件类型。</param>
-        /// <returns>要获取的游戏框架组件。</returns>
+        /// <param name="type">要获取的游戏框架模块类型。</param>
+        /// <returns>要获取的游戏框架模块。</returns>
         public static GameFrameworkModuleBase GetModule(Type type)
         {
             LinkedListNode<GameFrameworkModuleBase> current = s_GameFrameworkModules.First;
@@ -51,8 +51,8 @@ namespace TEngine
         /// <summary>
         /// 获取游戏框架模块。
         /// </summary>
-        /// <param name="typeName">要获取的游戏框架组件类型名称。</param>
-        /// <returns>要获取的游戏框架组件。</returns>
+        /// <param name="typeName">要获取的游戏框架模块类型名称。</param>
+        /// <returns>要获取的游戏框架模块。</returns>
         public static GameFrameworkModuleBase GetModule(string typeName)
         {
             LinkedListNode<GameFrameworkModuleBase> current = s_GameFrameworkModules.First;

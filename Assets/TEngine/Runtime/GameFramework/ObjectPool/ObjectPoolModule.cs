@@ -5,7 +5,7 @@ using UnityEngine;
 namespace TEngine
 {
     /// <summary>
-    /// 对象池组件。
+    /// 对象池模块。
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class ObjectPoolModule : GameFrameworkModuleBase
@@ -24,7 +24,7 @@ namespace TEngine
         }
 
         /// <summary>
-        /// 游戏框架组件初始化。
+        /// 游戏框架模块初始化。
         /// </summary>
         protected override void Awake()
         {

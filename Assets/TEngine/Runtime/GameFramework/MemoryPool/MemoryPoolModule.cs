@@ -29,7 +29,7 @@ namespace TEngine
     }
 
     /// <summary>
-    /// 基础组件。
+    /// 内存池模块。
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class MemoryPoolModule : GameFrameworkModuleBase
