@@ -10,7 +10,7 @@ namespace TEngine
     /// </summary>
     public static class GameEntry
     {
-        private static readonly GameFrameworkLinkedList<GameFrameworkComponent> s_GameFrameworkComponents = new GameFrameworkLinkedList<GameFrameworkComponent>();
+        private static readonly GameFrameworkLinkedList<GameFrameworkModuleBase> s_GameFrameworkModules = new GameFrameworkLinkedList<GameFrameworkModuleBase>();
 
         /// <summary>
         /// 游戏框架所在的场景编号。
@@ -18,23 +18,23 @@ namespace TEngine
         internal const int GameFrameworkSceneId = 0;
 
         /// <summary>
-        /// 获取游戏框架组件。
+        /// 获取游戏框架模块。
         /// </summary>
         /// <typeparam name="T">要获取的游戏框架组件类型。</typeparam>
         /// <returns>要获取的游戏框架组件。</returns>
-        public static T GetComponent<T>() where T : GameFrameworkComponent
+        public static T GetModule<T>() where T : GameFrameworkModuleBase
         {
-            return (T)GetComponent(typeof(T));
+            return (T)GetModule(typeof(T));
         }
 
         /// <summary>
-        /// 获取游戏框架组件。
+        /// 获取游戏框架模块。
         /// </summary>
         /// <param name="type">要获取的游戏框架组件类型。</param>
         /// <returns>要获取的游戏框架组件。</returns>
-        public static GameFrameworkComponent GetComponent(Type type)
+        public static GameFrameworkModuleBase GetModule(Type type)
         {
-            LinkedListNode<GameFrameworkComponent> current = s_GameFrameworkComponents.First;
+            LinkedListNode<GameFrameworkModuleBase> current = s_GameFrameworkModules.First;
             while (current != null)
             {
                 if (current.Value.GetType() == type)
@@ -49,13 +49,13 @@ namespace TEngine
         }
 
         /// <summary>
-        /// 获取游戏框架组件。
+        /// 获取游戏框架模块。
         /// </summary>
         /// <param name="typeName">要获取的游戏框架组件类型名称。</param>
         /// <returns>要获取的游戏框架组件。</returns>
-        public static GameFrameworkComponent GetComponent(string typeName)
+        public static GameFrameworkModuleBase GetModule(string typeName)
         {
-            LinkedListNode<GameFrameworkComponent> current = s_GameFrameworkComponents.First;
+            LinkedListNode<GameFrameworkModuleBase> current = s_GameFrameworkModules.First;
             while (current != null)
             {
                 Type type = current.Value.GetType();
@@ -78,14 +78,14 @@ namespace TEngine
         {
             Log.Info("Shutdown Game Framework ({0})...", shutdownType);
             Utility.Unity.Release();
-            RootModule rootModule = GetComponent<RootModule>();
+            RootModule rootModule = GetModule<RootModule>();
             if (rootModule != null)
             {
                 rootModule.Shutdown();
                 rootModule = null;
             }
 
-            s_GameFrameworkComponents.Clear();
+            s_GameFrameworkModules.Clear();
 
             if (shutdownType == ShutdownType.None)
             {
@@ -108,20 +108,20 @@ namespace TEngine
         }
 
         /// <summary>
-        /// 注册游戏框架组件。
+        /// 注册游戏框架模块。
         /// </summary>
-        /// <param name="gameFrameworkComponent">要注册的游戏框架组件。</param>
-        internal static void RegisterComponent(GameFrameworkComponent gameFrameworkComponent)
+        /// <param name="gameFrameworkModule">要注册的游戏框架模块。</param>
+        internal static void RegisterModule(GameFrameworkModuleBase gameFrameworkModule)
         {
-            if (gameFrameworkComponent == null)
+            if (gameFrameworkModule == null)
             {
                 Log.Error("Game Framework component is invalid.");
                 return;
             }
 
-            Type type = gameFrameworkComponent.GetType();
+            Type type = gameFrameworkModule.GetType();
 
-            LinkedListNode<GameFrameworkComponent> current = s_GameFrameworkComponents.First;
+            LinkedListNode<GameFrameworkModuleBase> current = s_GameFrameworkModules.First;
             while (current != null)
             {
                 if (current.Value.GetType() == type)
@@ -133,7 +133,7 @@ namespace TEngine
                 current = current.Next;
             }
 
-            s_GameFrameworkComponents.AddLast(gameFrameworkComponent);
+            s_GameFrameworkModules.AddLast(gameFrameworkModule);
         }
     }
 }

@@ -2,16 +2,16 @@
 
 namespace TEngine
 {
-    public sealed partial class DebuggerModule : GameFrameworkComponent
+    public sealed partial class DebuggerModule : GameFrameworkModuleBase
     {
         private sealed class ObjectPoolInformationWindow : ScrollableDebuggerWindowBase
         {
-            private ObjectPoolComponent m_ObjectPoolComponent = null;
+            private ObjectPoolModule _mObjectPoolModule = null;
 
             public override void Initialize(params object[] args)
             {
-                m_ObjectPoolComponent = GameEntry.GetComponent<ObjectPoolComponent>();
-                if (m_ObjectPoolComponent == null)
+                _mObjectPoolModule = GameEntry.GetModule<ObjectPoolModule>();
+                if (_mObjectPoolModule == null)
                 {
                     Log.Fatal("Object pool component is invalid.");
                     return;
@@ -23,10 +23,10 @@ namespace TEngine
                 GUILayout.Label("<b>Object Pool Information</b>");
                 GUILayout.BeginVertical("box");
                 {
-                    DrawItem("Object Pool Count", m_ObjectPoolComponent.Count.ToString());
+                    DrawItem("Object Pool Count", _mObjectPoolModule.Count.ToString());
                 }
                 GUILayout.EndVertical();
-                ObjectPoolBase[] objectPools = m_ObjectPoolComponent.GetAllObjectPools(true);
+                ObjectPoolBase[] objectPools = _mObjectPoolModule.GetAllObjectPools(true);
                 for (int i = 0; i < objectPools.Length; i++)
                 {
                     DrawObjectPool(objectPools[i]);

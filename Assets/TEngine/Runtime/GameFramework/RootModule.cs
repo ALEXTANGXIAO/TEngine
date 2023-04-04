@@ -8,7 +8,7 @@ namespace TEngine
     /// 基础模块。
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class RootModule : GameFrameworkComponent
+    public sealed class RootModule : GameFrameworkModuleBase
     {
         private const int DefaultDpi = 96;  // default windows dpi
 
@@ -318,16 +318,16 @@ namespace TEngine
         {
             Log.Warning("Low memory reported...");
 
-            ObjectPoolComponent objectPoolComponent = GameEntry.GetComponent<ObjectPoolComponent>();
-            if (objectPoolComponent != null)
+            ObjectPoolModule objectPoolModule = GameEntry.GetModule<ObjectPoolModule>();
+            if (objectPoolModule != null)
             {
-                objectPoolComponent.ReleaseAllUnused();
+                objectPoolModule.ReleaseAllUnused();
             }
 
-            ResourceComponent resourceComponent = GameEntry.GetComponent<ResourceComponent>();
-            if (resourceComponent != null)
+            ResourceModuleBase resourceModuleBase = GameEntry.GetModule<ResourceModuleBase>();
+            if (resourceModuleBase != null)
             {
-                resourceComponent.ForceUnloadUnusedAssets(true);
+                resourceModuleBase.ForceUnloadUnusedAssets(true);
             }
         }
     }

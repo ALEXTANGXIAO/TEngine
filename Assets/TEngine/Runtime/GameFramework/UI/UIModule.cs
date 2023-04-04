@@ -19,7 +19,7 @@ namespace TEngine
     /// UI模块。
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed partial class UIModule : GameFrameworkComponent
+    public sealed partial class UIModule : GameFrameworkModuleBase
     {
         private const int DefaultPriority = 0;
 
@@ -63,7 +63,7 @@ namespace TEngine
 
         private void Start()
         {
-            RootModule rootModule = GameEntry.GetComponent<RootModule>();
+            RootModule rootModule = GameEntry.GetModule<RootModule>();
             if (rootModule == null)
             {
                 Log.Fatal("Base component is invalid.");

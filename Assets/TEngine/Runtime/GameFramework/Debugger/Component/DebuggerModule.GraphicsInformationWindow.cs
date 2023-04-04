@@ -2,7 +2,7 @@
 
 namespace TEngine
 {
-    public sealed partial class DebuggerModule : GameFrameworkComponent
+    public sealed partial class DebuggerModule : GameFrameworkModuleBase
     {
         private sealed class GraphicsInformationWindow : ScrollableDebuggerWindowBase
         {

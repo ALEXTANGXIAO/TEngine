@@ -32,7 +32,7 @@ namespace TEngine
     /// 基础组件。
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class MemoryPoolComponent : GameFrameworkComponent
+    public sealed class MemoryPoolModule : GameFrameworkModuleBase
     {
         [SerializeField]
         private MemoryStrictCheckType m_EnableStrictCheck = MemoryStrictCheckType.AlwaysEnable;

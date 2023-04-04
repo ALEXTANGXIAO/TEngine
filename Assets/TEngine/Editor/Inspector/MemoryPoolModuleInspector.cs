@@ -7,8 +7,8 @@ using UnityEngine;
 
 namespace TEngine.Editor.Inspector
 {
-    [CustomEditor(typeof(MemoryPoolComponent))]
-    internal sealed class MemoryPoolComponentInspector : GameFrameworkInspector
+    [CustomEditor(typeof(MemoryPoolModule))]
+    internal sealed class MemoryPoolModuleInspector : GameFrameworkInspector
     {
         private readonly Dictionary<string, List<MemoryPoolInfo>> m_MemoryPoolInfos = new Dictionary<string, List<MemoryPoolInfo>>(StringComparer.Ordinal);
         private readonly HashSet<string> m_OpenedItems = new HashSet<string>();
@@ -23,7 +23,7 @@ namespace TEngine.Editor.Inspector
 
             serializedObject.Update();
 
-            MemoryPoolComponent t = (MemoryPoolComponent)target;
+            MemoryPoolModule t = (MemoryPoolModule)target;
 
             if (EditorApplication.isPlaying && IsPrefabInHierarchy(t.gameObject))
             {

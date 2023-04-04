@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace TEngine.Editor.Inspector
 {
-    [CustomEditor(typeof(SettingComponent))]
-    internal sealed class SettingComponentInspector : GameFrameworkInspector
+    [CustomEditor(typeof(SettingModule))]
+    internal sealed class SettingModuleInspector : GameFrameworkInspector
     {
         private HelperInfo<SettingHelperBase> m_SettingHelperInfo = new HelperInfo<SettingHelperBase>("Setting");
 
@@ -12,7 +12,7 @@ namespace TEngine.Editor.Inspector
         {
             base.OnInspectorGUI();
 
-            SettingComponent t = (SettingComponent)target;
+            SettingModule t = (SettingModule)target;
 
             EditorGUI.BeginDisabledGroup(EditorApplication.isPlayingOrWillChangePlaymode);
             {

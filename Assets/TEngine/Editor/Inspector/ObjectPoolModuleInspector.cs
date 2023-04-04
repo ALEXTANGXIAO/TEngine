@@ -7,8 +7,8 @@ using UnityEngine;
 
 namespace TEngine.Editor.Inspector
 {
-    [CustomEditor(typeof(ObjectPoolComponent))]
-    internal sealed class ObjectPoolComponentInspector : GameFrameworkInspector
+    [CustomEditor(typeof(ObjectPoolModule))]
+    internal sealed class ObjectPoolModuleInspector : GameFrameworkInspector
     {
         private readonly HashSet<string> m_OpenedItems = new HashSet<string>();
 
@@ -22,7 +22,7 @@ namespace TEngine.Editor.Inspector
                 return;
             }
 
-            ObjectPoolComponent t = (ObjectPoolComponent)target;
+            ObjectPoolModule t = (ObjectPoolModule)target;
 
             if (IsPrefabInHierarchy(t.gameObject))
             {

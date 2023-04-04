@@ -4,7 +4,7 @@ using UnityEngine;
 namespace TEngine
 {
     [DisallowMultipleComponent]
-    public class ResourceComponent: GameFrameworkComponent
+    public class ResourceModuleBase: GameFrameworkModuleBase
     {
         private IResourceManager m_ResourceManager;
         

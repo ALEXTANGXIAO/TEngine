@@ -8,7 +8,7 @@ namespace TEngine
     /// 对象池组件。
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class ObjectPoolComponent : GameFrameworkComponent
+    public sealed class ObjectPoolModule : GameFrameworkModuleBase
     {
         private IObjectPoolManager m_ObjectPoolManager = null;
 

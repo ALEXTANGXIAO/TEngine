@@ -8,7 +8,7 @@ namespace TEngine
     /// 调试器组件。
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed partial class DebuggerModule : GameFrameworkComponent
+    public sealed partial class DebuggerModule : GameFrameworkModuleBase
     {
         /// <summary>
         /// 默认调试器漂浮框大小。
@@ -154,7 +154,7 @@ namespace TEngine
             }
         }
 
-        private SettingComponent m_SettingComponent = null;
+        private SettingModule _mSettingModule = null;
         
         /// <summary>
         /// 游戏框架组件初始化。
@@ -172,33 +172,33 @@ namespace TEngine
 
             m_FpsCounter = new FpsCounter(0.5f);
             
-            m_SettingComponent = GameEntry.GetComponent<SettingComponent>();
-            if (m_SettingComponent == null)
+            _mSettingModule = GameEntry.GetModule<SettingModule>();
+            if (_mSettingModule == null)
             {
                 Log.Fatal("Setting component is invalid.");
                 return;
             }
             
-            var lastIconX = m_SettingComponent.GetFloat("Debugger.Icon.X", DefaultIconRect.x);
-            var  lastIconY = m_SettingComponent.GetFloat("Debugger.Icon.Y", DefaultIconRect.y);
-            var lastWindowX = m_SettingComponent.GetFloat("Debugger.Window.X", DefaultWindowRect.x);
-            var lastWindowY = m_SettingComponent.GetFloat("Debugger.Window.Y", DefaultWindowRect.y);
-            var lastWindowWidth = m_SettingComponent.GetFloat("Debugger.Window.Width", DefaultWindowRect.width);
-            var lastWindowHeight = m_SettingComponent.GetFloat("Debugger.Window.Height", DefaultWindowRect.height);
-            m_WindowScale = m_SettingComponent.GetFloat("Debugger.Window.Scale", DefaultWindowScale);
+            var lastIconX = _mSettingModule.GetFloat("Debugger.Icon.X", DefaultIconRect.x);
+            var  lastIconY = _mSettingModule.GetFloat("Debugger.Icon.Y", DefaultIconRect.y);
+            var lastWindowX = _mSettingModule.GetFloat("Debugger.Window.X", DefaultWindowRect.x);
+            var lastWindowY = _mSettingModule.GetFloat("Debugger.Window.Y", DefaultWindowRect.y);
+            var lastWindowWidth = _mSettingModule.GetFloat("Debugger.Window.Width", DefaultWindowRect.width);
+            var lastWindowHeight = _mSettingModule.GetFloat("Debugger.Window.Height", DefaultWindowRect.height);
+            m_WindowScale = _mSettingModule.GetFloat("Debugger.Window.Scale", DefaultWindowScale);
             m_WindowRect = new Rect(lastIconX, lastIconY, DefaultIconRect.width, DefaultIconRect.height);
             m_WindowRect = new Rect(lastWindowX, lastWindowY, lastWindowWidth, lastWindowHeight);
         }
 
         private void OnDestroy()
         {
-            if (m_SettingComponent == null)
+            if (_mSettingModule == null)
             {
                 Log.Fatal("Setting component is invalid.");
                 return;
             }
             
-            m_SettingComponent.Save();
+            _mSettingModule.Save();
         }
 
         private void Start()

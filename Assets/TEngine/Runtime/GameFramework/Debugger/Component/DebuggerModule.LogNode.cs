@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace TEngine
 {
-    public sealed partial class DebuggerModule : GameFrameworkComponent
+    public sealed partial class DebuggerModule : GameFrameworkModuleBase
     {
         /// <summary>
         /// 日志记录结点。

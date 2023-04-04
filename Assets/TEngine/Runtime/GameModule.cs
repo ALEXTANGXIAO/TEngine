@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class GameModule:MonoBehaviour
 {
-    #region BaseComponents
+    #region BaseModules
     /// <summary>
     /// 获取游戏基础模块。
     /// </summary>
@@ -27,17 +27,17 @@ public class GameModule:MonoBehaviour
     /// <summary>
     /// 获取对象池模块。
     /// </summary>
-    public static ObjectPoolComponent ObjectPool { get; private set; }
+    public static ObjectPoolModule ObjectPool { get; private set; }
 
     /// <summary>
     /// 获取资源模块。
     /// </summary>
-    public static ResourceComponent Resource { get; private set; }
+    public static ResourceModuleBase Resource { get; private set; }
 
     /// <summary>
     /// 获取配置模块。
     /// </summary>
-    public static SettingComponent Setting { get; private set; }
+    public static SettingModule Setting { get; private set; }
 
     /// <summary>
     /// 获取UI模块。
@@ -49,46 +49,46 @@ public class GameModule:MonoBehaviour
     /// <summary>
     /// 初始化系统框架模块
     /// </summary>
-    public static void InitFrameWorkComponents()
+    public static void InitFrameWorkModules()
     {
         Base = Get<RootModule>();
         Debugger = Get<DebuggerModule>();
         Fsm = Get<FsmModule>();
-        ObjectPool = Get<ObjectPoolComponent>();
-        Resource = Get<ResourceComponent>();
-        Setting = Get<SettingComponent>();
+        ObjectPool = Get<ObjectPoolModule>();
+        Resource = Get<ResourceModuleBase>();
+        Setting = Get<SettingModule>();
         UI = Get<UIModule>();
     }
 
-    public static void InitCustomComponents()
+    public static void InitCustomModules()
     {
         
     }
   
-    private static readonly Dictionary<Type, GameFrameworkComponent> s_Components = new Dictionary<Type, GameFrameworkComponent>();
+    private static readonly Dictionary<Type, GameFrameworkModuleBase> Modules = new Dictionary<Type, GameFrameworkModuleBase>();
 
-    public static T Get<T>()where T : GameFrameworkComponent
+    public static T Get<T>()where T : GameFrameworkModuleBase
     {
         Type type = typeof(T);
         
-        if (s_Components.ContainsKey(type))
+        if (Modules.ContainsKey(type))
         {
-            return s_Components[type] as T;
+            return Modules[type] as T;
         }
         
-        T component = TEngine.GameEntry.GetComponent<T>();
+        T module = TEngine.GameEntry.GetModule<T>();
         
-        Log.Assert(condition:component != null,$"{typeof(T)} is null");
+        Log.Assert(condition:module != null,$"{typeof(T)} is null");
         
-        s_Components.Add(type,component);
+        Modules.Add(type,module);
 
-        return component;
+        return module;
     }
 
     public void Start()
     {
         Log.Info("GameModule Active");
-        InitFrameWorkComponents();
-        InitCustomComponents();
+        InitFrameWorkModules();
+        InitCustomModules();
     }
 }

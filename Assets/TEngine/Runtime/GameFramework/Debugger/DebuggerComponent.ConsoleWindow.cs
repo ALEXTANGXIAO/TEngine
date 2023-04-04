@@ -4,14 +4,14 @@ using UnityEngine;
 
 namespace TEngine
 {
-    public sealed partial class DebuggerModule : GameFrameworkComponent
+    public sealed partial class DebuggerModule : GameFrameworkModuleBase
     {
         [Serializable]
         private sealed class ConsoleWindow : IDebuggerWindow
         {
             private readonly Queue<LogNode> m_LogNodes = new Queue<LogNode>();
 
-            private SettingComponent m_SettingComponent = null;
+            private SettingModule _mSettingModule = null;
             private Vector2 m_LogScrollPosition = Vector2.zero;
             private Vector2 m_StackScrollPosition = Vector2.zero;
             private int m_InfoCount = 0;
@@ -209,19 +209,19 @@ namespace TEngine
 
             public void Initialize(params object[] args)
             {
-                m_SettingComponent = GameEntry.GetComponent<SettingComponent>();
-                if (m_SettingComponent == null)
+                _mSettingModule = GameEntry.GetModule<SettingModule>();
+                if (_mSettingModule == null)
                 {
                     Log.Fatal("Setting component is invalid.");
                     return;
                 }
 
                 Application.logMessageReceived += OnLogMessageReceived;
-                m_LockScroll = m_LastLockScroll = m_SettingComponent.GetBool("Debugger.Console.LockScroll", true);
-                m_InfoFilter = m_LastInfoFilter = m_SettingComponent.GetBool("Debugger.Console.InfoFilter", true);
-                m_WarningFilter = m_LastWarningFilter = m_SettingComponent.GetBool("Debugger.Console.WarningFilter", true);
-                m_ErrorFilter = m_LastErrorFilter = m_SettingComponent.GetBool("Debugger.Console.ErrorFilter", true);
-                m_FatalFilter = m_LastFatalFilter = m_SettingComponent.GetBool("Debugger.Console.FatalFilter", true);
+                m_LockScroll = m_LastLockScroll = _mSettingModule.GetBool("Debugger.Console.LockScroll", true);
+                m_InfoFilter = m_LastInfoFilter = _mSettingModule.GetBool("Debugger.Console.InfoFilter", true);
+                m_WarningFilter = m_LastWarningFilter = _mSettingModule.GetBool("Debugger.Console.WarningFilter", true);
+                m_ErrorFilter = m_LastErrorFilter = _mSettingModule.GetBool("Debugger.Console.ErrorFilter", true);
+                m_FatalFilter = m_LastFatalFilter = _mSettingModule.GetBool("Debugger.Console.FatalFilter", true);
             }
 
             public void Shutdown()
@@ -243,31 +243,31 @@ namespace TEngine
                 if (m_LastLockScroll != m_LockScroll)
                 {
                     m_LastLockScroll = m_LockScroll;
-                    m_SettingComponent.SetBool("Debugger.Console.LockScroll", m_LockScroll);
+                    _mSettingModule.SetBool("Debugger.Console.LockScroll", m_LockScroll);
                 }
 
                 if (m_LastInfoFilter != m_InfoFilter)
                 {
                     m_LastInfoFilter = m_InfoFilter;
-                    m_SettingComponent.SetBool("Debugger.Console.InfoFilter", m_InfoFilter);
+                    _mSettingModule.SetBool("Debugger.Console.InfoFilter", m_InfoFilter);
                 }
 
                 if (m_LastWarningFilter != m_WarningFilter)
                 {
                     m_LastWarningFilter = m_WarningFilter;
-                    m_SettingComponent.SetBool("Debugger.Console.WarningFilter", m_WarningFilter);
+                    _mSettingModule.SetBool("Debugger.Console.WarningFilter", m_WarningFilter);
                 }
 
                 if (m_LastErrorFilter != m_ErrorFilter)
                 {
                     m_LastErrorFilter = m_ErrorFilter;
-                    m_SettingComponent.SetBool("Debugger.Console.ErrorFilter", m_ErrorFilter);
+                    _mSettingModule.SetBool("Debugger.Console.ErrorFilter", m_ErrorFilter);
                 }
 
                 if (m_LastFatalFilter != m_FatalFilter)
                 {
                     m_LastFatalFilter = m_FatalFilter;
-                    m_SettingComponent.SetBool("Debugger.Console.FatalFilter", m_FatalFilter);
+                    _mSettingModule.SetBool("Debugger.Console.FatalFilter", m_FatalFilter);
                 }
             }
 

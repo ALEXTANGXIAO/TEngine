@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace TEngine
 {
-    public sealed partial class UIModule : GameFrameworkComponent
+    public sealed partial class UIModule : GameFrameworkModuleBase
     {
         [Serializable]
         private sealed class UIGroup

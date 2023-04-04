@@ -2,7 +2,7 @@
 
 namespace TEngine
 {
-    public sealed partial class DebuggerModule : GameFrameworkComponent
+    public sealed partial class DebuggerModule : GameFrameworkModuleBase
     {
         private sealed class OperationsWindow : ScrollableDebuggerWindowBase
         {
@@ -11,21 +11,21 @@ namespace TEngine
                 GUILayout.Label("<b>Operations</b>");
                 GUILayout.BeginVertical("box");
                 {
-                    ObjectPoolComponent objectPoolComponent = GameEntry.GetComponent<ObjectPoolComponent>();
-                    if (objectPoolComponent != null)
+                    ObjectPoolModule objectPoolModule = GameEntry.GetModule<ObjectPoolModule>();
+                    if (objectPoolModule != null)
                     {
                         if (GUILayout.Button("Object Pool Release", GUILayout.Height(30f)))
                         {
-                            objectPoolComponent.Release();
+                            objectPoolModule.Release();
                         }
 
                         if (GUILayout.Button("Object Pool Release All Unused", GUILayout.Height(30f)))
                         {
-                            objectPoolComponent.ReleaseAllUnused();
+                            objectPoolModule.ReleaseAllUnused();
                         }
                     }
 
-                    ResourceComponent resourceCompoent = GameEntry.GetComponent<ResourceComponent>();
+                    ResourceModuleBase resourceCompoent = GameEntry.GetModule<ResourceModuleBase>();
                     if (resourceCompoent != null)
                     {
                         if (GUILayout.Button("Unload Unused Assets", GUILayout.Height(30f)))

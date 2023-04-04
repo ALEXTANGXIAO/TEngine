@@ -8,7 +8,7 @@ namespace TEngine
     /// 有限状态机模块。
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class FsmModule : GameFrameworkComponent
+    public sealed class FsmModule : GameFrameworkModuleBase
     {
         private IFsmManager m_FsmManager = null;
 

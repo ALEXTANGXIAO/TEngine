@@ -8,7 +8,7 @@ namespace TEngine
     /// 游戏配置组件。
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class SettingComponent : GameFrameworkComponent
+    public sealed class SettingModule : GameFrameworkModuleBase
     {
         private ISettingManager m_SettingManager = null;
 
