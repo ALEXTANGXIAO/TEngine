@@ -2,7 +2,7 @@
 
 namespace TEngine.Editor.Inspector
 {
-    [CustomEditor(typeof(FsmComponent))]
+    [CustomEditor(typeof(FsmModule))]
     internal sealed class FsmComponentInspector : GameFrameworkInspector
     {
         public override void OnInspectorGUI()
@@ -15,7 +15,7 @@ namespace TEngine.Editor.Inspector
                 return;
             }
 
-            FsmComponent t = (FsmComponent)target;
+            FsmModule t = (FsmModule)target;
 
             if (IsPrefabInHierarchy(t.gameObject))
             {

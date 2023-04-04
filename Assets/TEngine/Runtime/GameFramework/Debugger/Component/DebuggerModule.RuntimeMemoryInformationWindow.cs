@@ -7,7 +7,7 @@ using UnityEngine.Profiling;
 
 namespace TEngine
 {
-    public sealed partial class DebuggerComponent : GameFrameworkComponent
+    public sealed partial class DebuggerModule : GameFrameworkComponent
     {
         private sealed partial class RuntimeMemoryInformationWindow<T> : ScrollableDebuggerWindowBase where T : UnityEngine.Object
         {

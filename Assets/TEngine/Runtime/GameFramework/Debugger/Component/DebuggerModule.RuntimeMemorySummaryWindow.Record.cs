@@ -1,6 +1,6 @@
 ﻿namespace TEngine
 {
-    public sealed partial class DebuggerComponent : GameFrameworkComponent
+    public sealed partial class DebuggerModule : GameFrameworkComponent
     {
         private sealed partial class RuntimeMemorySummaryWindow : ScrollableDebuggerWindowBase
         {

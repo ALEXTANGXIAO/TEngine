@@ -5,7 +5,7 @@ using UnityEngine.Rendering;
 
 namespace TEngine
 {
-    public sealed partial class DebuggerComponent : GameFrameworkComponent
+    public sealed partial class DebuggerModule : GameFrameworkComponent
     {
         private sealed class EnvironmentInformationWindow : ScrollableDebuggerWindowBase
         {

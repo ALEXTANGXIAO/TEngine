@@ -17,12 +17,12 @@ public class GameModule:MonoBehaviour
     /// <summary>
     /// 获取调试模块。
     /// </summary>
-    public static DebuggerComponent Debugger { get; private set; }
+    public static DebuggerModule Debugger { get; private set; }
 
     /// <summary>
     /// 获取有限状态机模块。
     /// </summary>
-    public static FsmComponent Fsm { get; private set; }
+    public static FsmModule Fsm { get; private set; }
 
     /// <summary>
     /// 获取对象池模块。
@@ -52,8 +52,8 @@ public class GameModule:MonoBehaviour
     public static void InitFrameWorkComponents()
     {
         Base = Get<RootModule>();
-        Debugger = Get<DebuggerComponent>();
-        Fsm = Get<FsmComponent>();
+        Debugger = Get<DebuggerModule>();
+        Fsm = Get<FsmModule>();
         ObjectPool = Get<ObjectPoolComponent>();
         Resource = Get<ResourceComponent>();
         Setting = Get<SettingComponent>();

@@ -8,7 +8,7 @@ namespace TEngine
     /// 调试器组件。
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed partial class DebuggerComponent : GameFrameworkComponent
+    public sealed partial class DebuggerModule : GameFrameworkComponent
     {
         /// <summary>
         /// 默认调试器漂浮框大小。

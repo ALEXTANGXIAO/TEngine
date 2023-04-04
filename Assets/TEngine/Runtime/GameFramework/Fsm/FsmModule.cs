@@ -5,10 +5,10 @@ using UnityEngine;
 namespace TEngine
 {
     /// <summary>
-    /// 有限状态机组件。
+    /// 有限状态机模块。
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class FsmComponent : GameFrameworkComponent
+    public sealed class FsmModule : GameFrameworkComponent
     {
         private IFsmManager m_FsmManager = null;
 

@@ -5,7 +5,7 @@ using TEngine.Localization;
 namespace TEngine
 {
     /// <summary>
-    /// 基础组件。
+    /// 基础模块。
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class RootModule : GameFrameworkComponent

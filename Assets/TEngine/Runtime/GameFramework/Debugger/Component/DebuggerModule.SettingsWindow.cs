@@ -2,11 +2,11 @@
 
 namespace TEngine
 {
-    public sealed partial class DebuggerComponent : GameFrameworkComponent
+    public sealed partial class DebuggerModule : GameFrameworkComponent
     {
         private sealed class SettingsWindow : ScrollableDebuggerWindowBase
         {
-            private DebuggerComponent m_DebuggerComponent = null;
+            private DebuggerModule _mDebuggerModule = null;
             private SettingComponent m_SettingComponent = null;
             private float m_LastIconX = 0f;
             private float m_LastIconY = 0f;
@@ -18,8 +18,8 @@ namespace TEngine
 
             public override void Initialize(params object[] args)
             {
-                m_DebuggerComponent = GameEntry.GetComponent<DebuggerComponent>();
-                if (m_DebuggerComponent == null)
+                _mDebuggerModule = GameEntry.GetComponent<DebuggerModule>();
+                if (_mDebuggerModule == null)
                 {
                     Log.Fatal("Debugger component is invalid.");
                     return;
@@ -38,53 +38,53 @@ namespace TEngine
                 m_LastWindowY = m_SettingComponent.GetFloat("Debugger.Window.Y", DefaultWindowRect.y);
                 m_LastWindowWidth = m_SettingComponent.GetFloat("Debugger.Window.Width", DefaultWindowRect.width);
                 m_LastWindowHeight = m_SettingComponent.GetFloat("Debugger.Window.Height", DefaultWindowRect.height);
-                m_DebuggerComponent.WindowScale = m_LastWindowScale = m_SettingComponent.GetFloat("Debugger.Window.Scale", DefaultWindowScale);
-                m_DebuggerComponent.IconRect = new Rect(m_LastIconX, m_LastIconY, DefaultIconRect.width, DefaultIconRect.height);
-                m_DebuggerComponent.WindowRect = new Rect(m_LastWindowX, m_LastWindowY, m_LastWindowWidth, m_LastWindowHeight);
+                _mDebuggerModule.WindowScale = m_LastWindowScale = m_SettingComponent.GetFloat("Debugger.Window.Scale", DefaultWindowScale);
+                _mDebuggerModule.IconRect = new Rect(m_LastIconX, m_LastIconY, DefaultIconRect.width, DefaultIconRect.height);
+                _mDebuggerModule.WindowRect = new Rect(m_LastWindowX, m_LastWindowY, m_LastWindowWidth, m_LastWindowHeight);
             }
 
             public override void OnUpdate(float elapseSeconds, float realElapseSeconds)
             {
-                if (m_LastIconX != m_DebuggerComponent.IconRect.x)
+                if (m_LastIconX != _mDebuggerModule.IconRect.x)
                 {
-                    m_LastIconX = m_DebuggerComponent.IconRect.x;
-                    m_SettingComponent.SetFloat("Debugger.Icon.X", m_DebuggerComponent.IconRect.x);
+                    m_LastIconX = _mDebuggerModule.IconRect.x;
+                    m_SettingComponent.SetFloat("Debugger.Icon.X", _mDebuggerModule.IconRect.x);
                 }
 
-                if (m_LastIconY != m_DebuggerComponent.IconRect.y)
+                if (m_LastIconY != _mDebuggerModule.IconRect.y)
                 {
-                    m_LastIconY = m_DebuggerComponent.IconRect.y;
-                    m_SettingComponent.SetFloat("Debugger.Icon.Y", m_DebuggerComponent.IconRect.y);
+                    m_LastIconY = _mDebuggerModule.IconRect.y;
+                    m_SettingComponent.SetFloat("Debugger.Icon.Y", _mDebuggerModule.IconRect.y);
                 }
 
-                if (m_LastWindowX != m_DebuggerComponent.WindowRect.x)
+                if (m_LastWindowX != _mDebuggerModule.WindowRect.x)
                 {
-                    m_LastWindowX = m_DebuggerComponent.WindowRect.x;
-                    m_SettingComponent.SetFloat("Debugger.Window.X", m_DebuggerComponent.WindowRect.x);
+                    m_LastWindowX = _mDebuggerModule.WindowRect.x;
+                    m_SettingComponent.SetFloat("Debugger.Window.X", _mDebuggerModule.WindowRect.x);
                 }
 
-                if (m_LastWindowY != m_DebuggerComponent.WindowRect.y)
+                if (m_LastWindowY != _mDebuggerModule.WindowRect.y)
                 {
-                    m_LastWindowY = m_DebuggerComponent.WindowRect.y;
-                    m_SettingComponent.SetFloat("Debugger.Window.Y", m_DebuggerComponent.WindowRect.y);
+                    m_LastWindowY = _mDebuggerModule.WindowRect.y;
+                    m_SettingComponent.SetFloat("Debugger.Window.Y", _mDebuggerModule.WindowRect.y);
                 }
 
-                if (m_LastWindowWidth != m_DebuggerComponent.WindowRect.width)
+                if (m_LastWindowWidth != _mDebuggerModule.WindowRect.width)
                 {
-                    m_LastWindowWidth = m_DebuggerComponent.WindowRect.width;
-                    m_SettingComponent.SetFloat("Debugger.Window.Width", m_DebuggerComponent.WindowRect.width);
+                    m_LastWindowWidth = _mDebuggerModule.WindowRect.width;
+                    m_SettingComponent.SetFloat("Debugger.Window.Width", _mDebuggerModule.WindowRect.width);
                 }
 
-                if (m_LastWindowHeight != m_DebuggerComponent.WindowRect.height)
+                if (m_LastWindowHeight != _mDebuggerModule.WindowRect.height)
                 {
-                    m_LastWindowHeight = m_DebuggerComponent.WindowRect.height;
-                    m_SettingComponent.SetFloat("Debugger.Window.Height", m_DebuggerComponent.WindowRect.height);
+                    m_LastWindowHeight = _mDebuggerModule.WindowRect.height;
+                    m_SettingComponent.SetFloat("Debugger.Window.Height", _mDebuggerModule.WindowRect.height);
                 }
 
-                if (m_LastWindowScale != m_DebuggerComponent.WindowScale)
+                if (m_LastWindowScale != _mDebuggerModule.WindowScale)
                 {
-                    m_LastWindowScale = m_DebuggerComponent.WindowScale;
-                    m_SettingComponent.SetFloat("Debugger.Window.Scale", m_DebuggerComponent.WindowScale);
+                    m_LastWindowScale = _mDebuggerModule.WindowScale;
+                    m_SettingComponent.SetFloat("Debugger.Window.Scale", _mDebuggerModule.WindowScale);
                 }
             }
 
@@ -102,7 +102,7 @@ namespace TEngine
 
                     GUILayout.BeginHorizontal();
                     {
-                        float width = m_DebuggerComponent.WindowRect.width;
+                        float width = _mDebuggerModule.WindowRect.width;
                         GUILayout.Label("Width:", GUILayout.Width(60f));
                         if (GUILayout.RepeatButton("-", GUILayout.Width(30f)))
                         {
@@ -114,16 +114,16 @@ namespace TEngine
                             width++;
                         }
                         width = Mathf.Clamp(width, 100f, Screen.width - 20f);
-                        if (width != m_DebuggerComponent.WindowRect.width)
+                        if (width != _mDebuggerModule.WindowRect.width)
                         {
-                            m_DebuggerComponent.WindowRect = new Rect(m_DebuggerComponent.WindowRect.x, m_DebuggerComponent.WindowRect.y, width, m_DebuggerComponent.WindowRect.height);
+                            _mDebuggerModule.WindowRect = new Rect(_mDebuggerModule.WindowRect.x, _mDebuggerModule.WindowRect.y, width, _mDebuggerModule.WindowRect.height);
                         }
                     }
                     GUILayout.EndHorizontal();
 
                     GUILayout.BeginHorizontal();
                     {
-                        float height = m_DebuggerComponent.WindowRect.height;
+                        float height = _mDebuggerModule.WindowRect.height;
                         GUILayout.Label("Height:", GUILayout.Width(60f));
                         if (GUILayout.RepeatButton("-", GUILayout.Width(30f)))
                         {
@@ -135,16 +135,16 @@ namespace TEngine
                             height++;
                         }
                         height = Mathf.Clamp(height, 100f, Screen.height - 20f);
-                        if (height != m_DebuggerComponent.WindowRect.height)
+                        if (height != _mDebuggerModule.WindowRect.height)
                         {
-                            m_DebuggerComponent.WindowRect = new Rect(m_DebuggerComponent.WindowRect.x, m_DebuggerComponent.WindowRect.y, m_DebuggerComponent.WindowRect.width, height);
+                            _mDebuggerModule.WindowRect = new Rect(_mDebuggerModule.WindowRect.x, _mDebuggerModule.WindowRect.y, _mDebuggerModule.WindowRect.width, height);
                         }
                     }
                     GUILayout.EndHorizontal();
 
                     GUILayout.BeginHorizontal();
                     {
-                        float scale = m_DebuggerComponent.WindowScale;
+                        float scale = _mDebuggerModule.WindowScale;
                         GUILayout.Label("Scale:", GUILayout.Width(60f));
                         if (GUILayout.RepeatButton("-", GUILayout.Width(30f)))
                         {
@@ -156,9 +156,9 @@ namespace TEngine
                             scale += 0.01f;
                         }
                         scale = Mathf.Clamp(scale, 0.5f, 4f);
-                        if (scale != m_DebuggerComponent.WindowScale)
+                        if (scale != _mDebuggerModule.WindowScale)
                         {
-                            m_DebuggerComponent.WindowScale = scale;
+                            _mDebuggerModule.WindowScale = scale;
                         }
                     }
                     GUILayout.EndHorizontal();
@@ -167,42 +167,42 @@ namespace TEngine
                     {
                         if (GUILayout.Button("0.5x", GUILayout.Height(60f)))
                         {
-                            m_DebuggerComponent.WindowScale = 0.5f;
+                            _mDebuggerModule.WindowScale = 0.5f;
                         }
                         if (GUILayout.Button("1.0x", GUILayout.Height(60f)))
                         {
-                            m_DebuggerComponent.WindowScale = 1f;
+                            _mDebuggerModule.WindowScale = 1f;
                         }
                         if (GUILayout.Button("1.5x", GUILayout.Height(60f)))
                         {
-                            m_DebuggerComponent.WindowScale = 1.5f;
+                            _mDebuggerModule.WindowScale = 1.5f;
                         }
                         if (GUILayout.Button("2.0x", GUILayout.Height(60f)))
                         {
-                            m_DebuggerComponent.WindowScale = 2f;
+                            _mDebuggerModule.WindowScale = 2f;
                         }
                         if (GUILayout.Button("2.5x", GUILayout.Height(60f)))
                         {
-                            m_DebuggerComponent.WindowScale = 2.5f;
+                            _mDebuggerModule.WindowScale = 2.5f;
                         }
                         if (GUILayout.Button("3.0x", GUILayout.Height(60f)))
                         {
-                            m_DebuggerComponent.WindowScale = 3f;
+                            _mDebuggerModule.WindowScale = 3f;
                         }
                         if (GUILayout.Button("3.5x", GUILayout.Height(60f)))
                         {
-                            m_DebuggerComponent.WindowScale = 3.5f;
+                            _mDebuggerModule.WindowScale = 3.5f;
                         }
                         if (GUILayout.Button("4.0x", GUILayout.Height(60f)))
                         {
-                            m_DebuggerComponent.WindowScale = 4f;
+                            _mDebuggerModule.WindowScale = 4f;
                         }
                     }
                     GUILayout.EndHorizontal();
 
                     if (GUILayout.Button("Reset Layout", GUILayout.Height(30f)))
                     {
-                        m_DebuggerComponent.ResetLayout();
+                        _mDebuggerModule.ResetLayout();
                     }
                 }
                 GUILayout.EndVertical();
