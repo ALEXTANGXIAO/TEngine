@@ -10,32 +10,32 @@ public class GameModule:MonoBehaviour
 {
     #region BaseComponents
     /// <summary>
-    /// 获取游戏基础组件。
+    /// 获取游戏基础模块。
     /// </summary>
     public static RootComponent Base { get; private set; }
 
     /// <summary>
-    /// 获取调试组件。
+    /// 获取调试模块。
     /// </summary>
     public static DebuggerComponent Debugger { get; private set; }
 
     /// <summary>
-    /// 获取有限状态机组件。
+    /// 获取有限状态机模块。
     /// </summary>
     public static FsmComponent Fsm { get; private set; }
 
     /// <summary>
-    /// 获取对象池组件。
+    /// 获取对象池模块。
     /// </summary>
     public static ObjectPoolComponent ObjectPool { get; private set; }
 
     /// <summary>
-    /// 获取资源组件。
+    /// 获取资源模块。
     /// </summary>
     public static ResourceComponent Resource { get; private set; }
 
     /// <summary>
-    /// 获取配置组件。
+    /// 获取配置模块。
     /// </summary>
     public static SettingComponent Setting { get; private set; }
 
