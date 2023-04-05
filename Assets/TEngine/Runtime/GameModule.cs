@@ -33,6 +33,11 @@ public class GameModule:MonoBehaviour
     /// 获取资源模块。
     /// </summary>
     public static ResourceModule Resource { get; private set; }
+    
+    /// <summary>
+    /// 流程管理模块。
+    /// </summary>
+    public static ProcedureModule Procedure { get; private set; }
 
     /// <summary>
     /// 获取配置模块。
@@ -56,6 +61,7 @@ public class GameModule:MonoBehaviour
         Fsm = Get<FsmModule>();
         ObjectPool = Get<ObjectPoolModule>();
         Resource = Get<ResourceModule>();
+        Procedure = Get<ProcedureModule>();
         Setting = Get<SettingModule>();
         UI = Get<UIModule>();
     }
