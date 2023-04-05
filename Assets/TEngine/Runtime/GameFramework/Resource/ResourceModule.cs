@@ -179,6 +179,10 @@ namespace TEngine
             m_ResourceManager.Milliseconds = milliseconds;
             m_ResourceManager.Initialize();
             Log.Info($"AssetsComponent Run Mode：{playMode}");
+            if (playMode == EPlayMode.EditorSimulateMode)
+            {
+                m_ResourceManager.InitPackage();
+            }
         }
 
         /// <summary>
