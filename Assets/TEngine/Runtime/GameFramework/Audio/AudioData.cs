@@ -1,0 +1,293 @@
+﻿using UnityEngine;
+using UnityEngine.Audio;
+
+namespace TEngine
+{
+    public class AudioData
+    {
+        int _id = 0;
+        public AssetData _assetData = null;
+        public AudioSource _source = null;
+        Transform _transform = null;
+        float _volume = 1.0f;
+        float _duration = 0;
+        float _fadeoutTimer = 0f;
+        const float FadeoutDuration = 0.2f;
+        private bool _inPool = false;
+
+        enum State
+        {
+            None,
+            Loading,
+            Playing,
+            FadingOut,
+            End,
+        };
+
+        State _state = State.None;
+
+        class LoadRequest
+        {
+            public string path;
+            public bool bAsync;
+        }
+
+        LoadRequest _pendingLoad = null;
+
+        public int ID
+        {
+            get { return _id; }
+        }
+
+        public float Volume
+        {
+            set
+            {
+                if (_source != null)
+                {
+                    _volume = value;
+                    _source.volume = _volume;
+                }
+            }
+            get { return _volume; }
+        }
+
+        public bool IsFinish
+        {
+            get
+            {
+                if (_source != null)
+                    return _state == State.End;
+                else
+                    return true;
+            }
+        }
+
+        public float Duration
+        {
+            get { return _duration; }
+        }
+
+        public float Length
+        {
+            get
+            {
+                if (_source != null && _source.clip != null)
+                {
+                    return _source.clip.length;
+                }
+
+                return 0;
+            }
+        }
+
+        public Vector3 Position
+        {
+            get { return _transform.position; }
+            set { _transform.position = value; }
+        }
+
+        public bool IsLoop
+        {
+            get
+            {
+                if (_source != null)
+                    return _source.loop;
+                else
+                    return false;
+            }
+            set
+            {
+                if (_source != null)
+                    _source.loop = value;
+            }
+        }
+
+        internal bool IsPlaying
+        {
+            get
+            {
+                if (_source != null && _source.isPlaying)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        public AudioSource AudioResource()
+        {
+            return _source;
+        }
+
+        public static AudioData Create(string path, bool bAsync, AudioMixerGroup audioMixerGroup, bool bInPool = false)
+        {
+            AudioData audioData = new AudioData();
+            audioData.Init(audioMixerGroup);
+            audioData.Load(path, bAsync, bInPool);
+
+            return audioData;
+        }
+
+        public void Init(AudioMixerGroup audioMixerGroup)
+        {
+            GameObject host = new GameObject("Audio");
+            host.transform.SetParent(AudioManager.Instance.transform);
+            host.transform.localPosition = Vector3.zero;
+            _transform = host.transform;
+            _source = host.AddComponent<AudioSource>();
+            _source.playOnAwake = false;
+            _source.outputAudioMixerGroup = audioMixerGroup;
+            _id = _source.GetInstanceID();
+        }
+
+        public void Load(string path, bool bAsync, bool bInPool = false)
+        {
+            _inPool = bInPool;
+            if (_state == State.None || _state == State.End)
+            {
+                _duration = 0;
+                if (!string.IsNullOrEmpty(path))
+                {
+                    if (AudioManager.Instance._audioClipPool.ContainsKey(path))
+                    {
+                        OnAssetLoadComplete(AudioManager.Instance._audioClipPool[path]);
+                        return;
+                    }
+
+                    if (bAsync)
+                    {
+                        _state = State.Loading;
+                        AssetManager.Instance.GetAssetAsync(path, false, OnAssetLoadComplete);
+                    }
+                    else
+                        OnAssetLoadComplete(AssetManager.Instance.GetAsset(path, false));
+                }
+            }
+            else
+            {
+                _pendingLoad = new LoadRequest { path = path, bAsync = bAsync };
+
+                if (_state == State.Playing)
+                {
+                    Stop(true);
+                }
+            }
+        }
+
+        public void Stop(bool fadeout = false)
+        {
+            if (_source != null)
+            {
+                if (fadeout)
+                {
+                    _fadeoutTimer = FadeoutDuration;
+                    _state = State.FadingOut;
+                }
+                else
+                {
+                    _source.Stop();
+                    _state = State.End;
+                }
+            }
+        }
+
+        void OnAssetLoadComplete(AssetData assetData)
+        {
+            if (assetData != null)
+            {
+                assetData.OnAsyncLoadComplete -= OnAssetLoadComplete;
+                if (_inPool && !AudioManager.Instance._audioClipPool.ContainsKey(assetData.Path))
+                {
+                    assetData.AddRef();
+                    AudioManager.Instance._audioClipPool.Add(assetData.Path, assetData);
+                }
+            }
+
+
+            if (_pendingLoad != null)
+            {
+                assetData.AddRef();
+                if (assetData != null)
+                    assetData.DecRef();
+                _state = State.End;
+                string path = _pendingLoad.path;
+                bool bAsync = _pendingLoad.bAsync;
+                _pendingLoad = null;
+                Load(path, bAsync);
+            }
+            else if (assetData != null)
+            {
+                assetData.AddRef();
+                if (_assetData != null)
+                {
+                    _assetData.DecRef();
+                }
+                _assetData = assetData;
+
+                _source.clip = _assetData.AssetObject as AudioClip;
+                if (_source.clip != null)
+                {
+                    _source.Play();
+                    _state = State.Playing;
+                }
+                else
+                {
+                    _state = State.End;
+                }
+            }
+            else
+            {
+                _state = State.End;
+            }
+        }
+
+        public void Update(float delta)
+        {
+            if (_state == State.Playing)
+            {
+                if (!_source.isPlaying)
+                    _state = State.End;
+            }
+            else if (_state == State.FadingOut)
+            {
+                if (_fadeoutTimer > 0f)
+                {
+                    _fadeoutTimer -= delta;
+                    _source.volume = _volume * _fadeoutTimer / FadeoutDuration;
+                }
+                else
+                {
+                    Stop();
+                    if (_pendingLoad != null)
+                    {
+                        string path = _pendingLoad.path;
+                        bool bAsync = _pendingLoad.bAsync;
+                        _pendingLoad = null;
+                        Load(path, bAsync);
+                    }
+
+                    _source.volume = _volume;
+                }
+            }
+
+            _duration += delta;
+        }
+
+        public void Destroy()
+        {
+            if (_transform != null)
+            {
+                Object.Destroy(_transform.gameObject);
+            }
+
+            if (_assetData != null)
+            {
+                _assetData.DecRef();
+            }
+        }
+    }
+}
