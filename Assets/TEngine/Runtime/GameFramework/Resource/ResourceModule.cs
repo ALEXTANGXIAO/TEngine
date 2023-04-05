@@ -152,7 +152,7 @@ namespace TEngine
 
             if (playMode == EPlayMode.EditorSimulateMode)
             {
-                Log.Info("During this run, Game Framework will use editor resource files, which you should validate first.");
+                Log.Info("During this run, TEngine will use editor resource files, which you should validate first.");
 #if !UNITY_EDITOR
                 playMode = EPlayMode.OfflinePlayMode;
 #endif
@@ -427,7 +427,7 @@ namespace TEngine
         /// <param name="assetName">要加载的游戏物体名称。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
         /// <returns>异步游戏物体实例。</returns>
-        public UniTask<UnityEngine.GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken)
+        public UniTask<GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken)
         {
             return m_ResourceManager.LoadAssetAsync<GameObject>(assetName, cancellationToken);
         }
