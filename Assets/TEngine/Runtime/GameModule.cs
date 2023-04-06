@@ -48,6 +48,11 @@ public class GameModule:MonoBehaviour
     /// 获取UI模块。
     /// </summary>
     public static UIModule UI { get; private set; }
+    
+    /// <summary>
+    /// 获取音频模块。
+    /// </summary>
+    public static AudioModule Audio { get; private set; }
 
     #endregion
 
@@ -64,6 +69,7 @@ public class GameModule:MonoBehaviour
         Procedure = Get<ProcedureModule>();
         Setting = Get<SettingModule>();
         UI = Get<UIModule>();
+        Audio = Get<AudioModule>();
     }
 
     public static void InitCustomModules()
