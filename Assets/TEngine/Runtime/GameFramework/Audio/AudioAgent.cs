@@ -1,13 +1,18 @@
 ﻿using UnityEngine;
 using UnityEngine.Audio;
+using YooAsset;
 
 namespace TEngine
 {
-    public class AudioData
+    /// <summary>
+    /// 声音代理辅助器。
+    /// </summary>
+    public class AudioAgent
     {
-        int _id = 0;
-        public AssetData _assetData = null;
-        public AudioSource _source = null;
+        private AudioModule _audioModule;
+        private int _id = 0;
+        public AssetOperationHandle assetOperationHandle = null;
+        private AudioSource _source = null;
         Transform _transform = null;
         float _volume = 1.0f;
         float _duration = 0;
@@ -34,10 +39,7 @@ namespace TEngine
 
         LoadRequest _pendingLoad = null;
 
-        public int ID
-        {
-            get { return _id; }
-        }
+        public int ID => _id;
 
         public float Volume
         {
@@ -49,7 +51,7 @@ namespace TEngine
                     _source.volume = _volume;
                 }
             }
-            get { return _volume; }
+            get => _volume;
         }
 
         public bool IsFinish
@@ -57,16 +59,17 @@ namespace TEngine
             get
             {
                 if (_source != null)
+                {
                     return _state == State.End;
+                }
                 else
+                {
                     return true;
+                }
             }
         }
 
-        public float Duration
-        {
-            get { return _duration; }
-        }
+        public float Duration => _duration;
 
         public float Length
         {
@@ -83,8 +86,8 @@ namespace TEngine
 
         public Vector3 Position
         {
-            get { return _transform.position; }
-            set { _transform.position = value; }
+            get => _transform.position;
+            set => _transform.position = value;
         }
 
         public bool IsLoop
@@ -92,14 +95,20 @@ namespace TEngine
             get
             {
                 if (_source != null)
+                {
                     return _source.loop;
+                }
                 else
+                {
                     return false;
+                }
             }
             set
             {
                 if (_source != null)
+                {
                     _source.loop = value;
+                }
             }
         }
 
@@ -123,24 +132,25 @@ namespace TEngine
             return _source;
         }
 
-        public static AudioData Create(string path, bool bAsync, AudioMixerGroup audioMixerGroup, bool bInPool = false)
+        public static AudioAgent Create(string path, bool bAsync, AudioCategory audioCategory, bool bInPool = false)
         {
-            AudioData audioData = new AudioData();
-            audioData.Init(audioMixerGroup);
-            audioData.Load(path, bAsync, bInPool);
-
-            return audioData;
+            AudioAgent audioAgent = new AudioAgent();
+            audioAgent.Init(audioCategory);
+            audioAgent.Load(path, bAsync, bInPool);
+            return audioAgent;
         }
 
-        public void Init(AudioMixerGroup audioMixerGroup)
+        public void Init(AudioCategory audioCategory,int index = 0)
         {
-            GameObject host = new GameObject("Audio");
-            host.transform.SetParent(AudioManager.Instance.transform);
+            _audioModule = GameEntry.GetModule<AudioModule>();
+            GameObject host = new GameObject(Utility.Text.Format("Audio Agent Helper - {0} - {1}", audioCategory.AudioMixerGroup.name, index));
+            host.transform.SetParent(audioCategory.InstanceRoot);
             host.transform.localPosition = Vector3.zero;
             _transform = host.transform;
             _source = host.AddComponent<AudioSource>();
             _source.playOnAwake = false;
-            _source.outputAudioMixerGroup = audioMixerGroup;
+            AudioMixerGroup[] audioMixerGroups = audioCategory.AudioMixer.FindMatchingGroups(Utility.Text.Format("Master/{0}/{1}", audioCategory.AudioMixerGroup.name, index));
+            _source.outputAudioMixerGroup = audioMixerGroups.Length > 0 ? audioMixerGroups[0] : audioCategory.AudioMixerGroup;
             _id = _source.GetInstanceID();
         }
 
@@ -152,19 +162,23 @@ namespace TEngine
                 _duration = 0;
                 if (!string.IsNullOrEmpty(path))
                 {
-                    if (AudioManager.Instance._audioClipPool.ContainsKey(path))
+                    if (_audioModule.AudioClipPool.ContainsKey(path))
                     {
-                        OnAssetLoadComplete(AudioManager.Instance._audioClipPool[path]);
+                        OnAssetLoadComplete(_audioModule.AudioClipPool[path]);
                         return;
                     }
 
                     if (bAsync)
                     {
                         _state = State.Loading;
-                        AssetManager.Instance.GetAssetAsync(path, false, OnAssetLoadComplete);
+                        AssetOperationHandle handle = _audioModule.ResourceManager.LoadAssetAsyncHandle<AudioClip>(path);
+                        handle.Completed += OnAssetLoadComplete;
                     }
                     else
-                        OnAssetLoadComplete(AssetManager.Instance.GetAsset(path, false));
+                    {
+                        AssetOperationHandle handle = _audioModule.ResourceManager.LoadAssetGetOperation<AudioClip>(path);
+                        OnAssetLoadComplete(handle);
+                    }
                 }
             }
             else
@@ -195,40 +209,41 @@ namespace TEngine
             }
         }
 
-        void OnAssetLoadComplete(AssetData assetData)
+        void OnAssetLoadComplete(AssetOperationHandle handle)
         {
-            if (assetData != null)
+            if (handle != null)
             {
-                assetData.OnAsyncLoadComplete -= OnAssetLoadComplete;
-                if (_inPool && !AudioManager.Instance._audioClipPool.ContainsKey(assetData.Path))
+                handle.Completed -= OnAssetLoadComplete;
+                if (_inPool && !_audioModule.AudioClipPool.ContainsKey(handle.GetAssetInfo().AssetPath))
                 {
-                    assetData.AddRef();
-                    AudioManager.Instance._audioClipPool.Add(assetData.Path, assetData);
+                    _audioModule.AudioClipPool.Add(handle.GetAssetInfo().AssetPath, handle);
                 }
             }
 
 
             if (_pendingLoad != null)
             {
-                assetData.AddRef();
-                if (assetData != null)
-                    assetData.DecRef();
+                if (handle != null)
+                {
+                    handle.Dispose();
+                }
+
                 _state = State.End;
                 string path = _pendingLoad.path;
                 bool bAsync = _pendingLoad.bAsync;
                 _pendingLoad = null;
                 Load(path, bAsync);
             }
-            else if (assetData != null)
+            else if (handle != null)
             {
-                assetData.AddRef();
-                if (_assetData != null)
+                if (assetOperationHandle != null)
                 {
-                    _assetData.DecRef();
+                    assetOperationHandle.Dispose();
                 }
-                _assetData = assetData;
 
-                _source.clip = _assetData.AssetObject as AudioClip;
+                assetOperationHandle = handle;
+
+                _source.clip = assetOperationHandle.AssetObject as AudioClip;
                 if (_source.clip != null)
                 {
                     _source.Play();
@@ -284,9 +299,9 @@ namespace TEngine
                 Object.Destroy(_transform.gameObject);
             }
 
-            if (_assetData != null)
+            if (assetOperationHandle != null)
             {
-                _assetData.DecRef();
+                assetOperationHandle.Dispose();
             }
         }
     }

@@ -1,70 +1,98 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Audio;
-using UnityEngine.Networking;
 using YooAsset;
 
 namespace TEngine
 {
-    public class ChannelNumConfig
-    {
-        public int MaxChannelNum;
-    }
-
     /// <summary>
     /// 音效管理，为游戏提供统一的音效播放接口。
     /// </summary>
     /// <remarks>场景3D音效挂到场景物件、技能3D音效挂到技能特效上，并在AudioSource的Output上设置对应分类的AudioMixerGroup</remarks>
-    public class AudioManager : GameFrameworkModuleBase
+    public class AudioModule : GameFrameworkModuleBase
     {
-        private AudioMixer _audioMixer;
+        [SerializeField] private AudioMixer m_AudioMixer;
+
+        [SerializeField] private Transform m_InstanceRoot = null;
+        
+        [SerializeField]
+        private AudioGroupConfig[] m_AudioGroupConfigs = null;
+        
         private float _volume = 1f;
         private bool _enable = true;
-        public Dictionary<string, int> _soundConfigDic = new Dictionary<string, int>();
         private int _audioChannelMaxNum = 0;
-        AudioCategory[] _audioCategories = new AudioCategory[(int)AudioType.Max];
-        float[] _categoriesVolume = new float[(int)AudioType.Max];
-        public Dictionary<string, AssetOperationHandle> _audioClipPool = new Dictionary<string, AssetOperationHandle>();
-
-        private bool _bUnityAudioDisabled = false;
+        private AudioCategory[] _audioCategories = new AudioCategory[(int)AudioType.Max];
+        private readonly float[] _categoriesVolume = new float[(int)AudioType.Max];
+        public readonly Dictionary<string, AssetOperationHandle> AudioClipPool = new Dictionary<string, AssetOperationHandle>();
+        public IResourceManager ResourceManager;
 
         /// <summary>
-        /// 总音量控制
+        /// Unity是否禁用音频模块。
+        /// </summary>
+        private bool _bUnityAudioDisabled = false;
+
+        #region Public Propreties
+
+        /// <summary>
+        /// 音频混响器。
+        /// </summary>
+        public AudioMixer MAudioMixer => m_AudioMixer;
+
+        /// <summary>
+        /// 实例化根节点。
+        /// </summary>
+        public Transform InstanceRoot => m_InstanceRoot;
+
+        /// <summary>
+        /// 总音量控制。
         /// </summary>
         public float Volume
         {
             get
             {
                 if (_bUnityAudioDisabled)
+                {
                     return 0.0f;
+                }
+
                 return _volume;
             }
             set
             {
                 if (_bUnityAudioDisabled)
+                {
                     return;
+                }
+
                 _volume = value;
                 AudioListener.volume = _volume;
             }
         }
 
         /// <summary>
-        /// 总开关
+        /// 总开关。
         /// </summary>
         public bool Enable
         {
             get
             {
                 if (_bUnityAudioDisabled)
+                {
                     return false;
+                }
+
                 return _enable;
             }
             set
             {
                 if (_bUnityAudioDisabled)
+                {
                     return;
+                }
+
                 _enable = value;
                 AudioListener.volume = _enable ? _volume : 0f;
             }
@@ -78,17 +106,22 @@ namespace TEngine
             get
             {
                 if (_bUnityAudioDisabled)
+                {
                     return 0.0f;
+                }
+
                 return _categoriesVolume[(int)AudioType.Music];
             }
             set
             {
                 if (_bUnityAudioDisabled)
+                {
                     return;
+                }
+
                 float volume = Mathf.Clamp(value, 0.0001f, 1.0f);
                 _categoriesVolume[(int)AudioType.Music] = volume;
-
-                _audioMixer.SetFloat("MusicVolume", Mathf.Log10(volume) * 20f);
+                m_AudioMixer.SetFloat("MusicVolume", Mathf.Log10(volume) * 20f);
             }
         }
 
@@ -100,19 +133,52 @@ namespace TEngine
             get
             {
                 if (_bUnityAudioDisabled)
+                {
                     return 0.0f;
+                }
+
                 return _categoriesVolume[(int)AudioType.Sound];
             }
             set
             {
                 if (_bUnityAudioDisabled)
+                {
                     return;
+                }
+
                 float volume = Mathf.Clamp(value, 0.0001f, 1.0f);
                 _categoriesVolume[(int)AudioType.Sound] = volume;
-                _audioMixer.SetFloat("SoundVolume", Mathf.Log10(volume) * 20f);
+                m_AudioMixer.SetFloat("SoundVolume", Mathf.Log10(volume) * 20f);
             }
         }
 
+        /// <summary>
+        /// 音效音量
+        /// </summary>
+        public float UISoundVolume
+        {
+            get
+            {
+                if (_bUnityAudioDisabled)
+                {
+                    return 0.0f;
+                }
+
+                return _categoriesVolume[(int)AudioType.UISound];
+            }
+            set
+            {
+                if (_bUnityAudioDisabled)
+                {
+                    return;
+                }
+
+                float volume = Mathf.Clamp(value, 0.0001f, 1.0f);
+                _categoriesVolume[(int)AudioType.UISound] = volume;
+                m_AudioMixer.SetFloat("UISoundVolume", Mathf.Log10(volume) * 20f);
+            }
+        }        
+        
         /// <summary>
         /// 语音音量
         /// </summary>
@@ -121,16 +187,22 @@ namespace TEngine
             get
             {
                 if (_bUnityAudioDisabled)
+                {
                     return 0.0f;
+                }
+
                 return _categoriesVolume[(int)AudioType.Voice];
             }
             set
             {
                 if (_bUnityAudioDisabled)
+                {
                     return;
+                }
+
                 float volume = Mathf.Clamp(value, 0.0001f, 1.0f);
                 _categoriesVolume[(int)AudioType.Voice] = volume;
-                _audioMixer.SetFloat("VoiceVolume", Mathf.Log10(volume) * 20f);
+                m_AudioMixer.SetFloat("VoiceVolume", Mathf.Log10(volume) * 20f);
             }
         }
 
@@ -142,41 +214,85 @@ namespace TEngine
             get
             {
                 if (_bUnityAudioDisabled)
+                {
                     return false;
-                float db;
-                if (_audioMixer.GetFloat("MusicVolume", out db))
+                }
+
+                if (m_AudioMixer.GetFloat("MusicVolume", out var db))
+                {
                     return db > -80f;
+                }
                 else
+                {
                     return false;
+                }
             }
             set
             {
                 if (_bUnityAudioDisabled)
+                {
                     return;
+                }
+
                 // 音乐采用0音量方式，避免恢复播放时的复杂逻辑
                 if (value)
-                    _audioMixer.SetFloat("MusicVolume", Mathf.Log10(_categoriesVolume[(int)AudioType.Music]) * 20f);
+                {
+                    m_AudioMixer.SetFloat("MusicVolume", Mathf.Log10(_categoriesVolume[(int)AudioType.Music]) * 20f);
+                }
                 else
-                    _audioMixer.SetFloat("MusicVolume", -80f);
+                {
+                    m_AudioMixer.SetFloat("MusicVolume", -80f);
+                }
             }
         }
 
         /// <summary>
-        /// 音效开关
+        /// 音效开关。
         /// </summary>
         public bool SoundEnable
         {
             get
             {
                 if (_bUnityAudioDisabled)
+                {
                     return false;
+                }
+
                 return _audioCategories[(int)AudioType.Sound].Enable;
             }
             set
             {
                 if (_bUnityAudioDisabled)
+                {
                     return;
+                }
+
                 _audioCategories[(int)AudioType.Sound].Enable = value;
+            }
+        }
+        
+        /// <summary>
+        /// 音效开关。
+        /// </summary>
+        public bool UISoundEnable
+        {
+            get
+            {
+                if (_bUnityAudioDisabled)
+                {
+                    return false;
+                }
+
+                return _audioCategories[(int)AudioType.UISound].Enable;
+            }
+            set
+            {
+                if (_bUnityAudioDisabled)
+                {
+                    return;
+                }
+
+                _audioCategories[(int)AudioType.UISound].Enable = value;
             }
         }
 
@@ -188,29 +304,52 @@ namespace TEngine
             get
             {
                 if (_bUnityAudioDisabled)
+                {
                     return false;
+                }
+
                 return _audioCategories[(int)AudioType.Voice].Enable;
             }
             set
             {
                 if (_bUnityAudioDisabled)
+                {
                     return;
+                }
+
                 _audioCategories[(int)AudioType.Voice].Enable = value;
             }
         }
 
-        internal AudioMixer audioMixer
-        {
-            get { return _audioMixer; }
-        }
+        #endregion
+
 
         void Start()
         {
             Initialize();
         }
 
+        /// <summary>
+        /// 初始化音频模块。
+        /// </summary>
         private void Initialize()
         {
+            RootModule rootModule = GameEntry.GetModule<RootModule>();
+            if (rootModule == null)
+            {
+                Log.Fatal("Base component is invalid.");
+                return;
+            }
+
+            ResourceManager = GameFrameworkEntry.GetModule<IResourceManager>();
+
+            if (m_InstanceRoot == null)
+            {
+                m_InstanceRoot = new GameObject("AudioModule Instances").transform;
+                m_InstanceRoot.SetParent(gameObject.transform);
+                m_InstanceRoot.localScale = Vector3.one;
+            }
+
             try
             {
                 TypeInfo typeInfo = typeof(AudioSettings).GetTypeInfo();
@@ -226,41 +365,42 @@ namespace TEngine
                 Log.Error(e.ToString());
             }
 
-            _audioMixer = Resources.Load<AudioMixer>("AudioMixer");
-            
-            for (int i = 0; i < (int)AudioType.Max; ++i)
+            if (m_AudioMixer == null)
             {
-                int channelMaxNum = 0;
-                if (i == (int)AudioType.Sound)
-                {
-                    channelMaxNum = 10;
-                }
-                else
-                {
-                    channelMaxNum = 1;
-                }
-                _audioCategories[i] = new AudioCategory(channelMaxNum, audioMixer.FindMatchingGroups(((AudioType)i).ToString())[0]);
-                _categoriesVolume[i] = 1.0f;
+                m_AudioMixer = Resources.Load<AudioMixer>("AudioMixer");
+            }
+
+            for (int index = 0; index < (int)AudioType.Max; ++index)
+            {
+                AudioType audioType = (AudioType)index;
+                AudioGroupConfig audioGroupConfig = m_AudioGroupConfigs.First(t => t.AudioType == audioType);
+                _audioCategories[index] = new AudioCategory(audioGroupConfig.AgentHelperCount, m_AudioMixer, audioType);
+                _categoriesVolume[index] = audioGroupConfig.Volume;
             }
         }
 
+        /// <summary>
+        /// 重启音频模块。
+        /// </summary>
         public void Restart()
         {
             if (_bUnityAudioDisabled)
             {
                 return;
             }
+
             CleanSoundPool();
+
             for (int i = 0; i < (int)AudioType.Max; ++i)
             {
                 if (_audioCategories[i] != null)
                 {
-                    for (int j = 0; j < _audioCategories[i]._audioObjects.Count; ++j)
+                    for (int j = 0; j < _audioCategories[i].AudioAgents.Count; ++j)
                     {
-                        if (_audioCategories[i]._audioObjects[j] != null)
+                        if (_audioCategories[i].AudioAgents[j] != null)
                         {
-                            _audioCategories[i]._audioObjects[j].Destroy();
-                            _audioCategories[i]._audioObjects[j] = null;
+                            _audioCategories[i].AudioAgents[j].Destroy();
+                            _audioCategories[i].AudioAgents[j] = null;
                         }
                     }
                 }
@@ -272,33 +412,35 @@ namespace TEngine
         }
 
         /// <summary>
-        /// 播放，如果超过最大发声数采用fadeout的方式复用最久播放的AudioSource
+        /// 播放，如果超过最大发声数采用fadeout的方式复用最久播放的AudioSource。
         /// </summary>
         /// <param name="type">声音类型</param>
-        /// <param name="path">声音文件路径，通过右键菜单Get Asset Path获取的路径</param>
+        /// <param name="path">声音文件路径</param>
         /// <param name="bLoop">是否循环播放</param>>
         /// <param name="volume">音量（0-1.0）</param>
         /// <param name="bAsync">是否异步加载</param>
-        public AudioData Play(AudioType type, string path, bool bLoop = false, float volume = 1.0f, bool bAsync = false, bool bInPool = false)
+        /// <param name="bInPool">是否支持资源池</param>
+        public AudioAgent Play(AudioType type, string path, bool bLoop = false, float volume = 1.0f, bool bAsync = false, bool bInPool = false)
         {
             if (_bUnityAudioDisabled)
             {
                 return null;
             }
-            AudioData audioData = _audioCategories[(int)type].Play(path, bAsync, bInPool);
+
+            AudioAgent audioAgent = _audioCategories[(int)type].Play(path, bAsync, bInPool);
             {
-                if (audioData != null)
+                if (audioAgent != null)
                 {
-                    audioData.IsLoop = bLoop;
-                    audioData.Volume = volume;
+                    audioAgent.IsLoop = bLoop;
+                    audioAgent.Volume = volume;
                 }
 
-                return audioData;
+                return audioAgent;
             }
         }
 
         /// <summary>
-        /// 停止某类声音播放
+        /// 停止某类声音播放。
         /// </summary>
         /// <param name="type">声音类型</param>
         /// <param name="fadeout">是否渐消</param>
@@ -308,11 +450,12 @@ namespace TEngine
             {
                 return;
             }
+
             _audioCategories[(int)type].Stop(fadeout);
         }
 
         /// <summary>
-        /// 停止所有声音
+        /// 停止所有声音。
         /// </summary>
         /// <param name="fadeout">是否渐消</param>
         public void StopAll(bool fadeout)
@@ -321,6 +464,7 @@ namespace TEngine
             {
                 return;
             }
+
             for (int i = 0; i < (int)AudioType.Max; ++i)
             {
                 if (_audioCategories[i] != null)
@@ -341,6 +485,7 @@ namespace TEngine
             {
                 return;
             }
+
             if (num >= _audioChannelMaxNum)
             {
                 _audioCategories[(int)AudioType.Sound].AddAudio(num - _audioChannelMaxNum);
@@ -351,34 +496,35 @@ namespace TEngine
                 Stop(AudioType.Sound, true);
                 _audioChannelMaxNum = num;
                 _audioCategories[(int)AudioType.Sound].Enable = false;
-                _audioCategories[(int)AudioType.Sound] = new AudioCategory(_audioChannelMaxNum, _audioMixer.FindMatchingGroups((AudioType.Sound).ToString())[0]);
+                _audioCategories[(int)AudioType.Sound] = new AudioCategory(_audioChannelMaxNum, m_AudioMixer, AudioType.Sound);
                 _categoriesVolume[(int)AudioType.Sound] = 1.0f;
             }
         }
 
 
         /// <summary>
-        /// 预先加载AudioClip，并放入对象池
+        /// 预先加载AudioClip，并放入对象池。
         /// </summary>
-        /// <param name="list"></param>AudioClip的AssetPath集合
+        /// <param name="list"></param>AudioClip的AssetPath集合。
         public void PutInAudioPool(List<string> list)
         {
             if (_bUnityAudioDisabled)
             {
                 return;
             }
+
             foreach (string path in list)
             {
-                if (_audioClipPool != null && !_audioClipPool.ContainsKey(path))
+                if (AudioClipPool != null && !AudioClipPool.ContainsKey(path))
                 {
-                    AssetOperationHandle assetData = AssetManager.Instance.GetAsset(path, false);
-                    _audioClipPool?.Add(assetData.Path, assetData);
+                    AssetOperationHandle assetData = ResourceManager.LoadAssetGetOperation<AudioClip>(path);
+                    AudioClipPool?.Add(path, assetData);
                 }
             }
         }
 
         /// <summary>
-        /// 将部分AudioClip从对象池移出
+        /// 将部分AudioClip从对象池移出。
         /// </summary>
         /// <param name="list"></param>AudioClip的AssetPath集合
         public void RemoveClipFromPool(List<string> list)
@@ -387,18 +533,19 @@ namespace TEngine
             {
                 return;
             }
+
             foreach (string path in list)
             {
-                if (_audioClipPool.ContainsKey(path))
+                if (AudioClipPool.ContainsKey(path))
                 {
-                    _audioClipPool[path].Dispose();
-                    _audioClipPool.Remove(path);
+                    AudioClipPool[path].Dispose();
+                    AudioClipPool.Remove(path);
                 }
             }
         }
 
         /// <summary>
-        /// 清空AudioClip的对象池
+        /// 清空AudioClip的对象池。
         /// </summary>
         public void CleanSoundPool()
         {
@@ -406,12 +553,13 @@ namespace TEngine
             {
                 return;
             }
-            foreach (var dic in _audioClipPool)
+
+            foreach (var dic in AudioClipPool)
             {
                 dic.Value.Dispose();
             }
 
-            _audioClipPool.Clear();
+            AudioClipPool.Clear();
         }
 
         private void Update()
@@ -420,7 +568,7 @@ namespace TEngine
             {
                 if (_audioCategories[i] != null)
                 {
-                    _audioCategories[i].Update(Time.deltaTime);
+                    _audioCategories[i].Update(GameTime.deltaTime);
                 }
             }
         }

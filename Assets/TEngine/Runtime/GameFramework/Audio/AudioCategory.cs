@@ -1,14 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Audio;
 
 namespace TEngine
 {
+    /// <summary>
+    /// 音频轨道（类别）。
+    /// </summary>
+    [Serializable]
     public class AudioCategory
     {
-        public List<AudioData> _audioObjects;
-        AudioMixerGroup _audioMixerGroup;
-        int _maxChannel;
-        bool _bEnable = true;
+        [SerializeField]
+        private AudioMixer _audioMixer = null;
+        public List<AudioAgent> AudioAgents;
+        private readonly AudioMixerGroup _audioMixerGroup;
+        private int _maxChannel;
+        private bool _bEnable = true;
+        public AudioMixer AudioMixer => _audioMixer;
+        public AudioMixerGroup AudioMixerGroup => _audioMixerGroup;
+
+        public Transform InstanceRoot { private set; get; }
 
         public bool Enable
         {
@@ -20,11 +32,11 @@ namespace TEngine
                     _bEnable = value;
                     if (!_bEnable)
                     {
-                        for (int i = 0; i < _audioObjects.Count; ++i)
+                        foreach (var audioData in AudioAgents)
                         {
-                            if (_audioObjects[i] != null)
+                            if (audioData != null)
                             {
-                                _audioObjects[i].Stop();
+                                audioData.Stop();
                             }
                         }
                     }
@@ -33,18 +45,28 @@ namespace TEngine
         }
 
 
-        public AudioCategory(int maxChannel, AudioMixerGroup audioMixerGroup)
+        public AudioCategory(int maxChannel, AudioMixer audioMixer,AudioType audioType)
         {
+            _audioMixer = audioMixer;
             _maxChannel = maxChannel;
-            _audioObjects = new List<AudioData>();
-            for (int i = 0; i < _maxChannel; i++)
+            AudioMixerGroup[] audioMixerGroups = audioMixer.FindMatchingGroups(Utility.Text.Format("Master/{0}", audioType.ToString()));
+            if (audioMixerGroups.Length > 0)
             {
-                AudioData audioData = new AudioData();
-                audioData.Init(audioMixerGroup);
-                _audioObjects.Add(audioData);
+                _audioMixerGroup = audioMixerGroups[0];
             }
-
-            _audioMixerGroup = audioMixerGroup;
+            else
+            {
+                _audioMixerGroup = audioMixer.FindMatchingGroups("Master")[0];
+            }
+            AudioAgents = new List<AudioAgent>(16);
+            InstanceRoot = new GameObject(Utility.Text.Format("Audio Category - {0}", _audioMixerGroup.name)).transform;
+            InstanceRoot.SetParent(GameEntry.GetModule<AudioModule>().InstanceRoot);
+            for (int index = 0; index < _maxChannel; index++)
+            {
+                AudioAgent audioAgent = new AudioAgent();
+                audioAgent.Init(this, index);
+                AudioAgents.Add(audioAgent);
+            }
         }
 
         public void AddAudio(int num)
@@ -52,12 +74,12 @@ namespace TEngine
             _maxChannel += num;
             for (int i = 0; i < num; i++)
             {
-                _audioObjects.Add(null);
+                AudioAgents.Add(null);
             }
         }
 
 
-        public AudioData Play(string path, bool bAsync, bool bInPool = false)
+        public AudioAgent Play(string path, bool bAsync, bool bInPool = false)
         {
             if (!_bEnable)
             {
@@ -66,39 +88,33 @@ namespace TEngine
 
             int freeChannel = -1;
             float duration = -1;
-            int num = 0;
-            for (int i = 0; i < _audioObjects.Count; ++i)
-            {
-                if (_audioObjects[i] != null && _audioObjects[i]._assetData != null && _audioObjects[i].IsFinish == false)
-                {
-                    if (path.Equals(_audioObjects[i]._assetData.Path))
-                    {
-                        num++;
-                    }
-                }
-            }
 
-            for (int i = 0; i < _audioObjects.Count; i++)
+            for (int i = 0; i < AudioAgents.Count; i++)
             {
-                if (_audioObjects[i]._assetData == null || _audioObjects[i].IsFinish == true)
+                if (AudioAgents[i].assetOperationHandle == null || AudioAgents[i].IsFinish)
                 {
                     freeChannel = i;
                     break;
                 }
-                else if (_audioObjects[i].Duration > duration)
+                else if (AudioAgents[i].Duration > duration)
                 {
-                    duration = _audioObjects[i].Duration;
+                    duration = AudioAgents[i].Duration;
                     freeChannel = i;
                 }
             }
 
             if (freeChannel >= 0)
             {
-                if (_audioObjects[freeChannel] == null)
-                    _audioObjects[freeChannel] = AudioData.Create(path, bAsync, _audioMixerGroup, bInPool);
+                if (AudioAgents[freeChannel] == null)
+                {
+                    AudioAgents[freeChannel] = AudioAgent.Create(path, bAsync, this, bInPool);
+                }
                 else
-                    _audioObjects[freeChannel].Load(path, bAsync, bInPool);
-                return _audioObjects[freeChannel];
+                {
+                    AudioAgents[freeChannel].Load(path, bAsync, bInPool);
+                }
+
+                return AudioAgents[freeChannel];
             }
             else
             {
@@ -109,22 +125,22 @@ namespace TEngine
 
         public void Stop(bool fadeout)
         {
-            for (int i = 0; i < _audioObjects.Count; ++i)
+            for (int i = 0; i < AudioAgents.Count; ++i)
             {
-                if (_audioObjects[i] != null)
+                if (AudioAgents[i] != null)
                 {
-                    _audioObjects[i].Stop(fadeout);
+                    AudioAgents[i].Stop(fadeout);
                 }
             }
         }
 
         public void Update(float delta)
         {
-            for (int i = 0; i < _audioObjects.Count; ++i)
+            for (int i = 0; i < AudioAgents.Count; ++i)
             {
-                if (_audioObjects[i] != null)
+                if (AudioAgents[i] != null)
                 {
-                    _audioObjects[i].Update(delta);
+                    AudioAgents[i].Update(delta);
                 }
             }
         }

@@ -132,8 +132,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 23410075}
+  - component: {fileID: 23410076}
   m_Layer: 0
-  m_Name: Sound
+  m_Name: Audio
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -153,6 +154,41 @@ Transform:
   m_Father: {fileID: 2061060682}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &23410076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 23410074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13dea64094ab4501ba913acb560888fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AudioMixer: {fileID: 0}
+  m_InstanceRoot: {fileID: 0}
+  m_AudioGroupConfigs:
+  - m_Name: Music
+    m_Mute: 0
+    m_Volume: 1
+    m_AgentHelperCount: 1
+    AudioType: 2
+  - m_Name: Sound
+    m_Mute: 0
+    m_Volume: 1
+    m_AgentHelperCount: 4
+    AudioType: 0
+  - m_Name: UISound
+    m_Mute: 0
+    m_Volume: 1
+    m_AgentHelperCount: 4
+    AudioType: 1
+  - m_Name: Voice
+    m_Mute: 0
+    m_Volume: 1
+    m_AgentHelperCount: 1
+    AudioType: 3
 --- !u!1 &43232119
 GameObject:
   m_ObjectHideFlags: 0

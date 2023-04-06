@@ -11,6 +11,10 @@
         /// </summary>
         Sound,
         /// <summary>
+        /// UI声效
+        /// </summary>
+        UISound,
+        /// <summary>
         /// 背景音乐
         /// </summary>
         Music,
