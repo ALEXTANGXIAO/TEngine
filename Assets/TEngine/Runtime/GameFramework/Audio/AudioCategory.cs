@@ -32,11 +32,11 @@ namespace TEngine
                     _bEnable = value;
                     if (!_bEnable)
                     {
-                        foreach (var audioData in AudioAgents)
+                        foreach (var audioAgent in AudioAgents)
                         {
-                            if (audioData != null)
+                            if (audioAgent != null)
                             {
-                                audioData.Stop();
+                                audioAgent.Stop();
                             }
                         }
                     }
