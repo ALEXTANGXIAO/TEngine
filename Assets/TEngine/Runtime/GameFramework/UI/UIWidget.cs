@@ -131,6 +131,22 @@ namespace TEngine
             return CreateImp(parentUI, widgetRoot, false, visible);
         }
         
+        /// <summary>
+        /// 根据prefab或者模版来创建新的 widget。
+        /// </summary>
+        /// <param name="parentUI"></param>
+        /// <param name="goPrefab"></param>
+        /// <param name="parentTrans"></param>
+        /// <param name="visible"></param>
+        /// <returns></returns>
+        public bool CreateByPrefab(UIBase parentUI, GameObject goPrefab, Transform parentTrans, bool visible = true)
+        {
+            if (parentTrans == null)
+            {
+                parentTrans = parentUI.rectTransform;
+            }
+            return CreateImp(parentUI, Object.Instantiate(goPrefab, parentTrans), true, visible);
+        }
 
         private bool CreateImp(UIBase parentUI, GameObject widgetRoot, bool bindGo, bool visible = true)
         {
@@ -171,11 +187,15 @@ namespace TEngine
             {
                 return;
             }
-            var listCanvas = gameObject.GetComponentsInChildren<Canvas>(true);
-            for (var index = 0; index < listCanvas.Length; index++)
+
+            if (gameObject != null)
             {
-                var childCanvas = listCanvas[index];
-                childCanvas.sortingOrder = parentCanvas.sortingOrder + childCanvas.sortingOrder % UIModule.WINDOW_DEEP;
+                var listCanvas = gameObject.GetComponentsInChildren<Canvas>(true);
+                for (var index = 0; index < listCanvas.Length; index++)
+                {
+                    var childCanvas = listCanvas[index];
+                    childCanvas.sortingOrder = parentCanvas.sortingOrder + childCanvas.sortingOrder % UIModule.WINDOW_DEEP;
+                }
             }
         }
         #endregion

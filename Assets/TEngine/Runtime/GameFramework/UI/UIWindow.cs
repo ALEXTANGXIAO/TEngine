@@ -248,6 +248,9 @@ namespace TEngine
             if (_isCreate == false)
             {
                 _isCreate = true;
+                ScriptGenerator();
+                BindMemberProperty();
+                RegisterEvent();
                 OnCreate();
             }
         }
@@ -334,6 +337,11 @@ namespace TEngine
 
             RemoveAllUIEvent();
 
+            for (int i = 0; i < ListChild.Count; i++)
+            {
+                ListChild[i].OnDestroy();
+            }
+
             // 注销回调函数
             _prepareCallback = null;
 
@@ -342,6 +350,12 @@ namespace TEngine
             {
                 Handle.Release();
                 Handle = null;
+            }
+
+            if (AssetGroup != null)
+            {
+                AssetGroup.Release(AssetGroup);
+                AssetGroup = null;
             }
 
             // 销毁面板对象
