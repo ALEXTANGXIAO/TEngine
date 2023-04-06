@@ -191,7 +191,6 @@ namespace TEngine
         /// 同步加载资源。
         /// </summary>
         /// <param name="assetName">要加载资源的名称。</param>
-        /// <param name="tag">要加载资源的标签名称。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
         public T LoadAsset<T>(string assetName) where T : Object
@@ -222,7 +221,6 @@ namespace TEngine
         /// </summary>
         /// <param name="assetName">要加载资源的名称。</param>
         /// <param name="parent">父节点位置。</param>
-        /// <param name="tag">要加载资源的标签名称。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
         public T LoadAsset<T>(string assetName, Transform parent) where T : Object
@@ -252,7 +250,6 @@ namespace TEngine
         /// 异步加载资源实例。
         /// </summary>
         /// <param name="assetName">要加载的实例名称。</param>
-        /// <param name="tag">要加载资源的标签名称。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
         /// <returns>资源实实例。</returns>
         public async UniTask<T> LoadAssetAsync<T>(string assetName, CancellationToken cancellationToken) where T : Object
@@ -277,7 +274,6 @@ namespace TEngine
         /// 异步加载游戏物体。
         /// </summary>
         /// <param name="assetName">要加载的游戏物体名称。</param>
-        /// <param name="tag">要加载资源的标签名称。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
         /// <returns>异步游戏物体实例。</returns>
         public async UniTask<GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken)
