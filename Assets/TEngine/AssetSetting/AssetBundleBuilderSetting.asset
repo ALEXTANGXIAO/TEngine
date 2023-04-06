@@ -19,4 +19,4 @@ MonoBehaviour:
   OutputNameStyle: 1
   CopyBuildinFileOption: 0
   CopyBuildinFileTags: 
-  EncyptionClassName: EncryptionNone
+  EncyptionClassName: FileOffsetEncryption
