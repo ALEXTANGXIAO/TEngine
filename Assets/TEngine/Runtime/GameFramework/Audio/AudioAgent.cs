@@ -5,42 +5,80 @@ using YooAsset;
 namespace TEngine
 {
     /// <summary>
-    /// 声音代理辅助器。
+    /// 音频代理辅助器。
     /// </summary>
     public class AudioAgent
     {
         private AudioModule _audioModule;
-        private int _id = 0;
-        public AssetOperationHandle assetOperationHandle = null;
-        private AudioSource _source = null;
-        Transform _transform = null;
+        private int _id;
+        private AudioSource _source;
+        private AssetOperationHandle _assetOperationHandle;
+        private Transform _transform;
         float _volume = 1.0f;
-        float _duration = 0;
-        float _fadeoutTimer = 0f;
-        const float FadeoutDuration = 0.2f;
-        private bool _inPool = false;
+        float _duration;
+        private float _fadeoutTimer;
+        private const float FadeoutDuration = 0.2f;
+        private bool _inPool;
 
-        enum State
+        /// <summary>
+        /// 音频代理辅助器运行时状态枚举。
+        /// </summary>
+        enum RuntimeState
         {
+            /// <summary>
+            /// 无状态。
+            /// </summary>
             None,
+            /// <summary>
+            /// 加载中状态。
+            /// </summary>
             Loading,
+            /// <summary>
+            /// 播放中状态。
+            /// </summary>
             Playing,
+            /// <summary>
+            /// 渐渐消失状态。
+            /// </summary>
             FadingOut,
+            /// <summary>
+            /// 结束状态。
+            /// </summary>
             End,
         };
 
-        State _state = State.None;
+        /// <summary>
+        /// 音频代理辅助器运行时状态。
+        /// </summary>
+        RuntimeState _runtimeState = RuntimeState.None;
 
+        /// <summary>
+        /// 音频代理加载请求。
+        /// </summary>
         class LoadRequest
         {
-            public string path;
-            public bool bAsync;
+            public string Path;
+            public bool BAsync;
         }
 
+        /// <summary>
+        /// 音频代理加载请求。
+        /// </summary>
         LoadRequest _pendingLoad = null;
 
+        /// <summary>
+        /// AudioSource实例化Id
+        /// </summary>
         public int ID => _id;
 
+        /// <summary>
+        /// 资源操作句柄。
+        /// </summary>
+        public AssetOperationHandle assetOperationHandle => _assetOperationHandle;
+
+        /// <summary>
+        /// 音频代理辅助器音频大小。
+        /// </summary>
         public float Volume
         {
             set
@@ -54,13 +92,16 @@ namespace TEngine
             get => _volume;
         }
 
-        public bool IsFinish
+        /// <summary>
+        /// 音频代理辅助器当前是否空闲。
+        /// </summary>
+        public bool IsFree
         {
             get
             {
                 if (_source != null)
                 {
-                    return _state == State.End;
+                    return _runtimeState == RuntimeState.End;
                 }
                 else
                 {
@@ -69,8 +110,14 @@ namespace TEngine
             }
         }
 
+        /// <summary>
+        /// 音频代理辅助器播放秒数。
+        /// </summary>
         public float Duration => _duration;
 
+        /// <summary>
+        /// 音频代理辅助器当前音频长度。
+        /// </summary>
         public float Length
         {
             get
@@ -84,12 +131,18 @@ namespace TEngine
             }
         }
 
+        /// <summary>
+        /// 音频代理辅助器实例位置。
+        /// </summary>
         public Vector3 Position
         {
             get => _transform.position;
             set => _transform.position = value;
         }
 
+        /// <summary>
+        /// 音频代理辅助器是否循环。
+        /// </summary>
         public bool IsLoop
         {
             get
@@ -112,6 +165,9 @@ namespace TEngine
             }
         }
 
+        /// <summary>
+        /// 音频代理辅助器是否正在播放。
+        /// </summary>
         internal bool IsPlaying
         {
             get
@@ -127,11 +183,23 @@ namespace TEngine
             }
         }
 
+        /// <summary>
+        /// 音频代理辅助器获取当前声源。
+        /// </summary>
+        /// <returns></returns>
         public AudioSource AudioResource()
         {
             return _source;
         }
 
+        /// <summary>
+        /// 创建音频代理辅助器。
+        /// </summary>
+        /// <param name="path">生效路径。</param>
+        /// <param name="bAsync">是否异步。</param>
+        /// <param name="audioCategory">音频轨道（类别）。</param>
+        /// <param name="bInPool">是否池化。</param>
+        /// <returns>音频代理辅助器。</returns>
         public static AudioAgent Create(string path, bool bAsync, AudioCategory audioCategory, bool bInPool = false)
         {
             AudioAgent audioAgent = new AudioAgent();
@@ -140,9 +208,14 @@ namespace TEngine
             return audioAgent;
         }
 
+        /// <summary>
+        /// 初始化音频代理辅助器。
+        /// </summary>
+        /// <param name="audioCategory">音频轨道（类别）。</param>
+        /// <param name="index">音频代理辅助器编号。</param>
         public void Init(AudioCategory audioCategory,int index = 0)
         {
-            _audioModule = GameEntry.GetModule<AudioModule>();
+            _audioModule = GameModule.Audio;
             GameObject host = new GameObject(Utility.Text.Format("Audio Agent Helper - {0} - {1}", audioCategory.AudioMixerGroup.name, index));
             host.transform.SetParent(audioCategory.InstanceRoot);
             host.transform.localPosition = Vector3.zero;
@@ -151,13 +224,22 @@ namespace TEngine
             _source.playOnAwake = false;
             AudioMixerGroup[] audioMixerGroups = audioCategory.AudioMixer.FindMatchingGroups(Utility.Text.Format("Master/{0}/{1}", audioCategory.AudioMixerGroup.name, index));
             _source.outputAudioMixerGroup = audioMixerGroups.Length > 0 ? audioMixerGroups[0] : audioCategory.AudioMixerGroup;
+            _source.rolloffMode = audioCategory.AudioGroupConfig.audioRolloffMode;
+            _source.minDistance = audioCategory.AudioGroupConfig.minDistance;
+            _source.maxDistance = audioCategory.AudioGroupConfig.maxDistance;
             _id = _source.GetInstanceID();
         }
 
+        /// <summary>
+        /// 加载音频代理辅助器。
+        /// </summary>
+        /// <param name="path">资源路径。</param>
+        /// <param name="bAsync">是否异步。</param>
+        /// <param name="bInPool">是否池化。</param>
         public void Load(string path, bool bAsync, bool bInPool = false)
         {
             _inPool = bInPool;
-            if (_state == State.None || _state == State.End)
+            if (_runtimeState == RuntimeState.None || _runtimeState == RuntimeState.End)
             {
                 _duration = 0;
                 if (!string.IsNullOrEmpty(path))
@@ -170,7 +252,7 @@ namespace TEngine
 
                     if (bAsync)
                     {
-                        _state = State.Loading;
+                        _runtimeState = RuntimeState.Loading;
                         AssetOperationHandle handle = _audioModule.ResourceManager.LoadAssetAsyncHandle<AudioClip>(path);
                         handle.Completed += OnAssetLoadComplete;
                     }
@@ -183,15 +265,19 @@ namespace TEngine
             }
             else
             {
-                _pendingLoad = new LoadRequest { path = path, bAsync = bAsync };
+                _pendingLoad = new LoadRequest { Path = path, BAsync = bAsync };
 
-                if (_state == State.Playing)
+                if (_runtimeState == RuntimeState.Playing)
                 {
                     Stop(true);
                 }
             }
         }
 
+        /// <summary>
+        /// 暂停音频代理辅助器。
+        /// </summary>
+        /// <param name="fadeout">是否渐出。</param>
         public void Stop(bool fadeout = false)
         {
             if (_source != null)
@@ -199,16 +285,20 @@ namespace TEngine
                 if (fadeout)
                 {
                     _fadeoutTimer = FadeoutDuration;
-                    _state = State.FadingOut;
+                    _runtimeState = RuntimeState.FadingOut;
                 }
                 else
                 {
                     _source.Stop();
-                    _state = State.End;
+                    _runtimeState = RuntimeState.End;
                 }
             }
         }
 
+        /// <summary>
+        /// 资源加载完成。
+        /// </summary>
+        /// <param name="handle">资源操作句柄。</param>
         void OnAssetLoadComplete(AssetOperationHandle handle)
         {
             if (handle != null)
@@ -220,7 +310,6 @@ namespace TEngine
                 }
             }
 
-
             if (_pendingLoad != null)
             {
                 if (handle != null)
@@ -228,46 +317,52 @@ namespace TEngine
                     handle.Dispose();
                 }
 
-                _state = State.End;
-                string path = _pendingLoad.path;
-                bool bAsync = _pendingLoad.bAsync;
+                _runtimeState = RuntimeState.End;
+                string path = _pendingLoad.Path;
+                bool bAsync = _pendingLoad.BAsync;
                 _pendingLoad = null;
                 Load(path, bAsync);
             }
             else if (handle != null)
             {
-                if (assetOperationHandle != null)
+                if (_assetOperationHandle != null)
                 {
-                    assetOperationHandle.Dispose();
+                    _assetOperationHandle.Dispose();
                 }
 
-                assetOperationHandle = handle;
+                _assetOperationHandle = handle;
 
-                _source.clip = assetOperationHandle.AssetObject as AudioClip;
+                _source.clip = _assetOperationHandle.AssetObject as AudioClip;
                 if (_source.clip != null)
                 {
                     _source.Play();
-                    _state = State.Playing;
+                    _runtimeState = RuntimeState.Playing;
                 }
                 else
                 {
-                    _state = State.End;
+                    _runtimeState = RuntimeState.End;
                 }
             }
             else
             {
-                _state = State.End;
+                _runtimeState = RuntimeState.End;
             }
         }
 
+        /// <summary>
+        /// 轮询音频代理辅助器。
+        /// </summary>
+        /// <param name="delta"></param>
         public void Update(float delta)
         {
-            if (_state == State.Playing)
+            if (_runtimeState == RuntimeState.Playing)
             {
                 if (!_source.isPlaying)
-                    _state = State.End;
+                {
+                    _runtimeState = RuntimeState.End;
+                }
             }
-            else if (_state == State.FadingOut)
+            else if (_runtimeState == RuntimeState.FadingOut)
             {
                 if (_fadeoutTimer > 0f)
                 {
@@ -279,8 +374,8 @@ namespace TEngine
                     Stop();
                     if (_pendingLoad != null)
                     {
-                        string path = _pendingLoad.path;
-                        bool bAsync = _pendingLoad.bAsync;
+                        string path = _pendingLoad.Path;
+                        bool bAsync = _pendingLoad.BAsync;
                         _pendingLoad = null;
                         Load(path, bAsync);
                     }
@@ -288,10 +383,12 @@ namespace TEngine
                     _source.volume = _volume;
                 }
             }
-
             _duration += delta;
         }
 
+        /// <summary>
+        /// 销毁音频代理辅助器。
+        /// </summary>
         public void Destroy()
         {
             if (_transform != null)
@@ -299,9 +396,9 @@ namespace TEngine
                 Object.Destroy(_transform.gameObject);
             }
 
-            if (assetOperationHandle != null)
+            if (_assetOperationHandle != null)
             {
-                assetOperationHandle.Dispose();
+                _assetOperationHandle.Dispose();
             }
         }
     }

@@ -15,13 +15,33 @@ namespace TEngine
         private AudioMixer _audioMixer = null;
         public List<AudioAgent> AudioAgents;
         private readonly AudioMixerGroup _audioMixerGroup;
+        private AudioGroupConfig _audioGroupConfig;
         private int _maxChannel;
         private bool _bEnable = true;
+        
+        /// <summary>
+        /// 音频混响器。
+        /// </summary>
         public AudioMixer AudioMixer => _audioMixer;
+        
+        /// <summary>
+        /// 音频混响器组。
+        /// </summary>
         public AudioMixerGroup AudioMixerGroup => _audioMixerGroup;
 
+        /// <summary>
+        /// 音频组配置。
+        /// </summary>
+        public AudioGroupConfig AudioGroupConfig => _audioGroupConfig;
+
+        /// <summary>
+        /// 实例化根节点。
+        /// </summary>
         public Transform InstanceRoot { private set; get; }
 
+        /// <summary>
+        /// 音频轨道是否启用。
+        /// </summary>
         public bool Enable
         {
             get => _bEnable;
@@ -44,12 +64,18 @@ namespace TEngine
             }
         }
 
-
-        public AudioCategory(int maxChannel, AudioMixer audioMixer,AudioType audioType)
+        /// <summary>
+        /// 音频轨道构造函数。
+        /// </summary>
+        /// <param name="maxChannel">最大Channel。</param>
+        /// <param name="audioMixer">音频混响器。</param>
+        /// <param name="audioGroupConfig">音频轨道组配置。</param>
+        public AudioCategory(int maxChannel, AudioMixer audioMixer,AudioGroupConfig audioGroupConfig)
         {
             _audioMixer = audioMixer;
             _maxChannel = maxChannel;
-            AudioMixerGroup[] audioMixerGroups = audioMixer.FindMatchingGroups(Utility.Text.Format("Master/{0}", audioType.ToString()));
+            _audioGroupConfig = audioGroupConfig;
+            AudioMixerGroup[] audioMixerGroups = audioMixer.FindMatchingGroups(Utility.Text.Format("Master/{0}", audioGroupConfig.AudioType.ToString()));
             if (audioMixerGroups.Length > 0)
             {
                 _audioMixerGroup = audioMixerGroups[0];
@@ -69,6 +95,10 @@ namespace TEngine
             }
         }
 
+        /// <summary>
+        /// 增加音频。
+        /// </summary>
+        /// <param name="num"></param>
         public void AddAudio(int num)
         {
             _maxChannel += num;
@@ -78,7 +108,13 @@ namespace TEngine
             }
         }
 
-
+        /// <summary>
+        /// 播放音频。
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="bAsync"></param>
+        /// <param name="bInPool"></param>
+        /// <returns></returns>
         public AudioAgent Play(string path, bool bAsync, bool bInPool = false)
         {
             if (!_bEnable)
@@ -91,7 +127,7 @@ namespace TEngine
 
             for (int i = 0; i < AudioAgents.Count; i++)
             {
-                if (AudioAgents[i].assetOperationHandle == null || AudioAgents[i].IsFinish)
+                if (AudioAgents[i].assetOperationHandle == null || AudioAgents[i].IsFree)
                 {
                     freeChannel = i;
                     break;
@@ -123,6 +159,10 @@ namespace TEngine
             }
         }
 
+        /// <summary>
+        /// 暂停音频。
+        /// </summary>
+        /// <param name="fadeout">是否渐出</param>
         public void Stop(bool fadeout)
         {
             for (int i = 0; i < AudioAgents.Count; ++i)
@@ -134,6 +174,10 @@ namespace TEngine
             }
         }
 
+        /// <summary>
+        /// 音频轨道轮询。
+        /// </summary>
+        /// <param name="delta"></param>
         public void Update(float delta)
         {
             for (int i = 0; i < AudioAgents.Count; ++i)

@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace TEngine
 {
+    /// <summary>
+    /// 音频轨道组配置。
+    /// </summary>
     [Serializable]
     public sealed class AudioGroupConfig
     {
@@ -20,6 +23,12 @@ namespace TEngine
 
         public AudioType AudioType;
 
+        public AudioRolloffMode audioRolloffMode = AudioRolloffMode.Logarithmic;
+
+        public float minDistance = 1f;
+        
+        public float maxDistance = 500f;
+        
         public string Name
         {
             get

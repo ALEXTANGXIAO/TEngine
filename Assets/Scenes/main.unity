@@ -171,24 +171,36 @@ MonoBehaviour:
   m_AudioGroupConfigs:
   - m_Name: Music
     m_Mute: 0
-    m_Volume: 1
+    m_Volume: 0.5
     m_AgentHelperCount: 1
     AudioType: 2
+    audioRolloffMode: 1
+    minDistance: 15
+    maxDistance: 50
   - m_Name: Sound
     m_Mute: 0
-    m_Volume: 1
+    m_Volume: 0.5
     m_AgentHelperCount: 4
     AudioType: 0
+    audioRolloffMode: 0
+    minDistance: 1
+    maxDistance: 500
   - m_Name: UISound
     m_Mute: 0
-    m_Volume: 1
+    m_Volume: 0.5
     m_AgentHelperCount: 4
     AudioType: 1
+    audioRolloffMode: 0
+    minDistance: 1
+    maxDistance: 500
   - m_Name: Voice
     m_Mute: 0
-    m_Volume: 1
+    m_Volume: 0.5
     m_AgentHelperCount: 1
     AudioType: 3
+    audioRolloffMode: 0
+    minDistance: 1
+    maxDistance: 500
 --- !u!1 &43232119
 GameObject:
   m_ObjectHideFlags: 0

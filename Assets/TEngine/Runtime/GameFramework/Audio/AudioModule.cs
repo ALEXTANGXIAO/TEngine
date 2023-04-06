@@ -23,15 +23,10 @@ namespace TEngine
         
         private float _volume = 1f;
         private bool _enable = true;
-        private int _audioChannelMaxNum = 0;
         private AudioCategory[] _audioCategories = new AudioCategory[(int)AudioType.Max];
         private readonly float[] _categoriesVolume = new float[(int)AudioType.Max];
         public readonly Dictionary<string, AssetOperationHandle> AudioClipPool = new Dictionary<string, AssetOperationHandle>();
         public IResourceManager ResourceManager;
-
-        /// <summary>
-        /// Unity是否禁用音频模块。
-        /// </summary>
         private bool _bUnityAudioDisabled = false;
 
         #region Public Propreties
@@ -374,7 +369,7 @@ namespace TEngine
             {
                 AudioType audioType = (AudioType)index;
                 AudioGroupConfig audioGroupConfig = m_AudioGroupConfigs.First(t => t.AudioType == audioType);
-                _audioCategories[index] = new AudioCategory(audioGroupConfig.AgentHelperCount, m_AudioMixer, audioType);
+                _audioCategories[index] = new AudioCategory(audioGroupConfig.AgentHelperCount, m_AudioMixer, audioGroupConfig);
                 _categoriesVolume[index] = audioGroupConfig.Volume;
             }
         }
@@ -473,35 +468,7 @@ namespace TEngine
                 }
             }
         }
-
-
-        /// <summary>
-        /// 修改最大的音效播放上限，
-        /// </summary>
-        /// <param name="num"></param> 最大播放数量
-        public void ChangeAudioChannelMaxNum(int num)
-        {
-            if (_bUnityAudioDisabled)
-            {
-                return;
-            }
-
-            if (num >= _audioChannelMaxNum)
-            {
-                _audioCategories[(int)AudioType.Sound].AddAudio(num - _audioChannelMaxNum);
-                _audioChannelMaxNum = num;
-            }
-            else
-            {
-                Stop(AudioType.Sound, true);
-                _audioChannelMaxNum = num;
-                _audioCategories[(int)AudioType.Sound].Enable = false;
-                _audioCategories[(int)AudioType.Sound] = new AudioCategory(_audioChannelMaxNum, m_AudioMixer, AudioType.Sound);
-                _categoriesVolume[(int)AudioType.Sound] = 1.0f;
-            }
-        }
-
-
+        
         /// <summary>
         /// 预先加载AudioClip，并放入对象池。
         /// </summary>
@@ -562,6 +529,9 @@ namespace TEngine
             AudioClipPool.Clear();
         }
 
+        /// <summary>
+        /// 音频模块轮询。
+        /// </summary>
         private void Update()
         {
             for (int i = 0; i < _audioCategories.Length; ++i)
