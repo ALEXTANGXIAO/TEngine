@@ -310,7 +310,6 @@ namespace TEngine
             if (typeof(T) == typeof(GameObject))
             {
                 GameObject ret = handle.InstantiateSync();
-                BindAssetTag(ret, handle, assetName);
                 return ret as T;
             }
             else
@@ -338,7 +337,6 @@ namespace TEngine
             if (typeof(T) == typeof(GameObject))
             {
                 GameObject ret = handle.InstantiateSync(parent);
-                BindAssetTag(ret, handle, assetName);
                 return ret as T;
             }
             else
@@ -432,8 +430,6 @@ namespace TEngine
             await handle.ToUniTask(cancellationToken:cancellationToken);
 
             GameObject ret = handle.InstantiateSync();
-
-            BindAssetTag(ret, handle, assetName);
             
             return ret;
         }
@@ -484,23 +480,6 @@ namespace TEngine
         public SceneOperationHandle LoadSceneAsync(AssetInfo assetInfo, LoadSceneMode sceneMode = LoadSceneMode.Single, bool activateOnLoad = true, int priority = 100)
         {
             return YooAssets.LoadSceneAsync(assetInfo,sceneMode,activateOnLoad,priority);
-        }
-
-        private bool BindAssetTag(GameObject go,AssetOperationHandle handle,string location)
-        {
-            if (go == null)
-            {
-                throw new GameFrameworkException($"ResourceMgr BindAssetTag Failed! GameObject is null!");
-            }
-
-            if (handle == null)
-            {
-                throw new GameFrameworkException($"ResourceMgr BindAssetTag Failed! AssetOperationHandle is null!");
-            }
-
-            go.AddComponent<AssetTag>().Bind(handle,location);
-
-            return true;
         }
     }
 }
