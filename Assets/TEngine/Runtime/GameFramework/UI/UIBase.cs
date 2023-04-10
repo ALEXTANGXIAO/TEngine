@@ -41,6 +41,11 @@ namespace TEngine
         /// UI父节点。
         /// </summary>
         public UIBase Parent => parent;
+        
+        /// <summary>
+        /// 自动逸数据集。
+        /// </summary>
+        protected System.Object[] userDatas;
 
         /// <summary>
         /// 窗口的实例资源对象。

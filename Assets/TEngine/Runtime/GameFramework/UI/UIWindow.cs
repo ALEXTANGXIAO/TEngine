@@ -11,8 +11,6 @@ namespace TEngine
     {
         private System.Action<UIWindow> _prepareCallback;
 
-        private System.Object[] _userDatas;
-
         private bool _isCreate = false;
 
         private GameObject _panel;
@@ -64,9 +62,9 @@ namespace TEngine
         {
             get
             {
-                if (_userDatas != null && _userDatas.Length >= 1)
+                if (userDatas != null && userDatas.Length >= 1)
                 {
-                    return _userDatas[0];
+                    return userDatas[0];
                 }
                 else
                 {
@@ -78,7 +76,7 @@ namespace TEngine
         /// <summary>
         /// 自定义数据集。
         /// </summary>
-        public System.Object[] UserDatas => _userDatas;
+        public System.Object[] UserDatas => userDatas;
 
         /// <summary>
         /// 窗口深度值
@@ -219,7 +217,7 @@ namespace TEngine
         
         internal void TryInvoke(System.Action<UIWindow> prepareCallback, System.Object[] userDatas)
         {
-            _userDatas = userDatas;
+            base.userDatas = userDatas;
             if (IsPrepare)
             {
                 prepareCallback?.Invoke(this);
@@ -238,7 +236,7 @@ namespace TEngine
             }
 
             _prepareCallback = prepareCallback;
-            _userDatas = userDatas;
+            base.userDatas = userDatas;
             Handle = YooAssets.LoadAssetAsync<GameObject>(location);
             Handle.Completed += Handle_Completed;
         }
@@ -296,9 +294,9 @@ namespace TEngine
                 {
                     var uiWidget = listChild[i];
 
-                    UnityEngine.Profiling.Profiler.BeginSample(uiWidget.name);
+                    TProfiler.BeginSample(uiWidget.name);
                     var needValid = uiWidget.InternalUpdate();
-                    UnityEngine.Profiling.Profiler.EndSample();
+                    TProfiler.EndSample();
 
                     if (!updateListValid && needValid)
                     {
@@ -312,7 +310,7 @@ namespace TEngine
                 }
             }
 
-            UnityEngine.Profiling.Profiler.BeginSample("OnUpdate");
+            TProfiler.BeginSample("OnUpdate");
 
             bool needUpdate = false;
             if (listNextUpdateChild == null || listNextUpdateChild.Count <= 0)
@@ -326,7 +324,7 @@ namespace TEngine
                 OnUpdate();
                 needUpdate = true;
             }
-            UnityEngine.Profiling.Profiler.EndSample();
+            TProfiler.EndSample();
             
             return needUpdate;
         }
