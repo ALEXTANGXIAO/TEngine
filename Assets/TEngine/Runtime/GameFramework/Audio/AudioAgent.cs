@@ -9,7 +9,6 @@ namespace TEngine
     /// </summary>
     public class AudioAgent
     {
-        private AudioModule _audioModule;
         private int _id;
         private AudioSource _source;
         private AssetOperationHandle _assetOperationHandle;
@@ -215,7 +214,6 @@ namespace TEngine
         /// <param name="index">音频代理辅助器编号。</param>
         public void Init(AudioCategory audioCategory,int index = 0)
         {
-            _audioModule = GameModule.Audio;
             GameObject host = new GameObject(Utility.Text.Format("Audio Agent Helper - {0} - {1}", audioCategory.AudioMixerGroup.name, index));
             host.transform.SetParent(audioCategory.InstanceRoot);
             host.transform.localPosition = Vector3.zero;
@@ -244,21 +242,21 @@ namespace TEngine
                 _duration = 0;
                 if (!string.IsNullOrEmpty(path))
                 {
-                    if (_audioModule.AudioClipPool.ContainsKey(path))
+                    if (GameModule.Audio.AudioClipPool.ContainsKey(path))
                     {
-                        OnAssetLoadComplete(_audioModule.AudioClipPool[path]);
+                        OnAssetLoadComplete(GameModule.Audio.AudioClipPool[path]);
                         return;
                     }
 
                     if (bAsync)
                     {
                         _runtimeState = RuntimeState.Loading;
-                        AssetOperationHandle handle = _audioModule.ResourceManager.LoadAssetAsyncHandle<AudioClip>(path);
+                        AssetOperationHandle handle = GameModule.Audio.ResourceManager.LoadAssetAsyncHandle<AudioClip>(path);
                         handle.Completed += OnAssetLoadComplete;
                     }
                     else
                     {
-                        AssetOperationHandle handle = _audioModule.ResourceManager.LoadAssetGetOperation<AudioClip>(path);
+                        AssetOperationHandle handle = GameModule.Audio.ResourceManager.LoadAssetGetOperation<AudioClip>(path);
                         OnAssetLoadComplete(handle);
                     }
                 }
@@ -304,9 +302,9 @@ namespace TEngine
             if (handle != null)
             {
                 handle.Completed -= OnAssetLoadComplete;
-                if (_inPool && !_audioModule.AudioClipPool.ContainsKey(handle.GetAssetInfo().AssetPath))
+                if (_inPool && !GameModule.Audio.AudioClipPool.ContainsKey(handle.GetAssetInfo().AssetPath))
                 {
-                    _audioModule.AudioClipPool.Add(handle.GetAssetInfo().AssetPath, handle);
+                    GameModule.Audio.AudioClipPool.Add(handle.GetAssetInfo().AssetPath, handle);
                 }
             }
 
