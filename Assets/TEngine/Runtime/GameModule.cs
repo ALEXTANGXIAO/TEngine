@@ -102,5 +102,7 @@ public class GameModule:MonoBehaviour
         Log.Info("GameModule Active");
         InitFrameWorkModules();
         InitCustomModules();
+        DontDestroyOnLoad(gameObject);
+        gameObject.name = $"[{nameof(GameModule)}]";
     }
 }
