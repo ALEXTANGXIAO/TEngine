@@ -24,6 +24,8 @@ namespace TEngine
         private const int DefaultPriority = 0;
 
         [SerializeField] private Transform m_InstanceRoot = null;
+        
+        [SerializeField] private bool m_dontDestroyUIRoot = true;
 
         [SerializeField] private Camera m_UICamera = null;
 
@@ -87,6 +89,10 @@ namespace TEngine
                 m_InstanceRoot = new GameObject("UI Form Instances").transform;
                 m_InstanceRoot.SetParent(gameObject.transform);
                 m_InstanceRoot.localScale = Vector3.one;
+            }
+            else if (m_dontDestroyUIRoot)
+            {
+                DontDestroyOnLoad(m_InstanceRoot.parent);
             }
 
             m_InstanceRoot.gameObject.layer = LayerMask.NameToLayer("UI");
