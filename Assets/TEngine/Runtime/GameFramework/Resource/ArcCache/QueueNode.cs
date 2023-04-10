@@ -1,4 +1,4 @@
-﻿namespace TEngine.ArcCache
+﻿namespace TEngine
 {
     /// <summary>
     /// 队列类型。
