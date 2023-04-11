@@ -2,6 +2,15 @@
 
 namespace TEngine
 {
+    public enum UILayer:int
+    {
+        Bottom = 1,
+        UI,
+        Top,
+        Tips,
+        System,
+    }
+    
     [AttributeUsage(AttributeTargets.Class)]
     public class WindowAttribute : Attribute
     {
@@ -23,6 +32,13 @@ namespace TEngine
         public WindowAttribute(int windowLayer,string assetName = "", bool fullScreen = false)
         {
             WindowLayer = windowLayer;
+            AssetName = assetName;
+            FullScreen = fullScreen;
+        }
+        
+        public WindowAttribute(UILayer windowLayer,string assetName = "", bool fullScreen = false)
+        {
+            WindowLayer = (int)windowLayer;
             AssetName = assetName;
             FullScreen = fullScreen;
         }
