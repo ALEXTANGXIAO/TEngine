@@ -77,7 +77,7 @@ namespace TEngine
     /// </summary>
     public class AssetGroup : IMemory
     {
-        private GameFrameworkLinkedList<AssetHandleData> _assetHandleDataLinkedList = new GameFrameworkLinkedList<AssetHandleData>();
+        private readonly GameFrameworkLinkedList<AssetHandleData> _assetHandleDataLinkedList = new GameFrameworkLinkedList<AssetHandleData>();
 
         /// <summary>
         /// 注册资源数据到资源组内。
@@ -87,7 +87,7 @@ namespace TEngine
         /// <returns>是否注册成功。</returns>
         public bool Register(AssetOperationHandle handle,string tag = "")
         {
-            AssetHandleData handleData = AssetHandleData.Alloc(handle);
+            AssetHandleData handleData = AssetHandleData.Alloc(handle,tag);
             _assetHandleDataLinkedList.AddLast(handleData);
             return true;
         }
