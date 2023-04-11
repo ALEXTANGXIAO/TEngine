@@ -3,7 +3,7 @@ using UnityEngine.Profiling;
 
 namespace TEngine
 {
-    class TProfiler
+    public class TProfiler
     {
         private static int m_profileLevel = -1;
         private static int m_currLevel = 0;
