@@ -92,7 +92,7 @@ namespace TEngine
             }
             else if (m_dontDestroyUIRoot)
             {
-                DontDestroyOnLoad(m_InstanceRoot.parent);
+                DontDestroyOnLoad(m_InstanceRoot.parent !=null ? m_InstanceRoot.parent : m_InstanceRoot);
             }
 
             m_InstanceRoot.gameObject.layer = LayerMask.NameToLayer("UI");
