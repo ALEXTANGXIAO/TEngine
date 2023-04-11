@@ -245,22 +245,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_InstanceRoot: {fileID: 88107082}
+  m_dontDestroyUIRoot: 1
   m_UICamera: {fileID: 110205813}
-  m_UIWindowHelperTypeName: TEngine.DefaultUIWindowHelper
-  mCustomUIWindowHelper: {fileID: 0}
-  m_UIGroupHelperTypeName: TEngine.DefaultUIGroupHelper
-  m_CustomUIGroupHelper: {fileID: 0}
-  m_UIGroups:
-  - m_Name: Bottom
-    m_Depth: 0
-  - m_Name: UI
-    m_Depth: 1
-  - m_Name: Top
-    m_Depth: 2
-  - m_Name: Tips
-    m_Depth: 3
-  - m_Name: System
-    m_Depth: 4
 --- !u!1 &88107081
 GameObject:
   m_ObjectHideFlags: 0
