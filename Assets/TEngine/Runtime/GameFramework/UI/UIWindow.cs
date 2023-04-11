@@ -9,6 +9,7 @@ namespace TEngine
 {
     public abstract class UIWindow : UIBase
     {
+        #region Propreties
         private System.Action<UIWindow> _prepareCallback;
 
         private bool _isCreate = false;
@@ -206,6 +207,7 @@ namespace TEngine
         /// 是否加载完毕。
         /// </summary>
         internal bool IsLoadDone => Handle.IsDone;
+        #endregion
 
         public void Init(string name, int layer, bool fullScreen, string assetName)
         {
@@ -365,6 +367,11 @@ namespace TEngine
             }
         }
 
+        /// <summary>
+        /// 处理资源加载完成回调。
+        /// </summary>
+        /// <param name="handle"></param>
+        /// <exception cref="Exception"></exception>
         private void Handle_Completed(AssetOperationHandle handle)
         {
             if (handle.AssetObject == null)
