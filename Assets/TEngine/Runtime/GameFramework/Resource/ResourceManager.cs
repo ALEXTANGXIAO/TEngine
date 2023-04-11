@@ -297,6 +297,7 @@ namespace TEngine
         /// </summary>
         /// <param name="assetName">要加载资源的名称。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
+        /// <remarks>不计入引用计数，直接释放！</remarks>
         /// <returns>资源实例。</returns>
         public T LoadAsset<T>(string assetName) where T : Object
         {
@@ -310,11 +311,14 @@ namespace TEngine
             if (typeof(T) == typeof(GameObject))
             {
                 GameObject ret = handle.InstantiateSync();
+                handle.Dispose();
                 return ret as T;
             }
             else
             {
-                return handle.AssetObject as T;
+                T ret = handle.AssetObject as T;
+                handle.Dispose();
+                return ret;
             }
         }
 
@@ -324,6 +328,7 @@ namespace TEngine
         /// <param name="assetName">要加载资源的名称。</param>
         /// <param name="parent">父节点位置。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
+        /// <remarks>不计入引用计数，直接释放！</remarks>
         /// <returns>资源实例。</returns>
         public T LoadAsset<T>(string assetName, Transform parent) where T : Object
         {
@@ -336,12 +341,15 @@ namespace TEngine
 
             if (typeof(T) == typeof(GameObject))
             {
-                GameObject ret = handle.InstantiateSync(parent);
+                GameObject ret = handle.InstantiateSync();
+                handle.Dispose();
                 return ret as T;
             }
             else
             {
-                return handle.AssetObject as T;
+                T ret = handle.AssetObject as T;
+                handle.Dispose();
+                return ret;
             }
         }
 
