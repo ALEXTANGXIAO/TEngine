@@ -31,17 +31,8 @@ namespace TEngine
 
         [SerializeField] private string m_UIWindowHelperTypeName = "TEngine.DefaultUIWindowHelper";
 
-        [SerializeField] private UIWindowHelperBase mCustomUIWindowHelper = null;
-
-        [SerializeField] private string m_UIGroupHelperTypeName = "TEngine.DefaultUIGroupHelper";
-
-        [SerializeField] private UIGroupHelperBase m_CustomUIGroupHelper = null;
-
-        [SerializeField] private UIGroup[] m_UIGroups = null;
-
         private readonly List<UIWindow> _stack = new List<UIWindow>(100);
 
-        public const int GROUP_DEEP = 10000;
         public const int WINDOW_DEEP = 100;
         public const int WINDOW_HIDE_LAYER = 2; // Ignore Raycast
         public const int WINDOW_SHOW_LAYER = 5; // UI
@@ -58,11 +49,6 @@ namespace TEngine
         /// </summary>
         public Camera UICamera => m_UICamera;
 
-        /// <summary>
-        /// 获取界面组数量。
-        /// </summary>
-        public int UIGroupCount => m_UIGroups?.Length ?? 0;
-
         private void Start()
         {
             RootModule rootModule = GameEntry.GetModule<RootModule>();
@@ -71,18 +57,6 @@ namespace TEngine
                 Log.Fatal("Base component is invalid.");
                 return;
             }
-
-            UIWindowHelperBase uiWindowHelper = Helper.CreateHelper(m_UIWindowHelperTypeName, mCustomUIWindowHelper);
-            if (uiWindowHelper == null)
-            {
-                Log.Error("Can not create UI form helper.");
-                return;
-            }
-
-            uiWindowHelper.name = "UI Form Helper";
-            Transform transform = uiWindowHelper.transform;
-            transform.SetParent(this.transform);
-            transform.localScale = Vector3.one;
 
             if (m_InstanceRoot == null)
             {
@@ -97,15 +71,6 @@ namespace TEngine
 
             m_InstanceRoot.gameObject.layer = LayerMask.NameToLayer("UI");
             UIRootStatic = m_InstanceRoot;
-
-            for (int i = 0; i < m_UIGroups.Length; i++)
-            {
-                if (!AddUIGroup(m_UIGroups[i].Name, m_UIGroups[i].Depth))
-                {
-                    Log.Warning("Add UI group '{0}' failure.", m_UIGroups[i].Name);
-                    continue;
-                }
-            }
         }
 
         private void OnDestroy()
@@ -127,32 +92,7 @@ namespace TEngine
                 window.InternalUpdate();
             }
         }
-
-        /// <summary>
-        /// 增加界面组。
-        /// </summary>
-        /// <param name="uiGroupName">界面组名称。</param>
-        /// <param name="depth">界面组深度。</param>
-        /// <returns>是否增加界面组成功。</returns>
-        public bool AddUIGroup(string uiGroupName, int depth)
-        {
-            UIGroupHelperBase uiGroupHelper = Helper.CreateHelper(m_UIGroupHelperTypeName, m_CustomUIGroupHelper, m_UIGroups.Length);
-            if (uiGroupHelper == null)
-            {
-                Log.Error("Can not create UI group helper.");
-                return false;
-            }
-
-            uiGroupHelper.name = Utility.Text.Format("UI Group - {0}", uiGroupName);
-            uiGroupHelper.gameObject.layer = LayerMask.NameToLayer("UI");
-            Transform transform = uiGroupHelper.transform;
-            transform.SetParent(m_InstanceRoot);
-            transform.localScale = Vector3.one;
-            transform.localPosition = Vector3.zero;
-
-            return true;
-        }
-
+        
         #region 设置安全区域
 
         /// <summary>
