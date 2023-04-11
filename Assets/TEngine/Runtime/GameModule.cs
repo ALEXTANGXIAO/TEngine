@@ -59,7 +59,7 @@ public class GameModule:MonoBehaviour
     /// <summary>
     /// 初始化系统框架模块
     /// </summary>
-    public static void InitFrameWorkModules()
+    private static void InitFrameWorkModules()
     {
         Base = Get<RootModule>();
         Debugger = Get<DebuggerModule>();
@@ -72,7 +72,7 @@ public class GameModule:MonoBehaviour
         Audio = Get<AudioModule>();
     }
 
-    public static void InitCustomModules()
+    private static void InitCustomModules()
     {
         
     }
@@ -97,7 +97,7 @@ public class GameModule:MonoBehaviour
         return module;
     }
 
-    public void Start()
+    private void Start()
     {
         Log.Info("GameModule Active");
         InitFrameWorkModules();
