@@ -2,13 +2,16 @@
 
 namespace TEngine
 {
+    /// <summary>
+    /// UI层级枚举。
+    /// </summary>
     public enum UILayer:int
     {
-        Bottom = 1,
-        UI,
-        Top,
-        Tips,
-        System,
+        Bottom = 0,
+        UI = 1,
+        Top = 2,
+        Tips = 3,
+        System = 4,
     }
     
     [AttributeUsage(AttributeTargets.Class)]
