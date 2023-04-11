@@ -417,6 +417,19 @@ namespace TEngine
         /// 异步加载资源。
         /// </summary>
         /// <param name="assetName">要加载资源的名称。</param>
+        /// <param name="callback">回调函数。</param>
+        /// <typeparam name="T">要加载资源的类型。</typeparam>
+        public void LoadAssetAsync<T>(string assetName, Action<AssetOperationHandle> callback = null) where T : UnityEngine.Object
+        {
+            AssetOperationHandle handle = m_ResourceManager.LoadAssetAsyncHandle<T>(assetName);
+
+            handle.Completed += callback;
+        }
+        
+        /// <summary>
+        /// 异步加载资源。
+        /// </summary>
+        /// <param name="assetName">要加载资源的名称。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>异步资源实例。</returns>
