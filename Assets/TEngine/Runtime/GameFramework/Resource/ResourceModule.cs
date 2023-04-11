@@ -75,6 +75,11 @@ namespace TEngine
         private bool m_PreorderUnloadUnusedAssets = false;
         private bool m_PerformGCCollect = false;
         private float m_LastUnloadUnusedAssetsOperationElapseSeconds = 0f;
+        
+        /// <summary>
+        /// 全局取消操作Token。
+        /// </summary>
+        public CancellationToken DefaultToken { private set; get; }
 
         /// <summary>
         /// 获取或设置同时最大下载数目。
@@ -149,6 +154,8 @@ namespace TEngine
                 Log.Fatal("YooAssetsManager component is invalid.");
                 return;
             }
+
+            DefaultToken = gameObject.GetCancellationTokenOnDestroy();
 
             if (playMode == EPlayMode.EditorSimulateMode)
             {
