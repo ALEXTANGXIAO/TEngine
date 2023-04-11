@@ -161,6 +161,7 @@ namespace TEngine
             BindMemberProperty();
             RegisterEvent();
             OnCreate();
+            IsPrepare = true;
             
             if (!visible)
             {
