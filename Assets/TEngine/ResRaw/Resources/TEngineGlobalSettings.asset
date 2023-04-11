@@ -37,7 +37,7 @@ MonoBehaviour:
     m_IsReadLocalConfigInEditor: 1
     m_ConfigFolderName: Assets/AssetRaw/Configs/
   m_BybridCLRCustomGlobalSettings:
-    m_Enable: 0
+    m_Enable: 1
     m_Gitee: 1
     HotUpdateAssemblies: []
     AOTMetaAssemblies: []
