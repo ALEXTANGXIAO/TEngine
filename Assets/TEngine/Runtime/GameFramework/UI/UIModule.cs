@@ -29,8 +29,6 @@ namespace TEngine
 
         [SerializeField] private Camera m_UICamera = null;
 
-        [SerializeField] private string m_UIWindowHelperTypeName = "TEngine.DefaultUIWindowHelper";
-
         private readonly List<UIWindow> _stack = new List<UIWindow>(100);
 
         public const int WINDOW_DEEP = 100;
