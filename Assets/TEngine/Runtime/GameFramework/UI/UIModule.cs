@@ -6,15 +6,6 @@ using YooAsset;
 
 namespace TEngine
 {
-    public enum EUIGroup
-    {
-        Bottom,
-        UI,
-        Top,
-        Tips,
-        System,
-    }
-
     /// <summary>
     /// UI模块。
     /// </summary>
@@ -31,6 +22,7 @@ namespace TEngine
 
         private readonly List<UIWindow> _stack = new List<UIWindow>(100);
 
+        public const int LAYER_DEEP = 2000;
         public const int WINDOW_DEEP = 100;
         public const int WINDOW_HIDE_LAYER = 2; // Ignore Raycast
         public const int WINDOW_SHOW_LAYER = 5; // UI
@@ -333,7 +325,7 @@ namespace TEngine
 
         private void OnSortWindowDepth(int layer)
         {
-            int depth = layer;
+            int depth = layer * LAYER_DEEP;
             for (int i = 0; i < _stack.Count; i++)
             {
                 if (_stack[i].WindowLayer == layer)
