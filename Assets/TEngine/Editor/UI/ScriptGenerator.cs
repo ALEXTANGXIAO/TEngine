@@ -9,44 +9,28 @@ namespace TEngine.Editor.UI
     {
         private const string Gap = "/";
 
-        [MenuItem("GameObject/ScriptGenerator/UIProperty", priority = 49)]
+        [MenuItem("GameObject/ScriptGenerator/UIProperty", priority = 41)]
         public static void MemberProperty()
         {
             Generate(false);
         }
 
-        [MenuItem("GameObject/ScriptGenerator/UIProperty UniTask", priority = 49)]
+        [MenuItem("GameObject/ScriptGenerator/UIProperty UniTask", priority = 43)]
         public static void MemberPropertyUniTask()
         {
             Generate(false, true);
         }
 
-        [MenuItem("GameObject/ScriptGenerator/UIPropertyAndListener", priority = 49)]
+        [MenuItem("GameObject/ScriptGenerator/UIPropertyAndListener", priority = 42)]
         public static void MemberPropertyAndListener()
         {
             Generate(true);
         }
 
-        [MenuItem("GameObject/ScriptGenerator/UIPropertyAndListener UniTask", priority = 49)]
+        [MenuItem("GameObject/ScriptGenerator/UIPropertyAndListener UniTask", priority = 44)]
         public static void MemberPropertyAndListenerUniTask()
         {
             Generate(true, true);
-        }
-
-        [MenuItem("GameObject/ScriptGenerator/UISwitchGroup", priority = 49)]
-        public static void UISwitchGroup()
-        {
-            var root = Selection.activeTransform;
-            if (root == null)
-            {
-                return;
-            }
-
-            var content = SwitchGroupGenerator.Instance.Process(root);
-            TextEditor te = new TextEditor();
-            te.text = content;
-            te.SelectAll();
-            te.Copy();
         }
 
         private static void Generate(bool includeListener, bool isUniTask = false)
@@ -76,7 +60,7 @@ namespace TEngine.Editor.UI
                     strFile.Append("using TEngine;\n\n");
                     strFile.Append("namespace GameMain\n");
                     strFile.Append("{\n");
-                    strFile.Append("\tclass " + root.name + " : UIFormLogic\n");
+                    strFile.Append("\tclass " + root.name + " : UIWindow\n");
                     strFile.Append("\t{\n");
                 }
 
@@ -162,7 +146,7 @@ namespace TEngine.Editor.UI
             { "m_tf", "Transform" },
             { "m_rect", "RectTransform" },
 #if ENABLE_TEXTMESHPRO
-        {"m_text","TextMeshProUGUI"},
+            {"m_text","TextMeshProUGUI"},
 #else
             { "m_text", "Text" },
 #endif
@@ -183,7 +167,6 @@ namespace TEngine.Editor.UI
             { "m_slider", "Slider" },
             { "m_group", "ToggleGroup" },
             { "m_curve", "AnimationCurve" },
-            { "m_fightWidget", "CommonFightWidget" },
             { "m_canvasGroup", "CanvasGroup" },
 #if ENABLE_TEXTMESHPRO
         {"m_tmp","TextMeshProUGUI"},
@@ -216,18 +199,18 @@ namespace TEngine.Editor.UI
                 switch (varType)
                 {
                     case "Transform":
-                        strBind.Append(string.Format("\t\t\t{0} = FindChild(\"{1}\");\n", varName, varPath));
+                        strBind.Append($"\t\t\t{varName} = FindChild(\"{varPath}\");\n");
                         break;
                     case "GameObject":
-                        strBind.Append(string.Format("\t\t\t{0} = FindChild(\"{1}\").gameObject;\n", varName, varPath));
+                        strBind.Append($"\t\t\t{varName} = FindChild(\"{varPath}\").gameObject;\n");
                         break;
                     case "AnimationCurve":
-                        strBind.Append(string.Format("\t\t\t{0} = FindChildComponent<AnimCurveObject>(\"{1}\").m_animCurve;\n", varName, varPath));
+                        strBind.Append($"\t\t\t{varName} = FindChildComponent<AnimCurveObject>(\"{varPath}\").m_animCurve;\n");
                         break;
                     case "RichItemIcon":
                     case "CommonFightWidget":
                     case "PlayerHeadWidget":
-                        strBind.Append(string.Format("\t\t\t{0} = CreateWidgetByType<{1}>(\"{2}\");\n", varName, varType, varPath));
+                        strBind.Append($"\t\t\t{varName} = CreateWidgetByType<{varType}>(\"{varPath}\");\n");
                         break;
                     case "RedNoteBehaviour":
                     case "TextButtonItem":
@@ -235,16 +218,16 @@ namespace TEngine.Editor.UI
                     case "UIActorWidget":
                     case "UIEffectWidget":
                     case "UISpineWidget":
-                        strBind.Append(string.Format("\t\t\t{0} = CreateWidget<{1}>(\"{2}\");\n", varName, varType, varPath));
+                        strBind.Append($"\t\t\t{varName} = CreateWidget<{varType}>(\"{varPath}\");\n");
                         break;
                     case "ActorNameBinderText":
-                        strBind.Append(string.Format("\t\t\t{0} = FindTextBinder(\"{1}\");\n", varName, varPath));
+                        strBind.Append($"\t\t\t{varName} = FindTextBinder(\"{varPath}\");\n");
                         break;
                     case "ActorNameBinderEffect":
-                        strBind.Append(string.Format("\t\t\t{0} = FindEffectBinder(\"{1}\");\n", varName, varPath));
+                        strBind.Append($"\t\t\t{varName} = FindEffectBinder(\"{varPath}\");\n");
                         break;
                     default:
-                        strBind.Append(string.Format("\t\t\t{0} = FindChildComponent<{1}>(\"{2}\");\n", varName, varType, varPath));
+                        strBind.Append($"\t\t\t{varName} = FindChildComponent<{varType}>(\"{varPath}\");\n");
                         break;
                 }
 
@@ -253,29 +236,29 @@ namespace TEngine.Editor.UI
                     string varFuncName = GetBtnFuncName(varName);
                     if (isUniTask)
                     {
-                        strOnCreate.Append(string.Format("\t\t\t{0}.onClick.AddListener(UniTask.UnityAction({1}));\n", varName, varFuncName));
-                        strCallback.Append(string.Format("\t\tprivate async UniTaskVoid {0}()\n", varFuncName));
+                        strOnCreate.Append($"\t\t\t{varName}.onClick.AddListener(UniTask.UnityAction({varFuncName}));\n");
+                        strCallback.Append($"\t\tprivate async UniTaskVoid {varFuncName}()\n");
                         strCallback.Append("\t\t{\n await UniTask.Yield();\n\t\t}\n");
                     }
                     else
                     {
-                        strOnCreate.Append(string.Format("\t\t\t{0}.onClick.AddListener({1});\n", varName, varFuncName));
-                        strCallback.Append(string.Format("\t\tprivate void {0}()\n", varFuncName));
+                        strOnCreate.Append($"\t\t\t{varName}.onClick.AddListener({varFuncName});\n");
+                        strCallback.Append($"\t\tprivate void {varFuncName}()\n");
                         strCallback.Append("\t\t{\n\t\t}\n");
                     }
                 }
                 else if (varType == "Toggle")
                 {
                     string varFuncName = GetToggleFuncName(varName);
-                    strOnCreate.Append(string.Format("\t\t\t{0}.onValueChanged.AddListener({1});\n", varName, varFuncName));
-                    strCallback.Append(string.Format("\t\tprivate void {0}(bool isOn)\n", varFuncName));
+                    strOnCreate.Append($"\t\t\t{varName}.onValueChanged.AddListener({varFuncName});\n");
+                    strCallback.Append($"\t\tprivate void {varFuncName}(bool isOn)\n");
                     strCallback.Append("\t\t{\n\t\t}\n");
                 }
                 else if (varType == "Slider")
                 {
                     string varFuncName = GetSliderFuncName(varName);
-                    strOnCreate.Append(string.Format("\t\t\t{0}.onValueChanged.AddListener({1});\n", varName, varFuncName));
-                    strCallback.Append(string.Format("\t\tprivate void {0}(float value)\n", varFuncName));
+                    strOnCreate.Append($"\t\t\t{varName}.onValueChanged.AddListener({varFuncName});\n");
+                    strCallback.Append($"\t\tprivate void {varFuncName}(float value)\n");
                     strCallback.Append("\t\t{\n\t\t}\n");
                 }
             }
@@ -304,33 +287,13 @@ namespace TEngine.Editor.UI
             }
         }
 
-        public class SwitchGroupGeneratorHelper : EditorWindow
-        {
-            [MenuItem("GameObject/ScriptGenerator/AboutSwitchGroup", priority = 50)]
-            public static void About()
-            {
-                GetWindow(typeof(SwitchGroupGeneratorHelper), false, "AboutSwitchGroup");
-            }
-
-            public void Awake()
-            {
-                minSize = new Vector2(400, 600);
-            }
-
-            protected void OnGUI()
-            {
-                GUILayout.BeginVertical();
-                GUILayout.Label(SwitchGroupGenerator.CONDITION + "：\t" + "SwitchTabItem[]");
-            }
-        }
-
         public class SwitchGroupGenerator
         {
             /*
              遍历子节点，找到所有名为 m_switchGroup 开始的节点，输出该节点
              */
 
-            public const string CONDITION = "m_switchGroup";
+            private const string Condition = "m_switchGroup";
 
             public static readonly SwitchGroupGenerator Instance = new SwitchGroupGenerator();
 
@@ -349,7 +312,7 @@ namespace TEngine.Editor.UI
 
             public void Collect(Transform node, List<Transform> nodeList)
             {
-                if (node.name.StartsWith(CONDITION))
+                if (node.name.StartsWith(Condition))
                 {
                     nodeList.Add(node);
                     return;
@@ -363,10 +326,10 @@ namespace TEngine.Editor.UI
                 }
             }
 
-            public string Process(Transform root, Transform groupTf)
+            private string Process(Transform root, Transform groupTf)
             {
                 var parentPath = GetPath(root, groupTf);
-                var _name = groupTf.name;
+                var name = groupTf.name;
                 var sbd = new StringBuilder(@"
 var _namePath = ""#parentPath"";
 var _nameTf = FindChild(_namePath);
@@ -378,7 +341,7 @@ for (var i = 0; i < childCnt; i++)
     var child = _nameTf.GetChild(i);
     _name[i] = CreateWidget<SwitchTabItem>(_namePath + ""/"" + child.name);
 }");
-                sbd.Replace("_name", _name);
+                sbd.Replace("_name", name);
                 sbd.Replace("#parentPath", parentPath);
                 return sbd.ToString();
             }
