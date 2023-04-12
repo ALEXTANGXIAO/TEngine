@@ -35,7 +35,6 @@ public partial class GameApp
     /// <returns></returns>
     protected bool AddLogicSys(ILogicSys logicSys)
     {
-
         if (m_listLogicMgr.Contains(logicSys))
         {
             Log.Fatal("Repeat add logic system: {0}", logicSys.GetType().Name);
