@@ -21,6 +21,34 @@ public partial class GameApp:Singleton<GameApp>
         Utility.Unity.AddOnApplicationPauseListener(Instance.OnApplicationPause);
     }
 
+    public static void Shutdown(ShutdownType shutdownType)
+    {
+        
+        if (shutdownType == ShutdownType.None)
+        {
+            return;
+        }
+
+        if (shutdownType == ShutdownType.Restart)
+        {
+            Utility.Unity.RemoveUpdateListener(Instance.Update);
+            Utility.Unity.RemoveFixedUpdateListener(Instance.FixedUpdate);
+            Utility.Unity.RemoveLateUpdateListener(Instance.LateUpdate);
+            Utility.Unity.RemoveDestroyListener(Instance.OnDestroy);
+            Utility.Unity.RemoveOnDrawGizmosListener(Instance.OnDrawGizmos);
+            Utility.Unity.RemoveOnApplicationPauseListener(Instance.OnApplicationPause);
+            return;
+        }
+
+        if (shutdownType == ShutdownType.Quit)
+        {
+            UnityEngine.Application.Quit();
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#endif
+        }
+    }
+
     private void Start()
     {
         GameTime.StartFrame();
