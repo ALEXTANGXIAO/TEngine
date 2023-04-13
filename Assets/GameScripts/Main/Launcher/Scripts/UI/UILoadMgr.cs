@@ -7,8 +7,8 @@ namespace GameMain
     public static class UILoadMgr
     {
         private static GameObject _uiLoad;
-        private static Dictionary<string, string> _uiList = new Dictionary<string, string>();
-        private static readonly Dictionary<string, UIBase> _uiMap = new Dictionary<string, UIBase>();
+        private static readonly Dictionary<string, string> UIList = new Dictionary<string, string>();
+        private static readonly Dictionary<string, UIBase> UIMap = new Dictionary<string, UIBase>();
         /// <summary>
         /// 初始化根节点
         /// </summary>
@@ -36,11 +36,11 @@ namespace GameMain
                 }
             }
             RegisterUI();
-        }     
-              
-        public static void RegisterUI()
+        }
+
+        private static void RegisterUI()
         {
-            UIDefine.RegisterUI(_uiList);
+            UIDefine.RegisterUI(UIList);
         }
 
         /// <summary>
@@ -53,16 +53,16 @@ namespace GameMain
             if (string.IsNullOrEmpty(uiInfo))
                 return;
 
-            if (!_uiList.ContainsKey(uiInfo))
+            if (!UIList.ContainsKey(uiInfo))
             {
                 Log.Error($"not define ui:{uiInfo}");
                 return;
             }
 
             GameObject ui = null;
-            if (!_uiMap.ContainsKey(uiInfo))
+            if (!UIMap.ContainsKey(uiInfo))
             {                
-                Object obj = Resources.Load(_uiList[uiInfo]);
+                Object obj = Resources.Load(UIList[uiInfo]);
                 if (obj != null)
                 {
                     ui = Object.Instantiate(obj) as GameObject;
@@ -76,16 +76,19 @@ namespace GameMain
                     }                   
                 }
 
-                UIBase compenent = ui.GetComponent<UIBase>();
-                if (compenent != null)
+                if (ui != null)
                 {
-                    _uiMap.Add(uiInfo, compenent);
-                }                
+                    UIBase uiBase = ui.GetComponent<UIBase>();
+                    if (uiBase != null)
+                    {
+                        UIMap.Add(uiInfo, uiBase);
+                    }
+                }
             }
-            _uiMap[uiInfo].gameObject.SetActive(true);
+            UIMap[uiInfo].gameObject.SetActive(true);
             if (param != null)
             {
-                UIBase component = _uiMap[uiInfo].GetComponent<UIBase>();
+                UIBase component = UIMap[uiInfo].GetComponent<UIBase>();
                 if (component != null)
                 {
                     component.OnEnter(param);
@@ -95,22 +98,22 @@ namespace GameMain
         /// <summary>
         /// 隐藏ui对象
         /// </summary>
-        /// <param name="uiinfo">对应的ui</param>
-        public static void Hide(string uiinfo)
+        /// <param name="uiName">对应的ui</param>
+        public static void Hide(string uiName)
         {
-            if (string.IsNullOrEmpty(uiinfo))
+            if (string.IsNullOrEmpty(uiName))
             {
                 return;
             }
 
-            if (!_uiMap.ContainsKey(uiinfo))
+            if (!UIMap.ContainsKey(uiName))
             {
                 return;
             }
 
-            _uiMap[uiinfo].gameObject.SetActive(false);
-            Object.DestroyImmediate(_uiMap[uiinfo].gameObject);
-            _uiMap.Remove(uiinfo);            
+            UIMap[uiName].gameObject.SetActive(false);
+            Object.DestroyImmediate(UIMap[uiName].gameObject);
+            UIMap.Remove(uiName);            
         }
 
         /// <summary>
@@ -120,7 +123,7 @@ namespace GameMain
         /// <returns></returns>
         public static UIBase GetActiveUI(string ui)
         {
-            return _uiMap.ContainsKey(ui) ? _uiMap[ui] : null;
+            return UIMap.ContainsKey(ui) ? UIMap[ui] : null;
         }
 
         /// <summary>
@@ -128,14 +131,14 @@ namespace GameMain
         /// </summary>
         public static void HideAll()
         {
-            foreach (var item in _uiMap)
+            foreach (var item in UIMap)
             {
                 if (item.Value && item.Value.gameObject)
                 {
                     item.Value.gameObject.SetActive(false);
                 }
             }
-            _uiMap.Clear();
+            UIMap.Clear();
 
             if (_uiLoad != null)
             {
