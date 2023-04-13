@@ -5,7 +5,7 @@ using HybridCLR.Editor;
 using HybridCLR.Editor.Commands;
 using UnityEditor;
 using UnityEngine;
-using UnityGameFramework.Runtime;
+using TEngine;
 
 public static class BuildAssetsCommand
 {
