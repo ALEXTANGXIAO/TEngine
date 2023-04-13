@@ -25,7 +25,7 @@ MonoBehaviour:
       m_InnerResourceSourceUrl: http://127.0.0.1:8088
       m_ExtraResourceSourceUrl: http://127.0.0.1:8088
       m_FormalResourceSourceUrl: http://127.0.0.1:8088
-    m_AtlasFolder: Assets/AssetRaw/Atlas
+    m_AtlasFolder: Assets/AssetRaw/UIRaw
     m_ResourceVersionFileName: ResourceVersion.txt
     CheckVersionUrl: http://127.0.0.1/Resources/{0}Version.txt
     WindowsAppUrl: http://127.0.0.1
