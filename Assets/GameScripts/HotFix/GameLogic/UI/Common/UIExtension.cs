@@ -94,7 +94,7 @@ public static class UIExtension
     public static bool GetMouseDownUiPos(this UIModule uiModule, out Vector3 screenPos)
     {
         bool hadMouseDown = false;
-        Vector3 mousePos = Vector3.zero;
+        Vector3 mousePos;
 
 #if UNITY_EDITOR || PLATFORM_STANDALONE_WIN
         mousePos = Input.mousePosition;
@@ -113,7 +113,7 @@ public static class UIExtension
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             uiModule.UIRoot as RectTransform,
-            Input.mousePosition,
+            mousePos,
             uiModule.UICamera, out var pos);
         screenPos = uiModule.UIRoot.TransformPoint(pos);
 
