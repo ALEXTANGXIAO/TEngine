@@ -75,6 +75,7 @@ namespace TEngine
         private bool m_PreorderUnloadUnusedAssets = false;
         private bool m_PerformGCCollect = false;
         private float m_LastUnloadUnusedAssetsOperationElapseSeconds = 0f;
+        private bool m_InitPackageByProcedure = true;
         
         /// <summary>
         /// 全局取消操作Token。
@@ -186,7 +187,7 @@ namespace TEngine
             m_ResourceManager.Milliseconds = milliseconds;
             m_ResourceManager.Initialize();
             Log.Info($"AssetsComponent Run Mode：{playMode}");
-            if (playMode == EPlayMode.EditorSimulateMode)
+            if (playMode == EPlayMode.EditorSimulateMode && !m_InitPackageByProcedure)
             {
                 m_ResourceManager.InitPackage();
             }
