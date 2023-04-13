@@ -93,3 +93,10 @@ Assets/HybridCLRBuildCache/AssetBundleOutput/StandaloneWindows.meta
 Assets/HybridCLRBuildCache.meta
 Assets/HybridCLRBuildCache/AssetBundleSourceData.meta
 Assets/HybridCLRBuildCache/AssetBundleSourceData/StandaloneWindows.meta
+
+#Bundles
+Bundles/
+
+#Luban
+Luban/.cache.meta
+GenerateDatas/

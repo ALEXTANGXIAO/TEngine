@@ -1,0 +1,25 @@
+{
+    "name": "TEngine.Editor",
+    "rootNamespace": "",
+    "references": [
+        "TEngine.Runtime",
+        "YooAsset.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.textmeshpro",
+            "expression": "",
+            "define": "ENABLE_TEXTMESHPRO"
+        }
+    ],
+    "noEngineReferences": false
+}

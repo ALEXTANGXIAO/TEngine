@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+option java_package ="com.game.juhe.server.protobuf.proto";
+
+package GameBase;
+// 游戏全局基础数据，和协议无关，就放结构
+
+enum PacketType
+{
+	Undefined = 0;
+	ClientToServer = 1;
+	ServerToClient = 2;
+}
+
+message PacketHeader
+{
+	PacketType packetType = 1;
+	int64 id = 2;
+	int64 packetLength = 3;
+	bool isValid = 4;
+}
+
+// PTC_C2S_HeartBeat
+message CSHeartBeat
+{
+    int64 dwTime = 1;
+}
+
+// PTC_S2C_HeartBeat
+message SCHeartBeat
+{
+    int64 dwTime = 1;
+}
+
+// 玩家角色基础数据数据
+message DPRoleBaseInfo
+{
+    uint64 ullRoleGuid         = 1; // guid
+    string szRoleName          = 2; // 角色名    
+    int32  nLevel              = 3; // 角色等级
+    int32  nProfessionId       = 4; // 角色ID
+    int32  nPortraitId         = 5; // 头像
+    int32  nFightPower         = 6; // 战斗力
+    int32  nClothId            = 7; // 时装ID       
+}

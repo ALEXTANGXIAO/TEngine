@@ -1,0 +1,41 @@
+syntax = "proto3";
+package pb.message;
+// 对外服数据协议
+message ExternalMessage {
+  // 请求命令类型: 0 心跳，1 业务
+  int32 cmdCode = 1;
+  // 协议开关，用于一些协议级别的开关控制，比如 安全加密校验等。 : 0 不校验
+  int32 protocolSwitch = 2;
+  // 业务路由（高16为主, 低16为子）
+  int32 cmdMerge = 3;
+  // 响应码: 0:成功, 其他为有错误
+  sint32 responseStatus = 4;
+  // 验证信息: 当 responseStatus == -1001 时， 会有值
+  string validMsg = 5;
+  // 业务请求数据
+  bytes data = 6;
+}
+
+// int 包装类
+message IntPb {
+  // int 值
+  sint32 intValue = 1;
+}
+
+// int list 包装类
+message IntListPb {
+  // intList
+  repeated sint32 intValues = 1;
+}
+
+// long 包装类
+message LongPb {
+  // long 值
+  sint64 longValue = 1;
+}
+
+// long list 包装类
+message LongListPb {
+  // longList
+  repeated sint64 longValues = 1;
+}

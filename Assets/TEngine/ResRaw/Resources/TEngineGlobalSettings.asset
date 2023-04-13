@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 577471f3ecd1ec94b8a0d67218386f4a, type: 3}
+  m_Name: TEngineGlobalSettings
+  m_EditorClassIdentifier: 
+  m_FrameworkGlobalSettings:
+    m_ScriptAuthor: Default
+    m_ScriptVersion: 0.1
+    m_AppStage: 1
+    m_DefaultFont: Arial
+    m_ResourcesArea:
+      m_ResAdminType: Default
+      m_ResAdminCode: 0
+      m_ServerType: 1
+      m_CleanCommitPathRes: 1
+      m_InnerResourceSourceUrl: http://127.0.0.1:8088
+      m_ExtraResourceSourceUrl: http://127.0.0.1:8088
+      m_FormalResourceSourceUrl: http://127.0.0.1:8088
+    m_AtlasFolder: Assets/AssetRaw/UIRaw
+    m_ResourceVersionFileName: ResourceVersion.txt
+    CheckVersionUrl: http://127.0.0.1/Resources/{0}Version.txt
+    WindowsAppUrl: http://127.0.0.1
+    MacOSAppUrl: http://127.0.0.1
+    IOSAppUrl: http://127.0.0.1
+    AndroidAppUrl: http://127.0.0.1
+    m_CurUseServerChannel: 
+    m_ServerChannelInfos: []
+    m_IsReadLocalConfigInEditor: 1
+    m_ConfigFolderName: Assets/AssetRaw/Configs/
+  m_BybridCLRCustomGlobalSettings:
+    m_Enable: 1
+    m_Gitee: 1
+    HotUpdateAssemblies: []
+    AOTMetaAssemblies: []
+    LogicMainDllName: xxx.dll
+    AssemblyTextAssetExtension: .bytes
+    AssemblyTextAssetPath: Assets/AssetRaw/DLL
+    HybridCLRGlobalSettings: Settings/HybridCLRGlobalSettings
