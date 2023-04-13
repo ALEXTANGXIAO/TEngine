@@ -33,12 +33,12 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
-    - GroupName: Atlas
-      GroupDesc: "\u56FE\u96C6"
-      AssetTags: Atlas
+    - GroupName: UIRaw
+      GroupDesc: "\u56FE\u7247\u8D44\u6E90"
+      AssetTags: UIRaw
       ActiveRuleName: EnableGroup
       Collectors:
-      - CollectPath: Assets/AssetRaw/Atlas
+      - CollectPath: Assets/AssetRaw/UIRaw/Atlas
         CollectorGUID: 6d11fa91acc253840a648b58f23db139
         CollectorType: 0
         AddressRuleName: AddressByFileName
@@ -46,8 +46,8 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
-      - CollectPath: Assets/AssetRaw/AtlasCollection
-        CollectorGUID: 879acdeb0602a854a89292e949cb08cc
+      - CollectPath: Assets/AssetRaw/UIRaw/Raw
+        CollectorGUID: 6bc134b912ac6bb4399ea1bec4c11636
         CollectorType: 0
         AddressRuleName: AddressByFileName
         PackRuleName: PackDirectory
