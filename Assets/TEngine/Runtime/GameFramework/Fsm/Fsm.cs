@@ -220,10 +220,8 @@ namespace TEngine
 
             Name = null;
             m_Owner = null;
-            m_States.Clear();
-
-            m_Datas.Clear();
-
+            m_States?.Clear();
+            m_Datas?.Clear();
             m_CurrentState = null;
             m_CurrentStateTime = 0f;
             m_IsDestroyed = true;
