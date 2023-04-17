@@ -171,6 +171,7 @@ namespace TEngine
             // 联机运行模式
             if (PlayMode == EPlayMode.HostPlayMode)
             {
+                HostServerURL = SettingsUtils.FrameworkGlobalSettings.HostServerURL;
                 var createParameters = new HostPlayModeParameters();
                 createParameters.DecryptionServices = new GameDecryptionServices();
                 createParameters.QueryServices = new GameQueryServices();

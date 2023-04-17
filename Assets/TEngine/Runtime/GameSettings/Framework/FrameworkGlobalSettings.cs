@@ -159,6 +159,8 @@ public class FrameworkGlobalSettings
     [Header("Hotfix")] [SerializeField] 
     private string m_ResourceVersionFileName = "ResourceVersion.txt";
 
+    public string HostServerURL = "http://127.0.0.1:8081";
+    
     public string ResourceVersionFileName
     {
         get { return m_ResourceVersionFileName; }
