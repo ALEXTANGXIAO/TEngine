@@ -1,7 +1,7 @@
 using UnityEngine;
 using TEngine;
 
-namespace GameMain
+namespace GameLogic
 {
     public class SafeTop : MonoBehaviour
     {
