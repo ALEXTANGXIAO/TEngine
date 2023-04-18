@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.Text;
 using Debug = UnityEngine.Debug;
@@ -69,7 +70,7 @@ namespace TEngine
                     _stringBuilder.AppendFormat(
                         bColor
                             ? "<color=#0099bc><b>[TEngine] ► </b></color><color=gray><b>[INFO] ► </b></color>[{0}] - <color=#00FF18>{1}</color>"
-                            : "<color=#0099bc><b>[TEngine] ► </b></color><color=#00FF18><b>[SUCCESSED] ► </b></color>[{0}] - {1}",
+                            : "<color=#0099bc><b>[TEngine] ► </b></color><color=#00FF18><b>[SUCCESSES] ► </b></color>[{0}] - {1}",
                         timeNow, logString);
                     break;
                 case LogLevel.INFO:
@@ -160,6 +161,7 @@ namespace TEngine
             else if (type == LogLevel.EXCEPTION)
             {
                 Debug.LogError(logStr);
+                throw new Exception(logStr);
             }
         }
 
