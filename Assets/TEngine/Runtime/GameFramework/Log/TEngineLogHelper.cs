@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.Text;
 using Debug = UnityEngine.Debug;
@@ -160,6 +161,7 @@ namespace TEngine
             else if (type == LogLevel.EXCEPTION)
             {
                 Debug.LogError(logStr);
+                throw new GameFrameworkException(logStr);
             }
         }
 
