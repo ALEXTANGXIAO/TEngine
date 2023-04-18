@@ -4,15 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TEngine;
 
-public enum EUIGroup
-{
-    Root,
-    UI,
-    Dialog,
-    Tips,
-    System
-}
-
 public static class UIExtension
 {
     #region SetActive
