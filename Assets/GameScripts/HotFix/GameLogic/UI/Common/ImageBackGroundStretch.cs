@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace GameMain
+namespace GameLogic
 {
     /// <summary>
     /// 背景图片等比拉伸
