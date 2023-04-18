@@ -53,6 +53,11 @@ public class GameModule:MonoBehaviour
     /// 获取音频模块。
     /// </summary>
     public static AudioModule Audio { get; private set; }
+    
+    /// <summary>
+    /// 计时器模块。
+    /// </summary>
+    public static TimerModule Timer { get; private set; }
 
     #endregion
 
@@ -70,6 +75,7 @@ public class GameModule:MonoBehaviour
         Setting = Get<SettingModule>();
         UI = Get<UIModule>();
         Audio = Get<AudioModule>();
+        Timer = Get<TimerModule>();
     }
 
     private static void InitCustomModules()
