@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using TEngine.Localization;
 
 namespace TEngine
 {
