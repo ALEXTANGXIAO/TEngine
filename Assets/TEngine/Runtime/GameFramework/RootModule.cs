@@ -109,6 +109,8 @@ namespace TEngine
         {
             base.Awake();
             
+            BuglyManager.Instance.Init(Resources.Load<BuglyConfig>("BuglyConfig"));
+            
             GameTime.StartFrame();
 
             InitTextHelper();

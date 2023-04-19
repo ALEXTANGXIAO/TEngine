@@ -1,4 +1,6 @@
-﻿namespace TEngine
+﻿using UnityEngine;
+
+namespace TEngine
 {
     public class BuglyManager
     {
@@ -18,11 +20,11 @@
                 BuglyAgent.InitWithAppId (config.androidId);
 #endif
                 BuglyAgent.EnableExceptionHandler();
-                Log.Info($"Init Bugly Successes");
+                Debug.Log($"Init Bugly Successes");
             }
             else
             {
-                Log.Fatal("Init Bugly Fatal buglyConfig.asset is null!");
+                Debug.LogError("Init Bugly Fatal buglyConfig.asset is null!");
             }
         }
         
