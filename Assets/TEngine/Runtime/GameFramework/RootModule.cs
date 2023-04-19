@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using TEngine.Localization;
 
 namespace TEngine
 {
@@ -109,6 +108,8 @@ namespace TEngine
         protected override void Awake()
         {
             base.Awake();
+            
+            BuglyManager.Instance.Init(Resources.Load<BuglyConfig>("BuglyConfig"));
             
             GameTime.StartFrame();
 

@@ -1,4 +1,4 @@
-﻿namespace TEngine.Localization
+﻿namespace TEngine
 {
     /// <summary>
     /// 本地化语言。

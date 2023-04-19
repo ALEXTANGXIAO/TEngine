@@ -18,6 +18,5 @@ namespace GameBase
                 return _instance;
             }
         }
-
     }
 }

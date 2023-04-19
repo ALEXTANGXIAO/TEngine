@@ -52,7 +52,7 @@ public partial class GameApp:Singleton<GameApp>
     private void Start()
     {
         GameTime.StartFrame();
-        var listLogic = m_listLogicMgr;
+        var listLogic = _listLogicMgr;
         var logicCnt = listLogic.Count;
         for (int i = 0; i < logicCnt; i++)
         {
@@ -65,7 +65,7 @@ public partial class GameApp:Singleton<GameApp>
     {
         GameTime.StartFrame();
         TProfiler.BeginFirstSample("Update");
-        var listLogic = m_listLogicMgr;
+        var listLogic = _listLogicMgr;
         var logicCnt = listLogic.Count;
         for (int i = 0; i < logicCnt; i++)
         {
@@ -81,7 +81,7 @@ public partial class GameApp:Singleton<GameApp>
     {
         GameTime.StartFrame();
         TProfiler.BeginFirstSample("FixedUpdate");
-        var listLogic = m_listLogicMgr;
+        var listLogic = _listLogicMgr;
         var logicCnt = listLogic.Count;
         for (int i = 0; i < logicCnt; i++)
         {
@@ -97,7 +97,7 @@ public partial class GameApp:Singleton<GameApp>
     {
         GameTime.StartFrame();
         TProfiler.BeginFirstSample("LateUpdate");
-        var listLogic = m_listLogicMgr;
+        var listLogic = _listLogicMgr;
         var logicCnt = listLogic.Count;
         for (int i = 0; i < logicCnt; i++)
         {
@@ -112,7 +112,7 @@ public partial class GameApp:Singleton<GameApp>
     private void OnDestroy()
     {
         GameTime.StartFrame();
-        var listLogic = m_listLogicMgr;
+        var listLogic = _listLogicMgr;
         var logicCnt = listLogic.Count;
         for (int i = 0; i < logicCnt; i++)
         {
@@ -125,7 +125,7 @@ public partial class GameApp:Singleton<GameApp>
     {
 #if UNITY_EDITOR
         GameTime.StartFrame();
-        var listLogic = m_listLogicMgr;
+        var listLogic = _listLogicMgr;
         var logicCnt = listLogic.Count;
         for (int i = 0; i < logicCnt; i++)
         {
@@ -137,7 +137,7 @@ public partial class GameApp:Singleton<GameApp>
 
     private void OnApplicationPause(bool isPause)
     {
-        var listLogic = m_listLogicMgr;
+        var listLogic = _listLogicMgr;
         var logicCnt = listLogic.Count;
         for (int i = 0; i < logicCnt; i++)
         {
