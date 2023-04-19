@@ -60,6 +60,7 @@ namespace TEngine.Editor.UI
                     strFile.Append("using TEngine;\n\n");
                     strFile.Append("namespace GameMain\n");
                     strFile.Append("{\n");
+                    strFile.Append("\t[Window(UILayer.UI)]\n");
                     strFile.Append("\tclass " + root.name + " : UIWindow\n");
                     strFile.Append("\t{\n");
                 }
