@@ -3,11 +3,11 @@ using TEngine;
 
 public partial class GameApp
 {
-    private List<ILogicSys> m_listLogicMgr;
+    private List<ILogicSys> _listLogicMgr;
     
     private void Init()
     {
-        m_listLogicMgr = new List<ILogicSys>();
+        _listLogicMgr = new List<ILogicSys>();
         RegisterAllSystem();
         InitSystemSetting();
     }
@@ -35,7 +35,7 @@ public partial class GameApp
     /// <returns></returns>
     protected bool AddLogicSys(ILogicSys logicSys)
     {
-        if (m_listLogicMgr.Contains(logicSys))
+        if (_listLogicMgr.Contains(logicSys))
         {
             Log.Fatal("Repeat add logic system: {0}", logicSys.GetType().Name);
             return false;
@@ -47,7 +47,7 @@ public partial class GameApp
             return false;
         }
 
-        m_listLogicMgr.Add(logicSys);
+        _listLogicMgr.Add(logicSys);
 
         return true;
     }
