@@ -47,22 +47,18 @@ namespace TEngine
         /// <remarks>如果要获取的游戏框架模块不存在，则自动创建该游戏框架模块。</remarks>
         public static T GetModule<T>() where T : class
         {
-            Type interfaceType = typeof(T);
-            if (!interfaceType.IsInterface)
+            Type module = typeof(T);
+
+            if (module.FullName != null && !module.FullName.StartsWith("TEngine.", StringComparison.Ordinal))
             {
-                throw new GameFrameworkException(Utility.Text.Format("You must get module by interface, but '{0}' is not.", interfaceType.FullName));
+                throw new GameFrameworkException(Utility.Text.Format("You must get a Game Framework module, but '{0}' is not.", module.FullName));
             }
 
-            if (!interfaceType.FullName.StartsWith("TEngine.", StringComparison.Ordinal))
-            {
-                throw new GameFrameworkException(Utility.Text.Format("You must get a Game Framework module, but '{0}' is not.", interfaceType.FullName));
-            }
-
-            string moduleName = Utility.Text.Format("{0}.{1}", interfaceType.Namespace, interfaceType.Name.Substring(1));
+            string moduleName = Utility.Text.Format("{0}.{1}", module.Namespace, module.Name.Substring(1));
             Type moduleType = Type.GetType(moduleName);
             if (moduleType == null)
             {
-                moduleName = Utility.Text.Format("{0}.{1}", interfaceType.Namespace, interfaceType.Name);
+                moduleName = Utility.Text.Format("{0}.{1}", module.Namespace, module.Name);
                 moduleType = Type.GetType(moduleName);
                 if (moduleType == null)
                 {
