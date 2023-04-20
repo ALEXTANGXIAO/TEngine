@@ -2,9 +2,14 @@
 
 namespace GameBase
 {
-    public class Singleton<T> where T:new()
+    /// <summary>
+    /// 通用单例。
+    /// </summary>
+    /// <typeparam name="T">泛型T。</typeparam>
+    public class Singleton<T> where T : new()
     {
         private static T _instance;
+
         public static T Instance
         {
             get
