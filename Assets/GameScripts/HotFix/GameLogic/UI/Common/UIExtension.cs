@@ -85,7 +85,7 @@ public static class UIExtension
     public static bool GetMouseDownUiPos(this UIModule uiModule, out Vector3 screenPos)
     {
         bool hadMouseDown = false;
-        Vector3 mousePos;
+        Vector3 mousePos = Vector3.zero;
 
 #if UNITY_EDITOR || PLATFORM_STANDALONE_WIN
         mousePos = Input.mousePosition;
