@@ -134,6 +134,13 @@ namespace TEngine
         /// </summary>
         /// <param name="ipAddress">远程主机的 IP 地址。</param>
         /// <param name="port">远程主机的端口号。</param>
+        void Connect(string ipAddress, int port);
+        
+        /// <summary>
+        /// 连接到远程主机。
+        /// </summary>
+        /// <param name="ipAddress">远程主机的 IP 地址。</param>
+        /// <param name="port">远程主机的端口号。</param>
         void Connect(IPAddress ipAddress, int port);
 
         /// <summary>

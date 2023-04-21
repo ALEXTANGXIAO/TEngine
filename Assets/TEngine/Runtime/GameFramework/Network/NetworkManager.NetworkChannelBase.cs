@@ -274,6 +274,17 @@ namespace TEngine
                     listHandle.Remove(msgDelegate);
                 }
             }
+            
+            /// <summary>
+            /// 连接到远程主机。
+            /// </summary>
+            /// <param name="ipAddress">远程主机的 IP 地址。</param>
+            /// <param name="port">远程主机的端口号。</param>
+            public void Connect(string ipAddress, int port)
+            {
+                IPAddress address = IPAddress.Parse(ipAddress);
+                Connect(address, port, null);
+            }
 
             /// <summary>
             /// 连接到远程主机。
