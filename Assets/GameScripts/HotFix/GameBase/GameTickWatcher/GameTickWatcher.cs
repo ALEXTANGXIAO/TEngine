@@ -5,13 +5,13 @@ namespace GameBase
     /// <summary>
     /// 用来在多线程下检测耗时。
     /// </summary>
-    public struct GameTickWatcher
+    public class GameTickWatcher
     {
         private long _startTick;
 
         public GameTickWatcher()
         {
-            _startTick = System.DateTime.Now.Ticks;
+            Refresh();
         }
 
         public void Refresh()
