@@ -10,7 +10,7 @@ namespace TEngine
             int v6Count = 0;
             for (int i = 0; i < ipAddresses.Length; i++)
             {
-                if (AddressFamily.InterNetworkV6.Equals(ipAddresses[i].AddressFamily))
+                if (System.Net.Sockets.AddressFamily.InterNetworkV6.Equals(ipAddresses[i].AddressFamily))
                 {
                     v6Count++;
                 }
@@ -22,7 +22,7 @@ namespace TEngine
                 int resIndex = 0;
                 for (int i = 0; i < ipAddresses.Length; i++)
                 {
-                    if (AddressFamily.InterNetworkV6.Equals(ipAddresses[i].AddressFamily))
+                    if (System.Net.Sockets.AddressFamily.InterNetworkV6.Equals(ipAddresses[i].AddressFamily))
                     {
                         outIPs[resIndex++] = ipAddresses[i];
                     }
