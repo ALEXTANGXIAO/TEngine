@@ -217,7 +217,7 @@ namespace GameLogic
                 return;
             }
 
-            Log.Info("Network channel '{0}' miss heart beat '{1}' times.", channel.Name, missCount.ToString());
+            Log.Fatal("Network channel '{0}' miss heart beat '{1}' times.", channel.Name, missCount.ToString());
 
             if (missCount < 2)
             {
@@ -234,7 +234,7 @@ namespace GameLogic
                 return;
             }
 
-            Log.Info("Network channel '{0}' error, error code is '{1}', error message is '{2}'.", channel.Name, networkErrorCode.ToString(), errorMessage);
+            Log.Fatal("Network channel '{0}' error, error code is '{1}', error message is '{2}'.", channel.Name, networkErrorCode.ToString(), errorMessage);
 
             channel.Close();
         }
