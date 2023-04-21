@@ -18,6 +18,8 @@ namespace TEngine
         
         [SerializeField] private bool m_dontDestroyUIRoot = true;
 
+        [SerializeField] private bool m_enableErrorLog = true;
+        
         [SerializeField] private Camera m_UICamera = null;
 
         private readonly List<UIWindow> _stack = new List<UIWindow>(100);
@@ -61,6 +63,11 @@ namespace TEngine
 
             m_InstanceRoot.gameObject.layer = LayerMask.NameToLayer("UI");
             UIRootStatic = m_InstanceRoot;
+            
+            if (m_enableErrorLog)
+            {
+                ErrorLogger errorLogger = new ErrorLogger();
+            }
         }
 
         private void OnDestroy()
