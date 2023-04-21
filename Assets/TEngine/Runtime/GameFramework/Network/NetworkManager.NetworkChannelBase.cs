@@ -231,28 +231,35 @@ namespace TEngine
             /// </summary>
             /// <param name="msgId">网络消息包id。</param>
             /// <param name="msgDelegate">要注册的网络消息包处理函数。</param>
-            public void RegisterMsgHandler(int msgId, CsMsgDelegate msgDelegate)
+            /// <param name="checkRepeat">是否检测重复。</param>
+            public void RegisterMsgHandler(int msgId, CsMsgDelegate msgDelegate,bool checkRepeat = true)
             {
                 if (msgDelegate == null)
                 {
                     throw new GameFrameworkException("Msg handler is invalid.");
                 }
 
-                if (!_msgHandlerMap.TryGetValue(msgId, out var listHandle))
+                lock (_msgHandlerMap)
                 {
-                    listHandle = new List<CsMsgDelegate>();
-                    _msgHandlerMap[msgId] = listHandle;
-                }
-
-                if (listHandle != null)
-                {
-                    if (!listHandle.Contains(msgDelegate))
+                    if (!_msgHandlerMap.TryGetValue(msgId, out var listHandle))
                     {
-                        listHandle.Add(msgDelegate);
+                        listHandle = new List<CsMsgDelegate>();
+                        _msgHandlerMap[msgId] = listHandle;
                     }
-                    else
+                    
+                    if (listHandle != null)
                     {
-                        Log.Error("-------------repeat RegCmdHandle MsgId:{0}-----------",msgId);
+                        if (!listHandle.Contains(msgDelegate))
+                        {
+                            listHandle.Add(msgDelegate);
+                        }
+                        else
+                        {
+                            if (checkRepeat)
+                            {
+                                Log.Error("-------------repeat RegCmdHandle MsgId:{0}-----------",msgId);
+                            }
+                        }
                     }
                 }
             }
@@ -264,14 +271,17 @@ namespace TEngine
             /// <param name="msgDelegate">要注册的网络消息包处理函数。</param>
             public void RemoveMsgHandler(int msgId, CsMsgDelegate msgDelegate)
             {
-                if (!_msgHandlerMap.TryGetValue(msgId, out List<CsMsgDelegate> listHandle))
+                lock (_msgHandlerMap)
                 {
-                    return;
-                }
-
-                if (listHandle != null)
-                {
-                    listHandle.Remove(msgDelegate);
+                    if (!_msgHandlerMap.TryGetValue(msgId, out List<CsMsgDelegate> listHandle))
+                    {
+                        return;
+                    }
+                    
+                    if (listHandle != null)
+                    {
+                        listHandle.Remove(msgDelegate);
+                    }
                 }
             }
             
@@ -452,14 +462,14 @@ namespace TEngine
             /// 向远程主机发送消息包并注册消息回调。
             /// </summary>
             /// <typeparam name="T">消息包类型。</typeparam>
-            /// <param name="pack">要发送的消息包。</param>
+            /// <param name="packet">要发送的消息包。</param>
             /// <param name="resHandler">要注册的回调。</param>
             /// <param name="needShowWaitUI">是否需要等待UI。</param>
             /// <returns>消息包是否发送成功。</returns>
-            public bool Send<T>(T pack, CsMsgDelegate resHandler, bool needShowWaitUI = false) where T : Packet
+            public bool Send<T>(T packet, CsMsgDelegate resHandler, bool needShowWaitUI = false) where T : Packet
             {
-                //TODO
-                return true;
+                RegisterMsgHandler(packet.Id,resHandler,false);
+                return Send(packet);
             }
 
             /// <summary>

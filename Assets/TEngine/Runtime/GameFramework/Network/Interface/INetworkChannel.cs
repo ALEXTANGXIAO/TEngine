@@ -120,7 +120,8 @@ namespace TEngine
         /// </summary>
         /// <param name="msgId">网络消息包id。</param>
         /// <param name="msgDelegate">要注册的网络消息包处理函数。</param>
-        void RegisterMsgHandler(int msgId, CsMsgDelegate msgDelegate);
+        /// <param name="checkRepeat">是否检测重复。</param>
+        void RegisterMsgHandler(int msgId, CsMsgDelegate msgDelegate, bool checkRepeat = false);
         
         /// <summary>
         /// 移除网络消息包处理函数。
@@ -168,10 +169,10 @@ namespace TEngine
         /// 向远程主机发送消息包并注册消息回调。
         /// </summary>
         /// <typeparam name="T">消息包类型。</typeparam>
-        /// <param name="pack">要发送的消息包。</param>
+        /// <param name="packet">要发送的消息包。</param>
         /// <param name="resHandler">要注册的回调。</param>
         /// <param name="needShowWaitUI">是否需要等待UI。</param>
         /// <returns>消息包是否发送成功。</returns>
-        bool Send<T>(T pack, CsMsgDelegate resHandler, bool needShowWaitUI = false) where T : Packet;
+        bool Send<T>(T packet, CsMsgDelegate resHandler, bool needShowWaitUI = false) where T : Packet;
     }
 }
