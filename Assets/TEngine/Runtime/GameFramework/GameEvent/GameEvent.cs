@@ -13,6 +13,7 @@ namespace TEngine
         private static readonly EventMgr EventMgr = new EventMgr();
 
         #region 细分的注册接口
+
         /// <summary>
         /// 增加事件监听。
         /// </summary>
@@ -149,6 +150,7 @@ namespace TEngine
         {
             EventMgr.Dispatcher.RemoveEventListener(StringId.StringToHash(eventType), handler);
         }
+
         #endregion
 
         #region 分发消息接口
@@ -180,7 +182,7 @@ namespace TEngine
 
         public static void Send<TArg1, TArg2, TArg3, TArg4>(int eventType, TArg1 arg1, TArg2 arg2, TArg3 arg3, TArg4 arg4)
         {
-            EventMgr.Dispatcher.Send(eventType, arg1, arg2, arg3);
+            EventMgr.Dispatcher.Send(eventType, arg1, arg2, arg3, arg4);
         }
 
         public static void Send<TArg1, TArg2, TArg3, TArg4, TArg5>(int eventType, TArg1 arg1, TArg2 arg2, TArg3 arg3, TArg4 arg4, TArg5 arg5)
@@ -228,6 +230,7 @@ namespace TEngine
         {
             EventMgr.Dispatcher.Send(StringId.StringToHash(eventType), handler);
         }
+
         #endregion
     }
 }
