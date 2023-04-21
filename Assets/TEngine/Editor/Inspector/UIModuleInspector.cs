@@ -6,6 +6,7 @@ namespace TEngine.Editor.Inspector
     internal sealed class UIModuleInspector : GameFrameworkInspector
     {
         private SerializedProperty m_InstanceRoot = null;
+        private SerializedProperty m_enableErrorLog = null;
         private SerializedProperty m_dontDestroyUIRoot = null;
         private SerializedProperty m_UICamera = null;
 
@@ -20,6 +21,7 @@ namespace TEngine.Editor.Inspector
             EditorGUI.BeginDisabledGroup(EditorApplication.isPlayingOrWillChangePlaymode);
             {
                 EditorGUILayout.PropertyField(m_InstanceRoot);
+                EditorGUILayout.PropertyField(m_enableErrorLog);
                 EditorGUILayout.PropertyField(m_dontDestroyUIRoot);
                 EditorGUILayout.PropertyField(m_UICamera);
             }
@@ -40,6 +42,7 @@ namespace TEngine.Editor.Inspector
         private void OnEnable()
         {
             m_InstanceRoot = serializedObject.FindProperty("m_InstanceRoot");
+            m_enableErrorLog = serializedObject.FindProperty("m_enableErrorLog");
             m_dontDestroyUIRoot = serializedObject.FindProperty("m_dontDestroyUIRoot");
             m_UICamera = serializedObject.FindProperty("m_UICamera");
 

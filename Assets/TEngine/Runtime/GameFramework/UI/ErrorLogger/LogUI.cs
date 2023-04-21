@@ -1,9 +1,8 @@
 ﻿using System;
 using Cysharp.Threading.Tasks;
 using UnityEngine.UI;
-using TEngine;
 
-namespace GameLogic
+namespace TEngine
 {
     [Window(UILayer.System)]
     class LogUI : UIWindow
@@ -32,6 +31,5 @@ namespace GameLogic
          {
              m_textError.text = UserData.ToString();
          }
-
     }
 }

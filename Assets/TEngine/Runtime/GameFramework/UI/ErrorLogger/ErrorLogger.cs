@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace GameLogic
+namespace TEngine
 {
     public class ErrorLogger
     {
