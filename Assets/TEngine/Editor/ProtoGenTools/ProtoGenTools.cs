@@ -83,7 +83,7 @@ namespace TEngine.Editor
 
                 if (newline.StartsWith("//"))
                 {
-                    sb.Append($"{newline}\n");
+                    sb.Append($"\t{newline}\n");
                     continue;
                 }
 
