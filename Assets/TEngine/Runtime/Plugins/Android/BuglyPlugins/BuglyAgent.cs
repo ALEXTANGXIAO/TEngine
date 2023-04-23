@@ -682,7 +682,9 @@ public sealed class BuglyAgent
 
 #if UNITY_ANDROID
     // The crash reporter package name, default is 'com.tencent.bugly'
+#pragma warning disable CS0414
     private static string _crashReporterPackage = "com.tencent.bugly";
+#pragma warning restore CS0414
 #endif
 #if UNITY_IPHONE || UNITY_IOS
     private static int _crashReproterCustomizedLogLevel = 2; // Off=0,Error=1,Warn=2,Info=3,Debug=4
