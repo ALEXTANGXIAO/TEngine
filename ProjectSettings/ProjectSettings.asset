@@ -165,6 +165,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
     Standalone: com.DefaultCompany.2DProject
+    iPhone: com.dinstudio.tengine
   buildNumber:
     Standalone: 0
     iPhone: 0
@@ -426,9 +427,9 @@ PlayerSettings:
   enableInternalProfiler: 0
   logObjCUncaughtExceptions: 1
   enableCrashReportAPI: 0
-  cameraUsageDescription: 
-  locationUsageDescription: 
-  microphoneUsageDescription: 
+  cameraUsageDescription: "\u662F\u5426\u5141\u8BB8\u6253\u5F00\u6444\u50CF\u5934"
+  locationUsageDescription: "\u662F\u5426\u5141\u8BB8\u8BBF\u95EE\u5B9A\u4F4D"
+  microphoneUsageDescription: "\u662F\u5426\u5141\u8BB8\u8BBF\u95EE\u7535\u8BDD"
   bluetoothUsageDescription: 
   switchNMETAOverride: 
   switchNetLibKey: 
