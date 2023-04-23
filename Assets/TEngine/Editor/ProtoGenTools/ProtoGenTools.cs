@@ -8,12 +8,6 @@ using UnityEditor;
 
 namespace TEngine.Editor
 {
-    internal class OpcodeInfo
-    {
-        public string Name;
-        public int Opcode;
-    }
-
     public static class ProtoGenTools
     {
 #if UNITY_EDITOR
@@ -34,11 +28,9 @@ namespace TEngine.Editor
             UnityEngine.Application.dataPath + "/..\\Luban\\Proto\\Gen\\";
 
         private static readonly char[] splitChars = { ' ', '\t' };
-        private static readonly List<OpcodeInfo> msgOpcode = new List<OpcodeInfo>();
 
         public static void Proto2CS()
         {
-            msgOpcode.Clear();
             Proto2CS("GameProto", "ProtoBase.proto", OutPutPath,10001,false);
         }
 
@@ -49,7 +41,6 @@ namespace TEngine.Editor
                 Directory.CreateDirectory(outputPath);
             }
 
-            msgOpcode.Clear();
             string proto = Path.Combine(ProtoPath, protoName);
             string csPath = Path.Combine(outputPath, Path.GetFileNameWithoutExtension(proto) + ".cs");
 
@@ -99,9 +90,7 @@ namespace TEngine.Editor
                         parentClass = ss[1].Trim();
                     }
 
-                    msgOpcode.Add(new OpcodeInfo() { Name = msgName, Opcode = ++startOpcode });
                     sb.Append($"\t[Serializable,global::ProtoBuf.ProtoContract(Name = @\"{msgName}\")]\n");
-                    // sb.Append($"\t[global::ProtoBuf.ProtoContract()]\n");
                     if (useMemoryPool)
                     {
                         sb.Append($"\tpublic partial class {msgName}: IMemory");
