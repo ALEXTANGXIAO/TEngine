@@ -1,5 +1,7 @@
 syntax = "proto3";
-package pb.message;
+
+package GameProto;
+
 // 对外服数据协议
 message ExternalMessage {
   // 请求命令类型: 0 心跳，1 业务
