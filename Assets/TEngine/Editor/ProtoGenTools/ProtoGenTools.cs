@@ -58,7 +58,7 @@ namespace TEngine.Editor
             StringBuilder sb = new StringBuilder();
             sb.Append("using System;\n");
             sb.Append("using ProtoBuf;\n");
-            sb.Append("using TEngine.Runtime;\n");
+            sb.Append("using TEngine;\n");
             sb.Append("using System.Collections.Generic;\n");
             sb.Append($"namespace {nameSpace}\n");
             sb.Append("{\n");
