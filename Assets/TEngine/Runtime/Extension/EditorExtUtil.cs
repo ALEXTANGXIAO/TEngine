@@ -142,13 +142,13 @@ namespace TEngine
 #endif
         }
 
-        public static void SaveTblConfig(ScriptableObject confg)
+        public static void SaveTblConfig(ScriptableObject config)
         {
 #if UNITY_EDITOR
-            EditorUtility.SetDirty(confg);
+            EditorUtility.SetDirty(config);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            var path = AssetDatabase.GetAssetPath(confg);
+            var path = AssetDatabase.GetAssetPath(config);
             AssetDatabase.ImportAsset(path);
             AssetDatabase.ImportAsset(path.Replace(".asset", ".csv"));
             EditorWindow.focusedWindow?.ShowNotification(new GUIContent("Done"));
