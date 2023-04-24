@@ -3,7 +3,8 @@
     "rootNamespace": "",
     "references": [
         "TEngine.Runtime",
-        "YooAsset.Editor"
+        "YooAsset.Editor",
+        "HybridCLR.Editor"
     ],
     "includePlatforms": [
         "Editor"

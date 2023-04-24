@@ -1,4 +1,3 @@
-/*
 using System.Collections;
 using System.Collections.Generic;
 using HybridCLR.Editor;
@@ -59,6 +58,3 @@ public static class BuildAssetsCommand
         }
     }
 }
-*/
-
-

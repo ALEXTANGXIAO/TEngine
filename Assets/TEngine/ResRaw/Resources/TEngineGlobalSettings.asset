@@ -27,6 +27,7 @@ MonoBehaviour:
       m_FormalResourceSourceUrl: http://127.0.0.1:8088
     m_AtlasFolder: Assets/AssetRaw/UIRaw
     m_ResourceVersionFileName: ResourceVersion.txt
+    HostServerURL: http://127.0.0.1:8081
     CheckVersionUrl: http://127.0.0.1/Resources/{0}Version.txt
     WindowsAppUrl: http://127.0.0.1
     MacOSAppUrl: http://127.0.0.1
@@ -39,9 +40,16 @@ MonoBehaviour:
   m_BybridCLRCustomGlobalSettings:
     m_Enable: 1
     m_Gitee: 1
-    HotUpdateAssemblies: []
-    AOTMetaAssemblies: []
-    LogicMainDllName: xxx.dll
+    HotUpdateAssemblies:
+    - GameLogic.dll
+    - GameBase.dll
+    - GameProto.dll
+    - BattleCore.Runtime.dll
+    AOTMetaAssemblies:
+    - mscorlib.dll
+    - System.dll
+    - System.Core.dll
+    LogicMainDllName: GameLogic.dll
     AssemblyTextAssetExtension: .bytes
-    AssemblyTextAssetPath: Assets/AssetRaw/DLL
+    AssemblyTextAssetPath: AssetRaw/DLL
     HybridCLRGlobalSettings: Settings/HybridCLRGlobalSettings
