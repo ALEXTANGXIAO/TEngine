@@ -28,15 +28,16 @@ public class HybridCLRCustomGlobalSettings
         set { m_Gitee = value; }
     }
 
-    [Header("Auto sync with [HybridCLRGlobalSettings]")] [Tooltip("You should modify the file form file path [Assets/CustomHybridCLR/Settings/HybridCLRGlobalSettings.asset]")]
-    public List<string> HotUpdateAssemblies;
+    [Header("Auto sync with [HybridCLRGlobalSettings]")]
+    [Tooltip("You should modify the file form file path [Assets/CustomHybridCLR/Settings/HybridCLRGlobalSettings.asset]")]
+    public List<string> HotUpdateAssemblies = new List<string>() { "GameLogic.dll","GameBase.dll","GameProto.dll","BattleCore.Runtime.dll"};
 
-    [Header("Need manual setting!")] public List<string> AOTMetaAssemblies;
+    [Header("Need manual setting!")] public List<string> AOTMetaAssemblies= new List<string>() {"mscorlib.dll","System.dll","System.Core.dll" };
 
     /// <summary>
     /// Dll of main business logic assembly
     /// </summary>
-    public string LogicMainDllName = "xxx.dll";
+    public string LogicMainDllName = "GameLogic.dll";
 
     /// <summary>
     /// 程序集文本资产打包Asset后缀名
@@ -46,7 +47,7 @@ public class HybridCLRCustomGlobalSettings
     /// <summary>
     /// 程序集文本资产资源目录
     /// </summary>
-    public string AssemblyTextAssetPath = "Assets/AssetRaw/DLL";
+    public string AssemblyTextAssetPath = "AssetRaw/DLL";
 
     /// <summary>
     /// Resources HybridCLRGlobalSettings Dir
