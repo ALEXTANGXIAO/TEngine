@@ -120,7 +120,7 @@ namespace GameMain
                 Log.Fatal($"Main logic assembly missing.");
                 return;
             }
-            var appType = m_MainLogicAssembly.GetType("GameMain");
+            var appType = m_MainLogicAssembly.GetType("GameApp");
             if (appType == null)
             {
                 Log.Fatal($"Main logic type 'GameMain' missing.");
