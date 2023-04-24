@@ -2,7 +2,8 @@
     "name": "BattleCore.Runtime",
     "rootNamespace": "BattleCore.Runtime",
     "references": [
-        "GUID:aa06d4cc755c979489c256c1bcca1dfb"
+        "GUID:aa06d4cc755c979489c256c1bcca1dfb",
+        "GUID:d8b63aba1907145bea998dd612889d6b"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
