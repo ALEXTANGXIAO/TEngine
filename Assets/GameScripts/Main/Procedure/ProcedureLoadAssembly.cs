@@ -19,7 +19,7 @@ namespace GameMain
         /// </summary>
         public bool NeedLoadDll => GameModule.Resource.playMode == EPlayMode.HostPlayMode || GameModule.Resource.playMode == EPlayMode.OfflinePlayMode;
 
-        private bool m_enableAddressable;
+        private bool m_enableAddressable = true;
         public override bool UseNativeDialog => true;
         private int m_LoadAssetCount;
         private int m_LoadMetadataAssetCount;
@@ -76,7 +76,7 @@ namespace GameMain
 
             if (SettingsUtils.HybridCLRCustomGlobalSettings.Enable)
             {
-#if !UNITY_EDITOR
+#if UNITY_EDITOR
                 m_LoadMetadataAssemblyComplete = false;
                 LoadMetadataForAOTAssembly();
 #else
