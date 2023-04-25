@@ -7,7 +7,9 @@
 ### Win64位包运行
 
 ![image](src/Win64-RunSuccessed.png)
-### TODO - 安卓环境运行
 
+---
+### 安卓真机运行
+![image](src/Android-RunSuccessed.png)
 
 ### TODO - IOS环境运行
