@@ -41,6 +41,21 @@ namespace GameMain
             m_LoadAssemblyComplete = false;
             m_HotfixAssemblys = new List<Assembly>();
 
+            //AOT Assembly加载原始metadata
+            if (SettingsUtils.HybridCLRCustomGlobalSettings.Enable)
+            {
+#if !UNITY_EDITOR
+                m_LoadMetadataAssemblyComplete = false;
+                LoadMetadataForAOTAssembly();
+#else
+                m_LoadMetadataAssemblyComplete = true;
+#endif
+            }
+            else
+            {
+                m_LoadMetadataAssemblyComplete = true;
+            }
+            
             if (!NeedLoadDll || GameModule.Resource.playMode == EPlayMode.EditorSimulateMode)
             {
                 m_MainLogicAssembly = GetMainLogicAssembly();
@@ -72,20 +87,6 @@ namespace GameMain
                 {
                     m_MainLogicAssembly = GetMainLogicAssembly();
                 }
-            }
-
-            if (SettingsUtils.HybridCLRCustomGlobalSettings.Enable)
-            {
-#if !UNITY_EDITOR
-                m_LoadMetadataAssemblyComplete = false;
-                LoadMetadataForAOTAssembly();
-#else
-                m_LoadMetadataAssemblyComplete = true;
-#endif
-            }
-            else
-            {
-                m_LoadMetadataAssemblyComplete = true;
             }
 
             if (m_LoadAssetCount == 0)
