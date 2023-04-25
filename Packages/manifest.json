@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.focus-creative-games.hybridclr_unity": "https://gitee.com/focus-creative-games/hybridclr_unity.git",
+    "com.focus-creative-games.hybridclr_unity": "2.1.0",
     "com.unity.2d.animation": "5.2.0",
     "com.unity.2d.pixel-perfect": "4.0.1",
     "com.unity.2d.psdimporter": "4.3.0",

@@ -347,6 +347,7 @@ namespace TEngine
 
             try
             {
+#if UNITY_EDITOR
                 TypeInfo typeInfo = typeof(AudioSettings).GetTypeInfo();
                 PropertyInfo propertyInfo = typeInfo.GetDeclaredProperty("unityAudioDisabled");
                 _bUnityAudioDisabled = (bool)propertyInfo.GetValue(null);
@@ -354,6 +355,7 @@ namespace TEngine
                 {
                     return;
                 }
+#endif
             }
             catch (Exception e)
             {

@@ -41,10 +41,11 @@ MonoBehaviour:
     m_Enable: 1
     m_Gitee: 1
     HotUpdateAssemblies:
-    - GameLogic.dll
     - GameBase.dll
+    - GameLogic.dll
     - GameProto.dll
     - BattleCore.Runtime.dll
+    - Assembly-CSharp.dll
     AOTMetaAssemblies:
     - mscorlib.dll
     - System.dll
