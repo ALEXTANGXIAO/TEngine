@@ -1,0 +1,1 @@
+npm install yumu-static-server -g
