@@ -1,0 +1,8 @@
+node_modules
+*.swap
+.idea
+.DS_Store
+*.log
+.vscode
+*-lock.json
+AssetsRoot
