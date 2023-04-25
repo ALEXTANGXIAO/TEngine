@@ -76,7 +76,7 @@ namespace GameMain
 
             if (SettingsUtils.HybridCLRCustomGlobalSettings.Enable)
             {
-#if UNITY_EDITOR
+#if !UNITY_EDITOR
                 m_LoadMetadataAssemblyComplete = false;
                 LoadMetadataForAOTAssembly();
 #else
