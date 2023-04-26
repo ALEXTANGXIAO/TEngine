@@ -1,5 +1,5 @@
 {
-    "name": "Procedure",
+    "name": "GameMain",
     "rootNamespace": "",
     "references": [
         "GUID:aa06d4cc755c979489c256c1bcca1dfb",

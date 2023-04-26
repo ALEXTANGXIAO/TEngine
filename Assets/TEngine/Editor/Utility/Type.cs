@@ -13,7 +13,7 @@ namespace TEngine.Editor
             "TEngine.Runtime",
             "Assembly-CSharp",
             "GameMain.Runtime",
-
+            "GameMain",
             "GameBase",
             "GameLogic",
             "GameProto",
@@ -26,7 +26,6 @@ namespace TEngine.Editor
             "Assembly-CSharp",
             "TEngine.Editor",
             "Assembly-CSharp-Editor",
-            "GameMain.Runtime",
             "GameMain",
             "GameMain.Editor",
             "GameBase",

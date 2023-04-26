@@ -246,6 +246,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_InstanceRoot: {fileID: 88107082}
   m_dontDestroyUIRoot: 1
+  m_enableErrorLog: 1
   m_UICamera: {fileID: 110205813}
 --- !u!1 &88107081
 GameObject:
