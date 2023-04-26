@@ -111,11 +111,6 @@ namespace GameMain
         
         private void AllAssemblyLoadComplete()
         {
-            if (GameModule.Resource.playMode == EPlayMode.EditorSimulateMode)
-            {
-                ChangeState<ProcedureStartGame>(m_procedureOwner);
-                return;
-            }
             if (m_MainLogicAssembly == null)
             {
                 Log.Fatal($"Main logic assembly missing.");

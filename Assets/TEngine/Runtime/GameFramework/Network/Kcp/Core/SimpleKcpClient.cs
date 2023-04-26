@@ -35,7 +35,7 @@ namespace System.Net.Sockets.Kcp.Simple
             buffer.Dispose();
         }
 
-        public async void SendAsync(byte[] datagram, int bytes)
+        public void SendAsync(byte[] datagram, int bytes)
         {
             kcp.Send(datagram.AsSpan().Slice(0, bytes));
         }
