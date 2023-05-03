@@ -45,7 +45,6 @@ MonoBehaviour:
     - GameLogic.dll
     - GameProto.dll
     - BattleCore.Runtime.dll
-    - Assembly-CSharp.dll
     AOTMetaAssemblies:
     - mscorlib.dll
     - System.dll
