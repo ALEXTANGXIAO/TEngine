@@ -839,7 +839,7 @@ namespace TEngine.Editor
 
         int _GetMemSize()
         {
-            return Profiler.GetRuntimeMemorySize(_clip);
+            return (int)Profiler.GetRuntimeMemorySizeLong(_clip);
         }
 
         int _GetInspectorSize()
@@ -872,7 +872,9 @@ namespace TEngine.Editor
             {
                 //浮点数精度压缩到f3
                 AnimationClipCurveData[] curves = null;
+#pragma warning disable CS0618
                 curves = AnimationUtility.GetAllCurves(_clip);
+#pragma warning restore CS0618
                 Keyframe key;
                 Keyframe[] keyFrames;
                 string floatFormat;
