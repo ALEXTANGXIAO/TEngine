@@ -15,7 +15,7 @@ namespace TEngine.Editor.UI
             Generate(false);
         }
 
-        [MenuItem("GameObject/ScriptGenerator/UIProperty UniTask", priority = 43)]
+        [MenuItem("GameObject/ScriptGenerator/UIProperty - UniTask", priority = 43)]
         public static void MemberPropertyUniTask()
         {
             Generate(false, true);
@@ -27,7 +27,7 @@ namespace TEngine.Editor.UI
             Generate(true);
         }
 
-        [MenuItem("GameObject/ScriptGenerator/UIPropertyAndListener UniTask", priority = 44)]
+        [MenuItem("GameObject/ScriptGenerator/UIPropertyAndListener - UniTask", priority = 44)]
         public static void MemberPropertyAndListenerUniTask()
         {
             Generate(true, true);

@@ -103,4 +103,16 @@ Sandbox/
 #Luban
 Luban/.cache.meta
 GenerateDatas/
+
+#HybridCLR
 Assets/HybridCLRData.meta
+UserSettings/Search.settings
+
+#Unity UserSettings
+UserSettings/Search.index
+UserSettings/Layouts/default-2021.dwlt
+
+#UnityOnlineServiceData
+Assets/UnityOnlineServiceData.meta
+Assets/UnityOnlineServiceData
+
