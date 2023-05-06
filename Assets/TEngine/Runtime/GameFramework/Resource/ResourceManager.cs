@@ -75,11 +75,6 @@ namespace TEngine
         /// </summary>
         /// <remarks>优先级较高的模块会优先轮询，并且关闭操作会后进行。</remarks>
         internal override int Priority => 4;
-        
-        /// <summary>
-        /// 资源服务器地址。
-        /// </summary>
-        public string HostServerURL { get; set; }
         #endregion
 
         #region 生命周期
@@ -171,12 +166,11 @@ namespace TEngine
             // 联机运行模式
             if (PlayMode == EPlayMode.HostPlayMode)
             {
-                HostServerURL = SettingsUtils.FrameworkGlobalSettings.HostServerURL;
                 var createParameters = new HostPlayModeParameters();
                 createParameters.DecryptionServices = new GameDecryptionServices();
                 createParameters.QueryServices = new GameQueryServices();
-                createParameters.DefaultHostServer = HostServerURL;
-                createParameters.FallbackHostServer = HostServerURL;
+                createParameters.DefaultHostServer = SettingsUtils.FrameworkGlobalSettings.HostServerURL;
+                createParameters.FallbackHostServer = SettingsUtils.FrameworkGlobalSettings.FallbackHostServerURL;
                 initializationOperation = package.InitializeAsync(createParameters);
             }
 

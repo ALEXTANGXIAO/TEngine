@@ -161,6 +161,8 @@ public class FrameworkGlobalSettings
 
     public string HostServerURL = "http://127.0.0.1:8081";
     
+    public string FallbackHostServerURL = "http://127.0.0.1:8081";
+    
     public string ResourceVersionFileName
     {
         get { return m_ResourceVersionFileName; }

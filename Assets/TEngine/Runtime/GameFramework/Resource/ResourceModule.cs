@@ -205,10 +205,10 @@ namespace TEngine
         /// <summary>
         /// 异步更新最新包的版本。
         /// </summary>
-        /// <param name="appendTimeTicks"></param>
+        /// <param name="appendTimeTicks">请求URL是否需要带时间戳。</param>
         /// <param name="timeout">超时时间。</param>
         /// <returns>请求远端包裹的最新版本操作句柄。</returns>
-        public UpdatePackageVersionOperation UpdatePackageVersionAsync(bool appendTimeTicks = true, int timeout = 60)
+        public UpdatePackageVersionOperation UpdatePackageVersionAsync(bool appendTimeTicks = false, int timeout = 60)
         {
             var package = YooAssets.GetPackage(packageName);
             return package.UpdatePackageVersionAsync(appendTimeTicks, timeout);
