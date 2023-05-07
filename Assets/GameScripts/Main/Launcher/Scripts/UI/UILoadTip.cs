@@ -2,7 +2,6 @@
 using UnityEngine.UI;
 using System;
 using TEngine;
-using TMPro;
 
 namespace GameMain
 {
@@ -19,8 +18,8 @@ namespace GameMain
         public Button _btn_update;
         public Button _btn_ignore;
         public Button _btn_package;
-        public TextMeshProUGUI _label_desc;
-        public TextMeshProUGUI _label_tittle;
+        public Text _label_desc;
+        public Text _label_tittle;
 
         public Action OnOk;
         public Action OnCancle;
