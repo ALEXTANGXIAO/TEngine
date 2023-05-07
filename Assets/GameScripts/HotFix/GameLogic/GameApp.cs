@@ -19,8 +19,22 @@ public partial class GameApp:Singleton<GameApp>
         Utility.Unity.AddDestroyListener(Instance.OnDestroy);
         Utility.Unity.AddOnDrawGizmosListener(Instance.OnDrawGizmos);
         Utility.Unity.AddOnApplicationPauseListener(Instance.OnApplicationPause);
+        Instance.StartGameLogic();
     }
 
+    /// <summary>
+    /// 开始游戏业务层逻辑。
+    /// <remarks>显示UI、加载场景等。</remarks>
+    /// </summary>
+    private void StartGameLogic()
+    {
+        
+    }
+
+    /// <summary>
+    /// 关闭游戏。
+    /// </summary>
+    /// <param name="shutdownType">关闭游戏框架类型。</param>
     public static void Shutdown(ShutdownType shutdownType)
     {
         
