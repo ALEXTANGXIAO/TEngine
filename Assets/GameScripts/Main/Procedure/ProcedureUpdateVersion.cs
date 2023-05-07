@@ -58,7 +58,7 @@ namespace GameMain
             {
                 //线上最新版本operation.PackageVersion
                 GameModule.Resource.PackageVersion = operation.PackageVersion;
-                
+                Log.Debug($"Updated package Version : from {GameModule.Resource.GetPackageVersion()} to {operation.PackageVersion}");
                 ChangeState<ProcedureUpdateManifest>(_procedureOwner);
             }
             else

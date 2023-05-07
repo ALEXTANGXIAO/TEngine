@@ -32,6 +32,9 @@ namespace GameMain
             
             if(operation.Status == EOperationStatus.Succeed)
             {
+                //更新成功
+                //注意：保存资源版本号作为下次默认启动的版本!
+                operation.SavePackageVersion();
                 ChangeState<ProcedureCreateDownloader>(procedureOwner);
             }
             else

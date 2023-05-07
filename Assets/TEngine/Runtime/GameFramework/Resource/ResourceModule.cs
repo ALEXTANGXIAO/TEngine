@@ -203,6 +203,21 @@ namespace TEngine
         }
 
         /// <summary>
+        /// 获取当前资源包版本。
+        /// </summary>
+        /// <returns>资源包版本。</returns>
+        public string GetPackageVersion()
+        {
+            var package = YooAssets.GetPackage(packageName);
+            if (package == null)
+            {
+                return string.Empty;
+            }
+
+            return package.GetPackageVersion();
+        }
+
+        /// <summary>
         /// 异步更新最新包的版本。
         /// </summary>
         /// <param name="appendTimeTicks">请求URL是否需要带时间戳。</param>
