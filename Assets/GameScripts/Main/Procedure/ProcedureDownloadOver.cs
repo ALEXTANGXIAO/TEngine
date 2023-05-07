@@ -7,6 +7,8 @@ namespace GameMain
     {
         public override bool UseNativeDialog { get; }
 
+        private bool _needClearCache;
+
         protected override void OnEnter(ProcedureOwner procedureOwner)
         {
             Log.Info("下载完成!!!");
@@ -16,7 +18,14 @@ namespace GameMain
 
         protected override void OnUpdate(ProcedureOwner procedureOwner, float elapseSeconds, float realElapseSeconds)
         {
-            ChangeState<ProcedureClearCache>(procedureOwner);
+            if (_needClearCache)
+            {
+                ChangeState<ProcedureClearCache>(procedureOwner);
+            }
+            else
+            {
+                ChangeState<ProcedureLoadAssembly>(procedureOwner);
+            }
         }
     }
 }

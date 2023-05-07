@@ -25,7 +25,7 @@ namespace GameMain
         {
             UILoadMgr.Show(UIDefine.UILoadUpdate,$"清理完成 即将进入游戏...");
             
-            ChangeState<ProcedureStartGame>(_procedureOwner);
+            ChangeState<ProcedureLoadAssembly>(_procedureOwner);
         }
     }
 }
