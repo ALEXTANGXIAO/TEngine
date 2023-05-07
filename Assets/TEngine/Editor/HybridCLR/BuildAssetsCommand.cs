@@ -1,19 +1,42 @@
-using System.Collections;
-using System.Collections.Generic;
+#if ENABLE_HYBRIDCLR
 using HybridCLR.Editor;
 using HybridCLR.Editor.Commands;
+#endif
+using TEngine.Editor;
 using UnityEditor;
 using UnityEngine;
-using TEngine;
 
 public static class BuildAssetsCommand
 {
+    private const string EnableHybridClrScriptingDefineSymbol = "ENABLE_HYBRIDCLR";
+    
+    /// <summary>
+    /// 禁用HybridCLR宏定义。
+    /// </summary>
+    [MenuItem("HybridCLR/Define Symbols/Disable HybridCLR", false, 30)]
+    public static void Disable()
+    {
+        ScriptingDefineSymbols.RemoveScriptingDefineSymbol(EnableHybridClrScriptingDefineSymbol);
+    }
+
+    /// <summary>
+    /// 开启HybridCLR宏定义。
+    /// </summary>
+    [MenuItem("HybridCLR/Define Symbols/Enable HybridCLR", false, 31)]
+    public static void Enable()
+    {
+        ScriptingDefineSymbols.RemoveScriptingDefineSymbol(EnableHybridClrScriptingDefineSymbol);
+        ScriptingDefineSymbols.AddScriptingDefineSymbol(EnableHybridClrScriptingDefineSymbol);
+    }
+    
     [MenuItem("HybridCLR/Build/BuildAssets And CopyTo AssemblyTextAssetPath")]
     public static void BuildAndCopyDlls()
     {
+#if ENABLE_HYBRIDCLR
         BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
         CompileDllCommand.CompileDll(target);
         CopyAOTHotUpdateDlls(target);
+#endif
     }
     
     public static void CopyAOTHotUpdateDlls(BuildTarget target)
@@ -25,6 +48,7 @@ public static class BuildAssetsCommand
     
     public static void CopyAOTAssembliesToAssetPath()
     {
+#if ENABLE_HYBRIDCLR
         var target = EditorUserBuildSettings.activeBuildTarget;
         string aotAssembliesSrcDir = SettingsUtil.GetAssembliesPostIl2CppStripDir(target);
         string aotAssembliesDstDir = Application.dataPath +"/"+ SettingsUtils.HybridCLRCustomGlobalSettings.AssemblyTextAssetPath;
@@ -41,10 +65,12 @@ public static class BuildAssetsCommand
             System.IO.File.Copy(srcDllPath, dllBytesPath, true);
             Debug.Log($"[CopyAOTAssembliesToStreamingAssets] copy AOT dll {srcDllPath} -> {dllBytesPath}");
         }
+#endif
     }
     
     public static void CopyHotUpdateAssembliesToAssetPath()
     {
+#if ENABLE_HYBRIDCLR
         var target = EditorUserBuildSettings.activeBuildTarget;
 
         string hotfixDllSrcDir = SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target);
@@ -56,5 +82,6 @@ public static class BuildAssetsCommand
             System.IO.File.Copy(dllPath, dllBytesPath, true);
             Debug.Log($"[CopyHotUpdateAssembliesToStreamingAssets] copy hotfix dll {dllPath} -> {dllBytesPath}");
         }
+#endif
     }
 }

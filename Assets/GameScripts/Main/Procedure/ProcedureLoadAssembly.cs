@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+#if ENABLE_HYBRIDCLR
 using HybridCLR;
+#endif
 using UnityEngine;
 using TEngine;
 using System.Reflection;
@@ -28,7 +30,9 @@ namespace GameMain
         private bool m_LoadAssemblyComplete;
         private bool m_LoadMetadataAssemblyComplete;
         private bool m_LoadAssemblyWait;
+#pragma warning disable CS0414
         private bool m_LoadMetadataAssemblyWait;
+#pragma warning restore CS0414
         private Assembly m_MainLogicAssembly;
         private List<Assembly> m_HotfixAssemblys;
         private IFsm<IProcedureManager> m_procedureOwner;
@@ -251,7 +255,7 @@ namespace GameMain
                 Log.Debug($"LoadMetadataAssetSuccess:Load text asset [ {assetName} ] failed.");
                 return;
             }
-
+#if ENABLE_HYBRIDCLR
             try
             {
                 byte[] dllBytes = textAsset.bytes;
@@ -272,7 +276,11 @@ namespace GameMain
             finally
             {
                 m_LoadMetadataAssemblyComplete = m_LoadMetadataAssemblyWait && 0 == m_LoadMetadataAssetCount;
+
             }
+#else
+            m_LoadMetadataAssemblyComplete = true;
+#endif
         }
     }
 }
