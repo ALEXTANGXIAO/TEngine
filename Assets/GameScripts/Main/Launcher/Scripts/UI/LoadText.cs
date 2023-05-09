@@ -7,11 +7,11 @@ namespace GameMain
         public string Label_Load_Progress = "正在下载资源文件，请耐心等待\n当前下载速度：{0}/s 资源文件大小：{1}";
         public string Label_Load_FirstUnpack = "首次进入游戏，正在初始化游戏资源...（此过程不消耗网络流量）";
         public string Label_Load_Unpacking = "正在更新本地资源版本，请耐心等待...（此过程不消耗网络流量）";
-        public string Label_Load_Checking = "检测版本文件{0}...";
+        public string Label_Load_Checking = "检测更新设置{0}...";
         public string Label_Load_Checked = "最新版本检测完成";
         public string Label_Load_Package = "当前使用的版本过低，请下载安装最新版本";
         public string Label_Load_Plantform = "当前使用的版本过低，请前往应用商店安装最新版本";
-        public string Label_Load_Notice = "检测到可选资源更新，推荐完成更新提升游戏体验";
+        public string Label_Load_Notice = "检测到可选资源更新,更新包大小<color=#BA3026>{0}</color>，推荐完成更新提升游戏体验";
         public string Label_Load_Force = "检测到版本更新，取消更新将导致无法进入游戏";
         public string Label_Load_Force_WIFI =
             "检测到有新的游戏内容需要更新，更新包大小<color=#BA3026>{0}</color>, 取消更新将导致无法进入游戏，您当前已为<color=#BA3026>wifi网络</color>，请开始更新";
