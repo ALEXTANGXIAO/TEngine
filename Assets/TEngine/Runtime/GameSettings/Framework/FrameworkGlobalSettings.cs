@@ -198,11 +198,10 @@ public class FrameworkGlobalSettings
         get { return m_ResourceVersionFileName; }
     }
 
-    public string CheckVersionUrl = "http://127.0.0.1/Resources/{0}Version.txt";
-    public string WindowsAppUrl = "http://127.0.0.1";
-    public string MacOSAppUrl = "http://127.0.0.1";
-    public string IOSAppUrl = "http://127.0.0.1";
-    public string AndroidAppUrl = "http://127.0.0.1";
+    public string WindowsUpdateDataUrl = "http://127.0.0.1";
+    public string MacOSUpdateDataUrl = "http://127.0.0.1";
+    public string IOSUpdateDataUrl = "http://127.0.0.1";
+    public string AndroidUpdateDataUrl = "http://127.0.0.1";
     [Header("Server")] [SerializeField] private string m_CurUseServerChannel;
 
     public string CurUseServerChannel

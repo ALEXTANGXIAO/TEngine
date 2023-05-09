@@ -98,7 +98,7 @@ namespace GameMain
                 return;
             }
             
-            var checkVersionUrl = SettingsUtils.GetAppUpdateUrl();
+            var checkVersionUrl = SettingsUtils.GetUpdateDataUrl();
 
             UILoadMgr.Show(UIDefine.UILoadUpdate, string.Format(LoadText.Instance.Label_Load_Checking, _curTryCount));
             if (string.IsNullOrEmpty(checkVersionUrl))
