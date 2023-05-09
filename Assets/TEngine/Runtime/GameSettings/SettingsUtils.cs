@@ -38,6 +38,10 @@ public static class SettingsUtils
         HybridCLRCustomGlobalSettings.AOTMetaAssemblies = aOTMetaAssemblies;
     }
 
+    public static bool EnableUpdateData()
+    {
+        return FrameworkGlobalSettings.EnableUpdateData;
+    }
 
     public static string GetUpdateDataUrl()
     {

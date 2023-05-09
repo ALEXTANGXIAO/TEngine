@@ -198,6 +198,8 @@ public class FrameworkGlobalSettings
         get { return m_ResourceVersionFileName; }
     }
 
+    public bool EnableUpdateData = false;
+    
     public string WindowsUpdateDataUrl = "http://127.0.0.1";
     public string MacOSUpdateDataUrl = "http://127.0.0.1";
     public string IOSUpdateDataUrl = "http://127.0.0.1";
