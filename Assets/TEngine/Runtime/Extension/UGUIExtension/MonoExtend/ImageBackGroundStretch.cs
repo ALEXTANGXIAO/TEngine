@@ -1,15 +1,17 @@
 using UnityEngine;
 
-namespace GameLogic
+namespace TEngine
 {
     /// <summary>
-    /// 背景图片等比拉伸
+    /// 背景图片等比拉伸。
     /// </summary>
     public class ImageBackGroundStretch : MonoBehaviour
     {
+        public float standardAspectValue = 9 / 16f;
+        
         protected virtual void Start()
         {
-            DoImageStretch(9/16f);
+            DoImageStretch(standardAspectValue);
         }
 
         private void DoImageStretch(float standardAspect)
