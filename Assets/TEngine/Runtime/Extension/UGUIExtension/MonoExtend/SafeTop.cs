@@ -19,10 +19,14 @@ namespace TEngine
 
         private static float _notchHeight;
 
-        public static void CheckNotch(bool applyEditorNotch = false)
+        public static void CheckNotch(bool applyEditorNotch = true)
         {
 #if UNITY_EDITOR
             _notchHeight = applyEditorNotch ? Screen.safeArea.y > 0f ? Screen.safeArea.y : Screen.currentResolution.height - Screen.safeArea.height : 0f;
+            if (_notchHeight < 0)
+            {
+                _notchHeight = 0;
+            }
 #else
             _notchHeight = Screen.safeArea.y > 0f ? Screen.safeArea.y : Screen.currentResolution.height - Screen.currentResolution.height;
 #endif
