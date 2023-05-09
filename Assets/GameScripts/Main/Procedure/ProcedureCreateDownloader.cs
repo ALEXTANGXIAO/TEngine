@@ -62,7 +62,7 @@ namespace GameMain
                 sizeMb = Mathf.Clamp(sizeMb, 0.1f, float.MaxValue);
                 _totalSizeMb = sizeMb.ToString("f1");
 
-                if (SettingsUtils. EnableUpdateData())
+                if (!SettingsUtils.EnableUpdateData())
                 {
                     UILoadTip.ShowMessageBox($"Found update patch files, Total count {_totalDownloadCount} Total size {_totalSizeMb}MB", MessageShowType.TwoButton,
                         LoadStyle.StyleEnum.Style_StartUpdate_Notice
