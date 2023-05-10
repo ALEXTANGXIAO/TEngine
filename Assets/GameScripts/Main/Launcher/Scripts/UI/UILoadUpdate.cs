@@ -41,7 +41,7 @@ namespace GameMain
         private void RefreshVersion()
         {
             _label_appid.text = string.Format(LoadText.Instance.Label_App_id, Version.GameVersion);
-            _label_resid.text = string.Format(LoadText.Instance.Label_Res_id, GameModule.Resource.PackageVersion);
+            _label_resid.text = string.Format(LoadText.Instance.Label_Res_id, GameModule.Resource.GetPackageVersion());
         }
 
         public virtual void OnContinue(GameObject obj)
