@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using YooAsset;
@@ -83,11 +82,11 @@ namespace TEngine
         /// 注册资源数据到资源组内。
         /// </summary>
         /// <param name="handle">资源操作句柄。</param>
-        /// <param name="tag">资源标识。</param>
+        /// <param name="assetTag">资源标识。</param>
         /// <returns>是否注册成功。</returns>
-        public bool Register(AssetOperationHandle handle,string tag = "")
+        public bool Register(AssetOperationHandle handle,string assetTag = "")
         {
-            AssetHandleData handleData = AssetHandleData.Alloc(handle,tag);
+            AssetHandleData handleData = AssetHandleData.Alloc(handle,assetTag);
             _assetHandleDataLinkedList.AddLast(handleData);
             return true;
         }
@@ -95,14 +94,14 @@ namespace TEngine
         /// <summary>
         /// 从资源组内反注册资源数据。
         /// </summary>
-        /// <param name="tag"></param>
+        /// <param name="assetTag"></param>
         /// <returns></returns>
-        public bool UnRegister(string tag)
+        public bool UnRegister(string assetTag)
         {
             AssetHandleData founded = null;
             foreach (var assetHandleData in _assetHandleDataLinkedList)
             {
-                if (assetHandleData.Tag == tag)
+                if (assetHandleData.Tag == assetTag)
                 {
                     founded = assetHandleData;
                     break;
@@ -116,7 +115,7 @@ namespace TEngine
                 return true;
             }
 
-            Log.Warning($"UnRegister AssetHandleData Tag:{tag} Failed");
+            Log.Warning($"UnRegister AssetHandleData Tag:{assetTag} Failed");
             return false;
         }
         
@@ -201,7 +200,7 @@ namespace TEngine
                 return default;
             }
 
-            AssetOperationHandle handle = YooAssets.LoadAssetSync<T>(assetName);
+            AssetOperationHandle handle = GameModule.Resource.LoadAssetGetOperation<T>(assetName);
 
             Register(handle);
 
@@ -231,7 +230,7 @@ namespace TEngine
                 return default;
             }
 
-            AssetOperationHandle handle = YooAssets.LoadAssetSync<T>(assetName);
+            AssetOperationHandle handle = GameModule.Resource.LoadAssetGetOperation<T>(assetName);
 
             Register(handle);
 

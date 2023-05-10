@@ -292,7 +292,6 @@ namespace TEngine
         /// </summary>
         /// <param name="assetName">要加载资源的名称。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
-        /// <remarks>不计入引用计数，直接释放！</remarks>
         /// <returns>资源实例。</returns>
         public T LoadAsset<T>(string assetName) where T : Object
         {
@@ -306,7 +305,7 @@ namespace TEngine
             if (typeof(T) == typeof(GameObject))
             {
                 GameObject ret = handle.InstantiateSync();
-                handle.Dispose();
+                AssetReference.BindAssetReference(ret, handle, assetName);
                 return ret as T;
             }
             else
@@ -323,7 +322,6 @@ namespace TEngine
         /// <param name="assetName">要加载资源的名称。</param>
         /// <param name="parent">父节点位置。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
-        /// <remarks>不计入引用计数，直接释放！</remarks>
         /// <returns>资源实例。</returns>
         public T LoadAsset<T>(string assetName, Transform parent) where T : Object
         {
@@ -337,7 +335,7 @@ namespace TEngine
             if (typeof(T) == typeof(GameObject))
             {
                 GameObject ret = handle.InstantiateSync();
-                handle.Dispose();
+                AssetReference.BindAssetReference(ret, handle, assetName);
                 return ret as T;
             }
             else
@@ -416,8 +414,17 @@ namespace TEngine
             AssetOperationHandle handle = LoadAssetAsyncHandle<GameObject>(assetName);
 
             await handle.ToUniTask(cancellationToken:cancellationToken);
-
-            return handle.AssetObject as T;
+            
+            if (typeof(T) == typeof(GameObject))
+            {
+                GameObject ret = handle.InstantiateSync();
+                AssetReference.BindAssetReference(ret, handle, assetName);
+                return ret as T;
+            }
+            else
+            {
+                return handle.AssetObject as T;
+            }
         }
 
         /// <summary>
@@ -429,10 +436,9 @@ namespace TEngine
         public async UniTask<GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken)
         {
             AssetOperationHandle handle = LoadAssetAsyncHandle<GameObject>(assetName);
-
             await handle.ToUniTask(cancellationToken:cancellationToken);
-
             GameObject ret = handle.InstantiateSync();
+            AssetReference.BindAssetReference(ret, handle, assetName);
             
             return ret;
         }
