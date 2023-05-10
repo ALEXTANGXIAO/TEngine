@@ -360,7 +360,7 @@ GameObject:
   m_Component:
   - component: {fileID: 110205811}
   - component: {fileID: 110205813}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: UICamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
