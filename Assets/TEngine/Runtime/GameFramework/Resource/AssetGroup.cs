@@ -79,12 +79,12 @@ namespace TEngine
         private readonly GameFrameworkLinkedList<AssetHandleData> _assetHandleDataLinkedList = new GameFrameworkLinkedList<AssetHandleData>();
 
         /// <summary>
-        /// 注册资源数据到资源组内。
+        /// 引用资源数据到资源组内。
         /// </summary>
         /// <param name="handle">资源操作句柄。</param>
         /// <param name="assetTag">资源标识。</param>
         /// <returns>是否注册成功。</returns>
-        public bool Register(AssetOperationHandle handle,string assetTag = "")
+        public bool Reference(AssetOperationHandle handle,string assetTag = "")
         {
             AssetHandleData handleData = AssetHandleData.Alloc(handle,assetTag);
             _assetHandleDataLinkedList.AddLast(handleData);
@@ -92,11 +92,11 @@ namespace TEngine
         }
 
         /// <summary>
-        /// 从资源组内反注册资源数据。
+        /// 从资源组内释放资源数据。
         /// </summary>
-        /// <param name="assetTag"></param>
-        /// <returns></returns>
-        public bool UnRegister(string assetTag)
+        /// <param name="assetTag">资源标签。</param>
+        /// <returns>是否释放成功。</returns>
+        public bool Release(string assetTag)
         {
             AssetHandleData founded = null;
             foreach (var assetHandleData in _assetHandleDataLinkedList)
@@ -120,11 +120,11 @@ namespace TEngine
         }
         
         /// <summary>
-        /// 从资源组内反注册资源数据。
+        /// 从资源组内释放资源数据。
         /// </summary>
-        /// <param name="handle"></param>
-        /// <returns></returns>
-        public bool UnRegister(AssetOperationHandle handle)
+        /// <param name="handle">资源操作句柄。</param>
+        /// <returns>是否释放成功。</returns>
+        public bool Release(AssetOperationHandle handle)
         {
             AssetHandleData founded = null;
             foreach (var assetHandleData in _assetHandleDataLinkedList)
@@ -202,7 +202,7 @@ namespace TEngine
 
             AssetOperationHandle handle = GameModule.Resource.LoadAssetGetOperation<T>(assetName);
 
-            Register(handle);
+            Reference(handle);
 
             if (typeof(T) == typeof(GameObject))
             {
@@ -232,7 +232,7 @@ namespace TEngine
 
             AssetOperationHandle handle = GameModule.Resource.LoadAssetGetOperation<T>(assetName);
 
-            Register(handle);
+            Reference(handle);
 
             if (typeof(T) == typeof(GameObject))
             {
@@ -244,29 +244,110 @@ namespace TEngine
                 return handle.AssetObject as T;
             }
         }
+        
+        /// <summary>
+        /// 同步加载资源。
+        /// </summary>
+        /// <param name="assetName">要加载资源的名称。</param>
+        /// <typeparam name="T">要加载资源的类型。</typeparam>
+        /// <param name="assetOperationHandle">资源操作句柄。</param>
+        /// <returns>资源实例。</returns>
+        public T LoadAsset<T>(string assetName,out AssetOperationHandle assetOperationHandle) where T : Object
+        {
+            assetOperationHandle = null;
+            if (string.IsNullOrEmpty(assetName))
+            {
+                Log.Error("Asset name is invalid.");
+                return default;
+            }
+            if (string.IsNullOrEmpty(assetName))
+            {
+                Log.Error("Asset name is invalid.");
+                return default;
+            }
+
+            assetOperationHandle = GameModule.Resource.LoadAssetGetOperation<T>(assetName);
+
+            Reference(assetOperationHandle);
+
+            if (typeof(T) == typeof(GameObject))
+            {
+                GameObject ret = assetOperationHandle.InstantiateSync();
+                return ret as T;
+            }
+            else
+            {
+                return assetOperationHandle.AssetObject as T;
+            }
+        }
+        
+        /// <summary>
+        /// 同步加载资源。
+        /// </summary>
+        /// <param name="assetName">要加载资源的名称。</param>
+        /// <param name="parent">父节点位置。</param>
+        /// <param name="assetOperationHandle">资源操作句柄。</param>
+        /// <typeparam name="T">要加载资源的类型。</typeparam>
+        /// <returns>资源实例。</returns>
+        public T LoadAsset<T>(string assetName, Transform parent,out AssetOperationHandle assetOperationHandle) where T : Object
+        {
+            assetOperationHandle = null;
+            if (string.IsNullOrEmpty(assetName))
+            {
+                Log.Error("Asset name is invalid.");
+                return default;
+            }
+
+            assetOperationHandle = GameModule.Resource.LoadAssetGetOperation<T>(assetName);
+
+            Reference(assetOperationHandle);
+
+            if (typeof(T) == typeof(GameObject))
+            {
+                GameObject ret = assetOperationHandle.InstantiateSync(parent);
+                return ret as T;
+            }
+            else
+            {
+                return assetOperationHandle.AssetObject as T;
+            }
+        }
 
         /// <summary>
         /// 异步加载资源实例。
         /// </summary>
         /// <param name="assetName">要加载的实例名称。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
+        /// <param name="assetOperationHandle">资源操作句柄。</param>
         /// <returns>资源实实例。</returns>
-        public async UniTask<T> LoadAssetAsync<T>(string assetName, CancellationToken cancellationToken) where T : Object
+        // ReSharper disable once UnusedParameter.Global
+        // ReSharper disable once RedundantAssignment
+        public async UniTask<T> LoadAssetAsync<T>(string assetName, CancellationToken cancellationToken,AssetOperationHandle assetOperationHandle = null) where T : Object
         {
             AssetOperationHandle handle = GameModule.Resource.LoadAssetAsyncHandle<GameObject>(assetName);
 
-            Register(handle);
+            Reference(handle);
 
             bool cancelOrFailed = await handle.ToUniTask(cancellationToken: cancellationToken).SuppressCancellationThrow();
 
             if (cancelOrFailed)
             {
-                UnRegister(handle);
+                Release(handle);
 
                 return null;
             }
 
-            return handle.AssetObject as T;
+            assetOperationHandle = handle;
+            
+            if (typeof(T) == typeof(GameObject))
+            {
+                GameObject ret = handle.InstantiateSync();
+                return ret as T;
+            }
+            else
+            {
+                return handle.AssetObject as T;
+            }
         }
 
         /// <summary>
@@ -277,22 +358,19 @@ namespace TEngine
         /// <returns>异步游戏物体实例。</returns>
         public async UniTask<GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken)
         {
-            AssetOperationHandle handle = GameModule.Resource.LoadAssetAsyncHandle<GameObject>(assetName);
-
-            Register(handle);
-
-            bool cancelOrFailed = await handle.ToUniTask(cancellationToken: cancellationToken).SuppressCancellationThrow();
-
-            if (cancelOrFailed)
-            {
-                UnRegister(handle);
-
-                return null;
-            }
-
-            GameObject ret = handle.InstantiateSync();
-
-            return ret;
+            return await LoadAssetAsync<GameObject>(assetName,cancellationToken);
+        }
+        
+        /// <summary>
+        /// 异步加载游戏物体。
+        /// </summary>
+        /// <param name="assetName">要加载的游戏物体名称。</param>
+        /// <param name="cancellationToken">取消操作Token。</param>
+        /// <param name="assetOperationHandle">资源操作句柄。</param>
+        /// <returns>异步游戏物体实例。</returns>
+        public async UniTask<GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken,AssetOperationHandle assetOperationHandle)
+        {
+            return await LoadAssetAsync<GameObject>(assetName,cancellationToken,assetOperationHandle);
         }
     }
 }
