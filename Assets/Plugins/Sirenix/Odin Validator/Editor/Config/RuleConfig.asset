@@ -12,4 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 1434321088, guid: afbf832bc46149f5a291e87cab63e46d, type: 3}
   m_Name: RuleConfig
   m_EditorClassIdentifier: 
-  projectRules: []
+  projectRules:
+  - Enabled: 1
+    EnabledOverridden: 1
+    Type: Sirenix.OdinValidator.Editor.Validators.DuplicateComponentsValidator, Sirenix.OdinValidator.Editor
+    Override: "{\r\n    \"$id\": 0,\r\n    \"$type\": \"0|Sirenix.OdinValidator.Editor.Validators.DuplicateComponentsValidator,
+      Sirenix.OdinValidator.Editor\",\r\n    \"Severity\": 1,\r\n    \"TypeExceptions\":
+      {\r\n        \"$id\": 1,\r\n        \"$type\": \"1|System.Type[], mscorlib\",\r\n       
+      \"$rlength\": 1,\r\n        \"$rcontent\": [\r\n            {\r\n               
+      \"$id\": 2,\r\n                \"$type\": \"2|System.RuntimeType, mscorlib\",\r\n               
+      \"DG.Tweening.DOTweenAnimation, Assembly-CSharp\"\r\n            }\r\n       
+      ]\r\n    },\r\n    \"PrefabExceptions\": {\r\n        \"$id\": 3,\r\n       
+      \"$type\": \"3|System.Collections.Generic.List`1[[Sirenix.OdinValidator.Editor.Validators.DuplicateComponentsValidator+PrefabException,
+      Sirenix.OdinValidator.Editor]], mscorlib\",\r\n        \"$rlength\": 0,\r\n       
+      \"$rcontent\": [\r\n        ]\r\n    }\r\n}"
