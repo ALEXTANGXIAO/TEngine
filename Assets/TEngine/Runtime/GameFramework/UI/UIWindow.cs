@@ -339,7 +339,9 @@ namespace TEngine
 
             for (int i = 0; i < ListChild.Count; i++)
             {
-                ListChild[i].OnDestroy();
+                var uiChild = ListChild[i];
+                uiChild.OnDestroy();
+                uiChild.OnDestroyWidget();
             }
 
             // 注销回调函数
@@ -350,12 +352,6 @@ namespace TEngine
             {
                 Handle.Release();
                 Handle = null;
-            }
-
-            if (AssetGroup != null)
-            {
-                AssetGroup.Release(AssetGroup);
-                AssetGroup = null;
             }
 
             // 销毁面板对象
@@ -382,6 +378,9 @@ namespace TEngine
             // 实例化对象
             _panel = handle.InstantiateSync(UIModule.UIRootStatic);
             _panel.transform.localPosition = Vector3.zero;
+            
+            // 绑定引用
+            AssetReference = AssetReference.BindAssetReference(_panel);
 
             // 获取组件
             _canvas = _panel.GetComponent<Canvas>();

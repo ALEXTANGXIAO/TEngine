@@ -18,6 +18,7 @@ namespace TEngine
         /// <summary>
         /// 窗口组件名称。
         /// </summary>
+        // ReSharper disable once InconsistentNaming
         public string name { private set; get; } = nameof(UIWidget);
         
         /// <summary>
@@ -83,9 +84,9 @@ namespace TEngine
                 {
                     var uiWidget = listChild[i];
 
-                    UnityEngine.Profiling.Profiler.BeginSample(uiWidget.name);
+                    TProfiler.BeginSample(uiWidget.name);
                     var needValid = uiWidget.InternalUpdate();
-                    UnityEngine.Profiling.Profiler.EndSample();
+                    TProfiler.EndSample();
 
                     if (!updateListValid && needValid)
                     {
@@ -99,7 +100,7 @@ namespace TEngine
                 }
             }
 
-            UnityEngine.Profiling.Profiler.BeginSample("OnUpdate");
+            TProfiler.BeginSample("OnUpdate");
 
             bool needUpdate = false;
             if (listNextUpdateChild == null || listNextUpdateChild.Count <= 0)
@@ -113,7 +114,7 @@ namespace TEngine
                 OnUpdate();
                 needUpdate = true;
             }
-            UnityEngine.Profiling.Profiler.EndSample();
+            TProfiler.EndSample();
                 
             return needUpdate;
         }
@@ -154,6 +155,7 @@ namespace TEngine
             {
                 return false;
             }
+            AssetReference = AssetReference.BindAssetReference(widgetRoot,parent:parentUI.AssetReference);
             RestChildCanvas(parentUI);
             parent = parentUI;
             Parent.ListChild.Add(this);
@@ -199,6 +201,26 @@ namespace TEngine
                 }
             }
         }
+        #endregion
+
+        #region Destroy
+
+        /// <summary>
+        /// 组件被销毁调用。
+        /// <remarks>请勿手动调用！</remarks>
+        /// </summary>
+        public void OnDestroyWidget()
+        {
+            if (Handle != null)
+            {
+                if (AssetReference != null && AssetReference.Parent != null)
+                {
+                    AssetReference.Parent.Release(Handle);
+                }
+            }   
+        }
+        
+
         #endregion
     }
 }

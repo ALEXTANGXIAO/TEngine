@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using YooAsset;
@@ -68,9 +69,9 @@ namespace TEngine
         public AssetOperationHandle Handle { protected set; get; }
 
         /// <summary>
-        /// 资源组数据。
+        /// 资源引用数据。
         /// </summary>
-        public AssetGroup AssetGroup { protected set; get; }
+        public AssetReference AssetReference { protected set; get; }
 
         /// <summary>
         /// 资源是否准备完毕。
@@ -239,7 +240,13 @@ namespace TEngine
         #endregion
 
         #region UIWidget
-
+        /// <summary>
+        /// 创建UIWidget通过父UI位置节点。
+        /// </summary>
+        /// <param name="goPath">父UI位置节点。</param>
+        /// <param name="visible">是否可见。</param>
+        /// <typeparam name="T">UIWidget。</typeparam>
+        /// <returns>UIWidget实例。</returns>
         public T CreateWidget<T>(string goPath, bool visible = true) where T : UIWidget, new()
         {
             var goRootTrans = FindChild(goPath);
@@ -248,21 +255,18 @@ namespace TEngine
             {
                 return CreateWidget<T>(goRootTrans.gameObject, visible);
             }
-
             return null;
         }
-
-        public T CreateWidget<T>(GameObject goRoot, bool visible = true) where T : UIWidget, new()
-        {
-            var widget = new T();
-            if (widget.Create(this, goRoot, visible))
-            {
-                return widget;
-            }
-
-            return null;
-        }
-
+        
+        
+        /// <summary>
+        /// 创建UIWidget通过父UI位置节点。
+        /// </summary>
+        /// <param name="parentTrans"></param>
+        /// <param name="goPath">父UI位置节点。</param>
+        /// <param name="visible">是否可见。</param>
+        /// <typeparam name="T">UIWidget。</typeparam>
+        /// <returns>UIWidget实例。</returns>
         public T CreateWidget<T>(Transform parentTrans, string goPath, bool visible = true) where T : UIWidget, new()
         {
             var goRootTrans = FindChild(parentTrans, goPath);
@@ -270,21 +274,54 @@ namespace TEngine
             {
                 return CreateWidget<T>(goRootTrans.gameObject, visible);
             }
-
             return null;
         }
 
+        /// <summary>
+        /// 创建UIWidget通过游戏物体。
+        /// </summary>
+        /// <param name="goRoot">游戏物体。</param>
+        /// <param name="visible">是否可见。</param>
+        /// <typeparam name="T">UIWidget。</typeparam>
+        /// <returns>UIWidget实例。</returns>
+        public T CreateWidget<T>(GameObject goRoot, bool visible = true) where T : UIWidget, new()
+        {
+            var widget = new T();
+            if (widget.Create(this, goRoot, visible))
+            {
+                return widget;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 创建UIWidget通过资源路径。
+        /// </summary>
+        /// <param name="parentTrans">资源父节点。</param>
+        /// <param name="assetPath">资源路径。</param>
+        /// <param name="visible">是否可见。</param>
+        /// <typeparam name="T">UIWidget。</typeparam>
+        /// <returns>UIWidget实例。</returns>
         public T CreateWidgetByPath<T>(Transform parentTrans, string assetPath, bool visible = true) where T : UIWidget, new()
         {
-            if (AssetGroup == null)
+            if (AssetReference == null)
             {
-                AssetGroup = AssetGroup.Alloc();
+                Log.Fatal($"CreateWidgetByPath Failed => {this}.AssetReference is null");
+                return null;
             }
-
-            GameObject goInst = AssetGroup.LoadAsset<GameObject>(assetPath, parentTrans);
+            GameObject goInst = AssetReference.LoadAsset<GameObject>(assetPath, parentTrans,out var handle);
+            Handle = handle;
             return CreateWidget<T>(goInst, visible);
         }
 
+        /// <summary>
+        /// 根据prefab或者模版来创建新的 widget。
+        /// </summary>
+        /// <param name="goPrefab">资源创建副本。</param>
+        /// <param name="parentTrans">资源父节点。</param>
+        /// <param name="visible">是否可见。</param>
+        /// <typeparam name="T">UIWidget。</typeparam>
+        /// <returns>UIWidget实例。</returns>
         public T CreateWidgetByPrefab<T>(GameObject goPrefab, Transform parentTrans = null, bool visible = true) where T : UIWidget, new()
         {
             var widget = new T();
@@ -296,6 +333,13 @@ namespace TEngine
             return widget;
         }
 
+        /// <summary>
+        /// 通过UI类型来创建widget。
+        /// </summary>
+        /// <param name="parentTrans">资源父节点。</param>
+        /// <param name="visible">是否可见。</param>
+        /// <typeparam name="T">UIWidget。</typeparam>
+        /// <returns>UIWidget实例。</returns>
         public T CreateWidgetByType<T>(Transform parentTrans, bool visible = true) where T : UIWidget, new()
         {
             return CreateWidgetByPath<T>(parentTrans, typeof(T).Name, visible);
@@ -304,25 +348,32 @@ namespace TEngine
         /// <summary>
         /// 调整图标数量。
         /// </summary>
-        public void AdjustIconNum<T>(List<T> listIcon, int tarNum, Transform parent, GameObject prefab = null, string assetPath = "") where T : UIWidget, new()
+        /// <remarks>常用于Icon创建。</remarks>
+        /// <param name="listIcon">存放Icon的列表。</param>
+        /// <param name="number">创建数目。</param>
+        /// <param name="parentTrans">资源父节点。</param>
+        /// <param name="prefab">资产副本。</param>
+        /// <param name="assetPath">资产地址。</param>
+        /// <typeparam name="T">图标类型。</typeparam>
+        public void AdjustIconNum<T>(List<T> listIcon, int number, Transform parentTrans, GameObject prefab = null, string assetPath = "") where T : UIWidget, new()
         {
             if (listIcon == null)
             {
                 listIcon = new List<T>();
             }
 
-            if (listIcon.Count < tarNum)
+            if (listIcon.Count < number)
             {
-                int needNum = tarNum - listIcon.Count;
+                int needNum = number - listIcon.Count;
                 for (int iconIdx = 0; iconIdx < needNum; iconIdx++)
                 {
-                    T tmpT = prefab == null ? CreateWidgetByType<T>(parent) : CreateWidgetByPrefab<T>(prefab, parent);
+                    T tmpT = prefab == null ? CreateWidgetByType<T>(parentTrans) : CreateWidgetByPrefab<T>(prefab, parentTrans);
                     listIcon.Add(tmpT);
                 }
             }
-            else if (listIcon.Count > tarNum)
+            else if (listIcon.Count > number)
             {
-                RemoveUnUseItem<T>(listIcon, tarNum);
+                RemoveUnUseItem<T>(listIcon, number);
             }
         }
 
@@ -347,6 +398,14 @@ namespace TEngine
         /// <summary>
         /// 异步创建接口。
         /// </summary>
+        /// <param name="listIcon"></param>
+        /// <param name="tarNum"></param>
+        /// <param name="parentTrans"></param>
+        /// <param name="maxNumPerFrame"></param>
+        /// <param name="updateAction"></param>
+        /// <param name="prefab"></param>
+        /// <param name="assetPath"></param>
+        /// <typeparam name="T"></typeparam>
         private async UniTaskVoid AsyncAdjustIconNumInternal<T>(List<T> listIcon, int tarNum, Transform parentTrans, int maxNumPerFrame,
             Action<T, int> updateAction, GameObject prefab, string assetPath) where T : UIWidget, new()
         {
@@ -415,11 +474,128 @@ namespace TEngine
                 var icon = removeIcon[index];
                 listIcon.Remove(icon);
                 icon.OnDestroy();
+                icon.OnDestroyWidget();
                 ListChild.Remove(icon);
                 UnityEngine.Object.Destroy(icon.gameObject);
             }
         }
 
+        #endregion
+
+        #region AssetRefrence Methods
+        
+        /// <summary>
+        /// 引用资源数据到资源组内。
+        /// </summary>
+        /// <param name="handle">资源操作句柄。</param>
+        /// <param name="assetTag">资源标识。</param>
+        /// <returns>是否注册成功。</returns>
+        public bool Reference(AssetOperationHandle handle, string assetTag = "")
+        {
+            if (AssetReference == null)
+            {
+                Log.Fatal($"Register Failed => {this}.AssetReference is null");
+                return false;
+            }
+            return AssetReference.Reference(handle, assetTag);
+        }
+
+        /// <summary>
+        /// 从资源组内释放资源数据。
+        /// </summary>
+        /// <param name="assetTag"></param>
+        /// <returns></returns>
+        public bool Release(string assetTag)
+        {
+            if (AssetReference == null)
+            {
+                Log.Fatal($"UnRegister Failed => {this}.AssetReference is null");
+                return false;
+            }
+            return AssetReference.Release(assetTag);
+        }
+
+        /// <summary>
+        /// 从资源组内释放资源数据。
+        /// </summary>
+        /// <param name="handle"></param>
+        /// <returns></returns>
+        public bool Release(AssetOperationHandle handle)
+        {
+            if (AssetReference == null)
+            {
+                Log.Fatal($"UnRegister Failed => {this}.AssetReference is null");
+                return false;
+            }
+            return AssetReference.Release(handle);
+        }
+
+
+        /// <summary>
+        /// 同步加载资源。
+        /// </summary>
+        /// <param name="assetName">要加载资源的名称。</param>
+        /// <typeparam name="T">要加载资源的类型。</typeparam>
+        /// <returns>资源实例。</returns>
+        public T LoadAsset<T>(string assetName) where T : UnityEngine.Object
+        {
+            if (AssetReference == null)
+            {
+                Log.Fatal($"LoadAsset Failed => {this}.AssetReference is null");
+                return default;
+            }
+            return AssetReference.LoadAsset<T>(assetName);
+        }
+
+        /// <summary>
+        /// 同步加载资源。
+        /// </summary>
+        /// <param name="assetName">要加载资源的名称。</param>
+        /// <param name="parentTrans">父节点位置。</param>
+        /// <typeparam name="T">要加载资源的类型。</typeparam>
+        /// <returns>资源实例。</returns>
+        public T LoadAsset<T>(string assetName, Transform parentTrans) where T : UnityEngine.Object
+        {
+            if (AssetReference == null)
+            {
+                Log.Fatal($"LoadAsset Failed => {this}.AssetReference is null");
+                return default;
+            }
+            return AssetReference.LoadAsset<T>(assetName, parentTrans);
+        }
+
+        /// <summary>
+        /// 异步加载资源实例。
+        /// </summary>
+        /// <param name="assetName">要加载的实例名称。</param>
+        /// <param name="cancellationToken">取消操作Token。</param>
+        /// <returns>资源实实例。</returns>
+        public async UniTask<T> LoadAssetAsync<T>(string assetName, CancellationToken cancellationToken)
+            where T : UnityEngine.Object
+        {
+            if (AssetReference == null)
+            {
+                Log.Fatal($"LoadAssetAsync Failed => {this}.AssetReference is null");
+                return default;
+            }
+            return await AssetReference.LoadAssetAsync<T>(assetName, cancellationToken);
+        }
+
+        /// <summary>
+        /// 异步加载游戏物体。
+        /// </summary>
+        /// <param name="assetName">要加载的游戏物体名称。</param>
+        /// <param name="cancellationToken">取消操作Token。</param>
+        /// <returns>异步游戏物体实例。</returns>
+        public async UniTask<GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken)
+        {
+            if (AssetReference == null)
+            {
+                Log.Fatal($"LoadAssetAsync Failed => {this}.AssetReference is null");
+                return default;
+            }
+            return await AssetReference.LoadGameObjectAsync(assetName, cancellationToken);
+        }
         #endregion
     }
 }
