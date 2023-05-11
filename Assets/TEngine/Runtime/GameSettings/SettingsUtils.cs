@@ -201,4 +201,14 @@ public static class SettingsUtils
         //     GameEntry.GetModule<LocalizationComponent>().Language.ToString(), assetName, fromBytes ? "bytes" : "xml");
         return string.Empty;
     }
+
+    public static List<ScriptGenerateRuler> GetScriptGenerateRule()
+    {
+        return FrameworkGlobalSettings.ScriptGenerateRule;
+    }
+    
+    public static string GetUINameSpace()
+    {
+        return FrameworkGlobalSettings.NameSpace;
+    }
 }
