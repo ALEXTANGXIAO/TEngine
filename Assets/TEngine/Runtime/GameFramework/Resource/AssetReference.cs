@@ -22,7 +22,9 @@ namespace TEngine
         /// </summary>
         public AssetGroup AssetGroup => _assetGroup;
 
+#pragma warning disable CS0628
         public AssetReference Parent { protected set; get; }
+#pragma warning restore CS0628
         
         // ReSharper disable once ConvertToAutoPropertyWithPrivateSetter
         // ReSharper disable once InconsistentNaming
@@ -179,8 +181,7 @@ namespace TEngine
         /// <param name="parent">父级引用。</param>
         /// <returns>资源引用组件。</returns>
         /// <exception cref="GameFrameworkException">捕获异常。</exception>
-        public static AssetReference BindAssetReference(GameObject go, AssetOperationHandle handle = null,
-            string location = "", AssetReference parent = null)
+        public static AssetReference BindAssetReference(GameObject go, AssetOperationHandle handle, string location = "", AssetReference parent = null)
         {
             if (go == null)
             {
@@ -195,6 +196,28 @@ namespace TEngine
             var ret = go.AddComponent<AssetReference>();
 
             ret.Bind(operation: handle, assetLocation: location, parent: parent);
+
+            return ret;
+        }
+        
+        /// <summary>
+        /// 绑定资源引用。
+        /// </summary>
+        /// <param name="go">游戏物体实例。</param>
+        /// <param name="location">资源定位地址。</param>
+        /// <param name="parent">父级引用。</param>
+        /// <returns>资源引用组件。</returns>
+        /// <exception cref="GameFrameworkException">捕获异常。</exception>
+        public static AssetReference BindAssetReference(GameObject go,string location = "", AssetReference parent = null)
+        {
+            if (go == null)
+            {
+                throw new GameFrameworkException($"BindAssetReference Failed => GameObject is null!");
+            }
+
+            var ret = go.AddComponent<AssetReference>();
+
+            ret.Bind(operation: null, assetLocation: location, parent: parent);
 
             return ret;
         }
