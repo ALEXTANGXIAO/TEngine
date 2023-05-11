@@ -58,7 +58,7 @@ namespace TEngine.Editor.UI
                     strFile.Append("using UnityEngine;\n");
                     strFile.Append("using UnityEngine.UI;\n");
                     strFile.Append("using TEngine;\n\n");
-                    strFile.Append("namespace GameMain\n");
+                    strFile.Append($"namespace {SettingsUtils.GetUINameSpace()}\n");
                     strFile.Append("{\n");
                     strFile.Append("\t[Window(UILayer.UI)]\n");
                     strFile.Append("\tclass " + root.name + " : UIWindow\n");
@@ -140,55 +140,20 @@ namespace TEngine.Editor.UI
             return "OnSlider" + varName.Replace("m_slider", string.Empty) + "Change";
         }
 
-        public static Dictionary<string, string> dicWidget = new Dictionary<string, string>()
-        {
-            { "m_go", "GameObject" },
-            { "m_item", "GameObject" },
-            { "m_tf", "Transform" },
-            { "m_rect", "RectTransform" },
-#if ENABLE_TEXTMESHPRO
-            {"m_text","TextMeshProUGUI"},
-#else
-            { "m_text", "Text" },
-#endif
-            { "m_richText", "RichTextItem" },
-            { "m_tbtn", "TextButtonItem" },
-            { "m_btn", "Button" },
-            { "m_img", "Image" },
-            { "m_rimg", "RawImage" },
-            { "m_scrollBar", "Scrollbar" },
-            { "m_scroll", "ScrollRect" },
-            { "m_input", "InputField" },
-            { "m_grid", "GridLayoutGroup" },
-            { "m_clay", "CircleLayoutGroup" },
-            { "m_hlay", "HorizontalLayoutGroup" },
-            { "m_vlay", "VerticalLayoutGroup" },
-            { "m_red", "RedNoteBehaviour" },
-            { "m_switch", "SwitchTabItem" },
-            { "m_slider", "Slider" },
-            { "m_group", "ToggleGroup" },
-            { "m_curve", "AnimationCurve" },
-            { "m_canvasGroup", "CanvasGroup" },
-#if ENABLE_TEXTMESHPRO
-            {"m_tmp","TextMeshProUGUI"},
-#endif
-        };
-
         private static void WriteScript(Transform root, Transform child, ref StringBuilder strVar, ref StringBuilder strBind, ref StringBuilder strOnCreate,
             ref StringBuilder strCallback, bool isUniTask)
         {
             string varName = child.name;
-            string varType = string.Empty;
-            foreach (var pair in dicWidget)
-            {
-                var key = pair.Key;
-                if (varName.StartsWith(key))
-                {
-                    varType = pair.Value;
-                }
-            }
+            string componentName = string.Empty;
 
-            if (varType == string.Empty)
+            var rule = SettingsUtils.GetScriptGenerateRule().Find(t => varName.StartsWith(t.uiElementRegex));
+
+            if (rule != null)
+            {
+                componentName = rule.componentName;
+            }
+            
+            if (componentName == string.Empty)
             {
                 return;
             }
@@ -196,8 +161,8 @@ namespace TEngine.Editor.UI
             string varPath = GetRelativePath(child, root);
             if (!string.IsNullOrEmpty(varName))
             {
-                strVar.Append("\t\tprivate " + varType + " " + varName + ";\n");
-                switch (varType)
+                strVar.Append("\t\tprivate " + componentName + " " + varName + ";\n");
+                switch (componentName)
                 {
                     case "Transform":
                         strBind.Append($"\t\t\t{varName} = FindChild(\"{varPath}\");\n");
@@ -211,7 +176,7 @@ namespace TEngine.Editor.UI
                     case "RichItemIcon":
                     case "CommonFightWidget":
                     case "PlayerHeadWidget":
-                        strBind.Append($"\t\t\t{varName} = CreateWidgetByType<{varType}>(\"{varPath}\");\n");
+                        strBind.Append($"\t\t\t{varName} = CreateWidgetByType<{componentName}>(\"{varPath}\");\n");
                         break;
                     case "RedNoteBehaviour":
                     case "TextButtonItem":
@@ -219,7 +184,7 @@ namespace TEngine.Editor.UI
                     case "UIActorWidget":
                     case "UIEffectWidget":
                     case "UISpineWidget":
-                        strBind.Append($"\t\t\t{varName} = CreateWidget<{varType}>(\"{varPath}\");\n");
+                        strBind.Append($"\t\t\t{varName} = CreateWidget<{componentName}>(\"{varPath}\");\n");
                         break;
                     case "ActorNameBinderText":
                         strBind.Append($"\t\t\t{varName} = FindTextBinder(\"{varPath}\");\n");
@@ -228,11 +193,11 @@ namespace TEngine.Editor.UI
                         strBind.Append($"\t\t\t{varName} = FindEffectBinder(\"{varPath}\");\n");
                         break;
                     default:
-                        strBind.Append($"\t\t\t{varName} = FindChildComponent<{varType}>(\"{varPath}\");\n");
+                        strBind.Append($"\t\t\t{varName} = FindChildComponent<{componentName}>(\"{varPath}\");\n");
                         break;
                 }
 
-                if (varType == "Button")
+                if (componentName == "Button")
                 {
                     string varFuncName = GetBtnFuncName(varName);
                     if (isUniTask)
@@ -248,14 +213,14 @@ namespace TEngine.Editor.UI
                         strCallback.Append("\t\t{\n\t\t}\n");
                     }
                 }
-                else if (varType == "Toggle")
+                else if (componentName == "Toggle")
                 {
                     string varFuncName = GetToggleFuncName(varName);
                     strOnCreate.Append($"\t\t\t{varName}.onValueChanged.AddListener({varFuncName});\n");
                     strCallback.Append($"\t\tprivate void {varFuncName}(bool isOn)\n");
                     strCallback.Append("\t\t{\n\t\t}\n");
                 }
-                else if (varType == "Slider")
+                else if (componentName == "Slider")
                 {
                     string varFuncName = GetSliderFuncName(varName);
                     strOnCreate.Append($"\t\t\t{varName}.onValueChanged.AddListener({varFuncName});\n");
@@ -281,9 +246,9 @@ namespace TEngine.Editor.UI
             protected void OnGUI()
             {
                 GUILayout.BeginVertical();
-                foreach (var item in ScriptGenerator.dicWidget)
+                foreach (var item in SettingsUtils.GetScriptGenerateRule())
                 {
-                    GUILayout.Label(item.Key + "：\t" + item.Value);
+                    GUILayout.Label(item.uiElementRegex + "：\t" + item.componentName);
                 }
                 GUILayout.EndVertical();
             }
