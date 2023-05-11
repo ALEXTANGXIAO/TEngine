@@ -17,11 +17,6 @@ namespace TEngine
         private string _assetLocation;
         private AssetGroup _assetGroup;
 
-        /// <summary>
-        /// 资源组。
-        /// </summary>
-        public AssetGroup AssetGroup => _assetGroup;
-
 #pragma warning disable CS0628
         public AssetReference Parent { protected set; get; }
 #pragma warning restore CS0628
@@ -31,8 +26,8 @@ namespace TEngine
         public AssetOperationHandle assetOperationHandle => _operationHandle;
         
         public string AssetLocation => _assetLocation;
-
-        private void Awake()
+        
+        public void DirtyInitAssetGroup()
         {
             if (_assetGroup == null)
             {
@@ -59,7 +54,7 @@ namespace TEngine
                 _operationHandle = null;
             }
 
-            if (_assetGroup == null)
+            if (_assetGroup != null)
             {
                 AssetGroup.Release(_assetGroup);
                 _assetGroup = null;
@@ -75,6 +70,7 @@ namespace TEngine
         /// <returns>是否注册成功。</returns>
         public bool Reference(AssetOperationHandle handle, string assetTag = "")
         {
+            DirtyInitAssetGroup();
             return _assetGroup.Reference(handle, assetTag);
         }
 
@@ -85,6 +81,7 @@ namespace TEngine
         /// <returns></returns>
         public bool Release(string assetTag)
         {
+            DirtyInitAssetGroup();
             return _assetGroup.Release(assetTag);
         }
 
@@ -95,6 +92,7 @@ namespace TEngine
         /// <returns></returns>
         public bool Release(AssetOperationHandle handle)
         {
+            DirtyInitAssetGroup();
             return _assetGroup.Release(handle);
         }
 
@@ -107,6 +105,7 @@ namespace TEngine
         /// <returns>资源实例。</returns>
         public T LoadAsset<T>(string assetName) where T : Object
         {
+            DirtyInitAssetGroup();
             return _assetGroup.LoadAsset<T>(assetName);
         }
 
@@ -119,6 +118,7 @@ namespace TEngine
         /// <returns>资源实例。</returns>
         public T LoadAsset<T>(string assetName, Transform parent) where T : Object
         {
+            DirtyInitAssetGroup();
             return _assetGroup.LoadAsset<T>(assetName, parent);
         }
 
@@ -132,6 +132,7 @@ namespace TEngine
         // ReSharper disable once ParameterHidesMember
         public T LoadAsset<T>(string assetName, out AssetOperationHandle assetOperationHandle) where T : Object
         {
+            DirtyInitAssetGroup();
             return _assetGroup.LoadAsset<T>(assetName,out assetOperationHandle);
         }
         
@@ -146,6 +147,7 @@ namespace TEngine
         // ReSharper disable once ParameterHidesMember
         public T LoadAsset<T>(string assetName, Transform parent, out AssetOperationHandle assetOperationHandle) where T : Object
         {
+            DirtyInitAssetGroup();
             return _assetGroup.LoadAsset<T>(assetName, parent,out assetOperationHandle);
         }
 
@@ -158,6 +160,7 @@ namespace TEngine
         public async UniTask<T> LoadAssetAsync<T>(string assetName, CancellationToken cancellationToken)
             where T : Object
         {
+            DirtyInitAssetGroup();
             return await _assetGroup.LoadAssetAsync<T>(assetName, cancellationToken);
         }
 
@@ -169,6 +172,7 @@ namespace TEngine
         /// <returns>异步游戏物体实例。</returns>
         public async UniTask<GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken)
         {
+            DirtyInitAssetGroup();
             return await _assetGroup.LoadGameObjectAsync(assetName, cancellationToken);
         }
 
