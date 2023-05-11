@@ -170,7 +170,7 @@ namespace TEngine.Editor.UI
             { "m_curve", "AnimationCurve" },
             { "m_canvasGroup", "CanvasGroup" },
 #if ENABLE_TEXTMESHPRO
-        {"m_tmp","TextMeshProUGUI"},
+            {"m_tmp","TextMeshProUGUI"},
 #endif
         };
 
@@ -285,6 +285,7 @@ namespace TEngine.Editor.UI
                 {
                     GUILayout.Label(item.Key + "：\t" + item.Value);
                 }
+                GUILayout.EndVertical();
             }
         }
 
