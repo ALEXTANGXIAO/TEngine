@@ -7,8 +7,7 @@ namespace UnityToolbarExtender
     [InitializeOnLoad]
     public class SceneSwitchLeftButton
     {
-        private static readonly string SceneName1 = "main";
-        private static readonly string SceneName2 = "main2";
+        private static readonly string SceneMain = "main";
 
         static SceneSwitchLeftButton()
         {
@@ -32,7 +31,7 @@ namespace UnityToolbarExtender
                     new GUIContent("Launcher", EditorGUIUtility.FindTexture("PlayButton"), $"Start Scene Launcher"),
                     _buttonGuiStyle))
             {
-                SceneHelper.StartScene(SceneName1);
+                SceneHelper.StartScene(SceneMain);
             }
         }
     }
