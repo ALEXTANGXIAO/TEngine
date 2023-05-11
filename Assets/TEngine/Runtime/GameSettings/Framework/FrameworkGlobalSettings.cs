@@ -1,6 +1,11 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
+#if UNITY_EDITOR
+using Sirenix.OdinInspector;
+using UnityEditor;
+#endif
 
 /// <summary>
 /// APP更新类型。
@@ -8,10 +13,12 @@ using UnityEngine;
 public enum UpdateType
 {
     None = 0,
+
     //资源更新
     ResourceUpdate = 1,
+
     //底包更新
-    PackageUpdate = 2, 
+    PackageUpdate = 2,
 }
 
 /// <summary>
@@ -20,8 +27,8 @@ public enum UpdateType
 public enum UpdateStyle
 {
     None = 0,
-    Force = 1,      //强制(不更新无法进入游戏。)
-    Optional = 2,   //非强制(不更新可以进入游戏。)
+    Force = 1, //强制(不更新无法进入游戏。)
+    Optional = 2, //非强制(不更新可以进入游戏。)
 }
 
 /// <summary>
@@ -30,10 +37,10 @@ public enum UpdateStyle
 public enum UpdateNotice
 {
     None = 0,
-    Notice = 1,     //提示
-    NoNotice = 2,   //非提示
+    Notice = 1, //提示
+    NoNotice = 2, //非提示
 }
-    
+
 public enum GameStatus
 {
     First = 0,
@@ -48,13 +55,13 @@ public class UpdateData
     /// <summary>
     /// 是否底包更新。
     /// </summary>
-    public UpdateType UpdateType;    
-    
+    public UpdateType UpdateType;
+
     /// <summary>
     /// 是否强制更新。
     /// </summary>
     public UpdateStyle UpdateStyle;
-    
+
     /// <summary>
     /// 是否提示。
     /// </summary>
@@ -157,7 +164,7 @@ public class FrameworkGlobalSettings
     {
         get { return m_AppStage; }
     }
-    
+
     // // 资源更新类型
     // public UpdateType UpdateType = UpdateType.PackageUpdate;
     //     
@@ -186,20 +193,19 @@ public class FrameworkGlobalSettings
         get { return m_AtlasFolder; }
     }
 
-    [Header("Hotfix")] [SerializeField] 
-    private string m_ResourceVersionFileName = "ResourceVersion.txt";
+    [Header("Hotfix")] [SerializeField] private string m_ResourceVersionFileName = "ResourceVersion.txt";
 
     public string HostServerURL = "http://127.0.0.1:8081";
-    
+
     public string FallbackHostServerURL = "http://127.0.0.1:8081";
-    
+
     public string ResourceVersionFileName
     {
         get { return m_ResourceVersionFileName; }
     }
 
     public bool EnableUpdateData = false;
-    
+
     public string WindowsUpdateDataUrl = "http://127.0.0.1";
     public string MacOSUpdateDataUrl = "http://127.0.0.1";
     public string IOSUpdateDataUrl = "http://127.0.0.1";
@@ -232,4 +238,76 @@ public class FrameworkGlobalSettings
     {
         get { return m_ConfigFolderName; }
     }
+    
+    [LabelText("代码生成脚本命名空间")]
+    [SerializeField] private string @namespace = "GameLogic";
+
+    public string NameSpace => @namespace;
+
+    [SerializeField] [LabelText("代码生成脚本名映射")]
+    private List<ScriptGenerateRuler> scriptGenerateRule = new List<ScriptGenerateRuler>()
+    {
+        new("m_go", "GameObject"),
+        new("m_item", "GameObject"),
+        new("m_tf", "Transform"),
+        new("m_rect", "RectTransform"),
+#if ENABLE_TEXTMESHPRO
+        {"m_textPro","TextMeshProUGUI"},
+#else
+        new("m_text", "Text"),
+#endif
+        new("m_richText", "RichTextItem"),
+        new("m_btn", "Button"),
+        new("m_img", "Image"),
+        new("m_rimg", "RawImage"),
+        new("m_scrollBar", "Scrollbar"),
+        new("m_scroll", "ScrollRect"),
+        new("m_input", "InputField"),
+        new("m_grid", "GridLayoutGroup"),
+        new("m_hlay", "HorizontalLayoutGroup"),
+        new("m_vlay", "VerticalLayoutGroup"),
+        new("m_red", "RedNoteBehaviour"),
+        new("m_slider", "Slider"),
+        new("m_group", "ToggleGroup"),
+        new("m_curve", "AnimationCurve"),
+        new("m_canvasGroup", "CanvasGroup"),
+#if ENABLE_TEXTMESHPRO
+            new("m_tmp","TextMeshProUGUI"),
+#endif
+    };
+
+    public List<ScriptGenerateRuler> ScriptGenerateRule => scriptGenerateRule;
 }
+
+[Serializable]
+public class ScriptGenerateRuler
+{
+    public string uiElementRegex;
+    public string componentName;
+
+    public ScriptGenerateRuler(string uiElementRegex, string componentName)
+    {
+        this.uiElementRegex = uiElementRegex;
+        this.componentName = componentName;
+    }
+}
+
+#if UNITY_EDITOR
+[CustomPropertyDrawer(typeof(ScriptGenerateRuler))]
+public class ScriptGenerateRulerDrawer : PropertyDrawer
+{
+    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    {
+        EditorGUI.BeginProperty(position, label, property);
+        position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
+        var indent = EditorGUI.indentLevel;
+        EditorGUI.indentLevel = 0;
+        var uiElementRegexRect = new Rect(position.x, position.y, 120, position.height);
+        var componentNameRect = new Rect(position.x + 125, position.y, 150, position.height);
+        EditorGUI.PropertyField(uiElementRegexRect, property.FindPropertyRelative("uiElementRegex"), GUIContent.none);
+        EditorGUI.PropertyField(componentNameRect, property.FindPropertyRelative("componentName"), GUIContent.none);
+        EditorGUI.indentLevel = indent;
+        EditorGUI.EndProperty();
+    }
+}
+#endif
