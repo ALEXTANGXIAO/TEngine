@@ -41,6 +41,7 @@ public class UIButtonScale : MonoBehaviour,
         if (_tweener != null)
         {
             DOTween.Kill(_tweener.id);
+            _tweener = null;
         }
         tweenTarget.transform.localScale = _cacheScale;
     }
@@ -63,6 +64,7 @@ public class UIButtonScale : MonoBehaviour,
                 if (needRemoveAllTween == false && _tweener != null)
                 {
                     DOTween.Kill(_tweener.id);
+                    _tweener = null;
                 }
                 tweenTarget.transform.localScale = _cacheScale;
             }
@@ -83,6 +85,7 @@ public class UIButtonScale : MonoBehaviour,
                 if (_tweener != null)
                 {
                     DOTween.Kill(_tweener.id);
+                    _tweener = null;
                 }
             }
             if (isPressed)
@@ -132,6 +135,7 @@ public class UIButtonScale : MonoBehaviour,
         if (needRemoveAllTween == false && _tweener != null)
         {
             DOTween.Kill(_tweener.id);
+            _tweener = null;
         }
     }
 }
