@@ -27,16 +27,59 @@ MonoBehaviour:
       m_FormalResourceSourceUrl: http://127.0.0.1:8088
     m_AtlasFolder: Assets/AssetRaw/UIRaw
     m_ResourceVersionFileName: ResourceVersion.txt
-    HostServerURL: http://127.0.0.1:8081
-    CheckVersionUrl: http://127.0.0.1/Resources/{0}Version.txt
-    WindowsAppUrl: http://127.0.0.1
-    MacOSAppUrl: http://127.0.0.1
-    IOSAppUrl: http://127.0.0.1
-    AndroidAppUrl: http://127.0.0.1
+    HostServerURL: http://127.0.0.1:8081/AssetsRoot/
+    FallbackHostServerURL: 
+    EnableUpdateData: 1
+    WindowsUpdateDataUrl: http://127.0.0.1:8081/AssetsRoot/UpdateData.json
+    MacOSUpdateDataUrl: http://127.0.0.1
+    IOSUpdateDataUrl: http://127.0.0.1
+    AndroidUpdateDataUrl: http://127.0.0.1
     m_CurUseServerChannel: 
     m_ServerChannelInfos: []
     m_IsReadLocalConfigInEditor: 1
     m_ConfigFolderName: Assets/AssetRaw/Configs/
+    namespace: GameLogic
+    scriptGenerateRule:
+    - uiElementRegex: m_go
+      componentName: GameObject
+    - uiElementRegex: m_item
+      componentName: GameObject
+    - uiElementRegex: m_tf
+      componentName: Transform
+    - uiElementRegex: m_rect
+      componentName: RectTransform
+    - uiElementRegex: m_text
+      componentName: Text
+    - uiElementRegex: m_richText
+      componentName: RichTextItem
+    - uiElementRegex: m_btn
+      componentName: Button
+    - uiElementRegex: m_img
+      componentName: Image
+    - uiElementRegex: m_rimg
+      componentName: RawImage
+    - uiElementRegex: m_scrollBar
+      componentName: Scrollbar
+    - uiElementRegex: m_scroll
+      componentName: ScrollRect
+    - uiElementRegex: m_input
+      componentName: InputField
+    - uiElementRegex: m_grid
+      componentName: GridLayoutGroup
+    - uiElementRegex: m_hlay
+      componentName: HorizontalLayoutGroup
+    - uiElementRegex: m_vlay
+      componentName: VerticalLayoutGroup
+    - uiElementRegex: m_red
+      componentName: RedNoteBehaviour
+    - uiElementRegex: m_slider
+      componentName: Slider
+    - uiElementRegex: m_group
+      componentName: ToggleGroup
+    - uiElementRegex: m_curve
+      componentName: AnimationCurve
+    - uiElementRegex: m_canvasGroup
+      componentName: CanvasGroup
   m_BybridCLRCustomGlobalSettings:
     m_Enable: 1
     m_Gitee: 1
