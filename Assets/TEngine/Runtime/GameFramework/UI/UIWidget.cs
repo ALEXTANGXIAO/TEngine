@@ -217,7 +217,7 @@ namespace TEngine
                 {
                     AssetReference.Parent.Release(Handle);
                 }
-            }   
+            }
         }
         
 
