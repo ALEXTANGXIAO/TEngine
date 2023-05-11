@@ -211,6 +211,7 @@ namespace TEngine
         /// </summary>
         public void OnDestroyWidget()
         {
+            RemoveAllUIEvent();
             if (Handle != null)
             {
                 if (AssetReference != null && AssetReference.Parent != null)
