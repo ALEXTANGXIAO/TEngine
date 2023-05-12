@@ -1,8 +1,9 @@
 ﻿using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityToolbarExtender;
 
-namespace UnityToolbarExtender
+namespace TEngine
 {
     [InitializeOnLoad]
     public class SceneSwitchLeftButton
