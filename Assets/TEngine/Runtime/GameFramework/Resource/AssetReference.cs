@@ -75,14 +75,27 @@ namespace TEngine
         }
 
         /// <summary>
+        /// 引用资源数据到资源组内。
+        /// </summary>
+        /// <param name="address">资源定位地址。</param>
+        /// <param name="handle">资源操作句柄。</param>
+        /// <param name="assetTag">资源标识。</param>
+        /// <returns>是否注册成功。</returns>
+        public bool Reference(string address, AssetOperationHandle handle, string assetTag = "")
+        {
+            DirtyInitAssetGroup();
+            return _assetGroup.Reference(address, handle, assetTag);
+        }
+
+        /// <summary>
         /// 从资源组内释放资源数据。
         /// </summary>
         /// <param name="assetTag"></param>
         /// <returns></returns>
-        public bool Release(string assetTag)
+        public bool ReleaseByTag(string assetTag)
         {
             DirtyInitAssetGroup();
-            return _assetGroup.Release(assetTag);
+            return _assetGroup.ReleaseByTag(assetTag);
         }
 
         /// <summary>
@@ -96,6 +109,16 @@ namespace TEngine
             return _assetGroup.Release(handle);
         }
 
+        /// <summary>
+        /// 从资源组内释放资源数据。
+        /// </summary>
+        /// <param name="address">资源定位地址。</param>
+        /// <returns>是否释放成功。</returns>
+        public bool Release(string address)
+        {
+            DirtyInitAssetGroup();
+            return _assetGroup.Release(address);
+        }
 
         /// <summary>
         /// 同步加载资源。

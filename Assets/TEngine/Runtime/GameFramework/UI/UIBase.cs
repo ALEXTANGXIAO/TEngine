@@ -494,10 +494,27 @@ namespace TEngine
         {
             if (AssetReference == null)
             {
-                Log.Fatal($"Register Failed => {this}.AssetReference is null");
+                Log.Fatal($"Reference Failed => {this}.AssetReference is null");
                 return false;
             }
             return AssetReference.Reference(handle, assetTag);
+        }
+
+        /// <summary>
+        /// 引用资源数据到资源组内。
+        /// </summary>
+        /// <param name="address">资源定位地址。</param>
+        /// <param name="handle">资源操作句柄。</param>
+        /// <param name="assetTag">资源标识。</param>
+        /// <returns>是否注册成功。</returns>
+        public bool Reference(string address, AssetOperationHandle handle, string assetTag = "")
+        {
+            if (AssetReference == null)
+            {
+                Log.Fatal($"Reference Failed => {this}.AssetReference is null");
+                return false;
+            }
+            return AssetReference.Reference(address, handle, assetTag);
         }
 
         /// <summary>
@@ -505,14 +522,14 @@ namespace TEngine
         /// </summary>
         /// <param name="assetTag"></param>
         /// <returns></returns>
-        public bool Release(string assetTag)
+        public bool ReleaseByTag(string assetTag)
         {
             if (AssetReference == null)
             {
-                Log.Fatal($"UnRegister Failed => {this}.AssetReference is null");
+                Log.Fatal($"Release Failed => {this}.AssetReference is null");
                 return false;
             }
-            return AssetReference.Release(assetTag);
+            return AssetReference.ReleaseByTag(assetTag);
         }
 
         /// <summary>
@@ -524,12 +541,26 @@ namespace TEngine
         {
             if (AssetReference == null)
             {
-                Log.Fatal($"UnRegister Failed => {this}.AssetReference is null");
+                Log.Fatal($"Release Failed => {this}.AssetReference is null");
                 return false;
             }
             return AssetReference.Release(handle);
         }
 
+        /// <summary>
+        /// 从资源组内释放资源数据。
+        /// </summary>
+        /// <param name="address">资源定位地址。</param>
+        /// <returns>是否释放成功。</returns>
+        public bool Release(string address)
+        {
+            if (AssetReference == null)
+            {
+                Log.Fatal($"Release Failed => {this}.AssetReference is null");
+                return false;
+            }
+            return AssetReference.Release(address);
+        }
 
         /// <summary>
         /// 同步加载资源。

@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using YooAsset;
@@ -76,8 +77,8 @@ namespace TEngine
     /// </summary>
     public class AssetGroup : IMemory
     {
-        private readonly GameFrameworkLinkedList<AssetHandleData> _assetHandleDataLinkedList = new GameFrameworkLinkedList<AssetHandleData>();
-
+        private readonly Dictionary<string,AssetHandleData> _assetHandleDataMap = new Dictionary<string,AssetHandleData>();
+        
         /// <summary>
         /// 引用资源数据到资源组内。
         /// </summary>
@@ -87,7 +88,21 @@ namespace TEngine
         public bool Reference(AssetOperationHandle handle,string assetTag = "")
         {
             AssetHandleData handleData = AssetHandleData.Alloc(handle,assetTag);
-            _assetHandleDataLinkedList.AddLast(handleData);
+            _assetHandleDataMap[handleData.Handle.GetAssetInfo().Address] = handleData;
+            return true;
+        }
+        
+        /// <summary>
+        /// 引用资源数据到资源组内。
+        /// </summary>
+        /// <param name="address">资源定位地址。</param>
+        /// <param name="handle">资源操作句柄。</param>
+        /// <param name="assetTag">资源标识。</param>
+        /// <returns>是否注册成功。</returns>
+        public bool Reference(string address,AssetOperationHandle handle,string assetTag = "")
+        {
+            AssetHandleData handleData = AssetHandleData.Alloc(handle,assetTag);
+            _assetHandleDataMap[address] = handleData;
             return true;
         }
 
@@ -96,10 +111,10 @@ namespace TEngine
         /// </summary>
         /// <param name="assetTag">资源标签。</param>
         /// <returns>是否释放成功。</returns>
-        public bool Release(string assetTag)
+        public bool ReleaseByTag(string assetTag)
         {
             AssetHandleData founded = null;
-            foreach (var assetHandleData in _assetHandleDataLinkedList)
+            foreach (var assetHandleData in _assetHandleDataMap.Values)
             {
                 if (assetHandleData.Tag == assetTag)
                 {
@@ -110,12 +125,29 @@ namespace TEngine
             
             if (founded != null)
             {
-                _assetHandleDataLinkedList.Remove(founded);
+                _assetHandleDataMap.Remove(founded.Handle.GetAssetInfo().Address);
                 AssetHandleData.Release(founded);
                 return true;
             }
 
-            Log.Warning($"UnRegister AssetHandleData Tag:{assetTag} Failed");
+            Log.Warning($"Release AssetHandleData Tag:{assetTag} Failed");
+            return false;
+        }
+        
+        /// <summary>
+        /// 从资源组内释放资源数据。
+        /// </summary>
+        /// <param name="address">资源定位地址。</param>
+        /// <returns>是否释放成功。</returns>
+        public bool Release(string address)
+        {
+            if (_assetHandleDataMap.TryGetValue(address,out var assetHandleData))
+            {
+                _assetHandleDataMap.Remove(assetHandleData.Handle.GetAssetInfo().Address);
+                AssetHandleData.Release(assetHandleData);
+                return true;
+            }
+            Log.Warning($"Release AssetHandleData Address:{address} Failed");
             return false;
         }
         
@@ -127,7 +159,7 @@ namespace TEngine
         public bool Release(AssetOperationHandle handle)
         {
             AssetHandleData founded = null;
-            foreach (var assetHandleData in _assetHandleDataLinkedList)
+            foreach (var assetHandleData in _assetHandleDataMap.Values)
             {
                 if (assetHandleData.Handle == handle)
                 {
@@ -138,26 +170,26 @@ namespace TEngine
             
             if (founded != null)
             {
-                _assetHandleDataLinkedList.Remove(founded);
+                _assetHandleDataMap.Remove(founded.Handle.GetAssetInfo().Address);
                 AssetHandleData.Release(founded);
                 return true;
             }
 
-            Log.Warning($"UnRegister AssetHandleData Handle:{handle} Failed");
+            Log.Warning($"Release AssetHandleData Handle:{handle} Failed");
             return false;
         }
 
         public void Clear()
         {
-            var etr = _assetHandleDataLinkedList.GetEnumerator();
+            var etr = _assetHandleDataMap.GetEnumerator();
             while (etr.MoveNext())
             {
-                AssetHandleData assetHandleData = etr.Current;
+                AssetHandleData assetHandleData = etr.Current.Value;
                 AssetHandleData.Release(assetHandleData);
             }
 
             etr.Dispose();
-            _assetHandleDataLinkedList.Clear();
+            _assetHandleDataMap.Clear();
         }
 
         /// <summary>
@@ -167,7 +199,6 @@ namespace TEngine
         public static AssetGroup Alloc()
         {
             AssetGroup assetGroup = MemoryPool.Acquire<AssetGroup>();
-
             return assetGroup;
         }
 
@@ -190,44 +221,28 @@ namespace TEngine
         /// 同步加载资源。
         /// </summary>
         /// <param name="assetName">要加载资源的名称。</param>
-        /// <typeparam name="T">要加载资源的类型。</typeparam>
-        /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string assetName) where T : Object
-        {
-            if (string.IsNullOrEmpty(assetName))
-            {
-                Log.Error("Asset name is invalid.");
-                return default;
-            }
-
-            AssetOperationHandle handle = GameModule.Resource.LoadAssetGetOperation<T>(assetName);
-
-            Reference(handle);
-
-            if (typeof(T) == typeof(GameObject))
-            {
-                GameObject ret = handle.InstantiateSync();
-                return ret as T;
-            }
-            else
-            {
-                return handle.AssetObject as T;
-            }
-        }
-
-        /// <summary>
-        /// 同步加载资源。
-        /// </summary>
-        /// <param name="assetName">要加载资源的名称。</param>
         /// <param name="parent">父节点位置。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string assetName, Transform parent) where T : Object
+        public T LoadAsset<T>(string assetName, Transform parent = null) where T : Object
         {
             if (string.IsNullOrEmpty(assetName))
             {
                 Log.Error("Asset name is invalid.");
                 return default;
+            }
+            
+            if (_assetHandleDataMap.TryGetValue(assetName,out var assetHandleData))
+            {
+                if (typeof(T) == typeof(GameObject))
+                {
+                    GameObject ret = assetHandleData.Handle.InstantiateSync(parent);
+                    return ret as T;
+                }
+                else
+                {
+                    return assetHandleData.Handle.AssetObject as T;
+                }
             }
 
             AssetOperationHandle handle = GameModule.Resource.LoadAssetGetOperation<T>(assetName);
@@ -260,10 +275,18 @@ namespace TEngine
                 Log.Error("Asset name is invalid.");
                 return default;
             }
-            if (string.IsNullOrEmpty(assetName))
+            
+            if (_assetHandleDataMap.TryGetValue(assetName,out var assetHandleData))
             {
-                Log.Error("Asset name is invalid.");
-                return default;
+                if (typeof(T) == typeof(GameObject))
+                {
+                    GameObject ret = assetHandleData.Handle.InstantiateSync();
+                    return ret as T;
+                }
+                else
+                {
+                    return assetHandleData.Handle.AssetObject as T;
+                }
             }
 
             assetOperationHandle = GameModule.Resource.LoadAssetGetOperation<T>(assetName);
@@ -298,6 +321,19 @@ namespace TEngine
                 return default;
             }
 
+            if (_assetHandleDataMap.TryGetValue(assetName,out var assetHandleData))
+            {
+                if (typeof(T) == typeof(GameObject))
+                {
+                    GameObject ret = assetHandleData.Handle.InstantiateSync();
+                    return ret as T;
+                }
+                else
+                {
+                    return assetHandleData.Handle.AssetObject as T;
+                }
+            }
+            
             assetOperationHandle = GameModule.Resource.LoadAssetGetOperation<T>(assetName);
 
             Reference(assetOperationHandle);
@@ -324,6 +360,25 @@ namespace TEngine
         // ReSharper disable once RedundantAssignment
         public async UniTask<T> LoadAssetAsync<T>(string assetName, CancellationToken cancellationToken,AssetOperationHandle assetOperationHandle = null) where T : Object
         {
+            if (string.IsNullOrEmpty(assetName))
+            {
+                Log.Error("Asset name is invalid.");
+                return default;
+            }
+            
+            if (_assetHandleDataMap.TryGetValue(assetName,out var assetHandleData))
+            {
+                if (typeof(T) == typeof(GameObject))
+                {
+                    GameObject ret = assetHandleData.Handle.InstantiateSync();
+                    return ret as T;
+                }
+                else
+                {
+                    return assetHandleData.Handle.AssetObject as T;
+                }
+            }
+            
             AssetOperationHandle handle = GameModule.Resource.LoadAssetAsyncHandle<GameObject>(assetName);
 
             Reference(handle);
