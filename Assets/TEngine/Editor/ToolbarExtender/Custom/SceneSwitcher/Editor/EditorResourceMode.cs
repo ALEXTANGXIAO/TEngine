@@ -60,9 +60,7 @@ namespace TEngine
             {
                 // GUILayout.Label("资源加载模式:",ToolbarStyles.ToolBarTextStyle);
             
-                GUILayout.Space(2);
-                
-                GUILayout.Label("");
+                GUILayout.Space(10);
                 
                 GUILayout.FlexibleSpace();
             
