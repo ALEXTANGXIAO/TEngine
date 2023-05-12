@@ -28,7 +28,7 @@ MonoBehaviour:
     m_AtlasFolder: Assets/AssetRaw/UIRaw
     m_ResourceVersionFileName: ResourceVersion.txt
     HostServerURL: http://127.0.0.1:8081/AssetsRoot/
-    FallbackHostServerURL: 
+    FallbackHostServerURL: http://127.0.0.1:8081/AssetsRoot/
     EnableUpdateData: 1
     WindowsUpdateDataUrl: http://127.0.0.1:8081/AssetsRoot/UpdateData.json
     MacOSUpdateDataUrl: http://127.0.0.1

@@ -31,20 +31,22 @@ namespace GameMain
 
             if (initializationOperation.Status == EOperationStatus.Succeed)
             {
+                EPlayMode playMode = GameModule.Resource.PlayMode;
+
                 // 编辑器模式。
-                if (GameModule.Resource.playMode == EPlayMode.EditorSimulateMode)
+                if (playMode == EPlayMode.EditorSimulateMode)
                 {
                     Log.Info("Editor resource mode detected.");
                     ChangeState<ProcedurePreload>(procedureOwner);
                 }
                 // 单机模式。
-                else if (GameModule.Resource.playMode == EPlayMode.OfflinePlayMode)
+                else if (playMode == EPlayMode.OfflinePlayMode)
                 {
                     Log.Info("Package resource mode detected.");
                     ChangeState<ProcedureInitResources>(procedureOwner);
                 }
                 // 可更新模式。
-                else if (GameModule.Resource.playMode == EPlayMode.HostPlayMode)
+                else if (playMode == EPlayMode.HostPlayMode)
                 {
                     // 打开启动UI。
                     UILoadMgr.Show(UIDefine.UILoadUpdate);

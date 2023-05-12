@@ -146,9 +146,18 @@ namespace TEngine
                 YooAssets.SetDefaultPackage(package);
             }
 
+#if UNITY_EDITOR
+            //编辑器模式使用。
+            EPlayMode playMode = (EPlayMode)UnityEditor.EditorPrefs.GetInt("EditorResourceMode");
+            Log.Warning($"编辑器模式使用:{playMode}");
+#else
+            //运行时使用。
+            EPlayMode playMode = PlayMode;
+#endif
+            
             // 编辑器下的模拟模式
             InitializationOperation initializationOperation = null;
-            if (PlayMode == EPlayMode.EditorSimulateMode)
+            if (playMode == EPlayMode.EditorSimulateMode)
             {
                 var createParameters = new EditorSimulateModeParameters();
                 createParameters.SimulateManifestFilePath = EditorSimulateModeHelper.SimulateBuild(packageName);
@@ -156,7 +165,7 @@ namespace TEngine
             }
 
             // 单机运行模式
-            if (PlayMode == EPlayMode.OfflinePlayMode)
+            if (playMode == EPlayMode.OfflinePlayMode)
             {
                 var createParameters = new OfflinePlayModeParameters();
                 createParameters.DecryptionServices = new GameDecryptionServices();
@@ -164,7 +173,7 @@ namespace TEngine
             }
 
             // 联机运行模式
-            if (PlayMode == EPlayMode.HostPlayMode)
+            if (playMode == EPlayMode.HostPlayMode)
             {
                 var createParameters = new HostPlayModeParameters();
                 createParameters.DecryptionServices = new GameDecryptionServices();

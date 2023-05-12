@@ -27,7 +27,7 @@ namespace GameMain
 
             m_LoadedFlag.Clear();
 
-            if (GameModule.Resource.playMode == EPlayMode.EditorSimulateMode)
+            if (GameModule.Resource.PlayMode == EPlayMode.EditorSimulateMode)
             {
                 m_InitConfigXml = true;
             }
@@ -88,7 +88,7 @@ namespace GameMain
 
         private void LoadAllConfig()
         {
-            if (GameModule.Resource.playMode == EPlayMode.EditorSimulateMode)
+            if (GameModule.Resource.PlayMode == EPlayMode.EditorSimulateMode)
             {
                 m_InitConfigXml = true;
                 return;

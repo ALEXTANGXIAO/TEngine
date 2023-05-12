@@ -39,7 +39,7 @@ namespace GameMain
 
         private void InitLanguageSettings()
         {
-            if (GameModule.Resource.playMode == EPlayMode.EditorSimulateMode && GameModule.Base.EditorLanguage != Language.Unspecified)
+            if (GameModule.Resource.PlayMode == EPlayMode.EditorSimulateMode && GameModule.Base.EditorLanguage != Language.Unspecified)
             {
                 // 编辑器资源模式直接使用 Inspector 上设置的语言
                 return;

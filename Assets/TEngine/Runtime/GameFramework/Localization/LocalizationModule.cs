@@ -101,7 +101,7 @@ namespace TEngine
             transform.localScale = Vector3.one;
 
             m_LocalizationManager.SetLocalizationHelper(localizationHelper);
-            m_LocalizationManager.Language = resourceModule.playMode == EPlayMode.EditorSimulateMode && rootModule.EditorLanguage != Language.Unspecified 
+            m_LocalizationManager.Language = resourceModule.PlayMode == EPlayMode.EditorSimulateMode && rootModule.EditorLanguage != Language.Unspecified 
                 ? rootModule.EditorLanguage : m_LocalizationManager.SystemLanguage;
         }
 

@@ -66,7 +66,7 @@ namespace TEngine.Editor.Inspector
             {
                 if (EditorApplication.isPlaying && IsPrefabInHierarchy(t.gameObject))
                 {
-                    EditorGUILayout.EnumPopup("Resource Mode", t.playMode);
+                    EditorGUILayout.EnumPopup("Resource Mode", t.PlayMode);
 
                     EditorGUILayout.EnumPopup("VerifyLevel", t.verifyLevel);
 

@@ -43,7 +43,31 @@ namespace TEngine
         /// <summary>
         /// 资源系统运行模式。
         /// </summary>
-        public EPlayMode playMode = EPlayMode.EditorSimulateMode;
+        [SerializeField] private EPlayMode playMode = EPlayMode.EditorSimulateMode;
+
+        /// <summary>
+        /// 资源系统运行模式。
+        /// <remarks>编辑器内优先使用。</remarks>
+        /// </summary>
+        public EPlayMode PlayMode
+        {
+            get
+            {
+#if UNITY_EDITOR
+                //编辑器模式使用。
+                return (EPlayMode)UnityEditor.EditorPrefs.GetInt("EditorResourceMode");
+#else
+                //运行时使用。
+                return playMode;
+#endif
+            }
+            set
+            {
+#if UNITY_EDITOR
+                playMode = value;
+#endif
+            }
+        }
 
         /// <summary>
         /// 下载文件校验等级。

@@ -19,7 +19,7 @@ namespace GameMain
         /// <summary>
         /// 是否需要加载热更新DLL
         /// </summary>
-        public bool NeedLoadDll => GameModule.Resource.playMode == EPlayMode.HostPlayMode || GameModule.Resource.playMode == EPlayMode.OfflinePlayMode;
+        public bool NeedLoadDll => GameModule.Resource.PlayMode == EPlayMode.HostPlayMode || GameModule.Resource.PlayMode == EPlayMode.OfflinePlayMode;
 
         private bool m_enableAddressable = true;
         public override bool UseNativeDialog => true;
@@ -60,7 +60,7 @@ namespace GameMain
                 m_LoadMetadataAssemblyComplete = true;
             }
             
-            if (!NeedLoadDll || GameModule.Resource.playMode == EPlayMode.EditorSimulateMode)
+            if (!NeedLoadDll || GameModule.Resource.PlayMode == EPlayMode.EditorSimulateMode)
             {
                 m_MainLogicAssembly = GetMainLogicAssembly();
             }

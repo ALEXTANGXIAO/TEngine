@@ -239,12 +239,11 @@ public class FrameworkGlobalSettings
         get { return m_ConfigFolderName; }
     }
     
-    [LabelText("代码生成脚本命名空间")]
     [SerializeField] private string @namespace = "GameLogic";
 
     public string NameSpace => @namespace;
 
-    [SerializeField] [LabelText("代码生成脚本名映射")]
+    [SerializeField]
     private List<ScriptGenerateRuler> scriptGenerateRule = new List<ScriptGenerateRuler>()
     {
         new("m_go", "GameObject"),
