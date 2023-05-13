@@ -43,6 +43,11 @@ public class GameModule:MonoBehaviour
     /// 获取配置模块。
     /// </summary>
     public static SettingModule Setting { get; private set; }
+    
+    /// <summary>
+    /// 本地化模块。
+    /// </summary>
+    public static LocalizationModule Localization { get; private set; }
 
     /// <summary>
     /// 获取UI模块。
@@ -73,6 +78,7 @@ public class GameModule:MonoBehaviour
         Resource = Get<ResourceModule>();
         Procedure = Get<ProcedureModule>();
         Setting = Get<SettingModule>();
+        Localization = Get<LocalizationModule>();
         UI = Get<UIModule>();
         Audio = Get<AudioModule>();
         Timer = Get<TimerModule>();
