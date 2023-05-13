@@ -77,12 +77,12 @@ namespace GameMain
 
         private void InitSoundSettings()
         {
-            // GameModule.Sound.Mute("Music", GameModule.Setting.GetBool(Constant.Setting.MusicMuted, false));
-            // GameModule.Sound.SetVolume("Music", GameModule.Setting.GetFloat(Constant.Setting.MusicVolume, 0.3f));
-            // GameModule.Sound.Mute("Sound", GameModule.Setting.GetBool(Constant.Setting.SoundMuted, false));
-            // GameModule.Sound.SetVolume("Sound", GameModule.Setting.GetFloat(Constant.Setting.SoundVolume, 1f));
-            // GameModule.Sound.Mute("UISound", GameModule.Setting.GetBool(Constant.Setting.UISoundMuted, false));
-            // GameModule.Sound.SetVolume("UISound", GameModule.Setting.GetFloat(Constant.Setting.UISoundVolume, 1f));
+            GameModule.Audio.MusicEnable = GameModule.Setting.GetBool(Constant.Setting.MusicMuted, false);
+            GameModule.Audio.MusicVolume = GameModule.Setting.GetFloat(Constant.Setting.MusicVolume, 0.3f);
+            GameModule.Audio.SoundEnable = GameModule.Setting.GetBool(Constant.Setting.SoundMuted, false);
+            GameModule.Audio.SoundVolume = GameModule.Setting.GetFloat(Constant.Setting.SoundVolume, 1f);
+            GameModule.Audio.UISoundEnable = GameModule.Setting.GetBool(Constant.Setting.UISoundMuted, false);
+            GameModule.Audio.UISoundVolume = GameModule.Setting.GetFloat(Constant.Setting.UISoundVolume, 1f);
             Log.Info("Init sound settings complete.");
         }
     }
