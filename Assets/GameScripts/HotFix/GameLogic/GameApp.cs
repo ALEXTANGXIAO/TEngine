@@ -1,3 +1,5 @@
+using System.Collections;
+using Cysharp.Threading.Tasks;
 using GameBase;
 using TEngine;
 
@@ -28,7 +30,15 @@ public partial class GameApp:Singleton<GameApp>
     /// </summary>
     private void StartGameLogic()
     {
-        
+        StartBattleRoom().Forget();
+    }
+
+    private async UniTaskVoid StartBattleRoom()
+    {
+        await GameModule.Resource.LoadSceneAsync("scene_battle").ToUniTask(Utility.Unity.Behaviour);
+
+        BattleRoom battleRoom = new BattleRoom();
+        await battleRoom.LoadRoom().ToUniTask(Utility.Unity.Behaviour);
     }
 
     /// <summary>

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TEngine;
+using UniFramework.Pooling;
 
 public partial class GameApp
 {
@@ -17,7 +18,8 @@ public partial class GameApp
     /// </summary>
     private void InitSystemSetting()
     {
-        
+        // 初始化对象池系统
+        UniPooling.Initalize();
     }
 
     /// <summary>
