@@ -228,6 +228,8 @@ namespace TEngine
                 {
                     return;
                 }
+                
+                _audioCategories[(int)AudioType.Music].Enable = value;
 
                 // 音乐采用0音量方式，避免恢复播放时的复杂逻辑
                 if (value)
