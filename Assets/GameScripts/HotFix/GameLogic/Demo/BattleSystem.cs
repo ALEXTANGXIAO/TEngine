@@ -11,7 +11,8 @@ using Random = UnityEngine.Random;
 /// <summary>
 /// 战斗房间
 /// </summary>
-public class BattleRoom
+[Update]
+public class BattleSystem:BehaviourSingleton<BattleSystem>
 {
 	private enum ESteps
 	{
@@ -44,17 +45,52 @@ public class BattleRoom
 	private UniTimer _spawnWaitTimer = UniTimer.CreateOnceTimer(0.75f);
 	private UniTimer _waveWaitTimer = UniTimer.CreateOnceTimer(4f);
 
-	public BattleRoom()
-	{
-		Utility.Unity.AddUpdateListener(UpdateRoom);
-	}
 
-	~BattleRoom()
+	/// <summary>
+	/// 加载房间
+	/// </summary>
+	public IEnumerator LoadRoom()
 	{
-		Utility.Unity.RemoveUpdateListener(UpdateRoom);
-		DestroyRoom();
-	}
+		// 创建房间根对象
+		_roomRoot = new GameObject("BattleRoom");
 
+		// 加载背景音乐
+		GameModule.Audio.Play(AudioType.Music, "music_background", true);
+
+		// 创建游戏对象发生器
+		_entitySpawner = UniPooling.CreateSpawner("DefaultPackage");
+
+		// 创建游戏对象池
+		yield return _entitySpawner.CreateGameObjectPoolAsync("player_ship");
+		yield return _entitySpawner.CreateGameObjectPoolAsync("player_bullet");
+		yield return _entitySpawner.CreateGameObjectPoolAsync("enemy_ship");
+		yield return _entitySpawner.CreateGameObjectPoolAsync("enemy_bullet");
+		yield return _entitySpawner.CreateGameObjectPoolAsync("asteroid01");
+		yield return _entitySpawner.CreateGameObjectPoolAsync("asteroid02");
+		yield return _entitySpawner.CreateGameObjectPoolAsync("asteroid03");
+		yield return _entitySpawner.CreateGameObjectPoolAsync("explosion_asteroid");
+		yield return _entitySpawner.CreateGameObjectPoolAsync("explosion_enemy");
+		yield return _entitySpawner.CreateGameObjectPoolAsync("explosion_player");
+
+		// 创建玩家实体对象
+		var handle = _entitySpawner.SpawnSync("player_ship", _roomRoot.transform);
+		var entity = handle.GameObj.GetComponent<EntityPlayer>();
+		entity.InitEntity(handle);
+
+		// 显示战斗界面
+		yield return GameModule.UI.ShowUIAsync<UIBattleWindow>();
+
+		// 监听游戏事件
+		GameEvent.AddEventListener<Vector3,Quaternion>(ActorEventDefine.PlayerDead,OnPlayerDead);
+		GameEvent.AddEventListener<Vector3,Quaternion>(ActorEventDefine.EnemyDead,OnEnemyDead);
+		GameEvent.AddEventListener<Vector3,Quaternion>(ActorEventDefine.AsteroidExplosion,OnAsteroidExplosion);
+		GameEvent.AddEventListener<Vector3,Quaternion>(ActorEventDefine.PlayerFireBullet,OnPlayerFireBullet);
+		GameEvent.AddEventListener<Vector3,Quaternion>(ActorEventDefine.EnemyFireBullet,OnEnemyFireBullet);
+
+		_startWaitTimer.Reset();
+		_steps = ESteps.Ready;
+	}
+	
 	/// <summary>
 	/// 销毁房间
 	/// </summary>
@@ -70,6 +106,18 @@ public class BattleRoom
 			Object.Destroy(_roomRoot);
 
 		GameModule.UI.CloseWindow<UIBattleWindow>();
+		
+		// 监听游戏事件
+		GameEvent.RemoveEventListener<Vector3,Quaternion>(ActorEventDefine.PlayerDead,OnPlayerDead);
+		GameEvent.RemoveEventListener<Vector3,Quaternion>(ActorEventDefine.EnemyDead,OnEnemyDead);
+		GameEvent.RemoveEventListener<Vector3,Quaternion>(ActorEventDefine.AsteroidExplosion,OnAsteroidExplosion);
+		GameEvent.RemoveEventListener<Vector3,Quaternion>(ActorEventDefine.PlayerFireBullet,OnPlayerFireBullet);
+		GameEvent.RemoveEventListener<Vector3,Quaternion>(ActorEventDefine.EnemyFireBullet,OnEnemyFireBullet);
+	}
+
+	public override void Update()
+	{
+		UpdateRoom();
 	}
 
 	/// <summary>
@@ -140,49 +188,6 @@ public class BattleRoom
 		}
 	}
 
-	/// <summary>
-	/// 加载房间
-	/// </summary>
-	public IEnumerator LoadRoom()
-	{
-		// 创建房间根对象
-		_roomRoot = new GameObject("BattleRoom");
-
-		// 加载背景音乐
-		GameModule.Audio.Play(AudioType.Music, "music_background", true);
-
-		// 创建游戏对象发生器
-		_entitySpawner = UniPooling.CreateSpawner("DefaultPackage");
-
-		// 创建游戏对象池
-		yield return _entitySpawner.CreateGameObjectPoolAsync("player_ship");
-		yield return _entitySpawner.CreateGameObjectPoolAsync("player_bullet");
-		yield return _entitySpawner.CreateGameObjectPoolAsync("enemy_ship");
-		yield return _entitySpawner.CreateGameObjectPoolAsync("enemy_bullet");
-		yield return _entitySpawner.CreateGameObjectPoolAsync("asteroid01");
-		yield return _entitySpawner.CreateGameObjectPoolAsync("asteroid02");
-		yield return _entitySpawner.CreateGameObjectPoolAsync("asteroid03");
-		yield return _entitySpawner.CreateGameObjectPoolAsync("explosion_asteroid");
-		yield return _entitySpawner.CreateGameObjectPoolAsync("explosion_enemy");
-		yield return _entitySpawner.CreateGameObjectPoolAsync("explosion_player");
-
-		// 创建玩家实体对象
-		var handle = _entitySpawner.SpawnSync("player_ship", _roomRoot.transform);
-		var entity = handle.GameObj.GetComponent<EntityPlayer>();
-		entity.InitEntity(handle);
-
-		// 显示战斗界面
-		yield return GameModule.UI.ShowUIAsync<UIBattleWindow>();
-
-		// 监听游戏事件
-		GameEvent.AddEventListener<Vector3,Quaternion>(ActorEventDefine.PlayerDead,OnPlayerDead);
-		GameEvent.AddEventListener<Vector3,Quaternion>(ActorEventDefine.EnemyDead,OnEnemyDead);
-		GameEvent.AddEventListener<Vector3,Quaternion>(ActorEventDefine.AsteroidExplosion,OnAsteroidExplosion);
-		GameEvent.AddEventListener<Vector3,Quaternion>(ActorEventDefine.PlayerFireBullet,OnPlayerFireBullet);
-		GameEvent.AddEventListener<Vector3,Quaternion>(ActorEventDefine.EnemyFireBullet,OnEnemyFireBullet);
-
-		_steps = ESteps.Ready;
-	}
 
 	#region 接收事件
 

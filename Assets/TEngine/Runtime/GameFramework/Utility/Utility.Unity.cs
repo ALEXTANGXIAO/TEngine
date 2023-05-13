@@ -16,6 +16,7 @@ namespace TEngine
         {
             private static GameObject _entity;
             private static MainBehaviour _behaviour;
+            public static MainBehaviour Behaviour => _behaviour;
 
             #region 控制协程Coroutine
 
@@ -259,7 +260,7 @@ namespace TEngine
                 _behaviour = _entity.AddComponent<MainBehaviour>();
             }
 
-            private class MainBehaviour : MonoBehaviour
+            public class MainBehaviour : MonoBehaviour
             {
                 private event UnityAction updateEvent;
                 private event UnityAction fixedUpdateEvent;

@@ -20,6 +20,7 @@ public partial class GameApp
     {
         // 初始化对象池系统
         UniPooling.Initalize();
+        AddLogicSys(BehaviourSingleSystem.Instance);
     }
 
     /// <summary>

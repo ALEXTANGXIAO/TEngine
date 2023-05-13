@@ -35,6 +35,7 @@ namespace GameLogic
 
         public override void OnRefresh()
         {
+            m_textScore.text = "Score : 0";
             m_goOverView.SetActive(false);
         }
 
@@ -43,14 +44,10 @@ namespace GameLogic
         private async UniTaskVoid OnClickRestartBtn()
         {
             await UniTask.Yield();
-            // yield return YooAssets.LoadSceneAsync("scene_battle");
-            //
-            // _battleRoom = new BattleRoom();
-            // yield return _battleRoom.LoadRoom();
-            //
-            // // 释放资源
-            // var package = YooAssets.GetPackage("DefaultPackage");
-            // package.UnloadUnusedAssets();
+            await GameModule.Resource.LoadSceneAsync("scene_battle").ToUniTask(Utility.Unity.Behaviour);
+    
+            BattleSystem.Instance.DestroyRoom();
+            await BattleSystem.Instance.LoadRoom().ToUniTask(Utility.Unity.Behaviour);
         }
 
         private async UniTaskVoid OnClickHomeBtn()

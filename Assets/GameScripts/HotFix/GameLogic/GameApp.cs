@@ -36,9 +36,7 @@ public partial class GameApp:Singleton<GameApp>
     private async UniTaskVoid StartBattleRoom()
     {
         await GameModule.Resource.LoadSceneAsync("scene_battle").ToUniTask(Utility.Unity.Behaviour);
-
-        BattleRoom battleRoom = new BattleRoom();
-        await battleRoom.LoadRoom().ToUniTask(Utility.Unity.Behaviour);
+        await BattleSystem.Instance.LoadRoom().ToUniTask(Utility.Unity.Behaviour);
     }
 
     /// <summary>
