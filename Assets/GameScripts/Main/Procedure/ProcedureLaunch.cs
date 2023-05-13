@@ -39,40 +39,40 @@ namespace GameMain
 
         private void InitLanguageSettings()
         {
-            if (GameModule.Resource.PlayMode == EPlayMode.EditorSimulateMode && GameModule.Base.EditorLanguage != Language.Unspecified)
+            if (GameModule.Resource.PlayMode == EPlayMode.EditorSimulateMode && GameModule.Base.EditorLanguage == Language.Unspecified)
             {
                 // 编辑器资源模式直接使用 Inspector 上设置的语言
                 return;
             }
 
-            // Language language = GameModule.Localization.Language;
-            // if (GameModule.Setting.HasSetting(Constant.Setting.Language))
-            // {
-            //     try
-            //     {
-            //         string languageString = GameModule.Setting.GetString(Constant.Setting.Language);
-            //         language = (Language)Enum.Parse(typeof(Language), languageString);
-            //     }
-            //     catch(Exception exception)
-            //     {
-            //         Log.Error("Init language error, reason {0}",exception.ToString());
-            //     }
-            // }
+            Language language = GameModule.Localization.Language;
+            if (GameModule.Setting.HasSetting(Constant.Setting.Language))
+            {
+                try
+                {
+                    string languageString = GameModule.Setting.GetString(Constant.Setting.Language);
+                    language = (Language)System.Enum.Parse(typeof(Language), languageString);
+                }
+                catch(System.Exception exception)
+                {
+                    Log.Error("Init language error, reason {0}",exception.ToString());
+                }
+            }
 
-            // if (language != Language.English
-            //     && language != Language.ChineseSimplified
-            //     && language != Language.ChineseTraditional
-            //     && language != Language.Korean)
-            // {
-            //     // 若是暂不支持的语言，则使用英语
-            //     language = Language.English;
-            //
-            //     GameModule.Setting.SetString(Constant.Setting.Language, language.ToString());
-            //     GameModule.Setting.Save();
-            // }
-            //
-            // GameModule.Localization.Language = language;
-            // Log.Info("Init language settings complete, current language is '{0}'.", language.ToString());
+            if (language != Language.English
+                && language != Language.ChineseSimplified
+                && language != Language.ChineseTraditional
+                && language != Language.Korean)
+            {
+                // 若是暂不支持的语言，则使用英语
+                language = Language.English;
+            
+                GameModule.Setting.SetString(Constant.Setting.Language, language.ToString());
+                GameModule.Setting.Save();
+            }
+            
+            GameModule.Localization.Language = language;
+            Log.Info("Init language settings complete, current language is '{0}'.", language.ToString());
         }
 
         private void InitSoundSettings()
