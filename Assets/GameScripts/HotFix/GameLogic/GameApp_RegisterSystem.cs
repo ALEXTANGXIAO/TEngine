@@ -25,7 +25,8 @@ public partial class GameApp
     /// </summary>
     private void RegisterAllSystem()
     {
-        
+        //带生命周期的单例系统。
+        AddLogicSys(BehaviourSingleSystem.Instance);
     }
     
     /// <summary>
