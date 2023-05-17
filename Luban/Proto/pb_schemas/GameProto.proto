@@ -1,8 +1,0 @@
-syntax = "proto3";
-
-package GameProto;
-// 游戏全局基础数据，和协议无关，就放结构
-
-// 导入定义
-import "ProtoBase";
-

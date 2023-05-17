@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package GameProto;
+// 这个文件只放协议，和协议头
+
+MsgId CS_CMD_ACT_LOGIN_REQ = 2001; //帐号登录请求
+// 角色登录结果请求
+message CSActLoginReq
+{
+	uint32 Uin		= 1;		//帐号Uin
+	uint32 SvrID		= 2;		//服务器ID
+	uint32 AuthTime		= 3;		//账户认证的时间
+	uint32 NetworkType	= 4,		//网络类型
+}
+
+MsgId CS_CMD_ACT_LOGIN_RES = 2002; //帐号登录回包
+// 角色登录结果返回
+message CSActLoginRes
+{
+	ProtoResult Result  = 1;		//返回操作结果
+	uint32 Uin			= 2;		//帐号Uin
+	uint32 RoleID		= 3;		//角色ID
+}
