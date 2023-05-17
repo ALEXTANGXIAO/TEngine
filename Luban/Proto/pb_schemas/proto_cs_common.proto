@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package GameProto;
+// 常用协议
+
+// 消息结果
+message ProtoResult
+{
+	int32 Ret		=1;		//操作结果,0 为成功， 其他为错误码
+	int32 ParamCnt	=2;		//文本参数数目
+	repeated string  Params  = 3;//Ret描述的文本参数
+}
+
+MsgId CS_CMD_HEATBEAT_REQ = 1001; //心跳请求
+// 心跳请求
+message CSHeatBeatReq
+{
+	float HeatEchoTime		= 1;		//客户端的请求时间,服务器原包带回
+}
+
+MsgId CS_CMD_HEATBEAT_RES = 1002; //心跳回包
+// 角色登录结果返回
+message CSHeatBeatRes
+{
+	float HeatEchoTime		= 1;		//客户端的请求时间,服务器原包带回
+}

@@ -23,18 +23,11 @@ message CSPkgHead
 // 消息协议体
 message CSPkgBody
 {
-	CSActLoginReq ActLoginReq = 1;	//帐号登录请求
-	CSActLoginRes ActLoginRes = 2;	//帐号登录回包
+	CSHeatBeatReq HeatBeatReq = 1;	//心跳请求
+	CSHeatBeatRes HeatBeatRes = 2;  //心跳回包
+	CSActLoginReq ActLoginReq = 3;	//帐号登录请求
+	CSActLoginRes ActLoginRes = 4;	//帐号登录回包
 }
-
-// 消息结果
-message ProtoResult
-{
-	int32 Ret		=1;		//操作结果,0 为成功， 其他为错误码
-	int32 ParamCnt	=2;		//文本参数数目
-	repeated string  Params  = 3;//Ret描述的文本参数
-}
-
 
 // 协议ID
 enum CSMsgID

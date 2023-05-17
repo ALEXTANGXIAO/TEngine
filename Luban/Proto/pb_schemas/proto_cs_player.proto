@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package GameProto;
-// 这个文件只放协议，和协议头
+// 玩家协议
 
 MsgId CS_CMD_ACT_LOGIN_REQ = 2001; //帐号登录请求
 // 角色登录结果请求

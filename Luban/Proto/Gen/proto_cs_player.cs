@@ -13,7 +13,7 @@ using System.Collections.Generic;
 
 namespace GameProto
 {
-	// 这个文件只放协议，和协议头
+	// 玩家协议
 	// 角色登录结果请求
 	[Serializable,global::ProtoBuf.ProtoContract(Name = @"CSActLoginReq")]
 	public partial class CSActLoginReq

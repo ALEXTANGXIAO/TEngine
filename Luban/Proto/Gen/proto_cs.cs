@@ -52,19 +52,16 @@ namespace GameProto
 	public partial class CSPkgBody
 	{
 		[global::ProtoBuf.ProtoMember(1)]
-		public CSActLoginReq ActLoginReq { get; set; }
+		public CSHeatBeatReq HeatBeatReq { get; set; }
 
 		[global::ProtoBuf.ProtoMember(2)]
-		public CSActLoginRes ActLoginRes { get; set; }
+		public CSHeatBeatRes HeatBeatRes { get; set; }
 
-	}
-
-	// 消息结果
-	[Serializable,global::ProtoBuf.ProtoContract(Name = @"ProtoResult")]
-	public partial class ProtoResult
-	{
 		[global::ProtoBuf.ProtoMember(3)]
-		public List<string> Params = new List<string>();
+		public CSActLoginReq ActLoginReq { get; set; }
+
+		[global::ProtoBuf.ProtoMember(4)]
+		public CSActLoginRes ActLoginRes { get; set; }
 
 	}
 
