@@ -160,7 +160,7 @@ namespace TEngine
             }
             else if (type == LogLevel.EXCEPTION)
             {
-                // Debug.LogError(logStr);
+                Debug.LogError(logStr);
                 throw new Exception(logStr);
             }
         }
