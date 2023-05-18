@@ -10,11 +10,11 @@ protoc -I=pb_schemas --csharp_out=../../Assets/GameScripts/HotFix/GameProto/Game
 echo ------------%%i gen success
 )
 echo =================end gen proto code=================
-set cur_path=%~dp0
-set outEventPath=../../Assets\GameScripts\HotFix\GameProto\GameProtocol
-call ProtobufResolver.exe %cur_path%pb_schemas %outEventPath%
-echo =================end gen proto event=================
-pause
+@REM set cur_path=%~dp0
+@REM set outEventPath=../../Assets\GameScripts\HotFix\GameProto\GameProtocol
+@REM call ProtobufResolver.exe %cur_path%pb_schemas %outEventPath%
+@REM echo =================end gen proto event=================
+@REM pause
 
 @REM protoc -I=pb_schemas --csharp_out=Gen pb_schemas\proto_cs.proto proto_cs_common.proto pb_schemas\proto_cs_player.proto
 
