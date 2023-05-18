@@ -16,6 +16,6 @@
 @REM echo =================end gen proto event=================
 @REM pause
 
-protoc -I=pb_schemas --csharp_out=Gen pb_schemas\ProtoBase.proto
+protoc -I=pb_schemas --csharp_out=Gen pb_schemas\proto_cs.proto proto_cs_common.proto pb_schemas\proto_cs_player.proto
 
 pause
