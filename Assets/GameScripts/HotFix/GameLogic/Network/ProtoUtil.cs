@@ -3,7 +3,7 @@ using GameProto;
 
 namespace GameLogic
 {
-    public class ProtoUtil
+    public partial class ProtobufUtility
     {
         public static UInt32 MsgEcho = 0;
         
