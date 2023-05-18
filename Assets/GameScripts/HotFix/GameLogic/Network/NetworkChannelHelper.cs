@@ -1,10 +1,9 @@
-﻿using ProtoBuf;
-using ProtoBuf.Meta;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Reflection;
+using GameProto;
 using TEngine;
 
 namespace GameLogic
@@ -28,31 +27,6 @@ namespace GameLogic
         public void Initialize(INetworkChannel networkChannel)
         {
             _networkChannel = networkChannel;
-
-            // 反射注册包和包处理函数。
-            Type packetBaseType = typeof(ProtoPacket);
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            Type[] types = assembly.GetTypes();
-            for (int i = 0; i < types.Length; i++)
-            {
-                if (!types[i].IsClass || types[i].IsAbstract)
-                {
-                    continue;
-                }
-
-                if (types[i].BaseType == packetBaseType)
-                {
-                    PacketBase packetBase = (PacketBase)Activator.CreateInstance(types[i]);
-                    Type packetType = GetServerToClientPacketType(packetBase.Id);
-                    if (packetType != null)
-                    {
-                        Log.Warning("Already exist packet type '{0}', check '{1}' or '{2}'?.", packetBase.Id.ToString(), packetType.Name, packetBase.GetType().Name);
-                        continue;
-                    }
-
-                    _serverToClientPacketTypes.Add(packetBase.Id, types[i]);
-                }
-            }
 
             GameEvent.AddEventListener<INetworkChannel, object>(NetworkEvent.NetworkConnectedEvent, OnNetworkConnected);
             GameEvent.AddEventListener<INetworkChannel>(NetworkEvent.NetworkClosedEvent, OnNetworkClosed);
@@ -84,13 +58,16 @@ namespace GameLogic
             _networkChannel.Socket.SendBufferSize = 1024 * 64;
         }
 
+        public CSPkg HeartBeatPack = new CSPkg { Head = new CSPkgHead(), Body = new CSPkgBody() };
+
         /// <summary>
         /// 发送心跳消息包。
         /// </summary>
         /// <returns>是否发送心跳消息包成功。</returns>
         public bool SendHeartBeat()
         {
-            _networkChannel.Send(MemoryPool.Acquire<HeartBeat>());
+            HeartBeatPack.Head.MsgId = (uint)CSMsgID.CsCmdHeatbeatReq;
+            _networkChannel.Send(HeartBeatPack);
             return true;
         }
 
@@ -101,10 +78,9 @@ namespace GameLogic
         /// <param name="packet">要序列化的消息包。</param>
         /// <param name="destination">要序列化的目标流。</param>
         /// <returns>是否序列化成功。</returns>
-        public bool Serialize<T>(T packet, Stream destination) where T : Packet
+        public bool Serialize(CSPkg packet, Stream destination)
         {
-            PacketBase packetImpl = packet as PacketBase;
-            if (packetImpl == null)
+            if (packet == null)
             {
                 Log.Warning("Packet is invalid.");
                 return false;
@@ -113,12 +89,7 @@ namespace GameLogic
             _cachedStream.SetLength(_cachedStream.Capacity); // 此行防止 Array.Copy 的数据无法写入
             _cachedStream.Position = 0L;
 
-            PacketHeader packetHeader = MemoryPool.Acquire<PacketHeader>();
-            Serializer.Serialize(_cachedStream, packetHeader);
-            MemoryPool.Release(packetHeader);
-
-            Serializer.SerializeWithLengthPrefix(_cachedStream, packet, PrefixStyle.Fixed32);
-            MemoryPool.Release((IMemory)packet);
+            global::ProtobufUtility.ToStream(packet,destination);
 
             _cachedStream.WriteTo(destination);
             return true;
@@ -132,9 +103,10 @@ namespace GameLogic
         /// <returns>反序列化后的消息包头。</returns>
         public IPacketHeader DeserializePacketHeader(Stream source, out object customErrorData)
         {
+            // TODO
             // 注意：此函数并不在主线程调用！
             customErrorData = null;
-            return (IPacketHeader)RuntimeTypeModel.Default.Deserialize(source, MemoryPool.Acquire<PacketHeader>(), typeof(PacketHeader));
+            return null; //(IPacketHeader)RuntimeTypeModel.Default.Deserialize(source, MemoryPool.Acquire<PacketHeader>(), typeof(PacketHeader));
         }
 
         /// <summary>
@@ -144,7 +116,7 @@ namespace GameLogic
         /// <param name="source">要反序列化的来源流。</param>
         /// <param name="customErrorData">用户自定义错误数据。</param>
         /// <returns>反序列化后的消息包。</returns>
-        public Packet DeserializePacket(IPacketHeader packetHeader, Stream source, out object customErrorData)
+        public CSPkg DeserializePacket(IPacketHeader packetHeader, Stream source, out object customErrorData)
         {
             // 注意：此函数并不在主线程调用！
             customErrorData = null;
@@ -156,13 +128,13 @@ namespace GameLogic
                 return null;
             }
 
-            Packet packet = null;
+            CSPkg csPkg = null;
             if (scPacketHeader.IsValid)
             {
                 Type packetType = GetServerToClientPacketType(scPacketHeader.Id);
                 if (packetType != null)
                 {
-                    packet = (Packet)RuntimeTypeModel.Default.DeserializeWithLengthPrefix(source, MemoryPool.Acquire(packetType), packetType, PrefixStyle.Fixed32, 0);
+                    csPkg = global::ProtobufUtility.Deserialize<CSPkg>(((MemoryStream)source).GetBuffer());;
                 }
                 else
                 {
@@ -175,7 +147,7 @@ namespace GameLogic
             }
 
             MemoryPool.Release(scPacketHeader);
-            return packet;
+            return csPkg;
         }
 
         private Type GetServerToClientPacketType(int id)

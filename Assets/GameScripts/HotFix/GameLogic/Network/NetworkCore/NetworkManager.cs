@@ -1,21 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using GameBase;
+using GameProto;
 
 namespace TEngine
 {
     /// <summary>
     /// 网络消息委托。
     /// </summary>
-    public delegate void CsMsgDelegate(Packet packet);
-    
+    public delegate void CsMsgDelegate(CSPkg csPkg);
+
     /// <summary>
     /// 网络管理器。
     /// </summary>
-    internal sealed partial class NetworkManager : GameFrameworkModule, INetworkManager
+    internal sealed partial class NetworkManager : Singleton<NetworkManager>, INetworkManager
     {
         private readonly Dictionary<string, NetworkChannelBase> _networkChannels;
-        
+
         private Action<INetworkChannel, object> _networkConnectedEventHandler;
         private Action<INetworkChannel> _networkClosedEventHandler;
         private Action<INetworkChannel, int> _networkMissHeartBeatEventHandler;
@@ -90,7 +92,7 @@ namespace TEngine
         /// </summary>
         /// <param name="elapseSeconds">逻辑流逝时间，以秒为单位。</param>
         /// <param name="realElapseSeconds">真实流逝时间，以秒为单位。</param>
-        internal override void Update(float elapseSeconds, float realElapseSeconds)
+        public void Update(float elapseSeconds, float realElapseSeconds)
         {
             foreach (KeyValuePair<string, NetworkChannelBase> networkChannel in _networkChannels)
             {
@@ -101,7 +103,7 @@ namespace TEngine
         /// <summary>
         /// 关闭并清理网络管理器。
         /// </summary>
-        internal override void Shutdown()
+        public void Shutdown()
         {
             foreach (KeyValuePair<string, NetworkChannelBase> networkChannel in _networkChannels)
             {
@@ -183,7 +185,8 @@ namespace TEngine
         /// <param name="serviceType">网络服务类型。</param>
         /// <param name="networkChannelHelper">网络频道辅助器。</param>
         /// <returns>要创建的网络频道。</returns>
-        public INetworkChannel CreateNetworkChannel(string name, ServiceType serviceType, INetworkChannelHelper networkChannelHelper)
+        public INetworkChannel CreateNetworkChannel(string name, ServiceType serviceType,
+            INetworkChannelHelper networkChannelHelper)
         {
             if (networkChannelHelper == null)
             {
@@ -197,7 +200,8 @@ namespace TEngine
 
             if (HasNetworkChannel(name))
             {
-                throw new GameFrameworkException(Utility.Text.Format("Already exist network channel '{0}'.", name ?? string.Empty));
+                throw new GameFrameworkException(Utility.Text.Format("Already exist network channel '{0}'.",
+                    name ?? string.Empty));
             }
 
             NetworkChannelBase networkChannel = null;
@@ -210,17 +214,18 @@ namespace TEngine
                 case ServiceType.TcpWithSyncReceive:
                     networkChannel = new TcpWithSyncReceiveNetworkChannel(name, networkChannelHelper);
                     break;
-                
+
                 case ServiceType.Udp:
                     networkChannel = new UdpNetworkChannel(name, networkChannelHelper);
                     break;
-                
+
                 case ServiceType.Kcp:
                     networkChannel = new KcpNetworkChannel(name, networkChannelHelper);
                     break;
 
                 default:
-                    throw new GameFrameworkException(Utility.Text.Format("Not supported service type '{0}'.", serviceType));
+                    throw new GameFrameworkException(Utility.Text.Format("Not supported service type '{0}'.",
+                        serviceType));
             }
 
             networkChannel.NetworkChannelConnected += OnNetworkChannelConnected;
@@ -249,6 +254,7 @@ namespace TEngine
                 networkChannel.Shutdown();
                 return name != null && _networkChannels.Remove(name);
             }
+
             return false;
         }
 
@@ -285,7 +291,8 @@ namespace TEngine
             }
         }
 
-        private void OnNetworkChannelError(NetworkChannelBase networkChannel, NetworkErrorCode errorCode, SocketError socketErrorCode, string errorMessage)
+        private void OnNetworkChannelError(NetworkChannelBase networkChannel, NetworkErrorCode errorCode,
+            SocketError socketErrorCode, string errorMessage)
         {
             if (_networkErrorEventHandler != null)
             {

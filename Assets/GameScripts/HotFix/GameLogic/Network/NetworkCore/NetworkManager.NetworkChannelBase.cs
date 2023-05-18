@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using GameProto;
+using Google.Protobuf;
 
 namespace TEngine
 {
@@ -15,7 +17,7 @@ namespace TEngine
             private const float DefaultHeartBeatInterval = 30f;
 
             private readonly string _name;
-            protected readonly Queue<Packet> SendPacketPool;
+            protected readonly Queue<CSPkg> SendPacketPool;
             protected readonly INetworkChannelHelper NetworkChannelHelper;
             protected AddressFamily MAddressFamily;
             protected bool MResetHeartBeatElapseSecondsWhenReceivePacket;
@@ -48,7 +50,7 @@ namespace TEngine
             /// <summary>
             /// 消息包缓存堆栈。
             /// </summary>
-            private readonly Queue<Packet> _packsQueue = new Queue<Packet>();
+            private readonly Queue<CSPkg> _packsQueue = new Queue<CSPkg>();
             
             /// <summary>
             /// 初始化网络频道基类的新实例。
@@ -58,7 +60,7 @@ namespace TEngine
             public NetworkChannelBase(string name, INetworkChannelHelper networkChannelHelper)
             {
                 _name = name ?? string.Empty;
-                SendPacketPool = new Queue<Packet>();
+                SendPacketPool = new Queue<CSPkg>();
                 NetworkChannelHelper = networkChannelHelper;
                 MAddressFamily = AddressFamily.Unknown;
                 MResetHeartBeatElapseSecondsWhenReceivePacket = false;
@@ -411,9 +413,8 @@ namespace TEngine
             /// <summary>
             /// 向远程主机发送消息包。
             /// </summary>
-            /// <typeparam name="T">消息包类型。</typeparam>
             /// <param name="packet">要发送的消息包。</param>
-            public bool Send<T>(T packet) where T : Packet
+            public bool Send(CSPkg packet)
             {
                 if (MSocket == null)
                 {
@@ -466,9 +467,9 @@ namespace TEngine
             /// <param name="resHandler">要注册的回调。</param>
             /// <param name="needShowWaitUI">是否需要等待UI。</param>
             /// <returns>消息包是否发送成功。</returns>
-            public bool Send<T>(T packet, CsMsgDelegate resHandler, bool needShowWaitUI = false) where T : Packet
+            public bool Send(CSPkg packet, CsMsgDelegate resHandler, bool needShowWaitUI = false)
             {
-                RegisterMsgHandler(packet.Id,resHandler,false);
+                RegisterMsgHandler((int)packet.Head.MsgId,resHandler,false);
                 return Send(packet);
             }
 
@@ -511,16 +512,16 @@ namespace TEngine
 
                 while (SendPacketPool.Count > 0)
                 {
-                    Packet packet = null;
+                    CSPkg csPkg = null;
                     lock (SendPacketPool)
                     {
-                        packet = SendPacketPool.Dequeue();
+                        csPkg = SendPacketPool.Dequeue();
                     }
 
                     bool serializeResult = false;
                     try
                     {
-                        serializeResult = NetworkChannelHelper.Serialize(packet, MSendState.Stream);
+                        serializeResult = NetworkChannelHelper.Serialize(csPkg, MSendState.Stream);
                     }
                     catch (Exception exception)
                     {
@@ -614,22 +615,22 @@ namespace TEngine
 
                 try
                 {
-                    Packet packet = NetworkChannelHelper.DeserializePacket(MReceiveState.PacketHeader, MReceiveState.Stream, out var customErrorData);
+                    CSPkg csPkg = NetworkChannelHelper.DeserializePacket(MReceiveState.PacketHeader, MReceiveState.Stream, out var customErrorData);
 
                     if (customErrorData != null && NetworkChannelCustomError != null)
                     {
                         NetworkChannelCustomError(this, customErrorData);
                     }
 
-                    if (packet != null)
+                    if (csPkg != null)
                     {
                         lock (_cacheHandlerQueue)
                         {
-                            if (_msgHandlerMap.TryGetValue((int)packet.Id, out var listHandle))
+                            if (_msgHandlerMap.TryGetValue((int)csPkg.Head.MsgId, out var listHandle))
                             {
                                 _cacheHandlerQueue.Enqueue(listHandle);
 
-                                _packsQueue.Enqueue(packet);
+                                _packsQueue.Enqueue(csPkg);
                             }
                         }
                     }

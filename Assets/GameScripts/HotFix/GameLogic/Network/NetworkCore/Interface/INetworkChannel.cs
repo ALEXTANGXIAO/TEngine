@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using GameProto;
+using Google.Protobuf;
 
 namespace TEngine
 {
@@ -163,7 +165,7 @@ namespace TEngine
         /// <typeparam name="T">消息包类型。</typeparam>
         /// <param name="packet">要发送的消息包。</param>
         /// <returns>消息包是否发送成功。</returns>
-        bool Send<T>(T packet) where T : Packet;
+        bool Send(CSPkg packet);
         
         /// <summary>
         /// 向远程主机发送消息包并注册消息回调。
@@ -173,6 +175,6 @@ namespace TEngine
         /// <param name="resHandler">要注册的回调。</param>
         /// <param name="needShowWaitUI">是否需要等待UI。</param>
         /// <returns>消息包是否发送成功。</returns>
-        bool Send<T>(T packet, CsMsgDelegate resHandler, bool needShowWaitUI = false) where T : Packet;
+        bool Send(CSPkg packet, CsMsgDelegate resHandler, bool needShowWaitUI = false);
     }
 }

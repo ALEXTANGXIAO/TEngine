@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using GameProto;
 
 namespace TEngine
 {
@@ -44,7 +45,7 @@ namespace TEngine
         /// <param name="packet">要序列化的消息包。</param>
         /// <param name="destination">要序列化的目标流。</param>
         /// <returns>是否序列化成功。</returns>
-        bool Serialize<T>(T packet, Stream destination) where T : Packet;
+        bool Serialize(CSPkg packet, Stream destination);
 
         /// <summary>
         /// 反序列化消息包头。
@@ -61,6 +62,6 @@ namespace TEngine
         /// <param name="source">要反序列化的来源流。</param>
         /// <param name="customErrorData">用户自定义错误数据。</param>
         /// <returns>反序列化后的消息包。</returns>
-        Packet DeserializePacket(IPacketHeader packetHeader, Stream source, out object customErrorData);
+        CSPkg DeserializePacket(IPacketHeader packetHeader, Stream source, out object customErrorData);
     }
 }

@@ -18,6 +18,16 @@ public partial class ProtobufUtility
     {
         ((IMessage)message).WriteTo(stream);
     }
+    
+    /// <summary>
+    /// 消息压入内存流。
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="stream"></param>
+    public static void ToStream(object message, Stream stream)
+    {
+        ((IMessage)message).WriteTo(stream);
+    }
 
     /// <summary>
     /// 比特流解析。
