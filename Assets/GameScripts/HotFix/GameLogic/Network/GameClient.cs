@@ -1,4 +1,5 @@
-﻿using GameBase;
+﻿using System.Net.Sockets;
+using GameBase;
 using GameProto;
 using TEngine;
 using CSPkg = GameProto.CSPkg;
@@ -72,6 +73,33 @@ namespace GameLogic
             m_connectWatcher = new ClientConnectWatcher(this);
             m_dispatcher = new MsgDispatcher();
             m_dispatcher.SetTimeout(5f);
+            GameEvent.AddEventListener<INetworkChannel,object>(NetworkEvent.NetworkConnectedEvent,OnNetworkConnected);
+            GameEvent.AddEventListener<INetworkChannel>(NetworkEvent.NetworkClosedEvent,OnNetworkClosed);
+            GameEvent.AddEventListener<INetworkChannel,NetworkErrorCode,SocketError,string>(NetworkEvent.NetworkErrorEvent,OnNetworkError);
+            GameEvent.AddEventListener<INetworkChannel,object>(NetworkEvent.NetworkCustomErrorEvent,OnNetworkCustomError);
+        }
+        
+        private void OnNetworkConnected(INetworkChannel channel, object userdata)
+        {
+            bool isReconnect = (m_status == GameClientStatus.StatusReconnect);
+            //准备登录
+            Status = GameClientStatus.StatusLogin;
+            // TODO Reconnected
+        }
+
+        private void OnNetworkClosed(INetworkChannel channel)
+        {
+
+        }
+
+        private void OnNetworkError(INetworkChannel channel, NetworkErrorCode networkErrorCode, SocketError socketError, string errorMessage)
+        {
+            
+        }
+
+        private void OnNetworkCustomError(INetworkChannel channel, object userData)
+        {
+
         }
 
         public void Connect(string host, int port, bool reconnect = false)
@@ -94,6 +122,8 @@ namespace GameLogic
             _lastHost = host;
             _lastPort = port;
 
+            Status = reconnect ? GameClientStatus.StatusReconnect : GameClientStatus.StatusInit;
+            
             Channel = TEngine.Network.CreateNetworkChannel("GameClient", ServiceType.Tcp, new NetworkChannelHelper());
             Channel.Connect(host, port);
         }
@@ -203,13 +233,13 @@ namespace GameLogic
         private bool IsIgnoreLog(uint msgId)
         {
             bool ignoreLog = false;
-            switch (msgId)
+            /*switch (msgId)
             {
                 case (uint)CSMsgID.CsCmdHeatbeatReq:
                 case (uint)CSMsgID.CsCmdHeatbeatRes:
                     ignoreLog = true;
                     break;
-            }
+            }*/
 
             return ignoreLog;
         }

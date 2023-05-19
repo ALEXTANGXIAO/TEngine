@@ -462,7 +462,6 @@ namespace TEngine
             /// <summary>
             /// 向远程主机发送消息包并注册消息回调。
             /// </summary>
-            /// <typeparam name="T">消息包类型。</typeparam>
             /// <param name="packet">要发送的消息包。</param>
             /// <param name="resHandler">要注册的回调。</param>
             /// <param name="needShowWaitUI">是否需要等待UI。</param>

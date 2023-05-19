@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
+using GameProto;
 using Google.Protobuf;
 
 
@@ -9,6 +11,8 @@ using Google.Protobuf;
 /// </summary>
 public partial class ProtobufUtility
 {
+    private const int BufferHead = 4;
+
     /// <summary>
     /// 消息压入内存流。
     /// </summary>
@@ -27,6 +31,20 @@ public partial class ProtobufUtility
     public static void ToStream(object message, Stream stream)
     {
         ((IMessage)message).WriteTo(stream);
+    }
+    
+    /// <summary>
+    /// 消息压入内存流。
+    /// </summary>
+    /// <param name="packet"></param>
+    /// <param name="stream"></param>
+    public static void ToStreamWithHead(CSPkg packet, MemoryStream stream)
+    {
+        byte[] data = packet.ToByteArray();
+        byte[] head = BitConverter.GetBytes(data.Length);
+        byte[] ret = head.Concat(data).ToArray();
+        stream.Write(ret);
+        ((MemoryStream)stream).SetLength(BufferHead + data.Length);
     }
 
     /// <summary>

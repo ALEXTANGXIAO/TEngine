@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ namespace TEngine
     [DisallowMultipleComponent]
     public sealed class Network : GameFrameworkModuleBase
     {
-        private static INetworkManager m_NetworkManager = null;
+        private static NetworkManager m_NetworkManager = null;
 
         /// <summary>
         /// 获取网络频道数量。
@@ -24,7 +25,8 @@ namespace TEngine
         {
             base.Awake();
 
-            m_NetworkManager = GameFrameworkEntry.GetModule<INetworkManager>();
+            // m_NetworkManager = GameFrameworkEntry.GetModule<INetworkManager>();
+            m_NetworkManager = new NetworkManager();
             if (m_NetworkManager == null)
             {
                 Log.Fatal("Network manager is invalid.");
@@ -36,6 +38,11 @@ namespace TEngine
             m_NetworkManager.NetworkMissHeartBeat += OnNetworkMissHeartBeat;
             m_NetworkManager.NetworkError += OnNetworkError;
             m_NetworkManager.NetworkCustomError += OnNetworkCustomError;
+        }
+
+        private void Update()
+        {
+            m_NetworkManager.Update(GameTime.deltaTime, GameTime.unscaledDeltaTime);
         }
 
         /// <summary>

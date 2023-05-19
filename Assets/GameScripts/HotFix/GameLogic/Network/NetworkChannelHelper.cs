@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Sockets;
-using System.Reflection;
 using GameProto;
+using Google.Protobuf;
 using TEngine;
 
 namespace GameLogic
@@ -88,9 +89,7 @@ namespace GameLogic
 
             _cachedStream.SetLength(_cachedStream.Capacity); // 此行防止 Array.Copy 的数据无法写入
             _cachedStream.Position = 0L;
-
-            global::ProtobufUtility.ToStream(packet,destination);
-
+            global::ProtobufUtility.ToStreamWithHead(packet,_cachedStream);
             _cachedStream.WriteTo(destination);
             return true;
         }
