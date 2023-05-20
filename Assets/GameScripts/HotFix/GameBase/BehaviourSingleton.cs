@@ -4,25 +4,6 @@ using System.Collections.Generic;
 namespace TEngine
 {
     /// <summary>
-    /// 帧更新标签。
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Class)]
-    public class UpdateAttribute : Attribute { }
-    
-    /// <summary>
-    /// 后帧更新标签。
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Class)]
-    public class LateUpdateAttribute : Attribute{ }
-    
-    /// <summary>
-    /// 物理帧更新标签。
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Class)]
-    public class FixedUpdateAttribute : Attribute{ }
-   
-    
-    /// <summary>
     /// 通过LogicSys来驱动且具备Unity完整生命周期的单例（不继承MonoBehaviour）。
     /// </summary>
     /// <typeparam name="T"></typeparam>
