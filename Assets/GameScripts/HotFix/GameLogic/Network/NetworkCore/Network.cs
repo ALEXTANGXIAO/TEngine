@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net.Sockets;
+using GameBase;
 using UnityEngine;
 
 namespace TEngine
@@ -9,9 +9,9 @@ namespace TEngine
     /// 网络组件。
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class Network : GameFrameworkModuleBase
+    public sealed class Network : UnitySingleton<Network>
     {
-        private static NetworkManager m_NetworkManager = null;
+        private NetworkManager m_NetworkManager = null;
 
         /// <summary>
         /// 获取网络频道数量。
@@ -21,7 +21,7 @@ namespace TEngine
         /// <summary>
         /// 游戏框架组件初始化。
         /// </summary>
-        protected override void Awake()
+        public override void Awake()
         {
             base.Awake();
 
@@ -50,7 +50,7 @@ namespace TEngine
         /// </summary>
         /// <param name="name">网络频道名称。</param>
         /// <returns>是否存在网络频道。</returns>
-        public static bool HasNetworkChannel(string name)
+        public bool HasNetworkChannel(string name)
         {
             return m_NetworkManager.HasNetworkChannel(name);
         }
@@ -60,7 +60,7 @@ namespace TEngine
         /// </summary>
         /// <param name="name">网络频道名称。</param>
         /// <returns>要获取的网络频道。</returns>
-        public static INetworkChannel GetNetworkChannel(string name)
+        public INetworkChannel GetNetworkChannel(string name)
         {
             return m_NetworkManager.GetNetworkChannel(name);
         }
@@ -69,11 +69,11 @@ namespace TEngine
         /// 获取所有网络频道。
         /// </summary>
         /// <returns>所有网络频道。</returns>
-        public static INetworkChannel[] StaticGetAllNetworkChannels()
+        public INetworkChannel[] StaticGetAllNetworkChannels()
         {
             return m_NetworkManager.GetAllNetworkChannels();
         }
-        
+
         /// <summary>
         /// 获取所有网络频道。
         /// </summary>
@@ -87,7 +87,7 @@ namespace TEngine
         /// 获取所有网络频道。
         /// </summary>
         /// <param name="results">所有网络频道。</param>
-        public static void GetAllNetworkChannels(List<INetworkChannel> results)
+        public void GetAllNetworkChannels(List<INetworkChannel> results)
         {
             m_NetworkManager.GetAllNetworkChannels(results);
         }
@@ -99,7 +99,8 @@ namespace TEngine
         /// <param name="serviceType">网络服务类型。</param>
         /// <param name="networkChannelHelper">网络频道辅助器。</param>
         /// <returns>要创建的网络频道。</returns>
-        public static INetworkChannel CreateNetworkChannel(string name, ServiceType serviceType, INetworkChannelHelper networkChannelHelper)
+        public INetworkChannel CreateNetworkChannel(string name, ServiceType serviceType,
+            INetworkChannelHelper networkChannelHelper)
         {
             return m_NetworkManager.CreateNetworkChannel(name, serviceType, networkChannelHelper);
         }
@@ -109,7 +110,7 @@ namespace TEngine
         /// </summary>
         /// <param name="channelName">网络频道名称。</param>
         /// <returns>是否销毁网络频道成功。</returns>
-        public static bool DestroyNetworkChannel(string channelName)
+        public bool DestroyNetworkChannel(string channelName)
         {
             return m_NetworkManager.DestroyNetworkChannel(channelName);
         }
@@ -129,7 +130,8 @@ namespace TEngine
             GameEvent.Send(NetworkEvent.NetworkMissHeartBeatEvent, channel, missCount);
         }
 
-        private void OnNetworkError(INetworkChannel channel, NetworkErrorCode networkErrorCode, SocketError socketError, string errorMessage)
+        private void OnNetworkError(INetworkChannel channel, NetworkErrorCode networkErrorCode, SocketError socketError,
+            string errorMessage)
         {
             GameEvent.Send(NetworkEvent.NetworkErrorEvent, channel, networkErrorCode, socketError, errorMessage);
         }
