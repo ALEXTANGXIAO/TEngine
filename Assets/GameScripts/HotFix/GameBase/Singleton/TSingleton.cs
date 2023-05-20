@@ -30,11 +30,11 @@ namespace GameBase
             {
                 if (_root == null)
                 {
-                    _root = GameObject.Find("[SingletonMgr]");
+                    _root = GameObject.Find("[GameModule]");
 
                     if (_root == null)
                     {
-                        _root = new GameObject("[SingletonMgr]")
+                        _root = new GameObject("[GameModule]")
                         {
                             transform =
                             {
