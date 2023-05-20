@@ -17,7 +17,7 @@ namespace GameBase
             {
                 if (_instance == null)
                 {
-                    var ins = UnityEngine.Object.FindObjectOfType<T>();
+                    var ins = FindObjectOfType<T>();
                     if (ins != null)
                     {
                         var obj = ins.gameObject;
@@ -32,11 +32,16 @@ namespace GameBase
                     GameObject go = SingletonMgr.GetGameObject(instName);
                     if (go == null)
                     {
-                        go = GameObject.Find($"{instName}");
+                        go = GameObject.Find($"[{instName}]");
                         if (go == null)
                         {
-                            go = new GameObject(instName);
-                            go.transform.position = Vector3.zero;
+                            go = new GameObject($"[{instName}]")
+                            {
+                                transform =
+                                {
+                                    position = Vector3.zero
+                                }
+                            };
                         }
                     }
 
@@ -101,11 +106,9 @@ namespace GameBase
 
         public static void Release()
         {
-            if (_instance != null)
-            {
-                SingletonMgr.Release(_instance.gameObject);
-                _instance = null;
-            }
+            if (_instance == null) return;
+            SingletonMgr.Release(_instance.gameObject);
+            _instance = null;
         }
     }
 }
