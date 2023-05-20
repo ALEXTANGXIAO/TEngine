@@ -42,7 +42,7 @@ namespace GameBase
                             }
                         };
                     }
-                    UnityEngine.Object.DontDestroyOnLoad(_root);
+                    Object.DontDestroyOnLoad(_root);
                 }
                 return _root;
             }
@@ -70,7 +70,7 @@ namespace GameBase
                 _gameObjects.Add(go.name, go);
                 if (Application.isPlaying)
                 {
-                    UnityEngine.Object.DontDestroyOnLoad(go);
+                    Object.DontDestroyOnLoad(go);
                 }
             }
         }
@@ -80,7 +80,7 @@ namespace GameBase
             if (_gameObjects != null && _gameObjects.ContainsKey(go.name))
             {
                 _gameObjects.Remove(go.name);
-                UnityEngine.Object.Destroy(go);
+                Object.Destroy(go);
             }
         }
 
