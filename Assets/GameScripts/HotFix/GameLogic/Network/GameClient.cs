@@ -34,34 +34,34 @@ namespace GameLogic
 
     public class GameClient : Singleton<GameClient>
     {
-        public INetworkChannel Channel;
+        private readonly INetworkChannel _channel;
 
-        private GameClientStatus m_status = GameClientStatus.StatusInit;
+        private GameClientStatus _status = GameClientStatus.StatusInit;
 
-        private MsgDispatcher m_dispatcher;
+        private readonly MsgDispatcher _dispatcher;
 
-        private ClientConnectWatcher m_connectWatcher;
+        private readonly ClientConnectWatcher _connectWatcher;
 
-        private float m_lastLogDisconnectErrTime = 0f;
+        private float _lastLogDisconnectErrTime = 0f;
 
-        private int m_lastNetErrCode = 0;
+        private int _lastNetErrCode = 0;
 
-        public int LastNetErrCode => m_lastNetErrCode;
+        public int LastNetErrCode => _lastNetErrCode;
 
         public GameClientStatus Status
         {
-            get => m_status;
-            set => m_status = value;
+            get => _status;
+            set => _status = value;
         }
 
-        public bool IsEntered => m_status == GameClientStatus.StatusEnter;
+        public bool IsEntered => _status == GameClientStatus.StatusEnter;
 
         /// <summary>
         /// 连续心跳超时
         /// </summary>
-        private int m_heatBeatTimeoutNum = 0;
+        private int _heatBeatTimeoutNum = 0;
 
-        private int m_ping = -1;
+        private int _ping = -1;
 
         private float NowTime => GameTime.unscaledTime;
 
@@ -70,22 +70,23 @@ namespace GameLogic
 
         public GameClient()
         {
-            m_connectWatcher = new ClientConnectWatcher(this);
-            m_dispatcher = new MsgDispatcher();
-            m_dispatcher.SetTimeout(5f);
+            _connectWatcher = new ClientConnectWatcher(this);
+            _dispatcher = new MsgDispatcher();
+            _dispatcher.SetTimeout(5f);
             GameEvent.AddEventListener<INetworkChannel,object>(NetworkEvent.NetworkConnectedEvent,OnNetworkConnected);
             GameEvent.AddEventListener<INetworkChannel>(NetworkEvent.NetworkClosedEvent,OnNetworkClosed);
             GameEvent.AddEventListener<INetworkChannel,NetworkErrorCode,SocketError,string>(NetworkEvent.NetworkErrorEvent,OnNetworkError);
             GameEvent.AddEventListener<INetworkChannel,object>(NetworkEvent.NetworkCustomErrorEvent,OnNetworkCustomError);
-            Channel = Network.Instance.CreateNetworkChannel("GameClient", ServiceType.Tcp, new NetworkChannelHelper());
+            _channel = Network.Instance.CreateNetworkChannel("GameClient", ServiceType.Tcp, new NetworkChannelHelper());
         }
         
         private void OnNetworkConnected(INetworkChannel channel, object userdata)
         {
-            bool isReconnect = (m_status == GameClientStatus.StatusReconnect);
+            bool isReconnect = (_status == GameClientStatus.StatusReconnect);
             //准备登录
             Status = GameClientStatus.StatusLogin;
-            // TODO Reconnected
+            
+            OnServerConnected(isReconnect);
         }
 
         private void OnNetworkClosed(INetworkChannel channel)
@@ -125,7 +126,7 @@ namespace GameLogic
 
             Status = reconnect ? GameClientStatus.StatusReconnect : GameClientStatus.StatusInit;
             
-            Channel.Connect(host, port);
+            _channel.Connect(host, port);
         }
 
         public void Reconnect()
@@ -136,15 +137,20 @@ namespace GameLogic
                 return;
             }
 
-            m_connectWatcher.OnReConnect();
+            _connectWatcher.OnReConnect();
             Connect(_lastHost, _lastPort, true);
         }
 
 
         public void Shutdown()
         {
-            Channel.Close();
-            m_status = GameClientStatus.StatusInit;
+            _channel.Close();
+            _status = GameClientStatus.StatusInit;
+        }
+
+        public void OnServerConnected(bool isReconnect)
+        {
+            
         }
 
         public bool SendCsMsg(CSPkg reqPkg)
@@ -160,12 +166,12 @@ namespace GameLogic
         public bool IsStatusCanSendMsg(uint msgId)
         {
             bool canSend = false;
-            if (m_status == GameClientStatus.StatusLogin)
+            if (_status == GameClientStatus.StatusLogin)
             {
                 canSend = (msgId == (uint)CSMsgID.CsCmdActLoginReq);
             }
 
-            if (m_status == GameClientStatus.StatusEnter)
+            if (_status == GameClientStatus.StatusEnter)
             {
                 canSend = true;
             }
@@ -173,10 +179,10 @@ namespace GameLogic
             if (!canSend)
             {
                 float nowTime = NowTime;
-                if (m_lastLogDisconnectErrTime + 5 < nowTime)
+                if (_lastLogDisconnectErrTime + 5 < nowTime)
                 {
                     Log.Error("GameClient not connected, send msg failed, msgId[{0}]", msgId);
-                    m_lastLogDisconnectErrTime = nowTime;
+                    _lastLogDisconnectErrTime = nowTime;
                 }
 
                 //UISys.Mgr.ShowTipMsg(TextDefine.ID_ERR_NETWORKD_DISCONNECT);
@@ -200,14 +206,14 @@ namespace GameLogic
                     resHandler(CsMsgResult.InternalError, null);
                 }
 
-                m_dispatcher.NotifyCmdError(resCmd, CsMsgResult.InternalError);
+                _dispatcher.NotifyCmdError(resCmd, CsMsgResult.InternalError);
             }
             else
             {
                 //注册消息
                 if (resHandler != null)
                 {
-                    m_dispatcher.RegSeqHandle(reqPkg.Head.Echo, resCmd, resHandler);
+                    _dispatcher.RegSeqHandle(reqPkg.Head.Echo, resCmd, resHandler);
                     if (reqPkg.Head.Echo > 0 && IsWaitingCmd(resCmd) && needShowWaitUI)
                     {
                         // TODO
@@ -225,7 +231,7 @@ namespace GameLogic
             {
                 Log.Debug("[c-s] CmdId[{0}]\n{1}", reqPkg.Head.MsgId, reqPkg.Body.ToString());
             }
-            var sendRet = Channel.Send(reqPkg);
+            var sendRet = _channel.Send(reqPkg);
             return sendRet;
             return true;
         }
@@ -233,14 +239,13 @@ namespace GameLogic
         private bool IsIgnoreLog(uint msgId)
         {
             bool ignoreLog = false;
-            /*switch (msgId)
+            switch (msgId)
             {
                 case (uint)CSMsgID.CsCmdHeatbeatReq:
                 case (uint)CSMsgID.CsCmdHeatbeatRes:
                     ignoreLog = true;
                     break;
-            }*/
-
+            }
             return ignoreLog;
         }
 
@@ -257,19 +262,39 @@ namespace GameLogic
 
         private void ResetParam()
         {
-            m_lastLogDisconnectErrTime = 0f;
-            m_heatBeatTimeoutNum = 0;
+            _lastLogDisconnectErrTime = 0f;
+            _heatBeatTimeoutNum = 0;
             _lastHbTime = 0f;
-            m_ping = -1;
-            m_lastNetErrCode = 0;
+            _ping = -1;
+            _lastNetErrCode = 0;
         }
 
         public void OnUpdate()
         {
-            m_dispatcher.Update();
+            _dispatcher.Update();
             TickHeartBeat();
             CheckHeatBeatTimeout();
-            m_connectWatcher.Update();
+            _connectWatcher.Update();
+        }
+        
+        /// <summary>
+        /// 注册静态消息
+        /// </summary>
+        /// <param name="iCmdID"></param>
+        /// <param name="msgDelegate"></param>
+        public void RegCmdHandle(int iCmdID, CsMsgDelegate msgDelegate)
+        {
+            _dispatcher.RegCmdHandle((uint)iCmdID, msgDelegate);
+        }
+
+        /// <summary>
+        /// 移除消息处理函数
+        /// </summary>
+        /// <param name="cmdId"></param>
+        /// <param name="msgDelegate"></param>
+        public void RmvCmdHandle(int cmdId, CsMsgDelegate msgDelegate)
+        {
+            _dispatcher.RmvCmdHandle((uint)cmdId, msgDelegate);
         }
 
         /// <summary>
@@ -287,12 +312,12 @@ namespace GameLogic
         /// <param name="needWatch"></param>
         public void SetWatchReconnect(bool needWatch)
         {
-            m_connectWatcher.Enable = needWatch;
+            _connectWatcher.Enable = needWatch;
         }
 
         public bool IsNetworkOkAndLogin()
         {
-            return m_status == GameClientStatus.StatusEnter;
+            return _status == GameClientStatus.StatusEnter;
         }
 
         #region 心跳处理
@@ -314,13 +339,13 @@ namespace GameLogic
 
         private bool CheckHeatBeatTimeout()
         {
-            if (m_heatBeatTimeoutNum >= HeatBeatTimeoutMaxCount)
+            if (_heatBeatTimeoutNum >= HeatBeatTimeoutMaxCount)
             {
                 //断开连接
                 Shutdown();
 
                 //准备重连
-                m_heatBeatTimeoutNum = 0;
+                _heatBeatTimeoutNum = 0;
                 Status = GameClientStatus.StatusClose;
                 Log.Error("heat beat detect timeout");
                 return false;
@@ -354,16 +379,16 @@ namespace GameLogic
                 //如果是超时了，则标记最近收到包的次数
                 if (result == CsMsgResult.MsgTimeOut)
                 {
-                    m_heatBeatTimeoutNum++;
-                    Log.Warning("heat beat timeout: {0}", m_heatBeatTimeoutNum);
+                    _heatBeatTimeoutNum++;
+                    Log.Warning("heat beat timeout: {0}", _heatBeatTimeoutNum);
                 }
             }
             else
             {
                 var resBody = msg.Body.HeatBeatRes;
                 float diffTime = NowTime - resBody.HeatEchoTime;
-                m_ping = (int)(diffTime * 1000);
-                m_heatBeatTimeoutNum = 0;
+                _ping = (int)(diffTime * 1000);
+                _heatBeatTimeoutNum = 0;
             }
         }
 
@@ -380,7 +405,7 @@ namespace GameLogic
             {
                 if (IsPingValid())
                 {
-                    return m_ping / 4;
+                    return _ping / 4;
                 }
                 else
                 {
@@ -393,7 +418,7 @@ namespace GameLogic
         {
             if (IsNetworkOkAndLogin())
             {
-                return m_ping >= 0;
+                return _ping >= 0;
             }
 
             return false;
