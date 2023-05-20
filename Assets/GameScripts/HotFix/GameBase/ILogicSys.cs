@@ -46,9 +46,10 @@ public interface ILogicSys
     void OnRoleLogout();
 
     /// <summary>
-    /// OnDrawGizmos
+    /// 绘制调试接口
     /// </summary>
     void OnDrawGizmos();
+    
     /// <summary>
     /// 暂停游戏
     /// </summary>
