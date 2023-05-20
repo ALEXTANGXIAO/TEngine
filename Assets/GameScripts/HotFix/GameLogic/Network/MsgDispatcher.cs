@@ -8,65 +8,63 @@ namespace GameLogic
 {
     internal class MsgHandleDataToRmv
     {
-        public uint m_msgCmd;
-        public CsMsgDelegate m_handle;
+        public uint MsgId;
+        public CsMsgDelegate Handle;
     };
 
     class MsgDispatcher
     {
-        const int CHECK_TIMEOUT_PERFRAME = 10;
-        const int MAX_MSG_HANDLE = 256;
+        const int CheckTimeoutPerframe = 10;
+        const int MaxMsgHandle = 256;
 
-        CsMsgDelegate[] m_aMsgHandles = new CsMsgDelegate[MAX_MSG_HANDLE];
-        float[] m_fMsgRegTime = new float[MAX_MSG_HANDLE];
-        UInt32[] m_adwMsgRegSeq = new UInt32[MAX_MSG_HANDLE]; //因为m_aMsgHandles存储的是hash，不能保证一定seqid一样，所以这儿存储下，用来校验
-        private uint[] m_aiMsgRegResCmdID = new uint[MAX_MSG_HANDLE];
+        private readonly CsMsgDelegate[] _aMsgHandles = new CsMsgDelegate[MaxMsgHandle];
+        private readonly float[] _fMsgRegTime = new float[MaxMsgHandle];
+        private readonly UInt32[] _adwMsgRegSeq = new UInt32[MaxMsgHandle]; //因为_aiMsgRegResCmdID存储的是hash，不能保证一定seqid一样，所以这儿存储下，用来校验
+        private readonly uint[] _aiMsgRegResCmdID = new uint[MaxMsgHandle];
 
-        UInt32 m_dwLastCheckIndex = 0;
+        UInt32 _dwLastCheckIndex = 0;
 
-        Dictionary<uint, List<CsMsgDelegate>> m_mapCmdHandle = new Dictionary<uint, List<CsMsgDelegate>>();
-        List<CsMsgStatDelegate> m_listStatHandle = new List<CsMsgStatDelegate>();
+        private readonly Dictionary<uint, List<CsMsgDelegate>> _mapCmdHandle = new Dictionary<uint, List<CsMsgDelegate>>();
+        private readonly List<CsMsgStatDelegate> _listStatHandle = new List<CsMsgStatDelegate>();
 
         //防止在处理消息的时候又删除了消息映射，所以这儿加了个队列来做个保护
-        private List<MsgHandleDataToRmv> m_rmvList = new List<MsgHandleDataToRmv>();
-        private bool m_isInHandleLoop = false;
-
-        private float m_timeout = 5;
+        private readonly List<MsgHandleDataToRmv> _rmvList = new List<MsgHandleDataToRmv>();
+        private bool _isInHandleLoop = false;
+        private float _timeout = 5;
 
         // 清理所有的网络消息
         public void CleanAllNetMsg()
         {
-            m_mapCmdHandle.Clear();
+            _mapCmdHandle.Clear();
         }
 
         public void SetTimeout(float timeout)
         {
-            m_timeout = timeout;
+            _timeout = timeout;
         }
 
         public void RegSeqHandle(UInt32 dwMsgSeqID, uint iResCmdID, CsMsgDelegate msgDelegate)
         {
-            UInt32 hashIndex = dwMsgSeqID % MAX_MSG_HANDLE;
-            if (m_aMsgHandles[hashIndex] != null)
+            UInt32 hashIndex = dwMsgSeqID % MaxMsgHandle;
+            if (_aMsgHandles[hashIndex] != null)
             {
-                OnCallSeqHandle(m_adwMsgRegSeq[hashIndex], m_aiMsgRegResCmdID[hashIndex]);
-                NotifyTimeout(m_aMsgHandles[hashIndex]);
+                OnCallSeqHandle(_adwMsgRegSeq[hashIndex], _aiMsgRegResCmdID[hashIndex]);
+                NotifyTimeout(_aMsgHandles[hashIndex]);
                 RmvReg((int)hashIndex);
             }
 
-            m_aMsgHandles[hashIndex] = msgDelegate;
-            m_fMsgRegTime[hashIndex] = NowTime;
-            m_adwMsgRegSeq[hashIndex] = dwMsgSeqID;
-            m_aiMsgRegResCmdID[hashIndex] = iResCmdID;
+            _aMsgHandles[hashIndex] = msgDelegate;
+            _fMsgRegTime[hashIndex] = NowTime;
+            _adwMsgRegSeq[hashIndex] = dwMsgSeqID;
+            _aiMsgRegResCmdID[hashIndex] = iResCmdID;
         }
 
         public void RegCmdHandle(uint iCmdID, CsMsgDelegate msgDelegate)
         {
-            List<CsMsgDelegate> listHandle;
-            if (!m_mapCmdHandle.TryGetValue(iCmdID, out listHandle))
+            if (!_mapCmdHandle.TryGetValue(iCmdID, out var listHandle))
             {
                 listHandle = new List<CsMsgDelegate>();
-                m_mapCmdHandle[iCmdID] = listHandle;
+                _mapCmdHandle[iCmdID] = listHandle;
             }
 
             if (listHandle != null)
@@ -86,12 +84,12 @@ namespace GameLogic
         /// <param name="handler"></param>
         public void RegCmdStatHandle(CsMsgStatDelegate handler)
         {
-            m_listStatHandle.Add(handler);
+            _listStatHandle.Add(handler);
         }
 
         public void DispatchCmdStat(int cmdID, int pkgSize)
         {
-            foreach (CsMsgStatDelegate handle in m_listStatHandle)
+            foreach (CsMsgStatDelegate handle in _listStatHandle)
             {
                 handle(cmdID, pkgSize);
             }
@@ -99,18 +97,17 @@ namespace GameLogic
 
         public void RmvCmdHandle(uint iCmdID, CsMsgDelegate msgDelegate)
         {
-            if (m_isInHandleLoop)
+            if (_isInHandleLoop)
             {
                 MsgHandleDataToRmv toRmvData = new MsgHandleDataToRmv();
-                toRmvData.m_msgCmd = iCmdID;
-                toRmvData.m_handle = msgDelegate;
+                toRmvData.MsgId = iCmdID;
+                toRmvData.Handle = msgDelegate;
 
-                m_rmvList.Add(toRmvData);
+                _rmvList.Add(toRmvData);
                 return;
             }
 
-            List<CsMsgDelegate> listHandle;
-            if (!m_mapCmdHandle.TryGetValue(iCmdID, out listHandle))
+            if (!_mapCmdHandle.TryGetValue(iCmdID, out var listHandle))
             {
                 return;
             }
@@ -129,11 +126,11 @@ namespace GameLogic
         protected bool NotifyCmdHandle(uint cmdID, CsMsgResult result, CSPkg pkg)
         {
             bool ret = false;
-            if (m_mapCmdHandle.TryGetValue(cmdID, out var listHandle))
+            if (_mapCmdHandle.TryGetValue(cmdID, out var listHandle))
             {
-                m_isInHandleLoop = true;
+                _isInHandleLoop = true;
 
-                var rmvList = m_rmvList;
+                var rmvList = _rmvList;
                 rmvList.Clear();
                 foreach (CsMsgDelegate handle in listHandle)
                 {
@@ -144,15 +141,15 @@ namespace GameLogic
                     TProfiler.EndSample();
                 }
 
-                m_isInHandleLoop = false;
+                _isInHandleLoop = false;
 
                 //再统一删除掉
                 int rmvCnt = rmvList.Count;
                 for (int i = 0; i < rmvCnt; i++)
                 {
                     var rmvItem = rmvList[i];
-                    Log.Error("-------------remove cmd handle on loop:{0}-----------", rmvItem.m_msgCmd);
-                    RmvCmdHandle(rmvItem.m_msgCmd, rmvItem.m_handle);
+                    Log.Error("-------------remove cmd handle on loop:{0}-----------", rmvItem.MsgId);
+                    RmvCmdHandle(rmvItem.MsgId, rmvItem.Handle);
                 }
             }
 
@@ -175,14 +172,14 @@ namespace GameLogic
 
         public void NotifySeqError(UInt32 dwSeqID, CsMsgResult result)
         {
-            UInt32 hashIndex = dwSeqID % MAX_MSG_HANDLE;
+            UInt32 hashIndex = dwSeqID % MaxMsgHandle;
 
             //先判断是否有注册的指定消息
-            if (m_aMsgHandles[hashIndex] != null &&
-                m_adwMsgRegSeq[hashIndex] == dwSeqID)
+            if (_aMsgHandles[hashIndex] != null &&
+                _adwMsgRegSeq[hashIndex] == dwSeqID)
             {
-                OnCallSeqHandle(dwSeqID, m_aiMsgRegResCmdID[hashIndex]);
-                m_aMsgHandles[hashIndex](result, null);
+                OnCallSeqHandle(dwSeqID, _aiMsgRegResCmdID[hashIndex]);
+                _aMsgHandles[hashIndex](result, null);
 
                 RmvReg((int)hashIndex);
             }
@@ -190,64 +187,68 @@ namespace GameLogic
 
         public bool IsCmdFilterNoLog(int cmdID)
         {
-            // TODO
-            /*switch (cmdID)
+            switch (cmdID)
             {
-                case netMacros.CS_CMD_HEATBEAT_RES:
+                case (int)CSMsgID.CsCmdHeatbeatRes:
                     return true;
                 default:
                     break;
-            }*/
-
+            }
             return false;
         }
 
         public void NotifyMsg(CSPkg msg)
         {
             UInt32 dwSeq = msg.Head.Echo;
-            UInt32 hashIndex = dwSeq % MAX_MSG_HANDLE;
+            UInt32 hashIndex = dwSeq % MaxMsgHandle;
             //判断是否有固定的消息处理流程
             bool bHaveHandle = NotifyCmdHandle(msg.Head.MsgId, CsMsgResult.NoError, msg);
 
             //再判断是否有注册的指定消息
-            if (m_aMsgHandles[hashIndex] != null &&
-                m_adwMsgRegSeq[hashIndex] == dwSeq &&
-                m_aiMsgRegResCmdID[hashIndex] == (int)msg.Head.MsgId)
+            if (_aMsgHandles[hashIndex] != null &&
+                _adwMsgRegSeq[hashIndex] == dwSeq &&
+                _aiMsgRegResCmdID[hashIndex] == (int)msg.Head.MsgId)
             {
-                OnCallSeqHandle(m_adwMsgRegSeq[hashIndex], m_aiMsgRegResCmdID[hashIndex]);
-                m_aMsgHandles[hashIndex](CsMsgResult.NoError, msg);
+                OnCallSeqHandle(_adwMsgRegSeq[hashIndex], _aiMsgRegResCmdID[hashIndex]);
+                _aMsgHandles[hashIndex](CsMsgResult.NoError, msg);
                 RmvReg((int)hashIndex);
                 bHaveHandle = true;
             }
 
             if (!bHaveHandle)
             {
-                //todo..临时改为debug
                 Log.Debug("there is no handle for Msg[{0}]", msg.Head.MsgId);
             }
         }
 
         private float NowTime => GameTime.unscaledTime;
 
-        //定时检查是否请求超时了
         public void Update()
         {
-            float timeout = m_timeout;
+            CheckTimeOut();
+        }
+
+        /// <summary>
+        /// 定时检查是否请求超时。
+        /// </summary>
+        private void CheckTimeOut()
+        {
+            float timeout = _timeout;
             float nowTime = NowTime;
-            for (int i = 0; i < CHECK_TIMEOUT_PERFRAME; i++)
+            for (int i = 0; i < CheckTimeoutPerframe; i++)
             {
-                m_dwLastCheckIndex = (m_dwLastCheckIndex + 1) % MAX_MSG_HANDLE;
-                if (m_aMsgHandles[m_dwLastCheckIndex] != null)
+                _dwLastCheckIndex = (_dwLastCheckIndex + 1) % MaxMsgHandle;
+                if (_aMsgHandles[_dwLastCheckIndex] != null)
                 {
-                    if (m_fMsgRegTime[m_dwLastCheckIndex] + timeout < nowTime)
+                    if (_fMsgRegTime[_dwLastCheckIndex] + timeout < nowTime)
                     {
-                        Log.Error("msg timeout, resCmdID[{0}], reqSeq[{1}]", m_aiMsgRegResCmdID[m_dwLastCheckIndex],
-                            m_adwMsgRegSeq[m_dwLastCheckIndex]);
+                        Log.Error("msg timeout, resCmdID[{0}], reqSeq[{1}]", _aiMsgRegResCmdID[_dwLastCheckIndex],
+                            _adwMsgRegSeq[_dwLastCheckIndex]);
 
-                        OnCallSeqHandle(m_adwMsgRegSeq[m_dwLastCheckIndex], m_aiMsgRegResCmdID[m_dwLastCheckIndex]);
-                        NotifyTimeout(m_aMsgHandles[m_dwLastCheckIndex]);
+                        OnCallSeqHandle(_adwMsgRegSeq[_dwLastCheckIndex], _aiMsgRegResCmdID[_dwLastCheckIndex]);
+                        NotifyTimeout(_aMsgHandles[_dwLastCheckIndex]);
 
-                        RmvReg((int)m_dwLastCheckIndex);
+                        RmvReg((int)_dwLastCheckIndex);
                     }
                 }
             }
@@ -255,10 +256,10 @@ namespace GameLogic
 
         public void RmvReg(int index)
         {
-            m_aMsgHandles[index] = null;
-            m_adwMsgRegSeq[index] = 0;
-            m_aiMsgRegResCmdID[index] = 0;
-            m_fMsgRegTime[index] = 0;
+            _aMsgHandles[index] = null;
+            _adwMsgRegSeq[index] = 0;
+            _aiMsgRegResCmdID[index] = 0;
+            _fMsgRegTime[index] = 0;
         }
     }
 }
