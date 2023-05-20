@@ -77,7 +77,7 @@ namespace GameLogic
             GameEvent.AddEventListener<INetworkChannel>(NetworkEvent.NetworkClosedEvent,OnNetworkClosed);
             GameEvent.AddEventListener<INetworkChannel,NetworkErrorCode,SocketError,string>(NetworkEvent.NetworkErrorEvent,OnNetworkError);
             GameEvent.AddEventListener<INetworkChannel,object>(NetworkEvent.NetworkCustomErrorEvent,OnNetworkCustomError);
-            Channel = TEngine.Network.CreateNetworkChannel("GameClient", ServiceType.Tcp, new NetworkChannelHelper());
+            Channel = Network.Instance.CreateNetworkChannel("GameClient", ServiceType.Tcp, new NetworkChannelHelper());
         }
         
         private void OnNetworkConnected(INetworkChannel channel, object userdata)
