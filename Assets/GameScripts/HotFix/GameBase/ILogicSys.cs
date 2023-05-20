@@ -36,6 +36,11 @@ public interface ILogicSys
     void OnFixedUpdate();
 
     /// <summary>
+    /// 登录账号/角色时调用
+    /// </summary>
+    void OnRoleLogin();
+    
+    /// <summary>
     /// 清理数据接口，切换账号/角色时调用
     /// </summary>
     void OnRoleLogout();
