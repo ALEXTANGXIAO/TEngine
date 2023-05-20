@@ -51,6 +51,10 @@
         {
         }
 
+        public virtual void OnRoleLogin()
+        {
+        }
+        
         public virtual void OnRoleLogout()
         {
         }
