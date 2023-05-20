@@ -102,10 +102,11 @@ namespace GameLogic
         /// <returns>反序列化后的消息包头。</returns>
         public IPacketHeader DeserializePacketHeader(Stream source, out object customErrorData)
         {
-            // TODO
             // 注意：此函数并不在主线程调用！
             customErrorData = null;
-            return null; //(IPacketHeader)RuntimeTypeModel.Default.Deserialize(source, MemoryPool.Acquire<PacketHeader>(), typeof(PacketHeader));
+            PacketHeader packetHeader = MemoryPool.Acquire<PacketHeader>();
+            packetHeader.PacketLength = ((MemoryStream)source).GetBuffer()[0];
+            return packetHeader;
         }
 
         /// <summary>
@@ -130,14 +131,14 @@ namespace GameLogic
             CSPkg csPkg = null;
             if (scPacketHeader.IsValid)
             {
-                Type packetType = GetServerToClientPacketType(scPacketHeader.Id);
-                if (packetType != null)
+                try
                 {
-                    csPkg = global::ProtobufUtility.Deserialize<CSPkg>(((MemoryStream)source).GetBuffer());;
+                    csPkg = global::ProtobufUtility.Deserialize(((MemoryStream)source).GetBuffer(),0,scPacketHeader.PacketLength);
+                    Log.Debug("[s-c] CmdId[{0}]\n{1}", csPkg.Head.MsgId, csPkg.ToString());
                 }
-                else
+                catch (Exception e)
                 {
-                    Log.Warning("Can not deserialize packet for packet id '{0}'.", scPacketHeader.Id.ToString());
+                    Log.Warning(e);
                 }
             }
             else
