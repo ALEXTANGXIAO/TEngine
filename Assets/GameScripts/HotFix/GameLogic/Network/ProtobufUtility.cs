@@ -2,8 +2,10 @@
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using GameProto;
 using Google.Protobuf;
+using TEngine;
 
 
 /// <summary>
@@ -22,7 +24,7 @@ public partial class ProtobufUtility
     {
         ((IMessage)message).WriteTo(stream);
     }
-    
+
     /// <summary>
     /// 消息压入内存流。
     /// </summary>
@@ -32,7 +34,7 @@ public partial class ProtobufUtility
     {
         ((IMessage)message).WriteTo(stream);
     }
-    
+
     /// <summary>
     /// 消息压入内存流。
     /// </summary>
@@ -135,7 +137,7 @@ public partial class ProtobufUtility
     {
         return ((IMessage)message).ToByteArray();
     }
-    
+
     /// <summary>
     /// 序列化protobuf
     /// </summary>
@@ -151,11 +153,26 @@ public partial class ProtobufUtility
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="dataBytes"></param>
+    /// <param name="offset"></param>
+    /// <param name="bodyCount"></param>
     /// <returns></returns>
-    public static T Deserialize<T>(byte[] dataBytes) where T : IMessage, new()
+    public static T Deserialize<T>(byte[] dataBytes, int offset, int bodyCount) where T : IMessage, new()
     {
         T msg = new T();
-        msg = (T)msg.Descriptor.Parser.ParseFrom(dataBytes);
+        msg = (T)msg.Descriptor.Parser.ParseFrom(dataBytes, offset, bodyCount);
+        return msg;
+    }
+
+    /// <summary>
+    /// 反序列化protobuf
+    /// </summary>
+    /// <param name="dataBytes"></param>
+    /// <param name="offset"></param>
+    /// <param name="bodyCount"></param>
+    /// <returns></returns>
+    public static CSPkg Deserialize(byte[] dataBytes, int offset, int bodyCount)
+    {
+        var msg = (CSPkg)CSPkg.Descriptor.Parser.ParseFrom(dataBytes, offset, bodyCount);
         return msg;
     }
 
@@ -167,5 +184,34 @@ public partial class ProtobufUtility
     public static int GetLowOrder(int cmdMerge)
     {
         return cmdMerge & 65535;
+    }
+
+
+    private static readonly StringBuilder StringBuilder = new StringBuilder();
+
+    public static string GetBuffer(byte[] buffer)
+    {
+        StringBuilder.Length = 0;
+        StringBuilder.Append("[");
+        for (int i = 0; i < buffer.Length; i++)
+        {
+            if (i == buffer.Length - 1)
+            {
+                StringBuilder.Append(buffer[i]);
+                StringBuilder.Append("]");
+            }
+            else
+            {
+                StringBuilder.Append(buffer[i]);
+                StringBuilder.Append(",");
+            }
+        }
+
+        return StringBuilder.ToString();
+    }
+
+    public static void PrintBuffer(byte[] buffer)
+    {
+        Log.Debug(GetBuffer(buffer));
     }
 }
