@@ -140,7 +140,7 @@ namespace TEngine
         private void Update()
         {
             GameTime.StartFrame();
-            GameFrameworkEntry.Update(GameTime.deltaTime, GameTime.unscaledDeltaTime);
+            GameFrameworkEntry.Update(Time.deltaTime, Time.unscaledDeltaTime);
         }
 
         private void OnApplicationQuit()
