@@ -41,7 +41,7 @@ public static class EditorResourceBuilder
         }
         else
         {
-            Debug.LogError($"构建失败 : {buildResult.FailedInfo}");
+            Debug.LogError($"构建失败 : {buildResult.ErrorInfo}");
         }
     }
 

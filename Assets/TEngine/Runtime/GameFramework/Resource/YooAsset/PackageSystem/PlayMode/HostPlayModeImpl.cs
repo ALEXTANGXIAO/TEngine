@@ -93,7 +93,7 @@ namespace YooAsset
 		public void FlushManifestVersionFile()
 		{
 			if (_activeManifest != null)
-				PersistentHelper.SaveCachePackageVersionFile(_packageName, _activeManifest.PackageVersion);
+				PersistentTools.SaveCachePackageVersionFile(_packageName, _activeManifest.PackageVersion);
 		}
 
 		private bool IsBuildinPackageBundle(PackageBundle packageBundle)
@@ -111,9 +111,9 @@ namespace YooAsset
 			OperationSystem.StartOperation(operation);
 			return operation;
 		}
-		UpdatePackageManifestOperation IPlayModeServices.UpdatePackageManifestAsync(string packageVersion, int timeout)
+		UpdatePackageManifestOperation IPlayModeServices.UpdatePackageManifestAsync(string packageVersion, bool autoSaveVersion, int timeout)
 		{
-			var operation = new HostPlayModeUpdatePackageManifestOperation(this, _packageName, packageVersion, timeout);
+			var operation = new HostPlayModeUpdatePackageManifestOperation(this, _packageName, packageVersion, autoSaveVersion, timeout);
 			OperationSystem.StartOperation(operation);
 			return operation;
 		}

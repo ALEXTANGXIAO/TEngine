@@ -103,13 +103,14 @@ namespace YooAsset
 				else
 				{
 					_steps = ESteps.LoadFile;
+					return; //下载完毕等待一帧再去加载！
 				}
 			}
 
 			// 3. 内置文件解压
 			if (_steps == ESteps.Unpack)
 			{
-				int failedTryAgain = 1;
+				int failedTryAgain = Impl.DownloadFailedTryAgain;
 				var bundleInfo = ManifestTools.GetUnpackInfo(MainBundleInfo.Bundle);
 				_unpacker = DownloadSystem.BeginDownload(bundleInfo, failedTryAgain);
 				_steps = ESteps.CheckUnpack;

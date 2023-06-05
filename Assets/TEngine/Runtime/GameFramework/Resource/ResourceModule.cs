@@ -254,15 +254,15 @@ namespace TEngine
         }
 
         /// <summary>
-        /// 异步更新最新包的Manifest文件。
+        /// 向网络端请求并更新清单
         /// </summary>
-        /// <param name="packageVersion">包版本信息。</param>
-        /// <param name="timeout">超时时间。</param>
-        /// <returns>向远端请求并更新清单操作句柄。</returns>
-        public UpdatePackageManifestOperation UpdatePackageManifestAsync(string packageVersion, int timeout = 60)
+        /// <param name="packageVersion">更新的包裹版本</param>
+        /// <param name="autoSaveVersion">更新成功后自动保存版本号，作为下次初始化的版本。</param>
+        /// <param name="timeout">超时时间（默认值：60秒）</param>
+        public UpdatePackageManifestOperation UpdatePackageManifestAsync(string packageVersion, bool autoSaveVersion = true, int timeout = 60)
         {
             var package = YooAssets.GetPackage(packageName);
-            return package.UpdatePackageManifestAsync(packageVersion, timeout);
+            return package.UpdatePackageManifestAsync(packageVersion,autoSaveVersion, timeout);
         }
 
         /// <summary>

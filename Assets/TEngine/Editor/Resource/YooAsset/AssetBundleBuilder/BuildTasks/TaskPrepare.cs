@@ -24,6 +24,13 @@ namespace YooAsset.Editor
 
 			if (buildParameters.BuildMode != EBuildMode.SimulateBuild)
 			{
+#if UNITY_2021_3_OR_NEWER
+				if (buildParameters.BuildPipeline == EBuildPipeline.BuiltinBuildPipeline)
+				{
+					BuildLogger.Warning("推荐使用可编程构建管线（SBP）！");
+				}
+#endif
+
 				// 检测当前是否正在构建资源包
 				if (BuildPipeline.isBuildingPlayer)
 					throw new Exception("当前正在构建资源包，请结束后再试");
@@ -39,6 +46,20 @@ namespace YooAsset.Editor
 					if (string.IsNullOrEmpty(buildParameters.CopyBuildinFileTags))
 						throw new Exception("首包资源标签不能为空！");
 				}
+
+				// 检测共享资源打包规则
+				if (buildParameters.ShareAssetPackRule == null)
+					throw new Exception("共享资源打包规则不能为空！");
+
+#if UNITY_WEBGL
+				if (buildParameters.EncryptionServices != null)
+				{
+					if (buildParameters.EncryptionServices.GetType() != typeof(EncryptionNone))
+					{
+						throw new Exception("WebGL平台不支持加密！");
+					}
+				}
+#endif
 
 				// 检测包裹输出目录是否存在
 				string packageOutputDirectory = buildParametersContext.GetPackageOutputDirectory();

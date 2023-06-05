@@ -103,13 +103,16 @@ namespace YooAsset
 			MainAssetInfo = assetInfo;
 
 			// 创建资源包加载器
-			OwnerBundle = impl.CreateOwnerAssetBundleLoader(assetInfo);
-			OwnerBundle.Reference();
-			OwnerBundle.AddProvider(this);
+			if (impl != null)
+			{
+				OwnerBundle = impl.CreateOwnerAssetBundleLoader(assetInfo);
+				OwnerBundle.Reference();
+				OwnerBundle.AddProvider(this);
 
-			var dependBundles = impl.CreateDependAssetBundleLoaders(assetInfo);
-			DependBundleGroup = new DependAssetBundleGroup(dependBundles);
-			DependBundleGroup.Reference();
+				var dependBundles = impl.CreateDependAssetBundleLoaders(assetInfo);
+				DependBundleGroup = new DependAssetBundleGroup(dependBundles);
+				DependBundleGroup.Reference();
+			}
 		}
 
 		/// <summary>
@@ -242,6 +245,7 @@ namespace YooAsset
 			Progress = 1f;
 
 			// 注意：创建临时列表是为了防止外部逻辑在回调函数内创建或者释放资源句柄。
+			// 注意：回调方法如果发生异常，会阻断列表里的后续回调方法！
 			List<OperationHandleBase> tempers = new List<OperationHandleBase>(_handles);
 			foreach (var hande in tempers)
 			{

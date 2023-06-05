@@ -197,16 +197,17 @@ namespace YooAsset.Editor
 			// 检测可寻址地址是否重复
 			if (command.EnableAddressable)
 			{
-				HashSet<string> adressTemper = new HashSet<string>();
+				var addressTemper = new Dictionary<string, string>();
 				foreach (var collectInfoPair in result)
 				{
 					if (collectInfoPair.Value.CollectorType == ECollectorType.MainAssetCollector)
 					{
 						string address = collectInfoPair.Value.Address;
-						if (adressTemper.Contains(address) == false)
-							adressTemper.Add(address);
+						string assetPath = collectInfoPair.Value.AssetPath;
+						if (addressTemper.TryGetValue(address, out var existed) == false)
+							addressTemper.Add(address, assetPath);
 						else
-							throw new Exception($"The address is existed : {address} in collector : {CollectPath}");
+							throw new Exception($"The address is existed : {address} in collector : {CollectPath} \nAssetPath:\n     {existed}\n     {assetPath}");
 					}
 				}
 			}
@@ -243,8 +244,8 @@ namespace YooAsset.Editor
 				return false;
 
 			// 忽略编辑器下的类型资源
-			Type type = AssetDatabase.GetMainAssetTypeAtPath(assetPath);
-			if (type == typeof(LightingDataAsset))
+			Type assetType = AssetDatabase.GetMainAssetTypeAtPath(assetPath);
+			if (assetType == typeof(LightingDataAsset))
 				return false;
 
 			// 检测原生文件是否合规
@@ -252,27 +253,29 @@ namespace YooAsset.Editor
 			{
 				string extension = StringUtility.RemoveFirstChar(System.IO.Path.GetExtension(assetPath));
 				if (extension == EAssetFileExtension.unity.ToString() || extension == EAssetFileExtension.prefab.ToString() ||
-					extension == EAssetFileExtension.mat.ToString() || extension == EAssetFileExtension.controller.ToString() ||
-					extension == EAssetFileExtension.fbx.ToString() || extension == EAssetFileExtension.anim.ToString() ||
-					extension == EAssetFileExtension.shader.ToString())
+					extension == EAssetFileExtension.fbx.ToString() || extension == EAssetFileExtension.mat.ToString() ||
+					extension == EAssetFileExtension.controller.ToString() || extension == EAssetFileExtension.anim.ToString() ||
+					extension == EAssetFileExtension.ttf.ToString() || extension == EAssetFileExtension.shader.ToString())
 				{
 					UnityEngine.Debug.LogWarning($"Raw file pack rule can not support file estension : {extension}");
 					return false;
 				}
 
 				// 注意：原生文件只支持无依赖关系的资源
+				/*
 				string[] depends = AssetDatabase.GetDependencies(assetPath, true);
 				if (depends.Length != 1)
 				{
 					UnityEngine.Debug.LogWarning($"Raw file pack rule can not support estension : {extension}");
 					return false;
 				}
+				*/
 			}
 			else
 			{
 				// 忽略Unity无法识别的无效文件
 				// 注意：只对非原生文件收集器处理
-				if (type == typeof(UnityEditor.DefaultAsset))
+				if (assetType == typeof(UnityEditor.DefaultAsset))
 				{
 					UnityEngine.Debug.LogWarning($"Cannot pack default asset : {assetPath}");
 					return false;
@@ -287,10 +290,6 @@ namespace YooAsset.Editor
 		}
 		private bool IsCollectAsset(string assetPath)
 		{
-			Type assetType = AssetDatabase.GetMainAssetTypeAtPath(assetPath);
-			if (assetType == typeof(UnityEngine.Shader) || assetType == typeof(UnityEngine.ShaderVariantCollection))
-				return true;
-
 			// 根据规则设置过滤资源文件
 			IFilterRule filterRuleInstance = AssetBundleCollectorSettingData.GetFilterRuleInstance(FilterRuleName);
 			return filterRuleInstance.IsCollectAsset(new FilterRuleData(assetPath));

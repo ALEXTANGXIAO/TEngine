@@ -12,7 +12,7 @@ namespace YooAsset.Editor
 	public class AssetBundleBuilderWindow : EditorWindow
 	{
 		[MenuItem("YooAsset/AssetBundle Builder", false, 102)]
-		public static void ShowExample()
+		public static void OpenWindow()
 		{
 			AssetBundleBuilderWindow window = GetWindow<AssetBundleBuilderWindow>("资源包构建工具", true, WindowsDefine.DockedWindowTypes);
 			window.minSize = new Vector2(800, 600);
@@ -275,6 +275,7 @@ namespace YooAsset.Editor
 			buildParameters.PackageName = AssetBundleBuilderSettingData.Setting.BuildPackage;
 			buildParameters.PackageVersion = _buildVersionField.value;
 			buildParameters.VerifyBuildingResult = true;
+			buildParameters.ShareAssetPackRule = new DefaultShareAssetPackRule();
 			buildParameters.EncryptionServices = CreateEncryptionServicesInstance();
 			buildParameters.CompressOption = AssetBundleBuilderSettingData.Setting.CompressOption;
 			buildParameters.OutputNameStyle = AssetBundleBuilderSettingData.Setting.OutputNameStyle;

@@ -19,7 +19,10 @@ namespace YooAsset
 		public static void Initialize(ILogger logger = null)
 		{
 			if (_isInitialize)
-				throw new Exception($"{nameof(YooAssets)} is initialized !");
+			{
+				UnityEngine.Debug.LogWarning($"{nameof(YooAssets)} is initialized !");
+				return;
+			}
 
 			if (_isInitialize == false)
 			{
@@ -99,6 +102,7 @@ namespace YooAsset
 			if (HasPackage(packageName))
 				throw new Exception($"Package {packageName} already existed !");
 
+			YooLogger.Log($"Create resource package : {packageName}");
 			ResourcePackage package = new ResourcePackage(packageName);
 			_packages.Add(package);
 			return package;
@@ -134,6 +138,24 @@ namespace YooAsset
 					return package;
 			}
 			return null;
+		}
+
+		/// <summary>
+		/// 销毁资源包
+		/// </summary>
+		/// <param name="packageName">资源包名称</param>
+		public static void DestroyPackage(string packageName)
+		{
+			ResourcePackage package = GetPackage(packageName);
+			if (package == null)
+				return;
+
+			YooLogger.Log($"Destroy resource package : {packageName}");
+			_packages.Remove(package);
+			package.DestroyPackage();
+
+			// 清空缓存
+			CacheSystem.ClearPackage(packageName);
 		}
 
 		/// <summary>
@@ -215,6 +237,27 @@ namespace YooAsset
 		{
 			CacheSystem.InitVerifyLevel = verifyLevel;
 		}
+
+		/// <summary>
+		/// 设置缓存系统参数，沙盒目录的存储路径
+		/// </summary>
+		public static void SetCacheSystemSandboxPath(string sandboxPath)
+		{
+			if (string.IsNullOrEmpty(sandboxPath))
+			{
+				YooLogger.Error($"Sandbox path is null or empty !");
+				return;
+			}
+
+			// 注意：需要确保没有任何资源系统起效之前才可以设置沙盒目录！
+			if (_packages.Count > 0)
+			{
+				YooLogger.Error($"Please call this method {nameof(SetCacheSystemSandboxPath)} before the package is created !");
+				return;
+			}
+
+			PersistentTools.OverwriteSandboxPath(sandboxPath);
+		}
 		#endregion
 
 		#region 沙盒相关
@@ -231,15 +274,16 @@ namespace YooAsset
 		/// </summary>
 		public static string GetSandboxRoot()
 		{
-			return PathHelper.GetPersistentRootPath();
+			return PersistentTools.GetPersistentRootPath();
 		}
 
 		/// <summary>
-		/// 清空沙盒目录
+		/// 清空沙盒目录（需要重启APP）
 		/// </summary>
 		public static void ClearSandbox()
 		{
-			PersistentHelper.DeleteSandbox();
+			YooLogger.Warning("Clear sandbox folder files, Finally, restart the application !");
+			PersistentTools.DeleteSandbox();
 		}
 		#endregion
 
