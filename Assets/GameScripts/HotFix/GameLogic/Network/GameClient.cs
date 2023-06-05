@@ -233,7 +233,6 @@ namespace GameLogic
             }
             var sendRet = _channel.Send(reqPkg);
             return sendRet;
-            return true;
         }
 
         private bool IsIgnoreLog(uint msgId)
