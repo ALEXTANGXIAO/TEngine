@@ -517,6 +517,27 @@ namespace TEngine
         {
             return m_ResourceManager.LoadAssetAsyncHandle<T>(assetName);
         }
+        
+        
+        /// <summary>
+        /// 同步加载子资源对象
+        /// </summary>
+        /// <typeparam name="TObject">资源类型</typeparam>
+        /// <param name="location">资源的定位地址</param>
+        public SubAssetsOperationHandle LoadSubAssetsSync<TObject>(string location) where TObject : UnityEngine.Object
+        {
+            return m_ResourceManager.LoadSubAssetsSync<TObject>(location: location);
+        }
+
+        /// <summary>
+        /// 异步加载子资源对象
+        /// </summary>
+        /// <typeparam name="TObject">资源类型</typeparam>
+        /// <param name="location">资源的定位地址</param>
+        public SubAssetsOperationHandle LoadSubAssetsAsync<TObject>(string location) where TObject : UnityEngine.Object
+        {
+            return m_ResourceManager.LoadSubAssetsAsync<TObject>(location: location);
+        }
 
         /// <summary>
         /// 异步加载场景。
