@@ -219,6 +219,20 @@ namespace TEngine
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>异步加载资源句柄。</returns>
         AssetOperationHandle LoadAssetAsyncHandle<T>(string assetName) where T : Object;
+        
+        /// <summary>
+        /// 同步加载子资源对象
+        /// </summary>
+        /// <typeparam name="TObject">资源类型</typeparam>
+        /// <param name="location">资源的定位地址</param>
+        public SubAssetsOperationHandle LoadSubAssetsSync<TObject>(string location) where TObject : UnityEngine.Object;
+
+        /// <summary>
+        /// 异步加载子资源对象
+        /// </summary>
+        /// <typeparam name="TObject">资源类型</typeparam>
+        /// <param name="location">资源的定位地址</param>
+        public SubAssetsOperationHandle LoadSubAssetsAsync<TObject>(string location) where TObject : UnityEngine.Object;
 
         /// <summary>
         /// 异步加载场景。
