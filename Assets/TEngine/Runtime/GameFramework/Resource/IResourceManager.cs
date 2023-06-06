@@ -235,6 +235,12 @@ namespace TEngine
         public SubAssetsOperationHandle LoadSubAssetsAsync<TObject>(string location) where TObject : UnityEngine.Object;
 
         /// <summary>
+        /// 同步加载子资源对象
+        /// </summary>
+        /// <param name="assetInfo">资源信息。</param>
+        public SubAssetsOperationHandle LoadSubAssetsSync(AssetInfo assetInfo);
+        
+        /// <summary>
         /// 异步加载场景。
         /// </summary>
         /// <param name="location">场景的定位地址</param>

@@ -493,6 +493,15 @@ namespace TEngine
         {
             return YooAssets.LoadSubAssetsAsync<TObject>(location: location);
         }
+        
+        /// <summary>
+        /// 同步加载子资源对象
+        /// </summary>
+        /// <param name="assetInfo">资源信息。</param>
+        public SubAssetsOperationHandle LoadSubAssetsSync(AssetInfo assetInfo)
+        {
+            return YooAssets.LoadSubAssetsSync(assetInfo);
+        }
 
         /// <summary>
         /// 异步加载场景。

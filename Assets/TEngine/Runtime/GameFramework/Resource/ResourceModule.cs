@@ -538,6 +538,21 @@ namespace TEngine
         {
             return m_ResourceManager.LoadSubAssetsAsync<TObject>(location: location);
         }
+        
+        /// <summary>
+        /// 同步加载子资源对象
+        /// </summary>
+        /// <param name="location">资源的定位地址</param>
+        public SubAssetsOperationHandle LoadSubAssetsSync(string location)
+        {
+            var assetInfo = GetAssetInfo(location);
+            if (assetInfo == null)
+            {
+                Log.Fatal($"AssetsInfo is null");
+                return null;
+            }
+            return m_ResourceManager.LoadSubAssetsSync(assetInfo);
+        }
 
         /// <summary>
         /// 异步加载场景。
