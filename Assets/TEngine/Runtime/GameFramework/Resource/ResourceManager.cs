@@ -475,6 +475,26 @@ namespace TEngine
         }
 
         /// <summary>
+        /// 同步加载子资源对象
+        /// </summary>
+        /// <typeparam name="TObject">资源类型</typeparam>
+        /// <param name="location">资源的定位地址</param>
+        public SubAssetsOperationHandle LoadSubAssetsSync<TObject>(string location) where TObject : Object
+        {
+            return YooAssets.LoadSubAssetsSync<TObject>(location: location);
+        }
+
+        /// <summary>
+        /// 异步加载子资源对象
+        /// </summary>
+        /// <typeparam name="TObject">资源类型</typeparam>
+        /// <param name="location">资源的定位地址</param>
+        public SubAssetsOperationHandle LoadSubAssetsAsync<TObject>(string location) where TObject : Object
+        {
+            return YooAssets.LoadSubAssetsAsync<TObject>(location: location);
+        }
+
+        /// <summary>
         /// 异步加载场景。
         /// </summary>
         /// <param name="location">场景的定位地址</param>
