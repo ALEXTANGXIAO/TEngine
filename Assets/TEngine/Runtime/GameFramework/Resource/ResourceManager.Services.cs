@@ -23,7 +23,7 @@ namespace TEngine
 
             public Stream LoadFromStream(DecryptFileInfo fileInfo)
             {
-                BundleStream bundleStream = new BundleStream(fileInfo.FilePath, FileMode.Open);
+                BundleStream bundleStream = new BundleStream(fileInfo.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
                 return bundleStream;
             }
 
@@ -50,7 +50,7 @@ namespace TEngine
     {
         public const byte KEY = 64;
 
-        public BundleStream(string path, FileMode mode, FileAccess access, FileShare share, int bufferSize, bool useAsync) : base(path, mode, access, share, bufferSize, useAsync)
+        public BundleStream(string path, FileMode mode, FileAccess access, FileShare share) : base(path, mode, access, share)
         {
         }
 
