@@ -325,7 +325,7 @@ namespace TEngine
             {
                 if (typeof(T) == typeof(GameObject))
                 {
-                    GameObject ret = assetHandleData.Handle.InstantiateSync();
+                    GameObject ret = assetHandleData.Handle.InstantiateSync(parent);
                     return ret as T;
                 }
                 else
