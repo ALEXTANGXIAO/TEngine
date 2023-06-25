@@ -242,9 +242,9 @@ namespace TEngine
                 _duration = 0;
                 if (!string.IsNullOrEmpty(path))
                 {
-                    if (GameModule.Audio.AudioClipPool.ContainsKey(path))
+                    if (GameModule.Audio.AudioClipPool.TryGetValue(path, out var operationHandle))
                     {
-                        OnAssetLoadComplete(GameModule.Audio.AudioClipPool[path]);
+                        OnAssetLoadComplete(operationHandle);
                         return;
                     }
 
