@@ -92,6 +92,8 @@ MonoBehaviour:
     - mscorlib.dll
     - System.dll
     - System.Core.dll
+    - UnityEngine.CoreModule.dll
+    - TEngine.Runtime.dll
     LogicMainDllName: GameLogic.dll
     AssemblyTextAssetExtension: .bytes
     AssemblyTextAssetPath: AssetRaw/DLL
