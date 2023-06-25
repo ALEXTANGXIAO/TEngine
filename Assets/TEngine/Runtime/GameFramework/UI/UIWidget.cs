@@ -178,6 +178,7 @@ namespace TEngine
             {
                 return false;
             }
+            gameObject = go;
             rectTransform = go.GetComponent<RectTransform>();
             Log.Assert(rectTransform != null, $"{go.name} ui base element need to be RectTransform");
             return true;
