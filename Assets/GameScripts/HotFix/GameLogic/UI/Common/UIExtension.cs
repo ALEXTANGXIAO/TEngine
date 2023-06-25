@@ -7,6 +7,7 @@ using TEngine;
 public static class UIExtension
 {
     #region SetActive
+
     public static void SetActive(this GameObject go, bool value, ref bool cacheValue)
     {
         if (go != null && value != cacheValue)
@@ -15,8 +16,9 @@ public static class UIExtension
             go.SetActive(value);
         }
     }
+
     #endregion
-    
+
     public static IEnumerator FadeToAlpha(this CanvasGroup canvasGroup, float alpha, float duration,
         Action callback = null)
     {
@@ -109,5 +111,47 @@ public static class UIExtension
         screenPos = uiModule.UIRoot.TransformPoint(pos);
 
         return hadMouseDown;
+    }
+
+    public static void SetSprite(this Image image, string spriteName, UIBase uiBase, bool isSetNativeSize = false)
+    {
+        if (image == null)
+        {
+            return;
+        }
+
+        if (string.IsNullOrEmpty(spriteName))
+        {
+            image.sprite = null;
+        }
+        else
+        {
+            image.sprite = uiBase.LoadAsset<Sprite>(spriteName);
+            if (isSetNativeSize)
+            {
+                image.SetNativeSize();
+            }
+        }
+    }
+
+    public static void SetSprite(this UIBase uiBase, string spriteName, Image image, bool isSetNativeSize = false)
+    {
+        if (image == null)
+        {
+            return;
+        }
+
+        if (string.IsNullOrEmpty(spriteName))
+        {
+            image.sprite = null;
+        }
+        else
+        {
+            image.sprite = uiBase.LoadAsset<Sprite>(spriteName);
+            if (isSetNativeSize)
+            {
+                image.SetNativeSize();
+            }
+        }
     }
 }
