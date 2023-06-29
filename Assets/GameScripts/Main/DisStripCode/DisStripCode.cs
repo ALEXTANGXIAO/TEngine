@@ -6,27 +6,40 @@ using UnityEngine;
 /// </summary>
 public class DisStripCode : MonoBehaviour
 {
-   private void Awake()
-   {
-      //UnityEngine.Physics
-      RegisterType<Collider>();
-      RegisterType<Collider2D>();
-      RegisterType<Collision>();
-      RegisterType<Collision2D>();
-      
-      //UnityEngine.Graphics
-      RegisterType<Mesh>();
-      RegisterType<MeshRenderer>();
-      
-      //UnityEngine.Animation
-      RegisterType<Animator>();
-      RegisterType<Animation>();
-   }
+    private void Awake()
+    {
+        //UnityEngine.Physics
+        RegisterType<Collider>();
+        RegisterType<Collider2D>();
+        RegisterType<Collision>();
+        RegisterType<Collision2D>();
+        RegisterType<CapsuleCollider2D>();
 
-   private void RegisterType<T>()
-   {
+        RegisterType<Rigidbody>();
+        RegisterType<Rigidbody2D>();
+
+        //UnityEngine.Graphics
+        RegisterType<Mesh>();
+        RegisterType<MeshRenderer>();
+
+        //UnityEngine.Animation
+        RegisterType<AnimationClip>();
+        RegisterType<AnimationCurve>();
+        RegisterType<AnimationEvent>();
+        RegisterType<AnimationState>();
+        RegisterType<Animator>();
+        RegisterType<Animation>();
+
+        //IOSCamera ios下相机权限的问题，用这种方法就可以解决了 问题防裁剪。
+        foreach (var _ in WebCamTexture.devices)
+        {
+        }
+    }
+
+    private void RegisterType<T>()
+    {
 #if UNITY_EDITOR && false
       Debug.Log($"DisStripCode RegisterType :{typeof(T)}");
 #endif
-   }
+    }
 }
