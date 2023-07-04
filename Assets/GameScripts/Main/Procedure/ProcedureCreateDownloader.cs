@@ -114,7 +114,7 @@ namespace GameMain
             }
             Log.Info("RequestUpdateData, proxy:" + checkVersionUrl);
 
-            var updateDataStr = await HttpGet(checkVersionUrl);
+            var updateDataStr = await Utility.Http.Get(checkVersionUrl);
 
             try
             {
@@ -128,30 +128,6 @@ namespace GameMain
             }
         }
 
-        /// <summary> 
-        /// GET请求与获取结果.
-        /// </summary> 
-        public async UniTask<string> HttpGet(string url,float timeout = 5f)
-        {
-            var cts = new CancellationTokenSource();
-            cts.CancelAfterSlim(TimeSpan.FromSeconds(timeout));
-
-            UnityWebRequest unityWebRequest = UnityWebRequest.Get(url);
-            try
-            {
-                await unityWebRequest.SendWebRequest().WithCancellation(cts.Token);
-            }
-            catch (OperationCanceledException ex)
-            {
-                if (ex.CancellationToken == cts.Token)
-                {
-                    Debug.Log("HttpGet Timeout");
-                    return string.Empty;
-                }
-            }
-            return unityWebRequest.downloadHandler.text;
-        }
-        
         /// <summary>
         /// 显示更新方式
         /// </summary>

@@ -53,6 +53,11 @@ public enum GameStatus
 public class UpdateData
 {
     /// <summary>
+    /// 当前版本信息。
+    /// </summary>
+    public string CurrentVersion;
+
+    /// <summary>
     /// 是否底包更新。
     /// </summary>
     public UpdateType UpdateType;
@@ -66,6 +71,16 @@ public class UpdateData
     /// 是否提示。
     /// </summary>
     public UpdateNotice UpdateNotice;
+
+    /// <summary>
+    /// 热更资源地址。
+    /// </summary>
+    public string HostServerURL;
+
+    /// <summary>
+    /// 备用热更资源地址。
+    /// </summary>
+    public string FallbackHostServerURL;
 }
 
 /// <summary>

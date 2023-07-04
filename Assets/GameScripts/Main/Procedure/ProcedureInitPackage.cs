@@ -23,6 +23,23 @@ namespace GameMain
 
         private async UniTaskVoid InitPackage(ProcedureOwner procedureOwner)
         {
+            if (GameModule.Resource.PlayMode == EPlayMode.HostPlayMode)
+            {
+                UpdateData updateData = await RequestUpdateData();
+
+                if (updateData!=null)
+                {
+                    if (!string.IsNullOrEmpty(updateData.HostServerURL))
+                    {
+                        SettingsUtils.FrameworkGlobalSettings.HostServerURL = updateData.HostServerURL;
+                    }
+                    if (!string.IsNullOrEmpty(updateData.FallbackHostServerURL))
+                    {
+                        SettingsUtils.FrameworkGlobalSettings.FallbackHostServerURL = updateData.FallbackHostServerURL;
+                    }
+                }
+            }
+            
             var initializationOperation = GameModule.Resource.InitPackage();
 
             await UniTask.Delay(TimeSpan.FromSeconds(1f));
@@ -81,6 +98,34 @@ namespace GameMain
             UILoadMgr.Show(UIDefine.UILoadUpdate, $"重新初始化资源中...");
 
             InitPackage(procedureOwner).Forget();
+        }
+        
+        /// <summary>
+        /// 请求更新配置数据。
+        /// </summary>
+        private async UniTask<UpdateData> RequestUpdateData()
+        {
+            var checkVersionUrl = SettingsUtils.GetUpdateDataUrl();
+
+            if (string.IsNullOrEmpty(checkVersionUrl))
+            {
+                Log.Error("LoadMgr.RequestVersion, remote url is empty or null");
+                return null;
+            }
+            Log.Info("RequestUpdateData, proxy:" + checkVersionUrl);
+
+            var updateDataStr = await Utility.Http.Get(checkVersionUrl);
+
+            try
+            {
+                UpdateData updateData = Utility.Json.ToObject<UpdateData>(updateDataStr);
+                return updateData;
+            }
+            catch (Exception e)
+            {
+                Log.Fatal(e);
+                return null;
+            }
         }
     }
 }
