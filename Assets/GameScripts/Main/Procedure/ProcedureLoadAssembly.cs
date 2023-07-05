@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 #if ENABLE_HYBRIDCLR
 using HybridCLR;
 #endif
@@ -115,6 +116,10 @@ namespace GameMain
         
         private void AllAssemblyLoadComplete()
         {
+#if UNITY_EDITOR
+            m_MainLogicAssembly = AppDomain.CurrentDomain.GetAssemblies().
+                First(assembly => $"{assembly.GetName().Name}.dll" == SettingsUtils.HybridCLRCustomGlobalSettings.LogicMainDllName);
+#endif
             if (m_MainLogicAssembly == null)
             {
                 Log.Fatal($"Main logic assembly missing.");
@@ -202,6 +207,7 @@ namespace GameMain
             {
                 m_LoadAssemblyComplete = m_LoadAssemblyWait && 0 == m_LoadAssetCount;
             }
+            assetOperationHandle.Dispose();
         }
 
         /// <summary>
