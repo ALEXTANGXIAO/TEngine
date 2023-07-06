@@ -12,10 +12,7 @@ public class UIButtonScale : MonoBehaviour,
     public GameObject tweenTarget;
     public Vector3 pressedScale = new Vector3(0.95f, 0.95f, 0.95f);
     public float duration = 0.1f;
-
-    //是否移除当前gameObject身上所有的LeanTween。一般如果当前gameObject身上还有其他的Tween,例如Tween.Move,不建议移除所有的Tween
     public bool needRemoveAllTween = true; 
-
     private Vector3 _cacheScale;
     private Tweener _tweener;
     private bool _started = false;
@@ -38,12 +35,16 @@ public class UIButtonScale : MonoBehaviour,
 
     public void OnDestroy()
     {
-        if (_tweener != null)
+        if (_tweener is { active: true })
         {
-            DOTween.Kill(_tweener.id);
-            _tweener = null;
+            _tweener.Kill();
         }
-        tweenTarget.transform.localScale = _cacheScale;
+        _tweener = null;
+
+        if (tweenTarget != null)
+        {
+            tweenTarget.transform.localScale = _cacheScale;
+        }
     }
 
     void OnEnable()
@@ -61,9 +62,12 @@ public class UIButtonScale : MonoBehaviour,
         {
             if (tweenTarget != null)
             {
-                if (needRemoveAllTween == false && _tweener != null)
+                if (needRemoveAllTween == false)
                 {
-                    DOTween.Kill(_tweener.id);
+                    if (_tweener is { active: true })
+                    {
+                        _tweener.Kill();
+                    }
                     _tweener = null;
                 }
                 tweenTarget.transform.localScale = _cacheScale;
@@ -82,11 +86,11 @@ public class UIButtonScale : MonoBehaviour,
         {
             if (needRemoveAllTween == false)
             {
-                if (_tweener != null)
+                if (_tweener is { active: true })
                 {
-                    DOTween.Kill(_tweener.id);
-                    _tweener = null;
+                    _tweener.Kill();
                 }
+                _tweener = null;
             }
             if (isPressed)
             {
@@ -132,9 +136,12 @@ public class UIButtonScale : MonoBehaviour,
             Init();
         }
         _cacheScale = scale;
-        if (needRemoveAllTween == false && _tweener != null)
+        if (needRemoveAllTween == false)
         {
-            DOTween.Kill(_tweener.id);
+            if (_tweener is { active: true })
+            {
+                _tweener.Kill();
+            }
             _tweener = null;
         }
     }
