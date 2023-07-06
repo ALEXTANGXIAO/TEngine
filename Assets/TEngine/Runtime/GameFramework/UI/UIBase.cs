@@ -309,8 +309,7 @@ namespace TEngine
                 Log.Fatal($"CreateWidgetByPath Failed => {this}.AssetReference is null");
                 return null;
             }
-            GameObject goInst = AssetReference.LoadAsset<GameObject>(assetPath, parentTrans,out var handle);
-            Handle = handle;
+            GameObject goInst = AssetReference.LoadAsset<GameObject>(assetPath, parentTrans);
             return CreateWidget<T>(goInst, visible);
         }
 
