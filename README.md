@@ -23,9 +23,6 @@
   <a style="text-decoration:none">
     <img src="https://img.shields.io/github/languages/top/ALEXTANGXIAO/TEngine" alt="topLanguage" />
   </a>
-  <a style="text-decoration:none">
-    <img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2FJasonXuDeveloper%2FJEngine.svg?type=shield" alt="status" />
-  </a>
   <br>
   
   <br>
