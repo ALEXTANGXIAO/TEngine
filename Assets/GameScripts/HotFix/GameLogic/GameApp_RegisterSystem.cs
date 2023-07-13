@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using GameLogic;
 using TEngine;
 using TEngine.Core;
 
@@ -26,6 +27,7 @@ public partial class GameApp
     /// </summary>
     private void RegisterAllSystem()
     {
+        Scene = GameSystem.Init();
         if (_hotfixAssembly != null)
         {
             AssemblyManager.Load(AssemblyName.GameBase, _hotfixAssembly.Find(t=>t.FullName.Contains("GameBase")));
@@ -35,6 +37,7 @@ public partial class GameApp
         
         //带生命周期的单例系统。
         AddLogicSys(BehaviourSingleSystem.Instance);
+        AddLogicSys(DataCenterSys.Instance);
     }
     
     /// <summary>
