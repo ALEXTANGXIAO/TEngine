@@ -11,9 +11,9 @@ namespace TEngine
 
     public struct OnAppClosed { }
     
-    public static class ApplicationContext
+    public static class GameContext
     {
-        public static void Initialize()
+        public static void Init()
         {
             // 设置默认的线程的同步上下文
             SynchronizationContext.SetSynchronizationContext(ThreadSynchronizationContext.Main);
