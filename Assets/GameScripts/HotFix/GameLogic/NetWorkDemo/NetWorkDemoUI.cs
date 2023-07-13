@@ -58,12 +58,7 @@ class NetWorkDemoUI : UIWindow
             Log.Info("请输入账号和密码");
             return;
         }
-
-        GameClient.Instance.Send(new H_C2G_LoginRequest()
-        {
-            UserName = m_inputName.text,
-            Password = m_inputPassWord.text
-        });
+        PlayerNetSys.Instance.DoLoginReq(m_inputName.text,m_inputPassWord.text);
     }
 
     private void OnClickRegisterBtn()

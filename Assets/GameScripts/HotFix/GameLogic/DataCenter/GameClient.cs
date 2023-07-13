@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using GameBase;
 using TEngine;
 using TEngine.Core.Network;
@@ -54,6 +55,10 @@ namespace GameLogic
         
         public void Connect(string address, bool reconnect = false)
         {
+            if (Status == GameClientStatus.StatusConnected || Status == GameClientStatus.StatusLogin || Status == GameClientStatus.StatusEnter)
+            {
+                return;
+            }
             if (!reconnect)
             {
                 // SetWatchReconnect(false);
@@ -71,8 +76,11 @@ namespace GameLogic
             _lastAddress = address;
 
             Status = reconnect ? GameClientStatus.StatusReconnect : GameClientStatus.StatusInit;
-            
-            Scene.CreateSession(address, ProtocolType, OnConnectComplete, OnConnectFail);
+
+            if (Scene.Session == null || Scene.Session.IsDisposed)
+            {
+                Scene.CreateSession(address, ProtocolType, OnConnectComplete, OnConnectFail);
+            }
         }
 
         private void OnConnectComplete()
@@ -115,6 +123,16 @@ namespace GameLogic
                 return;
             }
             Scene.Session.Send(memoryStream,rpcId,routeTypeOpCode,routeId);
+        }
+        
+        public void RegisterMsgHandler(uint protocolCode,Action<IResponse> ctx)
+        {
+            MessageDispatcherSystem.Instance.RegisterMsgHandler(protocolCode,ctx);
+        }
+        
+        public void UnRegisterMsgHandler(uint protocolCode,Action<IResponse> ctx)
+        {
+            MessageDispatcherSystem.Instance.UnRegisterMsgHandler(protocolCode,ctx);
         }
     }
 }

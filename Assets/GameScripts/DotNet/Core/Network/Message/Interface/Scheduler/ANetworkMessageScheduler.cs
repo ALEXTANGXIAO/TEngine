@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using Codice.Client.GameUI.Explorer;
 using TEngine.Core;
 #pragma warning disable CS8600
 
@@ -58,9 +57,12 @@ namespace TEngine.Core.Network
 #else
 
 #if TENGINE_UNITY
-                        if (session.MsgHandles.TryGetValue(packInfo.ProtocolCode,out var msgDelegate))
+                        if (MessageDispatcherSystem.Instance.MsgHandles.TryGetValue(packInfo.ProtocolCode,out var msgDelegates))
                         {
-                            msgDelegate.Invoke(aResponse);
+                            foreach (var msgDelegate in msgDelegates)
+                            {
+                                msgDelegate.Invoke(aResponse);
+                            }
                             return;
                         }       
 #endif

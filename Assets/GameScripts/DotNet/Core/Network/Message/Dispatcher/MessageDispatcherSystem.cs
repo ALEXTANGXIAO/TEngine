@@ -34,6 +34,28 @@ namespace TEngine.Core.Network
 #endif
         private static readonly CoroutineLockQueueType ReceiveRouteMessageLock = new CoroutineLockQueueType("ReceiveRouteMessageLock");
         
+#if TENGINE_UNITY
+
+        public readonly Dictionary<uint, List<Action<IResponse>>> MsgHandles = new Dictionary<uint, List<Action<IResponse>>>();
+
+        public void RegisterMsgHandler(uint protocolCode,Action<IResponse> ctx)
+        {
+            if (!MsgHandles.ContainsKey(protocolCode))
+            {
+                MsgHandles[protocolCode] = new List<Action<IResponse>>();
+            }
+            MsgHandles[protocolCode].Add(ctx);
+        }
+        
+        public void UnRegisterMsgHandler(uint protocolCode,Action<IResponse> ctx)
+        {
+            if (MsgHandles.TryGetValue(protocolCode, out var handle))
+            {
+                handle.Remove(ctx);
+            }
+        }
+#endif
+        
         protected override void OnLoad(int assemblyName)
         {
             foreach (var type in AssemblyManager.ForEach(assemblyName, typeof(IMessage)))
