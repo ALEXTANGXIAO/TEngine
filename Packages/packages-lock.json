@@ -7,13 +7,6 @@
       "dependencies": {},
       "hash": "8e178c0e372a396e1bf1687e450d85693a95baf4"
     },
-    "com.cysharp.memorypack": {
-      "version": "https://github.com/Cysharp/MemoryPack.git?path=src/MemoryPack.Unity/Assets/Plugins/MemoryPack",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "09eb5f1535d0d01dee98c84fa110c21a436bd896"
-    },
     "com.unity.2d.animation": {
       "version": "7.0.9",
       "depth": 0,
