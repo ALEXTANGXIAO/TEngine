@@ -127,3 +127,6 @@ DotNet/Logic/obj/
 DotNet/ThirdParty/obj/
 
 Bin/
+
+#Server_Config
+DotNet/Config/GameConfig

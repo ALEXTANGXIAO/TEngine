@@ -8,10 +8,12 @@
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DefineConstants>TRACE;TENGINE_NET</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DefineConstants>TRACE;TENGINE_NET</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +24,12 @@
     <Compile Include="..\..\Assets\GameScripts\DotNet\Logic\**\*.cs">
       <Link>Core\%(RecursiveDir)%(FileName)%(Extension)</Link>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="..\..\Assets\GameScripts\DotNet\Logic\Config~\GameConfig\Battle\">
+      <Link>Core\Config~\GameConfig\Battle</Link>
+    </Folder>
   </ItemGroup>
 
 </Project>
