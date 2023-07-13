@@ -17,6 +17,26 @@ namespace TEngine.Core
             AssemblyManager.OnUnLoadAssemblyEvent += OnUnLoad;
         }
 
+        /// <summary>
+        /// 特殊情况调用设置。
+        /// </summary>
+        public static T TempInstance
+        {
+            get
+            {
+                return Instance;
+            }
+            set
+            {
+                if (Instance != null)
+                {
+                    return;
+                }
+
+                Instance = value;
+            }
+        }
+
         public virtual Task Initialize()
         {
             return Task.CompletedTask;

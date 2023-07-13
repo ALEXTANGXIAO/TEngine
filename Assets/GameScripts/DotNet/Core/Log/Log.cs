@@ -5,6 +5,10 @@ namespace TEngine
     {
         static Log()
         {
+            if (LogCore.Instance == null)
+            {
+                LogCore.TempInstance = new LogCore();
+            }
             LogCore.Instance.ILog = new NLog("Server");
         }
 
