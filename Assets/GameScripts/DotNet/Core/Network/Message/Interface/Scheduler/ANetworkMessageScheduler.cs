@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Codice.Client.GameUI.Explorer;
 using TEngine.Core;
 #pragma warning disable CS8600
 
@@ -55,6 +56,14 @@ namespace TEngine.Core.Network
                         // 服务器之间发送消息因为走的是MessageHelper、所以接收消息的回调也应该放到MessageHelper里处理
                         MessageHelper.ResponseHandler(packInfo.RpcId, aResponse);
 #else
+
+#if TENGINE_UNITY
+                        if (session.MsgHandles.TryGetValue(packInfo.ProtocolCode,out var msgDelegate))
+                        {
+                            msgDelegate.Invoke(aResponse);
+                            return;
+                        }       
+#endif
                         // 这个一般是客户端Session.Call发送时使用的、目前这个逻辑只有Unity客户端时使用
                         
                         if (!session.RequestCallback.TryGetValue(packInfo.RpcId, out var action))

@@ -19,6 +19,21 @@ namespace TEngine.Core.Network
         private static readonly Dictionary<long, Session> Sessions = new ();
         public readonly Dictionary<long, FTask<IResponse>> RequestCallback = new();
 
+#if TENGINE_UNITY
+        public delegate void CsMsgDelegate(IResponse msg);
+
+        public readonly Dictionary<uint, CsMsgDelegate> MsgHandles = new Dictionary<uint, CsMsgDelegate>();
+
+        public void RegisterMsgHandler(uint protocolCode,CsMsgDelegate ctx)
+        {
+            if (MsgHandles.ContainsKey(protocolCode))
+            {
+                return;
+            }
+            MsgHandles.Add(protocolCode,ctx);
+        }
+#endif
+
         public static void Create(ANetworkMessageScheduler networkMessageScheduler, ANetworkChannel channel)
         {
 #if TENGINE_DEVELOP
