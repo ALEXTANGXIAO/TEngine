@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace ET
+namespace TEngine
 {
     public static class Recast
     {

@@ -1,14 +1,19 @@
+using System.Collections.Generic;
+using System.Reflection;
 using GameBase;
 using TEngine;
 
 public partial class GameApp:Singleton<GameApp>
 {
+    private static List<Assembly> _hotfixAssembly;
+    
     /// <summary>
     /// 热更域App主入口。
     /// </summary>
     /// <param name="objects"></param>
     public static void Entrance(object[] objects)
     {
+        _hotfixAssembly = (List<Assembly>)objects[0];
         Log.Warning("======= 看到此条日志代表你成功运行了热更新代码 =======");
         Log.Warning("======= Entrance GameApp =======");
         Instance.Init();

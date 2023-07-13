@@ -122,10 +122,8 @@ Assets/UnityOnlineServiceData
 #Server_sln
 DotNet/.idea/
 DotNet/App/obj/
-DotNet/Loader/obj/
 DotNet/Core/obj/
-DotNet/Hotfix/obj/
-DotNet/Model/obj/
+DotNet/Logic/obj/
 DotNet/ThirdParty/obj/
 
 Bin/
