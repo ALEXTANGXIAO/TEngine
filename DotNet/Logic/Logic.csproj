@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DefineConstants>TRACE;TENGINE_NET</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DefineConstants>TRACE;TENGINE_NET</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\Assets\GameScripts\DotNet\Logic\**\*.cs">
+      <Link>Core\%(RecursiveDir)%(FileName)%(Extension)</Link>
+    </Compile>
+  </ItemGroup>
+
+</Project>
