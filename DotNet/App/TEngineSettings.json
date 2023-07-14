@@ -21,15 +21,15 @@
             "Comment": "Excel配置文件根目录"
         },
         "ExcelVersionFile": {
-            "Value": ".../../../Config/Excel/Version.txt",
+            "Value": ".../../../../../Config/Excel/Version.txt",
             "Comment": "Excel版本文件的位置"
         },
         "ExcelServerFileDirectory": {
-            "Value": "../../Server/Hotfix/Generate/ConfigTable/Entity/",
+            "Value": "../../../Config/Server/Entity/",
             "Comment": "Excel生成服务器代码的文件夹位置"
         },
         "ExcelClientFileDirectory": {
-            "Value": "../../Client/Unity/Assets/Scripts/Hotfix/Generate/ConfigTable/Entity/",
+            "Value": "../../../Config/Client/Entity/",
             "Comment": "Excel生成客户端代码文件夹位置"
         },
         "ExcelServerBinaryDirectory": {
@@ -37,7 +37,7 @@
             "Comment": "Excel生成服务器二进制数据文件夹位置"
         },
         "ExcelClientBinaryDirectory": {
-            "Value": "../../Client/Unity/Assets/Bundles/Config/",
+            "Value": "../../Config/Client/Binary/",
             "Comment": "Excel生成客户端二进制数据文件夹位置"
         },
         "ExcelServerJsonDirectory": {

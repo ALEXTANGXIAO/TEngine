@@ -51,29 +51,29 @@
 
   <ItemGroup>
     <Content Include="..\..\Assets\TEngine\Plugins\MacOS\x86_64\libRecastDll.dylib">
-      <Link>runtimes\osx\native\libRecastDll.dylib</Link>
+      <Link>libRecastDll.dylib</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\Assets\TEngine\Plugins\x86_64\libRecastDll.so">
-      <Link>runtimes\linux\native\libRecastDll.so</Link>
+      <Link>libRecastDll.so</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\Assets\TEngine\Plugins\x86_64\RecastDll.dll">
-      <Link>runtimes\win\native\RecastDll.dll</Link>
+      <Link>RecastDll.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
     <Content Include="KCPLibrary\kcp.dylib">
-      <Link>runtimes\osx\native\kcp.dylib</Link>
+      <Link>kcp.dylib</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="KCPLibrary\kcp.dll">
-      <Link>runtimes\win\native\kcp.dll</Link>
+      <Link>kcp.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
     <Content Include="KCPLibrary\kcp.so">
-      <Link>runtimes\linux\native\kcp.so</Link>
+      <Link>kcp.so</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 

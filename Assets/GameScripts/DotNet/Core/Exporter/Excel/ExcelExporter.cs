@@ -67,8 +67,8 @@ public sealed class ExcelExporter
         FileHelper.ClearDirectoryFile(ExcelDefine.ClientCustomExportDirectory);
         // 找到程序集
         var assemblyLoadContext = new AssemblyLoadContext("ExporterDll", true);
-        var dllBytes = File.ReadAllBytes(Path.Combine(Environment.CurrentDirectory, "TEngine.Model.dll"));
-        var pdbBytes = File.ReadAllBytes(Path.Combine(Environment.CurrentDirectory, "TEngine.Model.pdb"));
+        var dllBytes = File.ReadAllBytes(Path.Combine(Environment.CurrentDirectory, "Logic.dll"));
+        var pdbBytes = File.ReadAllBytes(Path.Combine(Environment.CurrentDirectory, "Logic.pdb"));
         var assembly = assemblyLoadContext.LoadFromStream(new MemoryStream(dllBytes), new MemoryStream(pdbBytes));
         // 加载程序集
         AssemblyManager.LoadAssembly(int.MaxValue, assembly);
