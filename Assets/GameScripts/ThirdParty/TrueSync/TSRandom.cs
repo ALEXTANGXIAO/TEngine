@@ -1,5 +1,8 @@
 ﻿using System;
+
+#if TENGINE_NET
 using MongoDB.Bson.Serialization.Attributes;
+#endif
 
 namespace TrueSync {
 
@@ -17,11 +20,17 @@ namespace TrueSync {
         private const uint UPPER_MASK = 0x80000000U;
         private const uint LOWER_MASK = 0x7fffffffU;
         private const int MAX_RAND_INT = 0x7fffffff;
+#if TENGINE_NET
         [BsonElement]
+#endif
         private uint[] mag01 = { 0x0U, MATRIX_A };
+#if TENGINE_NET
         [BsonElement]
+#endif
         private uint[] mt = new uint[N];
+#if TENGINE_NET
         [BsonElement]
+#endif
         private int mti = N + 1;
 
         private TSRandom() {
