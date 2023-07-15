@@ -23,14 +23,10 @@
 
   <ItemGroup>
     <Compile Include="..\..\Assets\GameScripts\DotNet\Logic\**\*.cs">
-      <Link>Core\%(RecursiveDir)%(FileName)%(Extension)</Link>
+      <Link>share\%(RecursiveDir)%(FileName)%(Extension)</Link>
+    </Compile>
+    <Compile Include="\src\**\*.cs">
+      <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
     </Compile>
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="..\..\Assets\GameScripts\DotNet\Logic\Config~\GameConfig\Battle\">
-      <Link>Core\Config~\GameConfig\Battle</Link>
-    </Folder>
-  </ItemGroup>
-
 </Project>

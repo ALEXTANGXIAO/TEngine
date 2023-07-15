@@ -1,11 +1,3 @@
-{
-    "List": [
-        {
-            "Id": 1,
-            "OuterIP": "127.0.0.1",
-            "OuterBindIP": "127.0.0.1",
-            "InnerBindIP": "127.0.0.1",
-            "ManagementPort": 20000
-        }
-    ]
-}
+{"List":[
+{"Id":1,"OuterIP":"0.0.0.0","OuterBindIP":"0.0.0.0","InnerBindIP":"0.0.0.0","ManagementPort":20000}
+]}

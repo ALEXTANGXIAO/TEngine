@@ -1,44 +1,10 @@
-{
-    "List": [
-        {
-            "Id": 1,
-            "EntityId": 17246978048,
-            "RouteId": 1024,
-            "WorldId": 0,
-            "SceneType": "Gate",
-            "Name": "Gate",
-            "NetworkProtocol": "KCP",
-            "OuterPort": 20000
-        },
-        {
-            "Id": 2,
-            "EntityId": 34493956096,
-            "RouteId": 2048,
-            "WorldId": 0,
-            "SceneType": "Addressable",
-            "Name": "Addressable1",
-            "NetworkProtocol": null,
-            "OuterPort": 0
-        },
-        {
-            "Id": 4,
-            "EntityId": 68920803328,
-            "RouteId": 3072,
-            "WorldId": 0,
-            "SceneType": "Map",
-            "Name": "Map1",
-            "NetworkProtocol": null,
-            "OuterPort": 0
-        },
-        {
-            "Id": 5,
-            "EntityId": 86167781376,
-            "RouteId": 4096,
-            "WorldId": 0,
-            "SceneType": "Chat",
-            "Name": "Chat",
-            "NetworkProtocol": null,
-            "OuterPort": 0
-        }
-    ]
-}
+{"List":[
+{"Id":1,"EntityId":17246978048,"RouteId":1024,"WorldId":1,"SceneType":"Gate","Name":"Gate","NetworkProtocol":"KCP","OuterPort":20000},
+{"Id":2,"EntityId":34493956096,"RouteId":2048,"WorldId":1,"SceneType":"Addressable","Name":"Addressable1","NetworkProtocol":null,"OuterPort":0},
+{"Id":4,"EntityId":68920803328,"RouteId":3072,"WorldId":1,"SceneType":"Map","Name":"Map1","NetworkProtocol":null,"OuterPort":0},
+{"Id":5,"EntityId":86167781376,"RouteId":4096,"WorldId":1,"SceneType":"Chat","Name":"Chat","NetworkProtocol":null,"OuterPort":0},
+{"Id":6,"EntityId":103146389504,"RouteId":1025,"WorldId":1,"SceneType":"Gate","Name":"Gate","NetworkProtocol":"KCP","OuterPort":20000},
+{"Id":7,"EntityId":120393367552,"RouteId":2049,"WorldId":1,"SceneType":"Addressable","Name":"Addressable1","NetworkProtocol":null,"OuterPort":0},
+{"Id":8,"EntityId":137640345600,"RouteId":3073,"WorldId":1,"SceneType":"Map","Name":"Map1","NetworkProtocol":null,"OuterPort":0},
+{"Id":9,"EntityId":154887323648,"RouteId":4097,"WorldId":1,"SceneType":"Chat","Name":"Chat","NetworkProtocol":null,"OuterPort":0}
+]}
