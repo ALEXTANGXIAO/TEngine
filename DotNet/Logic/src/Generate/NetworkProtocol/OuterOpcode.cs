@@ -16,5 +16,7 @@ namespace TEngine
 		 public const int H_M2C_ReceiveAddressMessageToServer = 190000003;
 		 public const int H_C2G_LoginRequest = 110000003;
 		 public const int H_G2C_LoginResponse = 160000003;
+		 public const int H_C2G_RegisterRequest = 110000004;
+		 public const int H_G2C_RegisterResponse = 160000004;
 	}
 }

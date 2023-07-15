@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace TEngine
 {
 	// 生成器自动生成，请不要手动编辑。

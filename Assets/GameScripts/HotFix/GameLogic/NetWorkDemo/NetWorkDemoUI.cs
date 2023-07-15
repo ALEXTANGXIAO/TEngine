@@ -63,6 +63,18 @@ class NetWorkDemoUI : UIWindow
 
     private void OnClickRegisterBtn()
     {
+        if (GameClient.Instance.Status == GameClientStatus.StatusInit)
+        {
+            Log.Info("没有连接到服务器、请先点击连接到服务器按钮在进行此操作");
+            return;
+        }
+
+        if (string.IsNullOrEmpty(m_inputName.text) || string.IsNullOrEmpty(m_inputPassWord.text))
+        {
+            Log.Info("请输入账号和密码");
+            return;
+        }
+        PlayerNetSys.Instance.DoRegisterReq(m_inputName.text,m_inputPassWord.text);
     }
 
     #endregion

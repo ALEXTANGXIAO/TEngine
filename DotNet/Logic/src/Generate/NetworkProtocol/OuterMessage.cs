@@ -152,6 +152,33 @@ namespace TEngine
 		[ProtoMember(91, IsRequired = true)]
 		public int ErrorCode { get; set; }
 		[ProtoMember(1)]
+		public uint UID { get; set; }
+		[ProtoMember(2)]
 		public string Text { get; set; }
+	}
+	/// <summary>
+	///  客户端发送消息请求注册账户
+	/// </summary>
+	[ProtoContract]
+	public partial class H_C2G_RegisterRequest : AProto, IRequest
+	{
+		[ProtoIgnore]
+		public H_G2C_RegisterResponse ResponseType { get; set; }
+		public uint OpCode() { return OuterOpcode.H_C2G_RegisterRequest; }
+		[ProtoMember(1)]
+		public string UserName { get; set; }
+		[ProtoMember(2)]
+		public string Password { get; set; }
+		[ProtoMember(3)]
+		public uint SDKUID { get; set; }
+	}
+	[ProtoContract]
+	public partial class H_G2C_RegisterResponse : AProto, IResponse
+	{
+		public uint OpCode() { return OuterOpcode.H_G2C_RegisterResponse; }
+		[ProtoMember(91, IsRequired = true)]
+		public int ErrorCode { get; set; }
+		[ProtoMember(1)]
+		public uint UID { get; set; }
 	}
 }

@@ -65,5 +65,17 @@ message H_C2G_LoginRequest // IRequest,H_G2C_LoginResponse
 }
 message H_G2C_LoginResponse // IResponse
 {
-	string Text = 1;
+	uint UID = 1;
+	string Text = 2;
+}
+/// 客户端发送消息请求注册账户
+message H_C2G_RegisterRequest // IRequest,H_G2C_RegisterResponse
+{
+	string UserName = 1;
+	string Password = 2;
+	uint SDKUID = 3;
+}
+message H_G2C_RegisterResponse // IResponse
+{
+	uint UID = 1;
 }
