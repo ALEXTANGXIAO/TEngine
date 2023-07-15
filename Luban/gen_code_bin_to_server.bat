@@ -7,7 +7,7 @@ set DATA_OUTPUT=%ROOT_PATH%..\GenerateDatas
 %GEN_CLIENT% -j cfg --^
  -d %CONF_ROOT%\Defines\__root__.xml ^
  --input_data_dir %CONF_ROOT%\Datas ^
- --output_code_dir %WORKSPACE%/Assets/GameScripts/DotNet/Logic/Config~/GameConfig ^
+ --output_code_dir %WORKSPACE%/DotNet/Logic/src/Config/GameConfig ^
  --output_data_dir ..\DotNet\Config\GameConfig ^
  --gen_types code_cs_unity_bin,data_bin ^
  -s all 
