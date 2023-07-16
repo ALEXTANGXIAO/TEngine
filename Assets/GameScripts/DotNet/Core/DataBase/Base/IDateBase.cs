@@ -19,6 +19,7 @@ public interface IDateBase
     FTask<List<T>> QueryByPageOrderBy<T>(Expression<Func<T, bool>> filter, int pageIndex, int pageSize, Expression<Func<T, object>> orderByExpression, bool isAsc = true, string collection = null) where T : Entity;
     FTask<T> First<T>(Expression<Func<T, bool>> filter, string collection = null) where T : Entity;
     FTask<T> First<T>(string json, string[] cols, string collection = null) where T : Entity;
+    FTask<T> Last<T>(Expression<Func<T, bool>> filter, string collection = null) where T : Entity;
     FTask<List<T>> QueryOrderBy<T>(Expression<Func<T, bool>> filter, Expression<Func<T, object>> orderByExpression, bool isAsc = true, string collection = null) where T : Entity;
     FTask<List<T>> Query<T>(Expression<Func<T, bool>> filter, string collection = null) where T : Entity;
     FTask Query(long id, List<string> collectionNames, List<Entity> result);

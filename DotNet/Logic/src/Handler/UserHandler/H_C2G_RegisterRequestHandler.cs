@@ -39,7 +39,7 @@ namespace TEngine.Logic
 
         public async FTask<uint> GeneratorUID(IDateBase db)
         {
-            var ret = await db.First<AccountInfo>(t=>t.UID != 0);
+            var ret = await db.Last<AccountInfo>(t=>t.UID != 0);
             if (ret == null)
             {
                 return 100000;

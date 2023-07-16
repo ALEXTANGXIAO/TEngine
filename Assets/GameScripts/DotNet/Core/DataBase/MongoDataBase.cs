@@ -190,6 +190,18 @@ public sealed class MongoDataBase : IDateBase
             return await cursor.FirstOrDefaultAsync();
         }
     }
+    
+    public async FTask<T> Last<T>(Expression<Func<T, bool>> filter, string collection = null) where T : Entity
+    {
+        using (await _mongoDataBaseLock.Lock(RandomHelper.RandInt64()))
+        {
+            var cursor = await GetCollection<T>(collection).FindAsync(filter);
+
+            var list = await cursor.ToListAsync();
+
+            return list.LastOrDefault();
+        }
+    }
 
     public async FTask<List<T>> QueryOrderBy<T>(Expression<Func<T, bool>> filter, Expression<Func<T, object>> orderByExpression, bool isAsc = true, string collection = null) where T : Entity
     {
