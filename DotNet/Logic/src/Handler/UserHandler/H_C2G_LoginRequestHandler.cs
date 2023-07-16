@@ -22,18 +22,35 @@ namespace TEngine.Logic
                 return;
             }
 
-            if (result[0].Forbid)
+            AccountInfo account = result[0];
+            
+            if (account.Forbid)
             {
                 response.ErrorCode = ErrorCode.ERR_AccountIsForbid;
                 reply();
                 return;
             }
 
+            AccountComponent accountComponent = session.Scene.GetComponent<AccountComponent>();
+            if (accountComponent.Get(account.UID) != null)
+            {
+                response.ErrorCode = ErrorCode.ERR_LoginError;
+                reply();
+                return;
+            }
+            else
+            {
+                var accountInfo = session.AddComponent<AccountInfo>();
+                accountInfo.UID = account.UID;
+                accountInfo.SDKUID = account.SDKUID;
+                accountComponent.Add(account);
+            }
+
             Log.Debug($"收到请求登录的消息 request:{request.ToJson()}");
             response.Text = "登录成功";
-            response.UID = result[0].UID;
+            response.UID = account.UID;
             await FTask.CompletedTask;
-        }
+         }
     }
 }
 #endif

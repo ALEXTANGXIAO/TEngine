@@ -15,9 +15,16 @@ namespace TEngine.Logic
                     await db.Query<AccountInfo>(t=>t.UserName == request.UserName) : 
                     await db.Query<AccountInfo>(t=>t.SDKUID == request.SDKUID) ;
 
-            if (result.Count > 0)
+            if (result.Count == 1)
             {
                 response.ErrorCode = ErrorCode.ERR_AccountAlreadyRegisted;
+                reply();
+                return;
+            }
+            else if (result.Count >= 1)
+            {
+                response.ErrorCode = ErrorCode.ERR_AccountAlreadyRegisted;
+                Log.Error("出现重复账号：" + request.UserName);
                 reply();
                 return;
             }

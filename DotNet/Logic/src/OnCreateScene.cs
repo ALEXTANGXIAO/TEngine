@@ -4,7 +4,8 @@ using TEngine.Core.Network;
 namespace TEngine.Logic;
 
 /// <summary>
-/// 当Scene创建时需要干什么
+/// 场景创建回调。
+/// <remarks>常用于定义场景需要添加的组件。</remarks>
 /// </summary>
 public class OnCreateScene : AsyncEventSystem<TEngine.OnCreateScene>
 {
@@ -21,6 +22,11 @@ public class OnCreateScene : AsyncEventSystem<TEngine.OnCreateScene>
             case "Addressable":
             {
                 sceneConfigInfo.Scene.AddComponent<AddressableManageComponent>();
+                break;
+            }
+            case "Gate":
+            {
+                sceneConfigInfo.Scene.AddComponent<AccountComponent>();
                 break;
             }
         }

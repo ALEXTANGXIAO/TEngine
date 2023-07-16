@@ -1,8 +1,8 @@
 namespace TEngine.Logic;
 
-public class UserInfoAwakeSystem : AwakeSystem<UserInfo>
+public class CharacterInfoAwakeSystem : AwakeSystem<CharacterInfo>
 {
-    protected override void Awake(UserInfo self)
+    protected override void Awake(CharacterInfo self)
     {
         self.Awake();
     }
@@ -11,7 +11,7 @@ public class UserInfoAwakeSystem : AwakeSystem<UserInfo>
 /// <summary>
 /// 角色信息。
 /// </summary>
-public class UserInfo : Entity
+public class CharacterInfo : Entity
 {
     //昵称
     public string UserName { get; set; }

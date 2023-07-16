@@ -29,4 +29,11 @@ public class AccountInfo : Entity
     /// 是否禁用账号。
     /// </summary>
     public bool Forbid { get; set; }
+
+    public override void Dispose()
+    {
+        Log.Debug($"UID:{this.UID}");
+        this.Parent?.Scene?.GetComponent<AccountComponent>()?.Remove(this);
+        base.Dispose();
+    }
 }
