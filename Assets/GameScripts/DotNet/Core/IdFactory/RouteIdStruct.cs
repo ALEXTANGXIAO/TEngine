@@ -40,5 +40,10 @@ namespace TEngine.Core
             idStruct.AppId = (ushort)(routeId & MaskAppId);
             return idStruct;
         }
+        
+        public override string ToString()
+        {
+            return $"AppId:{this.AppId}|WordId:{this.WordId}";
+        }
     }
 }

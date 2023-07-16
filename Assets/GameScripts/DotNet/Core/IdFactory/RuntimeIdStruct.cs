@@ -39,7 +39,7 @@ namespace TEngine.Core
         
         public override string ToString()
         {
-            return $"time: {this.Time}, value: {this.Sequence}";
+            return $"Time: {this.Time}, Sequence: {this.Sequence}";
         }
     }
 }
