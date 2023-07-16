@@ -33,7 +33,7 @@ namespace TEngine
 	{
 		public uint OpCode() { return OuterOpcode.H_G2C_MessageResponse; }
 		[ProtoMember(91, IsRequired = true)]
-		public int ErrorCode { get; set; }
+		public uint ErrorCode { get; set; }
 		[ProtoMember(1)]
 		public string Message { get; set; }
 	}
@@ -74,7 +74,7 @@ namespace TEngine
 	{
 		public uint OpCode() { return OuterOpcode.H_G2C_LoginAddressResponse; }
 		[ProtoMember(91, IsRequired = true)]
-		public int ErrorCode { get; set; }
+		public uint ErrorCode { get; set; }
 	}
 	/// <summary>
 	///  发送一个Address消息给Map
@@ -105,7 +105,7 @@ namespace TEngine
 	{
 		public uint OpCode() { return OuterOpcode.H_M2C_MessageResponse; }
 		[ProtoMember(91, IsRequired = true)]
-		public int ErrorCode { get; set; }
+		public uint ErrorCode { get; set; }
 		[ProtoMember(1)]
 		public string Message { get; set; }
 	}
@@ -150,7 +150,7 @@ namespace TEngine
 	{
 		public uint OpCode() { return OuterOpcode.H_G2C_LoginResponse; }
 		[ProtoMember(91, IsRequired = true)]
-		public int ErrorCode { get; set; }
+		public uint ErrorCode { get; set; }
 		[ProtoMember(1)]
 		public uint UID { get; set; }
 		[ProtoMember(2)]
@@ -177,7 +177,7 @@ namespace TEngine
 	{
 		public uint OpCode() { return OuterOpcode.H_G2C_RegisterResponse; }
 		[ProtoMember(91, IsRequired = true)]
-		public int ErrorCode { get; set; }
+		public uint ErrorCode { get; set; }
 		[ProtoMember(1)]
 		public uint UID { get; set; }
 	}

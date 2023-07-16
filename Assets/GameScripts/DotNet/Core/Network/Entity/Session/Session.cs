@@ -112,7 +112,7 @@ namespace TEngine.Core.Network
 
             if (networkId != 0 && channelId != 0)
             {
-                NetworkThread.Instance.SynchronizationContext.Post(() =>
+                NetworkThread.Instance?.SynchronizationContext.Post(() =>
                 {
                     NetworkThread.Instance?.RemoveChannel(networkId, channelId);
                 });

@@ -70,7 +70,7 @@ namespace TEngine
         public void CreateSession(string remoteAddress, NetworkProtocolType networkProtocolType, Action onConnectComplete, Action onConnectFail, int connectTimeout = 5000)
         {
             var address = NetworkHelper.ToIPEndPoint(remoteAddress);
-            var clientNetworkComponent = AddComponent<ClientNetworkComponent>();
+            var clientNetworkComponent = GetComponent<ClientNetworkComponent>() ?? AddComponent<ClientNetworkComponent>();
             clientNetworkComponent.Initialize(networkProtocolType, NetworkTarget.Outer);
             clientNetworkComponent.Connect(address, onConnectComplete, onConnectFail, connectTimeout);
             Session = clientNetworkComponent.Session;

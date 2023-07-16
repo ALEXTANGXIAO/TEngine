@@ -26,6 +26,6 @@ namespace TEngine
 	{
 		public uint OpCode() { return InnerOpcode.I_M2G_LoginAddressResponse; }
 		[ProtoMember(91, IsRequired = true)]
-		public int ErrorCode { get; set; }
+		public uint ErrorCode { get; set; }
 	}
 }

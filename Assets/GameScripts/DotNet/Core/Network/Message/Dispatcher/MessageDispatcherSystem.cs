@@ -212,7 +212,7 @@ namespace TEngine.Core.Network
             }
         }
 #endif
-        public void FailResponse(Session session, IRouteRequest iRouteRequest, int error, uint rpcId)
+        public void FailResponse(Session session, IRouteRequest iRouteRequest, uint error, uint rpcId)
         {
             var response = CreateResponse(iRouteRequest, error);
             session.Send(response, rpcId);
@@ -223,7 +223,7 @@ namespace TEngine.Core.Network
             return new RouteResponse();
         }
         
-        public IResponse CreateResponse(Type requestType, int error)
+        public IResponse CreateResponse(Type requestType, uint error)
         {
             IResponse response;
 
@@ -240,7 +240,7 @@ namespace TEngine.Core.Network
             return response;
         }
 
-        public IResponse CreateResponse(IRequest iRequest, int error)
+        public IResponse CreateResponse(IRequest iRequest, uint error)
         {
             IResponse response;
 
@@ -257,7 +257,7 @@ namespace TEngine.Core.Network
             return response;
         }
 
-        public IRouteResponse CreateResponse(IRouteRequest iRouteRequest, int error)
+        public IRouteResponse CreateResponse(IRouteRequest iRouteRequest, uint error)
         {
             IRouteResponse response;
 

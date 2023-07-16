@@ -246,7 +246,7 @@ public sealed class ProtoBufExporter
                             {
                                 opcodeInfo.Code += ++_aResponse;
                                 file.AppendLine("\t\t[ProtoMember(91, IsRequired = true)]");
-                                file.AppendLine("\t\tpublic int ErrorCode { get; set; }");
+                                file.AppendLine("\t\tpublic uint ErrorCode { get; set; }");
                                 break;
                             }
                             default:
@@ -263,7 +263,7 @@ public sealed class ProtoBufExporter
                                 {
                                     opcodeInfo.Code += ++_aRouteResponse;
                                     file.AppendLine("\t\t[ProtoMember(91, IsRequired = true)]");
-                                    file.AppendLine("\t\tpublic int ErrorCode { get; set; }");
+                                    file.AppendLine("\t\tpublic uint ErrorCode { get; set; }");
                                 }
 
                                 break;

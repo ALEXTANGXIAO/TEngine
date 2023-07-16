@@ -12,7 +12,7 @@ namespace TEngine
         }
 
         [ProtoMember(90)] public long RpcId { get; set; }
-        [ProtoMember(91, IsRequired = true)] public int ErrorCode { get; set; }
+        [ProtoMember(91, IsRequired = true)] public uint ErrorCode { get; set; }
     }
 
     [ProtoContract]
@@ -24,7 +24,7 @@ namespace TEngine
         }
         
         [ProtoMember(90)] public long RpcId { get; set; }
-        [ProtoMember(91, IsRequired = true)] public int ErrorCode { get; set; }
+        [ProtoMember(91, IsRequired = true)] public uint ErrorCode { get; set; }
     }
     [ProtoContract]
     public class PingRequest : AProto, IRequest
@@ -46,7 +46,7 @@ namespace TEngine
         }
 
         [ProtoMember(90)] public long RpcId { get; set; }
-        [ProtoMember(91, IsRequired = true)] public int ErrorCode { get; set; }
+        [ProtoMember(91, IsRequired = true)] public uint ErrorCode { get; set; }
         [ProtoMember(1)] public long Now;
     }
     /// <summary>
@@ -69,7 +69,7 @@ namespace TEngine
     {
         public uint OpCode() { return Opcode.AddressableAddResponse; }
         [ProtoMember(91, IsRequired = true)]
-        public int ErrorCode { get; set; }
+        public uint ErrorCode { get; set; }
     }
     /// <summary>
     /// 查询一个可寻址
@@ -89,7 +89,7 @@ namespace TEngine
     {
         public uint OpCode() { return Opcode.AddressableGetResponse; }
         [ProtoMember(91, IsRequired = true)]
-        public int ErrorCode { get; set; }
+        public uint ErrorCode { get; set; }
         [ProtoMember(1)]
         public long RouteId { get; set; }
     }
@@ -111,7 +111,7 @@ namespace TEngine
     {
         public uint OpCode() { return Opcode.AddressableRemoveResponse; }
         [ProtoMember(91, IsRequired = true)]
-        public int ErrorCode { get; set; }
+        public uint ErrorCode { get; set; }
     }
     /// <summary>
     /// 锁定一个可寻址
@@ -131,7 +131,7 @@ namespace TEngine
     {
         public uint OpCode() { return Opcode.AddressableLockResponse; }
         [ProtoMember(91, IsRequired = true)]
-        public int ErrorCode { get; set; }
+        public uint ErrorCode { get; set; }
     }
     /// <summary>
     /// 解锁一个可寻址
@@ -155,6 +155,6 @@ namespace TEngine
     {
         public uint OpCode() { return Opcode.AddressableUnLockResponse; }
         [ProtoMember(91, IsRequired = true)]
-        public int ErrorCode { get; set; }
+        public uint ErrorCode { get; set; }
     }
 }

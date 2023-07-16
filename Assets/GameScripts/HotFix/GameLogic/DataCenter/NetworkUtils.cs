@@ -34,7 +34,7 @@ namespace GameLogic
         }
 
         //Remark 这里图方便注册错误码文本，正常应该走文本配置表。
-        public static Dictionary<int, string> ErrCodeTextMap = new Dictionary<int, string>
+        public static Dictionary<uint, string> ErrCodeTextMap = new Dictionary<uint, string>
         {
             {
                 ErrorCode.ERR_AccountAlreadyRegisted, "账户已经被注册了"
