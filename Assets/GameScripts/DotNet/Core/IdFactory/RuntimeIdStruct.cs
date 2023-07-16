@@ -36,5 +36,10 @@ namespace TEngine.Core
             };
             return idStruct;
         }
+        
+        public override string ToString()
+        {
+            return $"time: {this.Time}, value: {this.Sequence}";
+        }
     }
 }

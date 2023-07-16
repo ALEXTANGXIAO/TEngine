@@ -16,8 +16,107 @@ using Newtonsoft.Json;
 
 namespace TEngine
 {
+    [Flags]
+    public enum EntityStatus: byte
+    {
+        None = 0,
+        IsFromPool = 1,
+        IsComponent = 1 << 1,
+        IsCreated = 1 << 2,
+        IsNew = 1 << 3,
+    }
+    
     public abstract class Entity : IDisposable
     {
+        #region Status
+        [BsonIgnore] 
+        [IgnoreDataMember] 
+        private EntityStatus status = EntityStatus.None;
+
+        [BsonIgnore] 
+        [IgnoreDataMember] 
+        public bool IsFromPool
+        {
+            get => (this.status & EntityStatus.IsFromPool) == EntityStatus.IsFromPool;
+            set
+            {
+                if (value)
+                {
+                    this.status |= EntityStatus.IsFromPool;
+                }
+                else
+                {
+                    this.status &= ~EntityStatus.IsFromPool;
+                }
+            }
+        }
+        
+        [BsonIgnore] 
+        [IgnoreDataMember]
+        protected bool IsComponent
+        {
+            get => (this.status & EntityStatus.IsComponent) == EntityStatus.IsComponent;
+            set
+            {
+                if (value)
+                {
+                    this.status |= EntityStatus.IsComponent;
+                }
+                else
+                {
+                    this.status &= ~EntityStatus.IsComponent;
+                }
+            }
+        }
+
+        [BsonIgnore] 
+        [IgnoreDataMember]
+        protected bool IsCreated
+        {
+            get => (this.status & EntityStatus.IsCreated) == EntityStatus.IsCreated;
+            set
+            {
+                if (value)
+                {
+                    this.status |= EntityStatus.IsCreated;
+                }
+                else
+                {
+                    this.status &= ~EntityStatus.IsCreated;
+                }
+            }
+        }
+
+        [BsonIgnore] 
+        [IgnoreDataMember]
+        protected bool IsNew
+        {
+            get => (this.status & EntityStatus.IsNew) == EntityStatus.IsNew;
+            set
+            {
+                if (value)
+                {
+                    this.status |= EntityStatus.IsNew;
+                }
+                else
+                {
+                    this.status &= ~EntityStatus.IsNew;
+                }
+            }
+        }
+        
+        [BsonIgnore] 
+        [IgnoreDataMember]
+        protected virtual string ViewName
+        {
+            get
+            {
+                return this.GetType().FullName;
+            }
+        }
+
+        #endregion
+        
         #region Entities
         
         private static readonly Dictionary<long, Entity> Entities = new Dictionary<long, Entity>();
@@ -73,7 +172,7 @@ namespace TEngine
                 entity = Activator.CreateInstance<T>();
             }
 
-            entity._isFromPool = true;
+            entity.IsFromPool = true;
             return entity;
         }
 
@@ -81,12 +180,12 @@ namespace TEngine
         {
             entity.Id = 0;
             
-            if (!entity._isFromPool)
+            if (!entity.IsFromPool)
             {
                 return;
             }
 
-            entity._isFromPool = false;
+            entity.IsFromPool = false;
             Pool.Enqueue(entity.GetType(), entity);
         }
 
@@ -123,7 +222,8 @@ namespace TEngine
                 EntitiesSystem.Instance.Awake(entity);
                 EntitiesSystem.Instance.StartUpdate(entity);
             }
-
+            entity.IsCreated = true;
+            entity.IsNew = true;
             return entity;
         }
 
@@ -144,7 +244,8 @@ namespace TEngine
                 EntitiesSystem.Instance.Awake(entity);
                 EntitiesSystem.Instance.StartUpdate(entity);
             }
-
+            entity.IsCreated = true;
+            entity.IsNew = true;
             return entity;
         }
 
@@ -199,11 +300,6 @@ namespace TEngine
         [BsonIgnore] 
         [IgnoreDataMember] 
         private DictionaryPool<long, ISupportedMultiEntity> _multi;
-
-        [BsonIgnore] 
-        [IgnoreDataMember] 
-        private bool _isFromPool;
-
         #endregion
 
         #region AddComponent
@@ -275,8 +371,10 @@ namespace TEngine
                 }
             }
 
+            this.IsComponent = false;
             component.Parent = this;
             component.Scene = Scene;
+            component.IsComponent = true;
         }
         
         #endregion
