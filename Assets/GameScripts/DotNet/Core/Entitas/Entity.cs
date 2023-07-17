@@ -28,6 +28,11 @@ namespace TEngine
     
     public abstract class Entity : IDisposable
     {
+#if UNITY_EDITOR
+        [UnityEngine.HideInInspector]
+        public UnityEngine.GameObject ViewGO;
+#endif
+        
         #region Status
         [BsonIgnore] 
         [IgnoreDataMember] 
@@ -107,13 +112,7 @@ namespace TEngine
         
         [BsonIgnore] 
         [IgnoreDataMember]
-        protected virtual string ViewName
-        {
-            get
-            {
-                return this.GetType().FullName;
-            }
-        }
+        protected virtual string ViewName => this.GetType().Name;
 
         #endregion
         
@@ -222,8 +221,17 @@ namespace TEngine
                 EntitiesSystem.Instance.Awake(entity);
                 EntitiesSystem.Instance.StartUpdate(entity);
             }
+
+            
             entity.IsCreated = true;
             entity.IsNew = true;
+            entity.OnCreate();
+#if UNITY_EDITOR
+            entity.ViewGO = new UnityEngine.GameObject(entity.ViewName);
+            entity.ViewGO.AddComponent<ComponentView>().Component = entity;
+            entity.ViewGO.transform.SetParent(entity.Parent == null? 
+                UnityEngine.GameObject.Find("[EntitySystem]").transform : entity.Parent.ViewGO.transform);
+#endif
             return entity;
         }
 
@@ -246,6 +254,13 @@ namespace TEngine
             }
             entity.IsCreated = true;
             entity.IsNew = true;
+            entity.OnCreate();
+#if UNITY_EDITOR
+            entity.ViewGO = new UnityEngine.GameObject(entity.ViewName);
+            entity.ViewGO.AddComponent<ComponentView>().Component = entity;
+            entity.ViewGO.transform.SetParent(entity.Parent == null? 
+                UnityEngine.GameObject.Find("[EntitySystem]").transform : entity.Parent.ViewGO.transform);
+#endif
             return entity;
         }
 
@@ -375,6 +390,15 @@ namespace TEngine
             component.Parent = this;
             component.Scene = Scene;
             component.IsComponent = true;
+#if UNITY_EDITOR
+            if (component.ViewGO == null)
+            {
+                Log.Error($"{component} ‘s component.ViewGO is null");
+                return;
+            }
+            component.ViewGO.transform.SetParent(component.Parent == null? 
+                UnityEngine.GameObject.Find("[EntitySystem]").transform : component.Parent.ViewGO.transform);
+#endif
         }
         
         #endregion
@@ -570,6 +594,10 @@ namespace TEngine
 
         #endregion
 
+        #region OnCreate
+        public virtual void OnCreate() { }
+        #endregion
+
         #region Dispose
 
         public virtual void Dispose()
@@ -638,6 +666,15 @@ namespace TEngine
             Entities.Remove(runtimeId);
             Scene = null;
             Return(this);
+            
+#if UNITY_EDITOR
+            if (this.ViewGO == null)
+            {
+                Log.Error($"{this} ‘s ViewGO is null");
+                return;
+            }
+            UnityEngine.Object.Destroy(this.ViewGO);;
+#endif
         }
 
         #endregion

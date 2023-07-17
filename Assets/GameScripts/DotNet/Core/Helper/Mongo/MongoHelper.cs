@@ -1,8 +1,12 @@
 #if TENGINE_NET
+using System.ComponentModel;
 using MongoDB.Bson;
+using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
+using TrueSync;
 using Unity.Mathematics;
+using MongoHelper = TEngine.Core.MongoHelper;
 
 namespace TEngine.Core;
 
@@ -15,10 +19,21 @@ public sealed class MongoHelper : Singleton<MongoHelper>
         // 自动注册IgnoreExtraElements
         var conventionPack = new ConventionPack {new IgnoreExtraElementsConvention(true)};
         ConventionRegistry.Register("IgnoreExtraElements", conventionPack, type => true);
-        BsonSerializer.TryRegisterSerializer(typeof(float2), new StructBsonSerialize<float2>());
-        BsonSerializer.TryRegisterSerializer(typeof(float3), new StructBsonSerialize<float3>());
-        BsonSerializer.TryRegisterSerializer(typeof(float4), new StructBsonSerialize<float4>());
-        BsonSerializer.TryRegisterSerializer(typeof(quaternion), new StructBsonSerialize<quaternion>());
+        RegisterStruct<float2>();
+        RegisterStruct<float3>();
+        RegisterStruct<float4>();
+        RegisterStruct<quaternion>();
+            
+        RegisterStruct<FP>();
+        RegisterStruct<TSVector>();
+        RegisterStruct<TSVector2>();
+        RegisterStruct<TSVector4>();
+        RegisterStruct<TSQuaternion>();
+    }
+    
+    public static void RegisterStruct<T>() where T : struct
+    {
+        BsonSerializer.RegisterSerializer(typeof (T), new StructBsonSerialize<T>());
     }
 
     protected override void OnLoad(int assemblyName)
@@ -42,6 +57,43 @@ public sealed class MongoHelper : Singleton<MongoHelper>
                 BsonClassMap.LookupClassMap(type);
             }
         });
+    }
+    
+    private static readonly JsonWriterSettings defaultSettings = new() { OutputMode = JsonOutputMode.RelaxedExtendedJson };
+    
+    public static string ToJson(object obj)
+    {
+        if (obj is ISupportInitialize supportInitialize)
+        {
+            supportInitialize.BeginInit();
+        }
+        return obj.ToJson(defaultSettings);
+    }
+
+    public static string ToJson(object obj, JsonWriterSettings settings)
+    {
+        if (obj is ISupportInitialize supportInitialize)
+        {
+            supportInitialize.BeginInit();
+        }
+        return obj.ToJson(settings);
+    }
+
+    public static T FromJson<T>(string str)
+    {
+        try
+        {
+            return BsonSerializer.Deserialize<T>(str);
+        }
+        catch (Exception e)
+        {
+            throw new Exception($"{str}\n{e}");
+        }
+    }
+
+    public static object FromJson(Type type, string str)
+    {
+        return BsonSerializer.Deserialize(str, type);
     }
 
     public T Deserialize<T>(byte[] bytes)

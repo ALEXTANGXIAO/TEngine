@@ -46,7 +46,7 @@ namespace GameLogic
         public GameClientStatus Status { get; set; } = GameClientStatus.StatusInit;
         public Scene Scene { private set; get; }
         
-        private string _lastAddress = null;
+        private string _lastAddress = String.Empty;
         
         public GameClient()
         {
