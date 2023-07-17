@@ -7,14 +7,59 @@ namespace GameLogic.BattleDemo
     /// </summary>
     public abstract class EntityLogic : Entity
     {
-        public override void OnCreate()
+        /// <summary>
+        /// 逻辑层实体类型。
+        /// </summary>
+        /// <returns></returns>
+        public abstract ActorEntityType GetActorEntityType();
+        
+        /// <summary>
+        /// 是否是战斗起始的Actor。
+        /// <remarks>,比如双方参与战斗的玩家，或者技能编辑器里的Caster。</remarks>
+        /// </summary>
+        public bool IsStartActor;
+
+        public EntityCreateData CreateData { private set; get; }
+        
+        public virtual string GetActorName()
         {
-            base.OnCreate();
+            return string.Empty;
+        }
+
+        #region 缓存常用组件
+        public ActorData ActorData { protected set; get; }
+        
+        public BuffComponent BuffComponent { protected set; get; }
+        public SkillCasterComponent SkillCaster { protected set; get; }
+        #endregion
+
+        #region 生命周期
+
+        internal bool LogicCreate(EntityCreateData entityCreateData)
+        {
+            CreateData = entityCreateData;
+            OnLogicCreate();
+            return true;
         }
         
-        public override void Dispose()
+        protected virtual void OnLogicCreate()
         {
-            base.Dispose();
+            
         }
+
+        internal void LogicDestroy()
+        {
+            OnLogicDestroy();
+            if (CreateData != null)
+            {
+                MemoryPool.Release(CreateData);
+            }
+        }
+        
+        protected virtual void OnLogicDestroy()
+        {
+            
+        }
+        #endregion
     }
 }

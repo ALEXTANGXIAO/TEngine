@@ -2,14 +2,17 @@
 {
     public class PlayerEntity : EntityLogic
     {
-        public override void OnCreate()
+        public override ActorEntityType GetActorEntityType()
         {
-            base.OnCreate();
+            return ActorEntityType.Player;
         }
 
-        public override void Dispose()
+        protected override void OnLogicCreate()
         {
-            base.Dispose();
+            base.OnLogicCreate();
+            ActorData = AddComponent<ActorData>();
+            BuffComponent = AddComponent<BuffComponent>();
+            SkillCaster = AddComponent<SkillCasterComponent>();
         }
     }
 }
