@@ -26,5 +26,14 @@ namespace TEngine
             }
             return (T)Enum.Parse(typeof(T), str);
         }
+		
+		public static T Parse<T>(this string str)
+		{
+			if (!Enum.IsDefined(typeof(T), str))
+			{
+				return default(T);
+			}
+			return (T)Enum.Parse(typeof(T), str);
+		}
     }
 }

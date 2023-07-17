@@ -3,6 +3,16 @@ using TEngine.Core.Network;
 
 namespace TEngine.Logic;
 
+[Flags]
+public enum SceneType: long
+{
+    None = 0,
+    Gate = 1,               // Gate
+    Addressable = 1 << 2,   // 负责进程间消息通信
+    Map = 1 << 3,           // 游戏场景服
+    Chat = 1 << 4,          // 游戏聊天服
+}
+
 /// <summary>
 /// 场景创建回调。
 /// <remarks>常用于定义场景需要添加的组件。</remarks>
@@ -17,14 +27,14 @@ public class OnCreateScene : AsyncEventSystem<TEngine.OnCreateScene>
         // 比如Map下你需要一些自定义组件、你也可以在这里操作
         var sceneConfigInfo = self.SceneInfo;
 
-        switch (sceneConfigInfo.SceneType)
+        switch (sceneConfigInfo.SceneType.Parse<SceneType>())
         {
-            case "Addressable":
+            case SceneType.Addressable:
             {
                 sceneConfigInfo.Scene.AddComponent<AddressableManageComponent>();
                 break;
             }
-            case "Gate":
+            case SceneType.Gate:
             {
                 sceneConfigInfo.Scene.AddComponent<AccountComponent>();
                 break;
