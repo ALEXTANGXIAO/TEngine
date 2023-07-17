@@ -79,3 +79,12 @@ message H_G2C_RegisterResponse // IResponse
 {
 	uint UID = 1;
 }
+/// 客户端发送GM
+message CmdGmReq // IRequest,IResponse
+{
+	string input = 1;
+}
+message CmdGmRes // IResponse
+{
+	string msg = 1;
+}

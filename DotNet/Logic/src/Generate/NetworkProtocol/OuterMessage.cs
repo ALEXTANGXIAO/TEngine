@@ -181,4 +181,25 @@ namespace TEngine
 		[ProtoMember(1)]
 		public uint UID { get; set; }
 	}
+	/// <summary>
+	///  客户端发送GM
+	/// </summary>
+	[ProtoContract]
+	public partial class CmdGmReq : AProto, IRequest
+	{
+		[ProtoIgnore]
+		public IResponse ResponseType { get; set; }
+		public uint OpCode() { return OuterOpcode.CmdGmReq; }
+		[ProtoMember(1)]
+		public string input { get; set; }
+	}
+	[ProtoContract]
+	public partial class CmdGmRes : AProto, IResponse
+	{
+		public uint OpCode() { return OuterOpcode.CmdGmRes; }
+		[ProtoMember(91, IsRequired = true)]
+		public uint ErrorCode { get; set; }
+		[ProtoMember(1)]
+		public string msg { get; set; }
+	}
 }

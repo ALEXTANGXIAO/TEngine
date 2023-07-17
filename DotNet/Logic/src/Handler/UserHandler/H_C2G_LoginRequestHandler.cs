@@ -34,7 +34,7 @@ namespace TEngine.Logic
             AccountComponent accountComponent = session.Scene.GetComponent<AccountComponent>();
             if (accountComponent.Get(account.UID) != null)
             {
-                response.ErrorCode = ErrorCode.ERR_LoginError;
+                response.ErrorCode = ErrorCode.ERR_AccountIsInGame;
                 reply();
                 return;
             }

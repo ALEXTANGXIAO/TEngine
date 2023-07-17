@@ -15,5 +15,6 @@
         public const int ERR_CannotCreateMoreCharacter = 300008;
         public const int ERR_CharacterAlreadyRegisted = 300009;
         public const int ERR_AccountIsForbid = 300010;
+        public const int ERR_AccountIsInGame = 300011;
     }
 }
