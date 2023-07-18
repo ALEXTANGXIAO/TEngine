@@ -34,7 +34,7 @@ namespace TEngine.Core.Network
         {
             if (_isInit)
             {
-                throw new NotSupportedException($"KCPClientNetwork Id:{Id} Has already been initialized. If you want to call Connect again, please re instantiate it.");
+                throw new NotSupportedException($"TCPClientNetwork Id:{Id} Has already been initialized. If you want to call Connect again, please re instantiate it.");
             }
             
             _isInit = true;
