@@ -19,10 +19,11 @@ namespace TEngine.Core.Network
         #region 逻辑线程
 
         private bool _isInit;
-        private Action _onConnectFail;
-        private Action _onConnectComplete;
         private long _connectTimeoutId;
         public override event Action OnDispose;
+        public override event Action OnConnectFail;
+        public override event Action OnConnectComplete;
+        public override event Action OnConnectDisconnect;
         public override event Action<uint> OnChangeChannelId;
         public override event Action<APackInfo> OnReceiveMemoryStream;
 
@@ -50,6 +51,11 @@ namespace TEngine.Core.Network
                 
                 if (_socket.Connected)
                 {
+                    if (OnConnectDisconnect != null)
+                    {
+                        ThreadSynchronizationContext.Main.Post(OnConnectDisconnect);
+                    }
+
                     _socket.Disconnect(false);
                     _socket.Close();
                 }
@@ -58,7 +64,6 @@ namespace TEngine.Core.Network
                 _updateMinTime = 0;
 
                 _sendAction = null;
-                _onConnectFail = null;
                 _rawSendBuffer = null;
                 _rawReceiveBuffer = null;
                 
@@ -89,7 +94,7 @@ namespace TEngine.Core.Network
             });
         }
 
-        public override uint Connect(IPEndPoint remoteEndPoint, Action onConnectComplete, Action onConnectFail, int connectTimeout = 5000)
+        public override uint Connect(IPEndPoint remoteEndPoint, Action onConnectComplete, Action onConnectFail, Action onConnectDisconnect, int connectTimeout = 5000)
         {
             if (_isInit)
             {
@@ -97,8 +102,9 @@ namespace TEngine.Core.Network
             }
             
             _isInit = true;
-            _onConnectFail = onConnectFail;
-            _onConnectComplete = onConnectComplete;
+            OnConnectFail = onConnectFail;
+            OnConnectComplete = onConnectComplete;
+            OnConnectDisconnect = onConnectDisconnect;
             ChannelId = CreateChannelId();
             _kcpSettings = KCPSettings.Create(NetworkTarget);
             _maxSndWnd = _kcpSettings.MaxSendWindowSize;
@@ -119,11 +125,11 @@ namespace TEngine.Core.Network
 
             _connectTimeoutId = TimerScheduler.Instance.Core.OnceTimer(connectTimeout, () =>
             {
-                if (_onConnectFail == null)
+                if (OnConnectFail == null)
                 {
                     return;
                 }
-                _onConnectFail();
+                OnConnectFail();
                 Dispose();
             });
 
@@ -247,7 +253,7 @@ namespace TEngine.Core.Network
                             ThreadSynchronizationContext.Main.Post(() =>
                             {
                                 OnChangeChannelId(ChannelId);
-                                _onConnectComplete?.Invoke();
+                                OnConnectComplete?.Invoke();
                             });
                             // 到这里正确创建上连接了、可以正常发送消息了
                             break;

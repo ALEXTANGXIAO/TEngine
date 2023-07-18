@@ -173,7 +173,7 @@ namespace TEngine.Core.Network
                         return;
                     }
 
-                    Session.Create(NetworkMessageScheduler, channel);
+                    Session.Create(NetworkMessageScheduler, channel, this.NetworkTarget);
                 });
                 
                 _connectionChannel.Add(channelId, channel);

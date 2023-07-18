@@ -59,6 +59,20 @@
         "ClientCustomExportDirectory": {
             "Value": "../../Client/Unity/Assets/Scripts/Hotfix/Generate/CustomExport/",
             "Comment": "客户端自定义导出代码文件夹位置"
+        },
+        "CustomExportAssembly": {
+            "Value": "Logic",
+            "Comment": "自定义导出代码存放的程序集"
+        }
+    },
+    "Network": {
+        "SessionIdleCheckerInterval": {
+            "Value": 10000,
+            "Comment": "每隔多久检查一个Session的对话时间"
+        },
+        "SessionIdleCheckerTimeout": {
+            "Value": 30000,
+            "Comment": "距上一次接收对话的时间如果超过设定的时间会自定断开Session"
         }
     }
 }

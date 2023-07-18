@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using TEngine.Core.Network;
 using TEngine.Core;
+using TEngine.Logic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -62,7 +63,7 @@ namespace TEngine.Demo
             // onConnectComplete:当跟服务器建立连接后的回调
             // onConnectFail:当网络无法连接或出错时的回调
             // connectTimeout:连接超时时间、默认是5000毫秒
-            Scene.CreateSession("127.0.0.1:20000", NetworkProtocolType.KCP, OnConnectComplete, OnConnectFail);
+            Scene.CreateSession("127.0.0.1:20000", NetworkProtocolType.KCP, OnConnectComplete, OnConnectFail, OnConnectDisconnect);
             // 注意:框架使用的ProtoBuf协议、文件定义的位置在Demo下Config/ProtoBuf/里
             // 生成协议是在服务器工程生成
             // ProtoBuf有三个文件:
@@ -74,6 +75,7 @@ namespace TEngine.Demo
         private void OnConnectComplete()
         {
             IsConnect = true;
+            Scene.Session.AddComponent<SessionHeartbeatComponent>().Start(15);
             LogDebug("已连接到服务器");
         }
 
@@ -81,6 +83,12 @@ namespace TEngine.Demo
         {
             IsConnect = false;
             LogError("无法连接到服务器");
+        }
+        
+        private void OnConnectDisconnect()
+        {
+            IsConnect = false;
+            LogError("服务器主动断开了连接");
         }
 
         private void OnSendButtonClick()

@@ -34,12 +34,12 @@ namespace TEngine
 
         private bool CheckLogLevel(int level)
         {
-            if (Define.Options == null)
+            if (AppDefine.Options == null)
             {
                 return true;
             }
 
-            return Define.Options.LogLevel <= level;
+            return AppDefine.Options.LogLevel <= level;
         }
 
         public void Trace(string msg)

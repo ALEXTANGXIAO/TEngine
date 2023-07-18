@@ -37,6 +37,7 @@ namespace TEngine.Core.Network
 
                 switch (packInfo.ProtocolCode)
                 {
+                    case Opcode.PingResponse:
                     case >= Opcode.OuterRouteMessage:
                     {
                         await Handler(session, messageType, packInfo);

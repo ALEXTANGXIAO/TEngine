@@ -17,6 +17,7 @@ namespace TEngine.Core.Network
                     {
                         throw new NotSupportedException($"Received unsupported message protocolCode:{packInfo.ProtocolCode} messageType:{messageType}");
                     }
+                    case Opcode.PingResponse:
                     case > Opcode.OuterRouteResponse:
                     {
                         // 这个一般是客户端Session.Call发送时使用的、目前这个逻辑只有Unity客户端时使用

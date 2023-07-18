@@ -20,22 +20,22 @@ public abstract class ACustomExport : ICustomExport
         {
             case CustomExportType.Client:
             {
-                if (!Directory.Exists(ExcelDefine.ClientCustomExportDirectory))
+                if (!Directory.Exists(Define.ClientCustomExportDirectory))
                 {
-                    Directory.CreateDirectory(ExcelDefine.ClientCustomExportDirectory);
+                    Directory.CreateDirectory(Define.ClientCustomExportDirectory);
                 }
                 
-                File.WriteAllText($"{ExcelDefine.ClientCustomExportDirectory}/{fileName}", fileContent);
+                File.WriteAllText($"{Define.ClientCustomExportDirectory}/{fileName}", fileContent);
                 return;
             }
             case CustomExportType.Server:
             {
-                if (!Directory.Exists(ExcelDefine.ServerCustomExportDirectory))
+                if (!Directory.Exists(Define.ServerCustomExportDirectory))
                 {
-                    Directory.CreateDirectory(ExcelDefine.ServerCustomExportDirectory);
+                    Directory.CreateDirectory(Define.ServerCustomExportDirectory);
                 }
                 
-                File.WriteAllText($"{ExcelDefine.ServerCustomExportDirectory}/{fileName}", fileContent);
+                File.WriteAllText($"{Define.ServerCustomExportDirectory}/{fileName}", fileContent);
                 return;
             }
         }

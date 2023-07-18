@@ -84,7 +84,7 @@ namespace TEngine
             clientNetworkComponent.Connect(ipEndPoint,null, () =>
             {
                 Log.Error($"Unable to connect to the target server sourceServerId:{Id} targetServerId:{targetServerId}");
-            });
+            },null);
             _sessions.Add(targetServerId, new ConnectInfo(clientNetworkComponent.Session, clientNetworkComponent));
             return clientNetworkComponent.Session;
         }

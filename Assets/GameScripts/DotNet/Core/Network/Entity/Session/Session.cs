@@ -19,7 +19,7 @@ namespace TEngine.Core.Network
         private static readonly Dictionary<long, Session> Sessions = new ();
         public readonly Dictionary<long, FTask<IResponse>> RequestCallback = new();
 
-        public static void Create(ANetworkMessageScheduler networkMessageScheduler, ANetworkChannel channel)
+        public static void Create(ANetworkMessageScheduler networkMessageScheduler, ANetworkChannel channel, NetworkTarget networkTarget)
         {
 #if TENGINE_DEVELOP
             if (ThreadSynchronizationContext.Main.ThreadId != Thread.CurrentThread.ManagedThreadId)
@@ -33,6 +33,14 @@ namespace TEngine.Core.Network
             session.NetworkMessageScheduler = networkMessageScheduler;
             channel.OnDispose += session.Dispose;
             channel.OnReceiveMemoryStream += session.OnReceive;
+#if TENGINE_NET
+            if (networkTarget == NetworkTarget.Outer)
+            {
+                var interval = Define.SessionIdleCheckerInterval;
+                var timeOut = Define.SessionIdleCheckerTimeout;
+                session.AddComponent<SessionIdleCheckerComponent>().Start(interval, timeOut);
+            }
+#endif
             Sessions.Add(session.Id, session);
         }
 

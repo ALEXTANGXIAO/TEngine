@@ -170,7 +170,6 @@ namespace TEngine.Core.Network
                 try
                 {
                     var receiveLength = _socket.ReceiveFrom(_rawReceiveBuffer, ref _clientEndPoint);
-                    // Log.Debug($"_socket.ReceiveFrom receiveLength:{receiveLength}");
                     if (receiveLength < 1)
                     {
                         continue;
@@ -223,7 +222,6 @@ namespace TEngine.Core.Network
                         }
                         case KcpHeader.ConfirmConnection:
                         {
-                            // Log.Debug("KcpHeader.ConfirmConnection");
                             if (receiveLength != 5)
                             {
                                 break;

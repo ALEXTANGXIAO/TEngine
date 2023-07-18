@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using TEngine.Core;
+// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 #pragma warning disable CS8625
 #pragma warning disable CS8618
 
@@ -26,7 +27,6 @@ namespace TEngine.Core.Network
         public ANetworkMessageScheduler NetworkMessageScheduler { get; protected set; }
 
         protected readonly Func<uint, long, long, MemoryStream, object, MemoryStream> Pack;
-        private readonly LastMessageInfo _lastMessageInfo = new LastMessageInfo();
 
         protected ANetwork(Scene scene, NetworkType networkType, NetworkProtocolType networkProtocolType, NetworkTarget networkTarget)
         {
@@ -69,22 +69,9 @@ namespace TEngine.Core.Network
                 return null;
             }
 #endif
-            if (memoryStream != null)
-            {
-                return InnerPacketParser.Pack(rpcId, routeId, memoryStream);
-            }
-
-            // 只针对服务器做缓存消息优化（例如群发消息等）、避免多次序列化
-            if (ReferenceEquals(_lastMessageInfo.Message, message))
-            {
-                _lastMessageInfo.MemoryStream.Seek(0, SeekOrigin.Begin);
-                return _lastMessageInfo.MemoryStream;
-            }
-
-            memoryStream = InnerPacketParser.Pack(rpcId, routeId, message);
-            _lastMessageInfo.MemoryStream = memoryStream;
-            _lastMessageInfo.Message = message;
-            return memoryStream;
+            return memoryStream == null
+                    ? InnerPacketParser.Pack(rpcId, routeId, message)
+                    : InnerPacketParser.Pack(rpcId, routeId, memoryStream);
         }
 #endif
         private MemoryStream OuterPack(uint rpcId, long routeTypeOpCode, long routeId, MemoryStream memoryStream, object message)
@@ -96,26 +83,9 @@ namespace TEngine.Core.Network
                 return null;
             }
 #endif
-            if (memoryStream != null)
-            {
-                return OuterPacketParser.Pack(rpcId, routeTypeOpCode, memoryStream);
-            }
-            
-            // 只针对服务器做缓存消息优化（例如群发消息等）、避免多次序列化
-            // 客户端没有群发消息的功能、一般客户端都是自己缓存消息、如果这里做了缓存反而不好了
-#if TENGINE_NET
-            if (ReferenceEquals(_lastMessageInfo.Message, message))
-            {
-                _lastMessageInfo.MemoryStream.Seek(0, SeekOrigin.Begin);
-                return _lastMessageInfo.MemoryStream;
-            }
-#endif
-            memoryStream = OuterPacketParser.Pack(rpcId, routeTypeOpCode, message);
-#if TENGINE_NET
-            _lastMessageInfo.MemoryStream = memoryStream;
-            _lastMessageInfo.Message = message;
-#endif
-            return memoryStream;
+            return memoryStream == null
+                    ? OuterPacketParser.Pack(rpcId, routeTypeOpCode, message)
+                    : OuterPacketParser.Pack(rpcId, routeTypeOpCode, memoryStream);
         }
 
         public abstract void Send(uint channelId, uint rpcId, long routeTypeOpCode, long routeId, object message);
@@ -132,8 +102,6 @@ namespace TEngine.Core.Network
             NetworkType = NetworkType.None;
             NetworkTarget = NetworkTarget.None;
             NetworkProtocolType = NetworkProtocolType.None;
-
-            _lastMessageInfo.Dispose();
         }
     }
 }

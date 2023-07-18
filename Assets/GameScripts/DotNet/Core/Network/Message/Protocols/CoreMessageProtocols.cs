@@ -37,7 +37,7 @@ namespace TEngine
         [ProtoIgnore] public PingResponse ResponseType { get; set; }
         [ProtoMember(90)] public long RpcId { get; set; }
     }
-
+    [ProtoContract]
     public class PingResponse : AProto, IResponse
     {
         public uint OpCode()

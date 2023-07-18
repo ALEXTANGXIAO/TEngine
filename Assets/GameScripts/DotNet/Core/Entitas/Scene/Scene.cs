@@ -67,12 +67,12 @@ namespace TEngine
             Scenes.Add(scene);
             return scene;
         }
-        public void CreateSession(string remoteAddress, NetworkProtocolType networkProtocolType, Action onConnectComplete, Action onConnectFail, int connectTimeout = 5000)
+        public void CreateSession(string remoteAddress, NetworkProtocolType networkProtocolType, Action onConnectComplete, Action onConnectFail,Action onConnectDisconnect, int connectTimeout = 5000)
         {
             var address = NetworkHelper.ToIPEndPoint(remoteAddress);
             var clientNetworkComponent = GetComponent<ClientNetworkComponent>() ?? AddComponent<ClientNetworkComponent>();
             clientNetworkComponent.Initialize(networkProtocolType, NetworkTarget.Outer);
-            clientNetworkComponent.Connect(address, onConnectComplete, onConnectFail, connectTimeout);
+            clientNetworkComponent.Connect(address, onConnectComplete, onConnectFail,onConnectDisconnect, connectTimeout);
             Session = clientNetworkComponent.Session;
         }
 #else

@@ -141,6 +141,10 @@ namespace TEngine.Core.Network
                 }
 #endif
                 packInfo = OuterPackInfo.Create();
+                if (packInfo == null)
+                {
+                    return null;
+                }
                 packInfo.ProtocolCode = BitConverter.ToUInt32(_messageHead, Packet.PacketLength);
                 packInfo.RpcId = BitConverter.ToUInt32(_messageHead, Packet.OuterPacketRpcIdLocation);
                 packInfo.RouteTypeCode = BitConverter.ToUInt16(_messageHead, Packet.OuterPacketRouteTypeOpCodeLocation);

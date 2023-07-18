@@ -16,9 +16,11 @@ namespace TEngine
                 // 解析命令行参数
                 Parser.Default.ParseArguments<CommandLineOptions>(Environment.GetCommandLineArgs())
                     .WithNotParsed(error => throw new Exception("Command line format error!"))
-                    .WithParsed(option => Define.Options = option);
+                    .WithParsed(option => AppDefine.Options = option);
+                // 加载框架配置
+                TEngineSettingsHelper.Initialize();
                 // 检查启动参数
-                switch (Define.Options.AppType)
+                switch (AppDefine.Options.AppType)
                 {
                     case AppType.Game:
                     {
@@ -31,12 +33,12 @@ namespace TEngine
                     }
                     default:
                     {
-                        throw new NotSupportedException($"AppType is {Define.Options.AppType} Unrecognized!");
+                        throw new NotSupportedException($"AppType is {AppDefine.Options.AppType} Unrecognized!");
                     }
                 }
 
                 // 根据不同的运行模式来选择日志的方式
-                switch (Define.Options.Mode)
+                switch (AppDefine.Options.Mode)
                 {
                     case Mode.Develop:
                     {
@@ -71,7 +73,7 @@ namespace TEngine
                 // 加载核心程序集
                 AssemblyManager.Initialize();
                 
-                Log.Info($"Start Server Param => {Parser.Default.FormatCommandLine(Define.Options)}");
+                Log.Info($"Start Server Param => {Parser.Default.FormatCommandLine(AppDefine.Options)}");
             }
             catch (Exception exception)
             {
@@ -81,7 +83,7 @@ namespace TEngine
 
         public static async FTask Start()
         {
-            switch (Define.Options.Mode)
+            switch (AppDefine.Options.Mode)
             {
                 case Mode.Develop:
                 {
@@ -99,7 +101,7 @@ namespace TEngine
                 {
                     // 发布模式只会启动启动参数传递的Server、也就是只会启动一个Server
                     // 您可以做一个Server专门用于管理启动所有Server的工作
-                    await Server.Create(Define.Options.AppId);
+                    await Server.Create(AppDefine.Options.AppId);
                     return;
                 }
             }

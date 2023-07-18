@@ -32,7 +32,7 @@ public sealed class ExcelExporter
     public ExcelExporter(ExportType exportType)
     {
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-        var versionFilePath = ExcelDefine.ExcelVersionFile;
+        var versionFilePath = Define.ExcelVersionFile;
         
         switch (exportType)
         {
@@ -47,8 +47,8 @@ public sealed class ExcelExporter
                     File.Delete(versionFilePath);
                 }
 
-                FileHelper.ClearDirectoryFile(ExcelDefine.ServerFileDirectory);
-                FileHelper.ClearDirectoryFile(ExcelDefine.ClientFileDirectory);
+                FileHelper.ClearDirectoryFile(Define.ExcelServerFileDirectory);
+                FileHelper.ClearDirectoryFile(Define.ExcelClientFileDirectory);
                 break;
             }
         }
@@ -63,12 +63,12 @@ public sealed class ExcelExporter
     private static void CustomExport()
     {
         // 清除文件夹
-        FileHelper.ClearDirectoryFile(ExcelDefine.ServerCustomExportDirectory);
-        FileHelper.ClearDirectoryFile(ExcelDefine.ClientCustomExportDirectory);
+        FileHelper.ClearDirectoryFile(Define.ServerCustomExportDirectory);
+        FileHelper.ClearDirectoryFile(Define.ClientCustomExportDirectory);
         // 找到程序集
         var assemblyLoadContext = new AssemblyLoadContext("ExporterDll", true);
-        var dllBytes = File.ReadAllBytes(Path.Combine(Environment.CurrentDirectory, "Logic.dll"));
-        var pdbBytes = File.ReadAllBytes(Path.Combine(Environment.CurrentDirectory, "Logic.pdb"));
+        var dllBytes = File.ReadAllBytes($"{Define.CustomExportAssembly}.dll");
+        var pdbBytes = File.ReadAllBytes($"{Define.CustomExportAssembly}.pdb");
         var assembly = assemblyLoadContext.LoadFromStream(new MemoryStream(dllBytes), new MemoryStream(pdbBytes));
         // 加载程序集
         AssemblyManager.LoadAssembly(int.MaxValue, assembly);
@@ -95,7 +95,7 @@ public sealed class ExcelExporter
     /// </summary>
     private void Find()
     {
-        var versionFilePath = ExcelDefine.ExcelVersionFile;
+        var versionFilePath = Define.ExcelVersionFile;
         
         if(File.Exists(versionFilePath))
         {
@@ -107,7 +107,7 @@ public sealed class ExcelExporter
             _versionDic = new Dictionary<string, long>();
         }
         
-        var dir = new DirectoryInfo(ExcelDefine.ProgramPath);
+        var dir = new DirectoryInfo(Define.ExcelProgramPath);
         var excelFiles = dir.GetFiles("*", SearchOption.AllDirectories);
 
         if (excelFiles.Length <= 0)
@@ -256,8 +256,8 @@ public sealed class ExcelExporter
                                 continue;
                             }
 
-                            if (!ExcelDefine.ColTypeSet.Contains(serverType) ||
-                                !ExcelDefine.ColTypeSet.Contains(clientType))
+                            if (!Define.ColTypeSet.Contains(serverType) ||
+                                !Define.ColTypeSet.Contains(clientType))
                             {
                                 Exporter.LogError($"配置表 {exportInfo.Name} {col} 列 [{colName}] 客户端类型 {clientType}, 服务端类型 {serverType} 不合法");
                                 continue;
@@ -297,12 +297,12 @@ public sealed class ExcelExporter
 
                 writeToClassTask.Add(Task.Run(() =>
                 {
-                    WriteToClass(excelTable.ServerColInfos, ExcelDefine.ServerFileDirectory, true);
+                    WriteToClass(excelTable.ServerColInfos, Define.ExcelServerFileDirectory, true);
                 }));
 
                 writeToClassTask.Add(Task.Run(() =>
                 {
-                    WriteToClass(excelTable.ClientColInfos, ExcelDefine.ClientFileDirectory, false);
+                    WriteToClass(excelTable.ClientColInfos, Define.ExcelClientFileDirectory, false);
                 }));
 
                 Task.WaitAll(writeToClassTask.ToArray());
@@ -385,7 +385,7 @@ public sealed class ExcelExporter
             }
         }
         
-        var template = ExcelDefine.ExcelTemplate;
+        var template = Define.ExcelTemplate;
         
         if (fileBuilder.Length > 0)
         {
@@ -407,8 +407,8 @@ public sealed class ExcelExporter
     private void ExportToBinary()
     {
         var exportToBinaryTasks = new List<Task>();
-        var dynamicServerAssembly = DynamicAssembly.Load(ExcelDefine.ServerFileDirectory);
-        var dynamicClientAssembly = DynamicAssembly.Load(ExcelDefine.ClientFileDirectory);
+        var dynamicServerAssembly = DynamicAssembly.Load(Define.ExcelServerFileDirectory);
+        var dynamicClientAssembly = DynamicAssembly.Load(Define.ExcelClientFileDirectory);
         
         foreach (var (tableName, tableList) in _tables)
         {
@@ -465,7 +465,7 @@ public sealed class ExcelExporter
                 if (serverDynamicInfo?.ConfigData != null)
                 {
                     var bytes = ProtoBufHelper.ToBytes(serverDynamicInfo.ConfigData);
-                    var serverBinaryDirectory = ExcelDefine.ServerBinaryDirectory;
+                    var serverBinaryDirectory = Define.ExcelServerBinaryDirectory;
                     
                     if (!Directory.Exists(serverBinaryDirectory))
                     {
@@ -476,7 +476,7 @@ public sealed class ExcelExporter
 
                     if (serverDynamicInfo.Json.Length > 0)
                     {
-                        var serverJsonDirectory = ExcelDefine.ServerJsonDirectory;
+                        var serverJsonDirectory = Define.ExcelServerJsonDirectory;
                         using var sw = new StreamWriter(Path.Combine(serverJsonDirectory, $"{csName}Data.Json"));
                         sw.WriteLine("{\"List\":[");
                         sw.Write(serverDynamicInfo.Json.ToString());
@@ -487,7 +487,7 @@ public sealed class ExcelExporter
                 if (clientDynamicInfo?.ConfigData != null)
                 {
                     var bytes = ProtoBufHelper.ToBytes(clientDynamicInfo.ConfigData);
-                    var clientBinaryDirectory = ExcelDefine.ClientBinaryDirectory;
+                    var clientBinaryDirectory = Define.ExcelClientBinaryDirectory;
                     
                     if (!Directory.Exists(clientBinaryDirectory))
                     {
@@ -498,7 +498,7 @@ public sealed class ExcelExporter
                 
                     if (clientDynamicInfo.Json.Length > 0)
                     {
-                        var clientJsonDirectory = ExcelDefine.ClientJsonDirectory;
+                        var clientJsonDirectory = Define.ExcelClientJsonDirectory;
                         using var sw = new StreamWriter(Path.Combine(clientJsonDirectory, $"{csName}Data.Json"));
                         sw.WriteLine("{\"List\":[");
                         sw.Write(clientDynamicInfo.Json.ToString());

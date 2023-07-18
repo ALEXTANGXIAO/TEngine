@@ -9,6 +9,7 @@ namespace TEngine.Core.Network
     {
         private AClientNetwork Network { get; set; }
         public Session Session { get; private set; }
+        private Action _onConnectDisconnect;
 
         public void Initialize(NetworkProtocolType networkProtocolType, NetworkTarget networkTarget)
         {
@@ -31,14 +32,15 @@ namespace TEngine.Core.Network
             }
         }
 
-        public void Connect(IPEndPoint remoteEndPoint, Action onConnectComplete, Action onConnectFail, int connectTimeout = 5000)
+        public void Connect(IPEndPoint remoteEndPoint, Action onConnectComplete, Action onConnectFail,Action onConnectDisconnect, int connectTimeout = 5000)
         {
             if (Network == null || Network.IsDisposed)
             {
                 throw new NotSupportedException("Network is null or isDisposed");
             }
 
-            Network.Connect(remoteEndPoint, onConnectComplete, onConnectFail, connectTimeout);
+            _onConnectDisconnect = onConnectDisconnect;
+            Network.Connect(remoteEndPoint, onConnectComplete, onConnectFail, onConnectDisconnect, connectTimeout);
             Session = Session.Create(Network);
         }
 
@@ -51,6 +53,7 @@ namespace TEngine.Core.Network
             }
 
             Session = null;
+            _onConnectDisconnect?.Invoke();
             base.Dispose();
         }
     }

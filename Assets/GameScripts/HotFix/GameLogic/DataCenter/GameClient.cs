@@ -79,7 +79,7 @@ namespace GameLogic
 
             if (Scene.Session == null || Scene.Session.IsDisposed)
             {
-                Scene.CreateSession(address, ProtocolType, OnConnectComplete, OnConnectFail);
+                Scene.CreateSession(address, ProtocolType, OnConnectComplete, OnConnectFail, OnConnectDisconnect);
             }
         }
 
@@ -93,6 +93,12 @@ namespace GameLogic
         {
             Status = GameClientStatus.StatusClose;
             Log.Warning("Could not connect to server");
+        }
+        
+        private void OnConnectDisconnect()
+        {
+            Status = GameClientStatus.StatusClose;
+            Log.Warning("OnConnectDisconnect server");
         }
         
         public virtual void Send(object message, uint rpcId = 0, long routeId = 0)

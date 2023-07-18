@@ -39,14 +39,14 @@ public sealed class ProtoBufExporter
     {
         Console.OutputEncoding = Encoding.UTF8;
         
-        if (!Directory.Exists(ProtoBufDefine.ServerDirectory))
+        if (!Directory.Exists(Define.ProtoBufServerDirectory))
         {
-            Directory.CreateDirectory(ProtoBufDefine.ServerDirectory);
+            Directory.CreateDirectory(Define.ProtoBufServerDirectory);
         }
         
-        if (!Directory.Exists(ProtoBufDefine.ClientDirectory))
+        if (!Directory.Exists(Define.ProtoBufClientDirectory))
         {
-            Directory.CreateDirectory(ProtoBufDefine.ClientDirectory);
+            Directory.CreateDirectory(Define.ProtoBufClientDirectory);
         }
 
         var tasks = new Task[2];
@@ -86,9 +86,9 @@ public sealed class ProtoBufExporter
                 _aRouteRequest = Opcode.OuterRouteRequest;
                 _aRouteResponse = Opcode.OuterRouteResponse;
                 opCodeName = "OuterOpcode";
-                protoFile = $"{ProtoBufDefine.ProtoBufDirectory}OuterMessage.proto";
-                saveDirectory.Add(ProtoBufDefine.ServerDirectory, _serverTemplate);
-                saveDirectory.Add(ProtoBufDefine.ClientDirectory, _clientTemplate);
+                protoFile = $"{Define.ProtoBufDirectory}OuterMessage.proto";
+                saveDirectory.Add(Define.ProtoBufServerDirectory, _serverTemplate);
+                saveDirectory.Add(Define.ProtoBufClientDirectory, _clientTemplate);
                 break;
             }
             case ProtoBufOpCodeType.Inner:
@@ -101,8 +101,8 @@ public sealed class ProtoBufExporter
                 _aRouteRequest = Opcode.InnerRouteRequest + 1000;
                 _aRouteResponse = Opcode.InnerRouteResponse + 1000;
                 opCodeName = "InnerOpcode";
-                protoFile = $"{ProtoBufDefine.ProtoBufDirectory}InnerMessage.proto";
-                saveDirectory.Add(ProtoBufDefine.ServerDirectory, _serverTemplate);
+                protoFile = $"{Define.ProtoBufDirectory}InnerMessage.proto";
+                saveDirectory.Add(Define.ProtoBufServerDirectory, _serverTemplate);
                 break;
             }
             case ProtoBufOpCodeType.InnerBson:
@@ -115,8 +115,8 @@ public sealed class ProtoBufExporter
                 _aRouteRequest = Opcode.InnerBsonRouteRequest + 1000;
                 _aRouteResponse = Opcode.InnerBsonRouteResponse + 1000;
                 opCodeName = "InnerBsonOpcode";
-                protoFile = $"{ProtoBufDefine.ProtoBufDirectory}InnerBsonMessage.proto";
-                saveDirectory.Add(ProtoBufDefine.ServerDirectory, _serverTemplate);
+                protoFile = $"{Define.ProtoBufDirectory}InnerBsonMessage.proto";
+                saveDirectory.Add(Define.ProtoBufServerDirectory, _serverTemplate);
                 break;
             }
         }
@@ -143,7 +143,7 @@ public sealed class ProtoBufExporter
                 isMsgHead = true;
                 opcodeInfo = new OpcodeInfo();
                 file.AppendLine("\t[ProtoContract]");
-                className = currentLine.Split(ProtoBufDefine.SplitChars, StringSplitOptions.RemoveEmptyEntries)[1];
+                className = currentLine.Split(Define.SplitChars, StringSplitOptions.RemoveEmptyEntries)[1];
                 var splits = currentLine.Split(new[] {"//"}, StringSplitOptions.RemoveEmptyEntries);
 
                 if (splits.Length > 1)
@@ -337,7 +337,7 @@ public sealed class ProtoBufExporter
 
     private async Task RouteType()
     {
-        var routeTypeFile = $"{ProtoBufDefine.ProtoBufDirectory}RouteType.Config";
+        var routeTypeFile = $"{Define.ProtoBufDirectory}RouteType.Config";
         var protoFileText = await File.ReadAllTextAsync(routeTypeFile);
         var routeTypeFileSb = new StringBuilder();
         routeTypeFileSb.AppendLine("namespace TEngine.Core.Network\n{");
@@ -369,8 +369,8 @@ public sealed class ProtoBufExporter
 
         routeTypeFileSb.AppendLine("\t}\n}");
         var file = routeTypeFileSb.ToString();
-        await File.WriteAllTextAsync($"{ProtoBufDefine.ServerDirectory}RouteType.cs", file);
-        await File.WriteAllTextAsync($"{ProtoBufDefine.ClientDirectory}RouteType.cs", file);
+        await File.WriteAllTextAsync($"{Define.ProtoBufServerDirectory}RouteType.cs", file);
+        await File.WriteAllTextAsync($"{Define.ProtoBufClientDirectory}RouteType.cs", file);
     }
     
     private void Repeated(StringBuilder file, string newline)
@@ -379,7 +379,7 @@ public sealed class ProtoBufExporter
         {
             var index = newline.IndexOf(";", StringComparison.Ordinal);
             newline = newline.Remove(index);
-            var property = newline.Split(ProtoBufDefine.SplitChars, StringSplitOptions.RemoveEmptyEntries);
+            var property = newline.Split(Define.SplitChars, StringSplitOptions.RemoveEmptyEntries);
             var type = property[1];
             var name = property[2];
             var memberIndex = int.Parse(property[4]);
@@ -400,7 +400,7 @@ public sealed class ProtoBufExporter
         {
             var index = currentLine.IndexOf(";", StringComparison.Ordinal);
             currentLine = currentLine.Remove(index);
-            var property = currentLine.Split(ProtoBufDefine.SplitChars, StringSplitOptions.RemoveEmptyEntries);
+            var property = currentLine.Split(Define.SplitChars, StringSplitOptions.RemoveEmptyEntries);
             var type = property[0];
             var name = property[1];
             var memberIndex = int.Parse(property[3]);
@@ -451,7 +451,7 @@ public sealed class ProtoBufExporter
     
     private void LoadTemplate()
     {
-        string[] lines = File.ReadAllLines(ProtoBufDefine.ProtoBufTemplatePath, Encoding.UTF8);
+        string[] lines = File.ReadAllLines(Define.ProtoBufTemplatePath, Encoding.UTF8);
 
         StringBuilder serverSb = new StringBuilder();
         StringBuilder clientSb = new StringBuilder();
