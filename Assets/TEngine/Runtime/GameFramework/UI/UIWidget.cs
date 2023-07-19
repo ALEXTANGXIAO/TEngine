@@ -133,6 +133,30 @@ namespace TEngine
         }
         
         /// <summary>
+        /// 根据资源名创建
+        /// </summary>
+        /// <param name="resPath"></param>
+        /// <param name="parentUI"></param>
+        /// <param name="parentTrans"></param>
+        /// <param name="visible"></param>
+        /// <returns></returns>
+        public bool CreateByPath(string resPath, UIBase parentUI, Transform parentTrans = null, bool visible = true)
+        {
+            GameObject goInst = parentUI.AssetReference.LoadAsset<GameObject>(resPath, parentTrans);
+            if (goInst == null)
+            {
+                return false;
+            }
+            if (!Create(parentUI, goInst, visible))
+            {
+                return false;
+            }
+            goInst.transform.localScale = Vector3.one;
+            goInst.transform.localPosition = Vector3.zero;
+            return true;
+        }
+        
+        /// <summary>
         /// 根据prefab或者模版来创建新的 widget。
         /// </summary>
         /// <param name="parentUI"></param>
@@ -155,7 +179,10 @@ namespace TEngine
             {
                 return false;
             }
-            AssetReference = AssetReference.BindAssetReference(widgetRoot,parent:parentUI.AssetReference);
+            if (AssetReference == null)
+            {
+                AssetReference = AssetReference.BindAssetReference(widgetRoot,parent:parentUI.AssetReference);
+            }
             RestChildCanvas(parentUI);
             parent = parentUI;
             Parent.ListChild.Add(this);
@@ -178,20 +205,23 @@ namespace TEngine
             {
                 return false;
             }
-            gameObject = go;
             rectTransform = go.GetComponent<RectTransform>();
+            gameObject = go;
             Log.Assert(rectTransform != null, $"{go.name} ui base element need to be RectTransform");
             return true;
         }
         
         protected void RestChildCanvas(UIBase parentUI)
         {
+            if (parentUI == null || parentUI.gameObject == null)
+            {
+                return;
+            }
             Canvas parentCanvas = parentUI.gameObject.GetComponentInParent<Canvas>();
             if (parentCanvas == null)
             {
                 return;
             }
-
             if (gameObject != null)
             {
                 var listCanvas = gameObject.GetComponentsInChildren<Canvas>(true);
