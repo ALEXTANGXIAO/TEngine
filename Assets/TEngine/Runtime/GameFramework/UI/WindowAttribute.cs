@@ -20,29 +20,27 @@ namespace TEngine
         /// <summary>
         /// 窗口层级
         /// </summary>
-        public int WindowLayer;
+        public readonly int WindowLayer;
         
         /// <summary>
         /// 资源定位地址。
         /// </summary>
-        public string AssetName;
-
+        public readonly string Location;
         /// <summary>
         /// 全屏窗口标记。
         /// </summary>
-        public bool FullScreen;
-
-        public WindowAttribute(int windowLayer,string assetName = "", bool fullScreen = false)
+        public readonly bool FullScreen;
+        public WindowAttribute(int windowLayer,string location = "", bool fullScreen = false)
         {
             WindowLayer = windowLayer;
-            AssetName = assetName;
+            Location = location;
             FullScreen = fullScreen;
         }
         
-        public WindowAttribute(UILayer windowLayer,string assetName = "", bool fullScreen = false)
+        public WindowAttribute(UILayer windowLayer,string location = "", bool fullScreen = false)
         {
             WindowLayer = (int)windowLayer;
-            AssetName = assetName;
+            Location = location;
             FullScreen = fullScreen;
         }
     }
