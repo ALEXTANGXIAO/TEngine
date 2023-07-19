@@ -29,9 +29,9 @@ namespace TEngine
 
         public SceneConfig Get(uint id, bool check = true)
         {
-            if (_configs.ContainsKey(id))
+            if (this._configs.TryGetValue(id, out SceneConfig? config))
             {
-                return _configs[id];
+                return config;
             }
     
             if (check)
