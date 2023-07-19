@@ -9,6 +9,7 @@
 //
 // ----------------------------------------
 //
+#if !UNITY_WEBGL
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -77,4 +78,4 @@ public class BuglyInit : MonoBehaviour
         return extras;
     }
 }
-
+#endif

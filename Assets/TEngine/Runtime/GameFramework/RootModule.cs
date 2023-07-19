@@ -109,7 +109,9 @@ namespace TEngine
         {
             base.Awake();
             
+#if !UNITY_WEBGL
             BuglyManager.Instance.Init(Resources.Load<BuglyConfig>("BuglyConfig"));
+#endif
             
             GameTime.StartFrame();
 
