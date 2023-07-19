@@ -420,7 +420,7 @@ namespace TEngine
         /// <returns>资源实实例。</returns>
         public async UniTask<T> LoadAssetAsync<T>(string assetName, CancellationToken cancellationToken) where T : Object
         {
-            AssetOperationHandle handle = LoadAssetAsyncHandle<GameObject>(assetName);
+            AssetOperationHandle handle = LoadAssetAsyncHandle<T>(assetName);
 
             await handle.ToUniTask(cancellationToken:cancellationToken);
             
