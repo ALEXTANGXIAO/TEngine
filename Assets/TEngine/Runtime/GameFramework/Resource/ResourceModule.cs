@@ -480,9 +480,9 @@ namespace TEngine
         /// <param name="cancellationToken">取消操作Token。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>异步资源实例。</returns>
-        public UniTask<T> LoadAssetAsync<T>(string assetName, CancellationToken cancellationToken) where T : UnityEngine.Object
+        public async UniTask<T> LoadAssetAsync<T>(string assetName, CancellationToken cancellationToken) where T : UnityEngine.Object
         {
-            return m_ResourceManager.LoadAssetAsync<T>(assetName, cancellationToken);
+            return await m_ResourceManager.LoadAssetAsync<T>(assetName, cancellationToken);
         }
 
         /// <summary>
@@ -491,9 +491,9 @@ namespace TEngine
         /// <param name="assetName">要加载的游戏物体名称。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
         /// <returns>异步游戏物体实例。</returns>
-        public UniTask<GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken)
+        public async UniTask<GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken)
         {
-            return m_ResourceManager.LoadAssetAsync<GameObject>(assetName, cancellationToken);
+            return await m_ResourceManager.LoadAssetAsync<GameObject>(assetName, cancellationToken);
         }
 
         /// <summary>
