@@ -220,7 +220,7 @@ namespace TEngine
                 throw new GameFrameworkException($"BindAssetReference Failed => AssetOperationHandle is null!");
             }
 
-            var ret = go.AddComponent<AssetReference>();
+            var ret = go.GetOrAddComponent<AssetReference>();
 
             ret.Bind(operation: handle, assetLocation: location, parent: parent);
 
@@ -242,7 +242,7 @@ namespace TEngine
                 throw new GameFrameworkException($"BindAssetReference Failed => GameObject is null!");
             }
 
-            var ret = go.AddComponent<AssetReference>();
+            var ret = go.GetOrAddComponent<AssetReference>();
 
             ret.Bind(operation: null, assetLocation: location, parent: parent);
 
