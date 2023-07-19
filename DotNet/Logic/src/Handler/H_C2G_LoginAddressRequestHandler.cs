@@ -24,17 +24,8 @@ public class H_C2G_LoginAddressRequestHandler : MessageRPC<H_C2G_LoginAddressReq
         // 1、首选分配一个可用、负载比较低的服务器给这个Unit、我这里就在ServerConfig.xsl表里拿一个MAP了、但实际开发过程可能比这个要复杂
         // 我这里就简单些一个做为演示、其实这些逻辑开发者完全可以自己封装一个接口来做。
         // 在ServerConfig.xsl里找到MAP的进程、看到ID是3072通过这个Id在SceneConfig.xsl里找到对应的Scene的EntityId
-        var sceneEntityId = 0L;
-        foreach (var sceneConfig in SceneConfigData.Instance.List)
-        {
-            if (sceneConfig.RouteId == 3072)
-            {
-                sceneEntityId = sceneConfig.EntityId;
-                break;
-            }
-            
-            continue;
-        }
+        var sceneEntityId = Helper.AddressableSceneHelper.GetSceneEntityIdByRouteId(3072);
+        
         // 2、在InnerMessage里定义一个协议、用于Gate跟Map通讯的协议I_G2M_LoginAddress
         var loginAddressResponse = (I_M2G_LoginAddressResponse)await MessageHelper.CallInnerRoute(session.Scene,
             sceneEntityId,
