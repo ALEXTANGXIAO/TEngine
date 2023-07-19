@@ -50,10 +50,10 @@ namespace TEngine
                 shader = Shader.Find(m_shaderName);
                 if (shader == null)
                 {
-                    var dodShader = new TShader(m_shaderName);
-                    if (dodShader.Shader != null)
+                    var tShader = new TShader(m_shaderName);
+                    if (tShader.Shader != null)
                     {
-                        shader = dodShader.Shader;
+                        shader = tShader.Shader;
                     }
                 }
             }
