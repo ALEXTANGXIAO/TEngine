@@ -244,5 +244,10 @@ namespace TEngine
 
             return find;
         }
+                
+        public static int GetHashCodeByString(string str)
+        {
+            return str.GetHashCode();
+        }
     }
 }
