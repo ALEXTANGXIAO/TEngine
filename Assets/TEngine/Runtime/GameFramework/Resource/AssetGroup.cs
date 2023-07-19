@@ -379,7 +379,7 @@ namespace TEngine
                 }
             }
             
-            AssetOperationHandle handle = GameModule.Resource.LoadAssetAsyncHandle<GameObject>(assetName);
+            AssetOperationHandle handle = GameModule.Resource.LoadAssetAsyncHandle<T>(assetName);
 
             Reference(handle);
 
