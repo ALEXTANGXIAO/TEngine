@@ -1,0 +1,21 @@
+{
+    "name": "DotNet",
+    "rootNamespace": "",
+    "references": [
+        "GUID:d020df1f2b63b444e8ca93c0d88597e2",
+        "GUID:756335c0388f7114790e504ed368ae1d",
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:aa06d4cc755c979489c256c1bcca1dfb"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "!ENABLE_DLL"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

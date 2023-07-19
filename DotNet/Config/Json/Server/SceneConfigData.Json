@@ -1,0 +1,7 @@
+{"List":[
+{"Id":1,"EntityId":17246978048,"RouteId":1024,"WorldId":0,"SceneType":"Gate","Name":"Gate","NetworkProtocol":"KCP","OuterPort":20000},
+{"Id":2,"EntityId":34493956096,"RouteId":2048,"WorldId":0,"SceneType":"Addressable","Name":"Addressable1","NetworkProtocol":null,"OuterPort":0},
+{"Id":4,"EntityId":68920803328,"RouteId":3072,"WorldId":0,"SceneType":"Map","Name":"Map1","NetworkProtocol":null,"OuterPort":0},
+{"Id":5,"EntityId":86167781376,"RouteId":4096,"WorldId":0,"SceneType":"Chat","Name":"Chat1","NetworkProtocol":null,"OuterPort":0},
+{"Id":6,"EntityId":103414759424,"RouteId":5120,"WorldId":0,"SceneType":"Gameplay","Name":"Gameplay1","NetworkProtocol":null,"OuterPort":0}
+]}

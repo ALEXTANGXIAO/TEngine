@@ -1,3 +1,4 @@
+#if !UNITY_WEBGL
 // ----------------------------------------
 //
 //  BuglyAgent.cs
@@ -1084,3 +1085,4 @@ public sealed class BuglyAgent
     #endregion
     
 }
+#endif

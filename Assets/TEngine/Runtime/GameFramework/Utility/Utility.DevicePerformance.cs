@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if !UNITY_WEBGL
+using UnityEngine;
 
 namespace TEngine
 {
@@ -173,3 +174,4 @@ namespace TEngine
         }
     }
 }
+#endif

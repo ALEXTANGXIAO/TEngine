@@ -116,4 +116,17 @@ UserSettings/Layouts/default-2021.dwlt
 Assets/UnityOnlineServiceData.meta
 Assets/UnityOnlineServiceData
 
+#MAC
 .DS_Store
+
+#Server_sln
+DotNet/.idea/
+DotNet/App/obj/
+DotNet/Core/obj/
+DotNet/Logic/obj/
+DotNet/ThirdParty/obj/
+
+Bin/
+
+#Server_Config
+DotNet/Config/GameConfig

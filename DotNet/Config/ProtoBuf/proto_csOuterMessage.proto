@@ -1,0 +1,20 @@
+syntax = "proto3";
+package TEngine.Network.Message;
+import "google/protobuf/struct.proto";
+
+
+message AccountInfo
+{
+	int64 UnitId  = 1;
+	int64 UserId = 2;
+	int64 CharaId = 3;
+	repeated int32 Ks = 4;
+	repeated int64 Vs = 5;
+}
+
+message ItemInfo
+{
+	int32 ItemGId = 1;
+	int32 ItemId = 2;
+	int32 Count = 3;
+}

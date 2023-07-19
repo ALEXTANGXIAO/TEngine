@@ -11,8 +11,8 @@ namespace TEngine
         private bool _loaded;
         private Shader _shader;
         private readonly string _shaderPath;
-        private readonly List<string> _keywordOn = new();
-        private readonly List<string> _keywordOff = new();
+        private readonly List<string> _keywordOn = new List<string>();
+        private readonly List<string> _keywordOff = new List<string>();
 
         /// <summary>
         /// Shader scripts used for all rendering.

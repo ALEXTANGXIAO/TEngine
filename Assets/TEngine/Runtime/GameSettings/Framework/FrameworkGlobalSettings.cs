@@ -261,32 +261,28 @@ public class FrameworkGlobalSettings
     [SerializeField]
     private List<ScriptGenerateRuler> scriptGenerateRule = new List<ScriptGenerateRuler>()
     {
-        new("m_go", "GameObject"),
-        new("m_item", "GameObject"),
-        new("m_tf", "Transform"),
-        new("m_rect", "RectTransform"),
+        new ScriptGenerateRuler("m_go", "GameObject"),
+        new ScriptGenerateRuler("m_item", "GameObject"),
+        new ScriptGenerateRuler("m_tf", "Transform"),
+        new ScriptGenerateRuler("m_rect", "RectTransform"),
+        new ScriptGenerateRuler("m_text", "Text"),
+        new ScriptGenerateRuler("m_richText", "RichTextItem"),
+        new ScriptGenerateRuler("m_btn", "Button"),
+        new ScriptGenerateRuler("m_img", "Image"),
+        new ScriptGenerateRuler("m_rimg", "RawImage"),
+        new ScriptGenerateRuler("m_scrollBar", "Scrollbar"),
+        new ScriptGenerateRuler("m_scroll", "ScrollRect"),
+        new ScriptGenerateRuler("m_input", "InputField"),
+        new ScriptGenerateRuler("m_grid", "GridLayoutGroup"),
+        new ScriptGenerateRuler("m_hlay", "HorizontalLayoutGroup"),
+        new ScriptGenerateRuler("m_vlay", "VerticalLayoutGroup"),
+        new ScriptGenerateRuler("m_red", "RedNoteBehaviour"),
+        new ScriptGenerateRuler("m_slider", "Slider"),
+        new ScriptGenerateRuler("m_group", "ToggleGroup"),
+        new ScriptGenerateRuler("m_curve", "AnimationCurve"),
+        new ScriptGenerateRuler("m_canvasGroup", "CanvasGroup"),
 #if ENABLE_TEXTMESHPRO
-        {"m_textPro","TextMeshProUGUI"},
-#else
-        new("m_text", "Text"),
-#endif
-        new("m_richText", "RichTextItem"),
-        new("m_btn", "Button"),
-        new("m_img", "Image"),
-        new("m_rimg", "RawImage"),
-        new("m_scrollBar", "Scrollbar"),
-        new("m_scroll", "ScrollRect"),
-        new("m_input", "InputField"),
-        new("m_grid", "GridLayoutGroup"),
-        new("m_hlay", "HorizontalLayoutGroup"),
-        new("m_vlay", "VerticalLayoutGroup"),
-        new("m_red", "RedNoteBehaviour"),
-        new("m_slider", "Slider"),
-        new("m_group", "ToggleGroup"),
-        new("m_curve", "AnimationCurve"),
-        new("m_canvasGroup", "CanvasGroup"),
-#if ENABLE_TEXTMESHPRO
-            new("m_tmp","TextMeshProUGUI"),
+        new ScriptGenerateRuler("m_tmp","TextMeshProUGUI"),
 #endif
     };
 
