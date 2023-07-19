@@ -133,7 +133,7 @@ namespace GameLogic
         
         public virtual async FTask<IResponse> Call(IRequest request, long routeId = 0)
         {
-            if (Scene == null || Scene.Session == null)
+            if (Scene == null || Scene.Session == null || Scene.Session.IsDisposed)
             {
                 return null;
             }
