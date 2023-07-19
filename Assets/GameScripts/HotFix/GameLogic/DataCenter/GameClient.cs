@@ -131,6 +131,18 @@ namespace GameLogic
             Scene.Session.Send(memoryStream,rpcId,routeTypeOpCode,routeId);
         }
         
+        public virtual async FTask<IResponse> Call(IRequest request, long routeId = 0)
+        {
+            if (Scene == null || Scene.Session == null)
+            {
+                return null;
+            }
+            
+            var requestCallback = await Scene.Session.Call(request,routeId);
+            
+            return requestCallback;
+        }
+        
         public void RegisterMsgHandler(uint protocolCode,Action<IResponse> ctx)
         {
             MessageDispatcherSystem.Instance.RegisterMsgHandler(protocolCode,ctx);
