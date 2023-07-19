@@ -162,7 +162,7 @@ namespace TEngine
                 return string.Empty;
             }
 
-            UIWindow topWindow = _stack[_stack.Count - 1];
+            UIWindow topWindow = _stack[^1];
             return topWindow.WindowName;
         }
 
@@ -321,6 +321,40 @@ namespace TEngine
 
             _stack.Clear();
         }
+        
+        /// <summary>
+        /// 关闭所有窗口除了。
+        /// </summary>
+        public void CloseAllWithOut(UIWindow withOut)
+        {
+            for (int i = _stack.Count-1; i>=0; i--)
+            {
+                UIWindow window = _stack[i];
+                if (window == withOut)
+                {
+                    continue;
+                }
+                window.InternalDestroy();
+                _stack.RemoveAt(i);
+            }
+        }
+        
+        /// <summary>
+        /// 关闭所有窗口除了。
+        /// </summary>
+        public void CloseAllWithOut<T>() where T:UIWindow
+        {
+            for (int i = _stack.Count-1; i>=0; i--)
+            {
+                UIWindow window = _stack[i];
+                if (window.GetType() == typeof(T))
+                {
+                    continue;
+                }
+                window.InternalDestroy();
+                _stack.RemoveAt(i);
+            }
+        }
 
         private void OnWindowPrepare(UIWindow window)
         {
@@ -374,7 +408,7 @@ namespace TEngine
             if (attribute == null)
                 throw new Exception($"Window {type.FullName} not found {nameof(WindowAttribute)} attribute.");
 
-            string assetName = string.IsNullOrEmpty(attribute.AssetName) ? type.Name : attribute.AssetName;
+            string assetName = string.IsNullOrEmpty(attribute.Location) ? type.Name : attribute.Location;
             window.Init(type.FullName, attribute.WindowLayer, attribute.FullScreen, assetName);
             return window;
         }
