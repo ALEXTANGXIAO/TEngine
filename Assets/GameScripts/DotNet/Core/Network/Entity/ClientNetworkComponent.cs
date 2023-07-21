@@ -9,7 +9,6 @@ namespace TEngine.Core.Network
     {
         private AClientNetwork Network { get; set; }
         public Session Session { get; private set; }
-        private Action _onConnectDisconnect;
 
         public void Initialize(NetworkProtocolType networkProtocolType, NetworkTarget networkTarget)
         {
@@ -39,7 +38,6 @@ namespace TEngine.Core.Network
                 throw new NotSupportedException("Network is null or isDisposed");
             }
 
-            _onConnectDisconnect = onConnectDisconnect;
             Network.Connect(remoteEndPoint, onConnectComplete, onConnectFail, onConnectDisconnect, connectTimeout);
             Session = Session.Create(Network);
         }
@@ -53,7 +51,6 @@ namespace TEngine.Core.Network
             }
 
             Session = null;
-            _onConnectDisconnect?.Invoke();
             base.Dispose();
         }
     }

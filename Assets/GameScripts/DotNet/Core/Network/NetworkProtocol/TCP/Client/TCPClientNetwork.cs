@@ -41,6 +41,7 @@ namespace TEngine.Core.Network
             _isInit = true;
             OnConnectFail = onConnectFail;
             OnConnectComplete = onConnectComplete;
+            OnConnectDisconnect = onConnectDisconnect;
             ChannelId = 0xC0000000 | (uint) new Random().Next();
 
             _sendAction = (rpcId, routeTypeOpCode, routeId, memoryStream, message) =>

@@ -111,8 +111,20 @@ namespace TEngine
 
             if (runEvent && sceneInfo.SceneType != null)
             {
-                // 没有SceneType目前只有代码创建的Scene才会这样、目前只有Server的Scene是这样
-                await EventSystem.Instance.PublishAsync(new OnCreateScene(sceneInfo, onSetNetworkComplete));
+                switch (sceneInfo.SceneType)
+                {
+                    case "Addressable":
+                    {
+                        scene.AddComponent<AddressableManageComponent>();
+                        break;
+                    }
+                    default:
+                    {
+                        // 没有SceneType目前只有代码创建的Scene才会这样、目前只有Server的Scene是这样
+                        await EventSystem.Instance.PublishAsync(new OnCreateScene(sceneInfo, onSetNetworkComplete));
+                        break;
+                    }
+                }
             }
 
             Scenes.Add(scene);
