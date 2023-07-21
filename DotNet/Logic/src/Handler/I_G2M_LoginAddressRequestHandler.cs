@@ -36,10 +36,10 @@ namespace TEngine.Logic
             // 一般这个信息是数据库里拿到或者其他服务器给传递过来了、这里主要演示怎么注册Address、所以这些步骤这里就不做了
             // 这里我就模拟一个假的Unit数据使用
             // 1、首先创建一个Unit
-            var unit = AddressManage.Add(scene, request.AddressId, request.GateRouteId);
+            var unit = AddressManage.Add(scene, request.AddressableId, request.GateRouteId);
             // 2、挂在AddressableMessageComponent组件、让这个Unit支持Address、并且会自动注册到网格中
             await unit.AddComponent<AddressableMessageComponent>().Register();
-            await FTask.CompletedTask;
+            response.AddressableId = unit.Id;
         }
     }
 }

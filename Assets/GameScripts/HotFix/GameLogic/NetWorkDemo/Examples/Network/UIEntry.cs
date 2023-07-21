@@ -75,7 +75,7 @@ namespace TEngine.Demo
         private void OnConnectComplete()
         {
             IsConnect = true;
-            Scene.Session.AddComponent<SessionHeartbeatComponent>().Start(15);
+            Scene.Session.AddComponent<SessionHeartbeatComponent>().Start(15000);
             LogDebug("已连接到服务器");
         }
 

@@ -144,7 +144,7 @@ namespace TEngine.Core.Network
                     scene = entity.Scene;
                 }
                 
-                Log.Error($"SceneWorld:{session.Scene.World.Id} SceneRouteId:{scene.RouteId} SceneType:{scene.SceneInfo.SceneType} EntityId {tEntity.Id} : Error {e}");
+                Log.Error($"SceneWorld:{session.Scene.World?.Id} SceneRouteId:{scene.RouteId} SceneType:{scene.SceneInfo.SceneType} EntityId {tEntity.Id} : Error {e}");
             }
             finally
             {

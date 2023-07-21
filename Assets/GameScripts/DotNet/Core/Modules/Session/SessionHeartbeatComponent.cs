@@ -26,6 +26,7 @@ namespace TEngine.Logic
         {
             _session = (Session)Parent;
             _selfRunTimeId = RuntimeId;
+            RepeatedSend().Coroutine();
             _timerId = TimerScheduler.Instance.Unity.RepeatedTimer(interval, () => RepeatedSend().Coroutine());
         }
 
@@ -57,6 +58,7 @@ namespace TEngine.Logic
             var responseTime = TimeHelper.Now;
             Ping = (int)(responseTime - requestTime) / 2;
             TimeHelper.TimeDiff = pingResponse.Now + Ping - responseTime;
+            Log.Info("----------- HeartBeat -----------");
         }
     }
 }

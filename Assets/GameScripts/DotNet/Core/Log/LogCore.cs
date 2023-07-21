@@ -217,7 +217,7 @@ namespace TEngine
 
             StringBuilder infoBuilder = GetFormatString(type, logString);
 
-            if (type == LogLevel.ERROR || type == LogLevel.WARNING || type == LogLevel.EXCEPTION)
+            if (type == LogLevel.ERROR || type == LogLevel.EXCEPTION)
             {
                 StackFrame[] sf = new StackTrace().GetFrames();
                 for (int i = 0; i < sf.Length; i++)

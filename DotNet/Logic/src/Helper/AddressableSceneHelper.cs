@@ -33,10 +33,10 @@ public static class AddressableSceneHelper
         return sceneEntityId;
     }
     
-    public static long GetSceneEntityIdByRouteId(uint routeId)
+    public static long GetSceneEntityIdBySceneId(uint sceneId)
     {
         var sceneEntityId = 0L;
-        var sceneConfig = SceneConfigData.Instance.Get(routeId);
+        var sceneConfig = SceneConfigData.Instance.Get(sceneId);
         sceneEntityId = sceneConfig.EntityId;
         return sceneEntityId;
     }

@@ -528,6 +528,7 @@ namespace TEngine
 
             try
             {
+                Scene = scene;
 #if TENGINE_NET
                 RuntimeId = IdFactory.NextEntityId(scene.RouteId);
 #else
@@ -546,7 +547,6 @@ namespace TEngine
                     foreach (var entity in _treeDb)
                     {
                         entity.Parent = this;
-                        entity.Scene = scene;
                         entity.Deserialize(scene, resetId);
                         _tree.Add(entity.GetType(), entity);
                     }
@@ -558,7 +558,6 @@ namespace TEngine
                     foreach (var entity in _multiDb)
                     {
                         entity.Parent = this;
-                        entity.Scene = scene;
                         entity.Deserialize(scene, resetId);
                         _multi.Add(entity.Id, (ISupportedMultiEntity)entity);
                     }

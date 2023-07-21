@@ -25,8 +25,3 @@ catch (Exception e)
 {
     Log.Error(e);
 }
-
-
-
-
-

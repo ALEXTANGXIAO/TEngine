@@ -1,50 +1,26 @@
-#pragma warning disable CS8603
-#pragma warning disable CS8600
 #if TENGINE_NET
 namespace TEngine.Core.Network;
-
-public sealed class AddressableRouteComponentAwakeSystem : AwakeSystem<AddressableRouteComponent>
-{
-    protected override void Awake(AddressableRouteComponent self)
-    {
-        self.Awake();
-    }
-}
 
 /// <summary>
 /// 可寻址消息组件、挂载了这个组件可以接收和发送Addressable消息
 /// </summary>
 public sealed class AddressableRouteComponent : Entity
 {
-    private long _parentId;
-    private long _addressableRouteId;
+    private long _routeId;
+    private long _addressableId;
+    
     public static readonly CoroutineLockQueueType AddressableRouteMessageLock = new CoroutineLockQueueType("AddressableRouteMessageLock");
 
     public override void Dispose()
     {
-        _parentId = 0;
-        _addressableRouteId = 0;
+        _routeId = 0;
+        _addressableId = 0;
         base.Dispose();
     }
-    
-    public void Awake()
-    {
-        if (Parent == null)
-        {
-            throw new Exception("AddressableRouteComponent must be mounted under a component");
-        }
-        
-        if (Parent.RuntimeId == 0)
-        {
-            throw new Exception("AddressableRouteComponent.Parent.RuntimeId is null");
-        }
 
-        _parentId = Parent.Id;
-    }
-
-    public void SetAddressableRouteId(long addressableRouteId)
+    public void SetAddressableId(long addressableId)
     {
-        _addressableRouteId = addressableRouteId;
+        _addressableId = addressableId;
     }
 
     public void Send(IAddressableRouteMessage message)
@@ -68,21 +44,21 @@ public sealed class AddressableRouteComponent : Entity
         var runtimeId = RuntimeId;
         IResponse iRouteResponse = null;
 
-        using (await AddressableRouteMessageLock.Lock(_parentId, "AddressableRouteComponent Call MemoryStream"))
+        using (await AddressableRouteMessageLock.Lock(_addressableId, "AddressableRouteComponent Call MemoryStream"))
         {
             while (!IsDisposed)
             {
-                if (_addressableRouteId == 0)
+                if (_routeId == 0)
                 {
-                    _addressableRouteId = await AddressableHelper.GetAddressableRouteId(Scene, _parentId);
+                    _routeId = await AddressableHelper.GetAddressableRouteId(Scene, _addressableId);
                 }
 
-                if (_addressableRouteId == 0)
+                if (_routeId == 0)
                 {
                     return MessageDispatcherSystem.Instance.CreateResponse(requestType, CoreErrorCode.ErrNotFoundRoute);
                 }
 
-                iRouteResponse = await MessageHelper.CallInnerRoute(Scene, _addressableRouteId, routeTypeOpCode, requestType, request);
+                iRouteResponse = await MessageHelper.CallInnerRoute(Scene, _routeId, routeTypeOpCode, requestType, request);
 
                 if (runtimeId != RuntimeId)
                 {
@@ -99,7 +75,7 @@ public sealed class AddressableRouteComponent : Entity
                     {
                         if (++failCount > 20)
                         {
-                            Log.Error($"AddressableComponent.Call failCount > 20 route send message fail, routeId: {_addressableRouteId} AddressableRouteComponent:{Id}");
+                            Log.Error($"AddressableComponent.Call failCount > 20 route send message fail, routeId: {_routeId} AddressableRouteComponent:{Id}");
                             return iRouteResponse;
                         }
 
@@ -110,7 +86,7 @@ public sealed class AddressableRouteComponent : Entity
                             iRouteResponse.ErrorCode = CoreErrorCode.ErrRouteTimeout;
                         }
 
-                        _addressableRouteId = 0;
+                        _routeId = 0;
                         continue;
                     }
                     default:
@@ -134,21 +110,21 @@ public sealed class AddressableRouteComponent : Entity
         var failCount = 0;
         var runtimeId = RuntimeId;
 
-        using (await AddressableRouteMessageLock.Lock(_parentId,"AddressableRouteComponent Call"))
+        using (await AddressableRouteMessageLock.Lock(_addressableId,"AddressableRouteComponent Call"))
         {
             while (true)
             {
-                if (_addressableRouteId == 0)
+                if (_routeId == 0)
                 {
-                    _addressableRouteId = await AddressableHelper.GetAddressableRouteId(Scene, _parentId);
+                    _routeId = await AddressableHelper.GetAddressableRouteId(Scene, _addressableId);
                 }
 
-                if (_addressableRouteId == 0)
+                if (_routeId == 0)
                 {
                     return MessageDispatcherSystem.Instance.CreateResponse(request, CoreErrorCode.ErrNotFoundRoute);
                 }
 
-                var iRouteResponse = await MessageHelper.CallInnerRoute(Scene, _addressableRouteId, request);
+                var iRouteResponse = await MessageHelper.CallInnerRoute(Scene, _routeId, request);
 
                 if (runtimeId != RuntimeId)
                 {
@@ -161,7 +137,7 @@ public sealed class AddressableRouteComponent : Entity
                     {
                         if (++failCount > 20)
                         {
-                            Log.Error($"AddressableRouteComponent.Call failCount > 20 route send message fail, routeId: {_addressableRouteId} AddressableRouteComponent:{Id}");
+                            Log.Error($"AddressableRouteComponent.Call failCount > 20 route send message fail, routeId: {_routeId} AddressableRouteComponent:{Id}");
                             return iRouteResponse;
                         }
 
@@ -172,7 +148,7 @@ public sealed class AddressableRouteComponent : Entity
                             iRouteResponse.ErrorCode = CoreErrorCode.ErrRouteTimeout;
                         }
 
-                        _addressableRouteId = 0;
+                        _routeId = 0;
                         continue;
                     }
                     case CoreErrorCode.ErrRouteTimeout:

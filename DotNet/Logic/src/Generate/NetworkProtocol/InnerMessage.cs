@@ -17,7 +17,7 @@ namespace TEngine
 		public uint OpCode() { return InnerOpcode.I_G2M_LoginAddressRequest; }
 		public long RouteTypeOpCode() { return CoreRouteType.Route; }
 		[ProtoMember(1)]
-		public long AddressId { get; set; }
+		public long AddressableId { get; set; }
 		[ProtoMember(2)]
 		public long GateRouteId { get; set; }
 	}
@@ -27,5 +27,7 @@ namespace TEngine
 		public uint OpCode() { return InnerOpcode.I_M2G_LoginAddressResponse; }
 		[ProtoMember(91, IsRequired = true)]
 		public uint ErrorCode { get; set; }
+		[ProtoMember(1)]
+		public long AddressableId { get; set; }
 	}
 }
