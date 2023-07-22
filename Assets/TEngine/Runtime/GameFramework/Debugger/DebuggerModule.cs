@@ -163,7 +163,7 @@ namespace TEngine
         {
             base.Awake();
 
-            m_DebuggerManager = GameFrameworkEntry.GetModule<IDebuggerManager>();
+            m_DebuggerManager = GameFrameworkModuleSystem.GetModule<IDebuggerManager>();
             if (m_DebuggerManager == null)
             {
                 Log.Fatal("Debugger manager is invalid.");

@@ -30,7 +30,7 @@ namespace TEngine
         {
             base.Awake();
 
-            m_FsmManager = GameFrameworkEntry.GetModule<IFsmManager>();
+            m_FsmManager = GameFrameworkModuleSystem.GetModule<IFsmManager>();
             if (m_FsmManager == null)
             {
                 Log.Fatal("FSM manager is invalid.");

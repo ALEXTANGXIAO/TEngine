@@ -173,7 +173,7 @@ namespace TEngine
                 return;
             }
 
-            m_ResourceManager = GameFrameworkEntry.GetModule<IResourceManager>();
+            m_ResourceManager = GameFrameworkModuleSystem.GetModule<IResourceManager>();
             if (m_ResourceManager == null)
             {
                 Log.Fatal("YooAssetsManager component is invalid.");

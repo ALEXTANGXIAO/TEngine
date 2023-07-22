@@ -142,7 +142,7 @@ namespace TEngine
         private void Update()
         {
             GameTime.StartFrame();
-            GameFrameworkEntry.Update(Time.deltaTime, Time.unscaledDeltaTime);
+            GameFrameworkModuleSystem.Update(Time.deltaTime, Time.unscaledDeltaTime);
         }
 
         private void OnApplicationQuit()
@@ -153,7 +153,7 @@ namespace TEngine
 
         private void OnDestroy()
         {
-            GameFrameworkEntry.Shutdown();
+            GameFrameworkModuleSystem.Shutdown();
         }
 
         /// <summary>

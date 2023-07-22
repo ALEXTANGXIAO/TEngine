@@ -63,7 +63,7 @@ namespace TEngine
         {
             base.Awake();
 
-            m_LocalizationManager = GameFrameworkEntry.GetModule<ILocalizationManager>();
+            m_LocalizationManager = GameFrameworkModuleSystem.GetModule<ILocalizationManager>();
             if (m_LocalizationManager == null)
             {
                 Log.Fatal("Localization manager is invalid.");
@@ -86,7 +86,7 @@ namespace TEngine
                 return;
             }
 
-            m_LocalizationManager.SetResourceManager(GameFrameworkEntry.GetModule<IResourceManager>());
+            m_LocalizationManager.SetResourceManager(GameFrameworkModuleSystem.GetModule<IResourceManager>());
 
             LocalizationHelperBase localizationHelper = Helper.CreateHelper(m_LocalizationHelperTypeName, m_CustomLocalizationHelper);
             if (localizationHelper == null)

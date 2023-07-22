@@ -338,7 +338,7 @@ namespace TEngine
                 return;
             }
 
-            ResourceManager = GameFrameworkEntry.GetModule<IResourceManager>();
+            ResourceManager = GameFrameworkModuleSystem.GetModule<IResourceManager>();
 
             if (m_InstanceRoot == null)
             {

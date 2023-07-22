@@ -4,9 +4,9 @@ using System.Collections.Generic;
 namespace TEngine
 {
     /// <summary>
-    /// 游戏框架入口。
+    /// 游戏框架模块实现类管理系统。
     /// </summary>
-    public static class GameFrameworkEntry
+    public static class GameFrameworkModuleSystem
     {
         private static readonly GameFrameworkLinkedList<GameFrameworkModule> GameFrameworkModules = new GameFrameworkLinkedList<GameFrameworkModule>();
 

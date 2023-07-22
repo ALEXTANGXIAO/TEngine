@@ -56,7 +56,7 @@ namespace TEngine
         {
             base.Awake();
 
-            m_ProcedureManager = GameFrameworkEntry.GetModule<IProcedureManager>();
+            m_ProcedureManager = GameFrameworkModuleSystem.GetModule<IProcedureManager>();
             if (m_ProcedureManager == null)
             {
                 Log.Fatal("Procedure manager is invalid.");
@@ -94,7 +94,7 @@ namespace TEngine
                 yield break;
             }
 
-            m_ProcedureManager.Initialize(GameFrameworkEntry.GetModule<IFsmManager>(), procedures);
+            m_ProcedureManager.Initialize(GameFrameworkModuleSystem.GetModule<IFsmManager>(), procedures);
 
             yield return new WaitForEndOfFrame();
 

@@ -36,7 +36,7 @@ namespace TEngine
         {
             base.Awake();
 
-            m_SettingManager = GameFrameworkEntry.GetModule<ISettingManager>();
+            m_SettingManager = GameFrameworkModuleSystem.GetModule<ISettingManager>();
             if (m_SettingManager == null)
             {
                 Log.Fatal("Setting manager is invalid.");

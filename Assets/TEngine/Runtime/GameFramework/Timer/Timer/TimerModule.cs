@@ -17,7 +17,7 @@ namespace TEngine
         {
             base.Awake();
 
-            _timerManager = GameFrameworkEntry.GetModule<TimerManager>();
+            _timerManager = GameFrameworkModuleSystem.GetModule<TimerManager>();
             if (_timerManager == null)
             {
                 Log.Fatal("TimerMgr is invalid.");
