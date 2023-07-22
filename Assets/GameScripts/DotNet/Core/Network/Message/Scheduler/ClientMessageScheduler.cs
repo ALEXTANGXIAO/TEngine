@@ -7,8 +7,6 @@ namespace TEngine.Core.Network
     {
         protected override async FTask Handler(Session session, Type messageType, APackInfo packInfo)
         {
-            var packInfoMemoryStream = packInfo.MemoryStream;
-
             try
             {
                 switch (packInfo.ProtocolCode)
@@ -28,7 +26,7 @@ namespace TEngine.Core.Network
                             Log.Error($"not found rpc {packInfo.RpcId}, response message: {aResponse.GetType().Name}");
                             return;
                         }
-                        
+
                         session.RequestCallback.Remove(packInfo.RpcId);
                         action.SetResult(aResponse);
                         return;
@@ -43,18 +41,21 @@ namespace TEngine.Core.Network
             }
             catch (Exception e)
             {
-                if (packInfoMemoryStream.CanRead)
-                {
-                    // ReSharper disable once MethodHasAsyncOverload
-                    packInfoMemoryStream.Dispose();
-                }
-                
                 Log.Error(e);
                 return;
+            }
+            finally
+            {
+                packInfo.Dispose();
             }
 
             await FTask.CompletedTask;
             throw new NotSupportedException($"Received unsupported message protocolCode:{packInfo.ProtocolCode} messageType:{messageType}");
+        }
+
+        protected override FTask InnerHandler(Session session, uint rpcId, long routeId, uint protocolCode, long routeTypeCode, Type messageType, object message)
+        {
+            throw new NotImplementedException();
         }
     }
 #endif
@@ -64,6 +65,11 @@ namespace TEngine.Core.Network
         protected override FTask Handler(Session session, Type messageType, APackInfo packInfo)
         {
             throw new NotSupportedException($"Received unsupported message protocolCode:{packInfo.ProtocolCode} messageType:{messageType}");
+        }
+
+        protected override FTask InnerHandler(Session session, uint rpcId, long routeId, uint protocolCode, long routeTypeCode, Type messageType, object message)
+        {
+            throw new NotSupportedException($"Received unsupported message protocolCode:{protocolCode} messageType:{messageType}");
         }
     }
 #endif

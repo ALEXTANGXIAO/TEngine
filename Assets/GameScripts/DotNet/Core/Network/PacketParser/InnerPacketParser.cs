@@ -1,37 +1,25 @@
 #if TENGINE_NET
+using System.Buffers;
 using TEngine.DataStructure;
-using TEngine.Core;
-#pragma warning disable CS8600
-#pragma warning disable CS8625
-#pragma warning disable CS8603
+// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 
 namespace TEngine.Core.Network;
 
 public sealed class InnerPackInfo : APackInfo
 {
-    public static InnerPackInfo Create()
+    public static InnerPackInfo Create(IMemoryOwner<byte> memoryOwner)
     {
-        return Pool<InnerPackInfo>.Rent();
-    }
-    
-    public static InnerPackInfo Create(uint rpcId, long routeId, uint protocolCode)
-    {
-        var innerPackInfo = Pool<InnerPackInfo>.Rent();
-        innerPackInfo.RpcId = rpcId;
-        innerPackInfo.RouteId = routeId;
-        innerPackInfo.ProtocolCode = protocolCode;
+        var innerPackInfo = Rent<InnerPackInfo>();
+        innerPackInfo.MemoryOwner = memoryOwner;
         return innerPackInfo;
     }
 
-    public static InnerPackInfo Create(uint rpcId, long routeId, uint protocolCode, long routeTypeCode, MemoryStream memoryStream)
+    public override MemoryStream CreateMemoryStream()
     {
-        var innerPackInfo = Pool<InnerPackInfo>.Rent();
-        innerPackInfo.RpcId = rpcId;
-        innerPackInfo.RouteId = routeId;
-        innerPackInfo.ProtocolCode = protocolCode;
-        innerPackInfo.RouteTypeCode = routeTypeCode;
-        innerPackInfo.MemoryStream = memoryStream;
-        return innerPackInfo;
+        var recyclableMemoryStream = MemoryStreamHelper.GetRecyclableMemoryStream();
+        recyclableMemoryStream.Write(MemoryOwner.Memory.Span.Slice(0, Packet.InnerPacketHeadLength + MessagePacketLength));
+        recyclableMemoryStream.Seek(0, SeekOrigin.Begin);
+        return recyclableMemoryStream;
     }
 
     public override void Dispose()
@@ -42,38 +30,36 @@ public sealed class InnerPackInfo : APackInfo
 
     public override object Deserialize(Type messageType)
     {
-        using (MemoryStream)
+        var memoryOwnerMemory = MemoryOwner.Memory;
+        memoryOwnerMemory = memoryOwnerMemory.Slice(Packet.InnerPacketHeadLength, MessagePacketLength);
+        
+        switch (ProtocolCode)
         {
-            MemoryStream.Seek(Packet.InnerPacketHeadLength, SeekOrigin.Begin);
-
-            switch (ProtocolCode)
+            case >= Opcode.InnerBsonRouteResponse:
             {
-                case >= Opcode.InnerBsonRouteResponse:
-                {
-                    return MongoHelper.Instance.DeserializeFrom(messageType, MemoryStream);
-                }
-                case >= Opcode.InnerRouteResponse:
-                {
-                    return ProtoBufHelper.FromStream(messageType, MemoryStream);
-                }
-                case >= Opcode.OuterRouteResponse:
-                {
-                    return ProtoBufHelper.FromStream(messageType, MemoryStream);
-                }
-                case >= Opcode.InnerBsonRouteMessage:
-                {
-                    return MongoHelper.Instance.DeserializeFrom(messageType, MemoryStream);
-                }
-                case >= Opcode.InnerRouteMessage:
-                case >= Opcode.OuterRouteMessage:
-                {
-                    return ProtoBufHelper.FromStream(messageType, MemoryStream);
-                }
-                default:
-                {
-                    Log.Error($"protocolCode:{ProtocolCode} Does not support processing protocol");
-                    return null;
-                }
+                return MongoHelper.Instance.Deserialize(memoryOwnerMemory, messageType);
+            }
+            case >= Opcode.InnerRouteResponse:
+            {
+                return ProtoBufHelper.FromMemory(messageType, memoryOwnerMemory);
+            }
+            case >= Opcode.OuterRouteResponse:
+            {
+                return ProtoBufHelper.FromMemory(messageType, memoryOwnerMemory);
+            }
+            case >= Opcode.InnerBsonRouteMessage:
+            {
+                return MongoHelper.Instance.Deserialize(memoryOwnerMemory, messageType);
+            }
+            case >= Opcode.InnerRouteMessage:
+            case >= Opcode.OuterRouteMessage:
+            {
+                return ProtoBufHelper.FromMemory(messageType, memoryOwnerMemory);
+            }
+            default:
+            {
+                Log.Error($"protocolCode:{ProtocolCode} Does not support processing protocol");
+                return null;
             }
         }
     }
@@ -88,10 +74,15 @@ public sealed class InnerPacketParser : APacketParser
     private bool _isUnPackHead = true;
     private readonly byte[] _messageHead = new byte[Packet.InnerPacketHeadLength];
     
+    public InnerPacketParser()
+    {
+        MemoryPool = MemoryPool<byte>.Shared;
+    }
+
     public override bool UnPack(CircularBuffer buffer, out APackInfo packInfo)
     {
         packInfo = null;
-
+    
         while (!IsDisposed)
         {
             if (_isUnPackHead)
@@ -100,48 +91,40 @@ public sealed class InnerPacketParser : APacketParser
                 {
                     return false;
                 }
-
+                
                 _ = buffer.Read(_messageHead, 0, Packet.InnerPacketHeadLength);
                 _messagePacketLength = BitConverter.ToInt32(_messageHead, 0);
-
+    
                 if (_messagePacketLength > Packet.PacketBodyMaxLength)
                 {
                     throw new ScanException($"The received information exceeds the maximum limit = {_messagePacketLength}");
                 }
                 
                 _protocolCode = BitConverter.ToUInt32(_messageHead, Packet.PacketLength);
-                _rpcId = BitConverter.ToUInt32(_messageHead, Packet.OuterPacketRpcIdLocation);
+                _rpcId = BitConverter.ToUInt32(_messageHead, Packet.InnerPacketRpcIdLocation);
                 _routeId = BitConverter.ToInt64(_messageHead, Packet.InnerPacketRouteRouteIdLocation);
                 _isUnPackHead = false;
             }
-
+    
             try
             {
                 if (buffer.Length < _messagePacketLength)
                 {
                     return false;
                 }
-
+    
                 _isUnPackHead = true;
-                packInfo = InnerPackInfo.Create(_rpcId, _routeId, _protocolCode);
-
-                if (_messagePacketLength > 0)
-                {
-                    return true;
-                }
-            
-                var memoryStream = MemoryStreamHelper.GetRecyclableMemoryStream();
+                // 创建消息包
+                var memoryOwner = MemoryPool.Rent(Packet.InnerPacketMaxLength);
+                packInfo = InnerPackInfo.Create(memoryOwner);
+                packInfo.RpcId = _rpcId;
+                packInfo.RouteId = _routeId;
+                packInfo.ProtocolCode = _protocolCode;
+                packInfo.MessagePacketLength = _messagePacketLength;
                 // 写入消息体的信息到内存中
-                memoryStream.Seek(Packet.InnerPacketHeadLength, SeekOrigin.Begin);
-                buffer.Read(memoryStream, _messagePacketLength);
+                buffer.Read(memoryOwner.Memory.Slice(Packet.InnerPacketHeadLength), _messagePacketLength);
                 // 写入消息头的信息到内存中
-                memoryStream.Seek(0, SeekOrigin.Begin);
-                memoryStream.Write(BitConverter.GetBytes(_messagePacketLength));
-                memoryStream.Write(BitConverter.GetBytes(packInfo.ProtocolCode));
-                memoryStream.Write(BitConverter.GetBytes(packInfo.RpcId));
-                memoryStream.Write(BitConverter.GetBytes(packInfo.RouteId));
-                memoryStream.Seek(0, SeekOrigin.Begin);
-                packInfo.MemoryStream = memoryStream;
+                _messageHead.AsMemory().CopyTo( memoryOwner.Memory.Slice(0, Packet.InnerPacketHeadLength));
                 return true;
             }
             catch (Exception e)
@@ -151,69 +134,50 @@ public sealed class InnerPacketParser : APacketParser
                 return false;
             }
         }
-
+    
         return false;
     }
-
-    public override APackInfo UnPack(MemoryStream memoryStream)
+    
+    public override bool UnPack(IMemoryOwner<byte> memoryOwner, out APackInfo packInfo)
     {
-        InnerPackInfo packInfo = null;
-        
+        packInfo = null;
+
         try
         {
-            if (memoryStream == null || memoryStream.Length < Packet.InnerPacketHeadLength)
-            {
-                return null;
-            }
-                
-            _ = memoryStream.Read(_messageHead, 0, Packet.InnerPacketHeadLength);
-            _messagePacketLength = BitConverter.ToInt32(_messageHead, 0);
+            var memorySpan = memoryOwner.Memory.Span;
 
+             if (memorySpan.Length < Packet.InnerPacketHeadLength)
+            {
+                return false;
+            }
+            
+            _messagePacketLength = BitConverter.ToInt32(memorySpan);
+            
             if (_messagePacketLength > Packet.PacketBodyMaxLength)
             {
                 throw new ScanException($"The received information exceeds the maximum limit = {_messagePacketLength}");
             }
-
-            packInfo = InnerPackInfo.Create();
-            packInfo.ProtocolCode = BitConverter.ToUInt32(_messageHead, Packet.PacketLength);
-            packInfo.RpcId = BitConverter.ToUInt32(_messageHead, Packet.OuterPacketRpcIdLocation);
-            packInfo.RouteId = BitConverter.ToInt64(_messageHead, Packet.InnerPacketRouteRouteIdLocation);
-                
-            if (memoryStream.Length < _messagePacketLength)
-            {
-                return null;
-            }
-
-            if (_messagePacketLength <= 0)
-            {
-                return packInfo;
-            }
             
-            var outMemoryStream = MemoryStreamHelper.GetRecyclableMemoryStream();
-            memoryStream.WriteTo(outMemoryStream);
-            outMemoryStream.Seek(0, SeekOrigin.Begin);
-            packInfo.MemoryStream = outMemoryStream;
-            return packInfo;
+            packInfo = InnerPackInfo.Create(memoryOwner);
+            packInfo.MessagePacketLength = _messagePacketLength;
+            packInfo.ProtocolCode = BitConverter.ToUInt32(memorySpan[Packet.PacketLength..]);
+            packInfo.RpcId = BitConverter.ToUInt32(memorySpan[Packet.OuterPacketRpcIdLocation..]);
+            packInfo.RouteId = BitConverter.ToInt64(memorySpan[Packet.InnerPacketRouteRouteIdLocation..]);
+            
+            if (memorySpan.Length < _messagePacketLength)
+            {
+                return false;
+            }
+
+            return _messagePacketLength >= 0;
         }
         catch (Exception e)
         {
-            packInfo?.Dispose();
-            Log.Error(e);
-            return null;
+            Console.WriteLine(e);
+            throw;
         }
     }
-    
-    public static void Serialize(object message, MemoryStream stream)
-    {
-        if (message is IBsonMessage)
-        {
-            MongoHelper.Instance.SerializeTo(message, stream);
-            return;
-        }
 
-        ProtoBufHelper.ToStream(message, stream);
-    }
-    
     public static MemoryStream Pack(uint rpcId, long routeId, MemoryStream memoryStream)
     {
         memoryStream.Seek(Packet.InnerPacketRpcIdLocation, SeekOrigin.Begin);
@@ -233,7 +197,15 @@ public sealed class InnerPacketParser : APacketParser
 
         if (message != null)
         {
-            Serialize(message, memoryStream);
+            if (message is IBsonMessage)
+            {
+                MongoHelper.Instance.SerializeTo(message, memoryStream);
+            }
+            else
+            {
+                ProtoBufHelper.ToStream(message, memoryStream);
+            }
+
             opCode = MessageDispatcherSystem.Instance.GetOpCode(message.GetType());
             packetBodyCount = (int)(memoryStream.Position - Packet.InnerPacketHeadLength);
         }
@@ -255,7 +227,6 @@ public sealed class InnerPacketParser : APacketParser
     public override void Dispose()
     {
         _messagePacketLength = 0;
-        Array.Clear(_messageHead, 0, _messageHead.Length);
         base.Dispose();
     }
 }

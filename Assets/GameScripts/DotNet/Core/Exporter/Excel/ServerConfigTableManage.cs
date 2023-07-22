@@ -33,7 +33,9 @@ namespace TEngine.Core
             {
                 var configFile = GetConfigPath(dataConfig);
                 var bytes = File.ReadAllBytes(configFile);
-                var data = (AProto) ProtoBufHelper.FromBytes(typeof(T), bytes, 0, bytes.Length);
+                // var data = (AProto) ProtoBufHelper.FromBytes(typeof(T), bytes, 0, bytes.Length);
+                // var data = ProtoBufHelper.FromBytes<T>(bytes, 0, bytes.Length);
+                var data = (T)ProtoBufHelper.FromBytes(typeof(T), bytes, 0, bytes.Length);
                 data.AfterDeserialization();
                 ConfigDic[dataConfig] = data;
                 return (T)data;
@@ -65,7 +67,7 @@ namespace TEngine.Core
             {
                 var configFile = GetConfigPath(type.Name);
                 var bytes = File.ReadAllBytes(configFile);
-                var data = (AProto) ProtoBufHelper.FromBytes(type, bytes, 0, bytes.Length);
+                var data = (AProto)ProtoBufHelper.FromBytes(type, bytes, 0, bytes.Length);
                 data.AfterDeserialization();
                 ConfigDic[dataConfig] = data;
                 return data;

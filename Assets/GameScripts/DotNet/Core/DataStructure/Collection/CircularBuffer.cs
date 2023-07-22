@@ -96,6 +96,38 @@ namespace TEngine.DataStructure
             }
         }
 
+        public void Read(Memory<byte> memory, int count)
+        {
+            if (count > Length)
+            {
+                throw new Exception($"bufferList length < count, {Length} {count}");
+            }
+
+            var copyCount = 0;
+            while (copyCount < count)
+            {
+                var n = count - copyCount;
+                var asMemory = First.AsMemory();
+                
+                if (ChunkSize - FirstIndex > n)
+                {
+                    var slice = asMemory.Slice(FirstIndex, n);
+                    slice.CopyTo(memory.Slice(copyCount, n));
+                    FirstIndex += n;
+                    copyCount += n;
+                }
+                else
+                {
+                    var length = ChunkSize - FirstIndex;
+                    var slice = asMemory.Slice(FirstIndex, length);
+                    slice.CopyTo(memory.Slice(copyCount, length));
+                    copyCount += ChunkSize - FirstIndex;
+                    FirstIndex = 0;
+                    RemoveFirst();
+                }
+            }
+        }
+
         public override int Read(byte[] buffer, int offset, int count)
         {
             if (buffer.Length < offset + count)
@@ -124,7 +156,6 @@ namespace TEngine.DataStructure
                 }
 
                 Array.Copy(First, FirstIndex, buffer, copyCount + offset, ChunkSize - FirstIndex);
-
                 copyCount += ChunkSize - FirstIndex;
                 FirstIndex = 0;
 

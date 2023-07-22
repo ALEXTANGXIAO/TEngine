@@ -62,21 +62,6 @@
       <Link>RecastDll.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-
-    <Content Include="KCPLibrary\kcp.dylib">
-      <Link>kcp.dylib</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="KCPLibrary\kcp.dll">
-      <Link>kcp.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-
-    <Content Include="KCPLibrary\kcp.so">
-      <Link>kcp.so</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-
   </ItemGroup>
 
   <ItemGroup>

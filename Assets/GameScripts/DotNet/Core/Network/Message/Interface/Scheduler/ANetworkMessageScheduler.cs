@@ -1,18 +1,17 @@
 using System;
 using System.IO;
-using TEngine.Core;
-#pragma warning disable CS8600
 
 namespace TEngine.Core.Network
 {
     public abstract class ANetworkMessageScheduler
     {
+        protected bool DisposePackInfo;
         private readonly PingResponse _pingResponse = new PingResponse();
 
         public async FTask Scheduler(Session session, APackInfo packInfo)
         {
             Type messageType = null;
-            var packInfoMemoryStream = packInfo.MemoryStream;
+            DisposePackInfo = true;
 
             try
             {
@@ -56,17 +55,6 @@ namespace TEngine.Core.Network
                         // 服务器之间发送消息因为走的是MessageHelper、所以接收消息的回调也应该放到MessageHelper里处理
                         MessageHelper.ResponseHandler(packInfo.RpcId, aResponse);
 #else
-
-#if TENGINE_UNITY
-                        if (MessageDispatcherSystem.Instance.MsgHandles.TryGetValue(packInfo.ProtocolCode,out var msgDelegates))
-                        {
-                            foreach (var msgDelegate in msgDelegates)
-                            {
-                                msgDelegate.Invoke(aResponse);
-                            }
-                            return;
-                        }       
-#endif
                         // 这个一般是客户端Session.Call发送时使用的、目前这个逻辑只有Unity客户端时使用
                         
                         if (!session.RequestCallback.TryGetValue(packInfo.RpcId, out var action))
@@ -84,20 +72,57 @@ namespace TEngine.Core.Network
             }
             catch (Exception e)
             {
-                if (packInfoMemoryStream.CanRead)
-                {
-                    // ReSharper disable once MethodHasAsyncOverload
-                    packInfoMemoryStream.Dispose();
-                }
-                
                 Log.Error($"NetworkMessageScheduler error messageProtocolCode:{packInfo.ProtocolCode} messageType:{messageType} SessionId {session.Id} IsDispose {session.IsDisposed} {e}");
             }
             finally
             {
-                packInfo.Dispose();
+                if (DisposePackInfo)
+                {
+                    packInfo.Dispose();
+                }
             }
         }
-        
+
+        public async FTask InnerScheduler(Session session, uint rpcId, long routeId, uint protocolCode, long routeTypeCode, object message)
+        {
+            var messageType = message.GetType();
+            
+            try
+            {
+                if (session.IsDisposed)
+                {
+                    return;
+                }
+
+                switch (protocolCode)
+                {
+                    case >= Opcode.OuterRouteMessage:
+                    {
+                        await InnerHandler(session, rpcId, routeId, protocolCode, routeTypeCode, messageType, message);
+                        return;
+                    }
+                    case < Opcode.OuterResponse:
+                    {
+                        MessageDispatcherSystem.Instance.MessageHandler(session, messageType, message, rpcId, protocolCode);
+                        return;
+                    }
+                    default:
+                    {
+#if TENGINE_NET
+                        // 服务器之间发送消息因为走的是MessageHelper、所以接收消息的回调也应该放到MessageHelper里处理
+                        MessageHelper.ResponseHandler(rpcId, (IResponse)message);
+#endif
+                        return;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error($"NetworkMessageScheduler error messageProtocolCode:{protocolCode} messageType:{messageType} SessionId {session.Id} IsDispose {session.IsDisposed} {e}");
+            }
+        }
+
         protected abstract FTask Handler(Session session, Type messageType, APackInfo packInfo);
+        protected abstract FTask InnerHandler(Session session, uint rpcId, long routeId, uint protocolCode, long routeTypeCode, Type messageType, object message);
     }
 }

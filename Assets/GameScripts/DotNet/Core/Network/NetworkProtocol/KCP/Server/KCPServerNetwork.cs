@@ -5,11 +5,10 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using TEngine.DataStructure;
-using TEngine.Core;
+using kcp2k;
+
 // ReSharper disable InconsistentNaming
-#pragma warning disable CS8601
-#pragma warning disable CS8625
-#pragma warning disable CS8618
+// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 
 namespace TEngine.Core.Network
 {
@@ -102,7 +101,6 @@ namespace TEngine.Core.Network
         private readonly SortedOneToManyList<uint, uint> _pendingConnectionTimer = new SortedOneToManyList<uint, uint>();
         private readonly Dictionary<uint, KCPServerNetworkChannel> _pendingConnection = new Dictionary<uint, KCPServerNetworkChannel>();
         private readonly Dictionary<uint, KCPServerNetworkChannel> _connectionChannel = new Dictionary<uint, KCPServerNetworkChannel>();
-        public static readonly Dictionary<IntPtr, KCPServerNetworkChannel> ConnectionPtrChannel = new Dictionary<IntPtr, KCPServerNetworkChannel>();
         private KCPSettings KcpSettings { get; set; }
         private uint TimeNow => (uint) (TimeHelper.Now - _startTime);
 
@@ -170,6 +168,7 @@ namespace TEngine.Core.Network
                 try
                 {
                     var receiveLength = _socket.ReceiveFrom(_rawReceiveBuffer, ref _clientEndPoint);
+                    
                     if (receiveLength < 1)
                     {
                         continue;
@@ -182,7 +181,6 @@ namespace TEngine.Core.Network
                     {
                         case KcpHeader.RequestConnection:
                         {
-                            // Log.Debug("KcpHeader.RequestConnection");
                             if (receiveLength != 5)
                             {
                                 break;
@@ -232,17 +230,12 @@ namespace TEngine.Core.Network
                                 break;
                             }
 
-                            var kcpIntPtr = KCP.KcpCreate(channelId, new IntPtr(channelId));
-
-                            KCP.KcpNodelay(kcpIntPtr, 1, 5, 2, 1);
-                            KCP.KcpWndsize(kcpIntPtr, KcpSettings.SendWindowSize, KcpSettings.ReceiveWindowSize);
-                            KCP.KcpSetmtu(kcpIntPtr, KcpSettings.Mtu);
-                            KCP.KcpSetminrto(kcpIntPtr, 30);
-                            KCP.KcpSetoutput(kcpIntPtr, KcpOutput);
-                            
+                            var kcp = new Kcp(channelId, channel.Output);
+                            kcp.SetNoDelay(1, 5, 2, true);
+                            kcp.SetWindowSize(KcpSettings.SendWindowSize, KcpSettings.ReceiveWindowSize);
+                            kcp.SetMtu(KcpSettings.Mtu);
                             _connectionChannel.Add(channel.Id, channel);
-                            ConnectionPtrChannel.Add(kcpIntPtr, channel);
-                            channel.Connect(kcpIntPtr, AddToUpdate, KcpSettings.MaxSendWindowSize, NetworkTarget, NetworkMessageScheduler);
+                            channel.Connect(kcp, AddToUpdate, KcpSettings.MaxSendWindowSize, NetworkTarget, NetworkMessageScheduler);
                             break;
                         }
                         case KcpHeader.ReceiveData:
@@ -260,7 +253,7 @@ namespace TEngine.Core.Network
                                 break;
                             }
                             
-                            KCP.KcpInput(channel.KcpIntPtr, _rawReceiveBuffer, 5, messageLength);
+                            channel.Kcp.Input(_rawReceiveBuffer, 5, messageLength);
                             AddToUpdate(0, channel.Id);
                             channel.Receive();
                             break;
@@ -279,6 +272,7 @@ namespace TEngine.Core.Network
                 }
             }
         }
+        
 
         private bool RemovePendingConnection(uint channelId, EndPoint remoteEndPoint, out KCPServerNetworkChannel channel)
         {
@@ -391,18 +385,19 @@ namespace TEngine.Core.Network
                         continue;
                     }
 
+                    var channelKcp = channel.Kcp;
                     try
                     {
-                        KCP.KcpUpdate(channel.KcpIntPtr, nowTime); 
+                        channelKcp.Update(nowTime);
                     }
                     catch (Exception e)
                     {
                         Log.Error(e);
                     }
-                
-                    if (channel.KcpIntPtr != IntPtr.Zero)
+
+                    if (channelKcp != null)
                     {
-                        AddToUpdate(KCP.KcpCheck(channel.KcpIntPtr, nowTime), channelId);
+                        AddToUpdate(channelKcp.Check(nowTime), channelId);
                     }
                 }
             
@@ -460,39 +455,6 @@ namespace TEngine.Core.Network
             }
         
             _updateTimer.Add(tillTime, channelId);
-        }
-        
-        
-#if ENABLE_IL2CPP
-        [AOT.MonoPInvokeCallback(typeof(KcpOutput))]
-#endif
-        private static int KcpOutput(IntPtr bytes, int count, IntPtr kcp, IntPtr user)
-        {
-#if TENGINE_DEVELOP
-            if (NetworkThread.Instance.ManagedThreadId != Thread.CurrentThread.ManagedThreadId)
-            {
-                Log.Error("not in NetworkThread!");
-                return 0;
-            }
-#endif
-            try
-            {
-                if (kcp == IntPtr.Zero || !ConnectionPtrChannel.TryGetValue(kcp, out var channel))
-                {
-                    return 0;
-                }
-
-                if (!channel.IsDisposed)
-                {
-                    channel.Output(bytes, count);
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Error(e);
-            }
-
-            return count;
         }
 
         #endregion

@@ -1,12 +1,14 @@
 using System;
+using System.Buffers;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
-using TEngine.Core;
+using TEngine.DataStructure;
+using kcp2k;
+// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+
 // ReSharper disable InconsistentNaming
-#pragma warning disable CS8625
-#pragma warning disable CS8618
 
 namespace TEngine.Core.Network
 {
@@ -19,8 +21,8 @@ namespace TEngine.Core.Network
         public readonly uint CreateTime;
         private readonly Socket _socket;
         private Action<uint, uint> _addToUpdate;
-        private MemoryStream _receiveMemoryStream;
-        public IntPtr KcpIntPtr { get; private set; }
+        private MemoryPool<byte> _memoryPool;
+        public Kcp Kcp { get; private set; }
 
         public override event Action OnDispose;
         public override event Action<APackInfo> OnReceiveMemoryStream;
@@ -37,6 +39,7 @@ namespace TEngine.Core.Network
             _socket = socket;
             CreateTime = createTime;
             RemoteEndPoint = remoteEndPoint;
+            _memoryPool = MemoryPool<byte>.Shared;
         }
 
         public override void Dispose()
@@ -53,28 +56,23 @@ namespace TEngine.Core.Network
                 return;
             }
 
+            Kcp = null;
             var buff = new byte[5];
             buff.WriteTo(0, (byte) KcpHeader.Disconnect);
             buff.WriteTo(1, Id);
             _socket.SendTo(buff, 5, SocketFlags.None, RemoteEndPoint);
-
-            if (KcpIntPtr != IntPtr.Zero)
-            {
-                KCPServerNetwork.ConnectionPtrChannel.Remove(KcpIntPtr);
-                KCP.KcpRelease(KcpIntPtr);
-                KcpIntPtr = IntPtr.Zero;
-            }
 #if NETDEBUG
             Log.Debug($"KCPServerNetworkChannel ConnectionPtrChannel:{KCPServerNetwork.ConnectionPtrChannel.Count}");
 #endif
             _maxSndWnd = 0;
             _addToUpdate = null;
-            _receiveMemoryStream?.Dispose();
+            _memoryPool.Dispose();
+            _memoryPool = null;
             ThreadSynchronizationContext.Main.Post(OnDispose);
             base.Dispose();
         }
 
-        public void Connect(IntPtr kcpIntPtr, Action<uint, uint> addToUpdate, int maxSndWnd, NetworkTarget networkTarget, ANetworkMessageScheduler networkMessageScheduler)
+        public void Connect(Kcp kcp, Action<uint, uint> addToUpdate, int maxSndWnd, NetworkTarget networkTarget, ANetworkMessageScheduler networkMessageScheduler)
         {
 #if TENGINE_DEVELOP
             if (NetworkThread.Instance.ManagedThreadId != Thread.CurrentThread.ManagedThreadId)
@@ -83,11 +81,10 @@ namespace TEngine.Core.Network
                 return;
             }
 #endif
-            KcpIntPtr = kcpIntPtr;
+            Kcp = kcp;
             _maxSndWnd = maxSndWnd;
             _addToUpdate = addToUpdate;
             _rawSendBuffer = new byte[ushort.MaxValue];
-            _receiveMemoryStream = MemoryStreamHelper.GetRecyclableMemoryStream();
             PacketParser = APacketParser.CreatePacketParser(networkTarget);
             
             ThreadSynchronizationContext.Main.Post(() =>
@@ -110,14 +107,14 @@ namespace TEngine.Core.Network
                 return;
             }
 #endif
-            if (IsDisposed || KcpIntPtr == IntPtr.Zero)
+            if (IsDisposed)
             {
                 return;
             }
 
             // 检查等待发送的消息，如果超出两倍窗口大小，KCP作者给的建议是要断开连接
-
-            var waitSendSize = KCP.KcpWaitsnd(KcpIntPtr);
+            
+            var waitSendSize = Kcp.WaitSnd;
 
             if (waitSendSize > _maxSndWnd)
             {
@@ -125,15 +122,10 @@ namespace TEngine.Core.Network
                 Dispose();
                 return;
             }
-
             // 发送消息
-
-            KCP.KcpSend(KcpIntPtr, memoryStream.GetBuffer(), (int) memoryStream.Length);
-            
+            Kcp.Send(memoryStream.GetBuffer(), 0, (int)memoryStream.Length);
             // 因为memoryStream对象池出来的、所以需要手动回收下
-            
             memoryStream.Dispose();
-            
             _addToUpdate(0, Id);
         }
 
@@ -146,7 +138,7 @@ namespace TEngine.Core.Network
                 return;
             }
 #endif
-            if (IsDisposed || KcpIntPtr == IntPtr.Zero)
+            if (IsDisposed)
             {
                 return;
             }
@@ -155,32 +147,25 @@ namespace TEngine.Core.Network
             {
                 try
                 {
-                    if (KcpIntPtr == IntPtr.Zero)
-                    {
-                        return;
-                    }
-                    
                     // 获得一个完整消息的长度
-
-                    var peekSize = KCP.KcpPeeksize(KcpIntPtr);
-
+                    
+                    var peekSize = Kcp.PeekSize();
+                    
                     // 如果没有接收的消息那就跳出当前循环。
-
+                    
                     if (peekSize < 0)
                     {
                         return;
                     }
-
+                    
                     // 如果为0，表示当前消息发生错误。提示下、一般情况不会发生的
-
                     if (peekSize == 0)
                     {
                         throw new Exception("SocketError.NetworkReset");
                     }
-
-                    _receiveMemoryStream.SetLength(peekSize);
-                    _receiveMemoryStream.Seek(0, SeekOrigin.Begin);
-                    var receiveCount = KCP.KcpRecv(KcpIntPtr, _receiveMemoryStream.GetBuffer(), peekSize);
+                    
+                    var receiveMemoryOwner = _memoryPool.Rent(Packet.OuterPacketMaxLength);
+                    var receiveCount = Kcp.Receive(receiveMemoryOwner.Memory, peekSize);
 
                     // 如果接收的长度跟peekSize不一样，不需要处理，因为消息肯定有问题的(虽然不可能出现)。
 
@@ -190,9 +175,7 @@ namespace TEngine.Core.Network
                         break;
                     }
 
-                    var packInfo = PacketParser.UnPack(_receiveMemoryStream);
-
-                    if (packInfo == null)
+                    if (!PacketParser.UnPack(receiveMemoryOwner,out var packInfo))
                     {
                         break;
                     }
@@ -215,7 +198,7 @@ namespace TEngine.Core.Network
             }
         }
 
-        public void Output(IntPtr bytes, int count)
+        public void Output(byte[] bytes, int count)
         {
 #if TENGINE_DEVELOP
             if (NetworkThread.Instance.ManagedThreadId != Thread.CurrentThread.ManagedThreadId)
@@ -224,7 +207,7 @@ namespace TEngine.Core.Network
                 return;
             }
 #endif
-            if (IsDisposed || KcpIntPtr == IntPtr.Zero)
+            if (IsDisposed)
             {
                 return;
             }
@@ -238,7 +221,7 @@ namespace TEngine.Core.Network
 
                 _rawSendBuffer.WriteTo(0, (byte) KcpHeader.ReceiveData);
                 _rawSendBuffer.WriteTo(1, Id);
-                Marshal.Copy(bytes, _rawSendBuffer, 5, count);
+                Buffer.BlockCopy(bytes, 0, _rawSendBuffer, 5, count);
                 _socket.SendTo(_rawSendBuffer, 0, count + 5, SocketFlags.None, RemoteEndPoint);
             }
             catch (Exception e)

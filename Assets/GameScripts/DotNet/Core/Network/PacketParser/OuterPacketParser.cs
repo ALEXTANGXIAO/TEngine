@@ -1,27 +1,26 @@
 using System;
+using System.Buffers;
 using System.IO;
 using TEngine.DataStructure;
-using TEngine.Core;
-#pragma warning disable CS8603
-#pragma warning disable CS8600
-#pragma warning disable CS8625
+// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 
 namespace TEngine.Core.Network
 {
     public sealed class OuterPackInfo : APackInfo
     {
-        public static OuterPackInfo Create()
+        public static OuterPackInfo Create(IMemoryOwner<byte> memoryOwner)
         {
-            return Pool<OuterPackInfo>.Rent();
-        }
-        
-        public static OuterPackInfo Create(uint rpcId, uint protocolCode, long routeTypeCode)
-        {
-            var outerPackInfo = Pool<OuterPackInfo>.Rent();
-            outerPackInfo.RpcId = rpcId;
-            outerPackInfo.ProtocolCode = protocolCode;
-            outerPackInfo.RouteTypeCode = routeTypeCode;
+            var outerPackInfo = Rent<OuterPackInfo>();;
+            outerPackInfo.MemoryOwner = memoryOwner;
             return outerPackInfo;
+        }
+
+        public override MemoryStream CreateMemoryStream()
+        {
+            var recyclableMemoryStream = MemoryStreamHelper.GetRecyclableMemoryStream();
+            recyclableMemoryStream.Write(MemoryOwner.Memory.Span.Slice(0, Packet.InnerPacketHeadLength + MessagePacketLength));
+            recyclableMemoryStream.Seek(0, SeekOrigin.Begin);
+            return recyclableMemoryStream;
         }
 
         public override void Dispose()
@@ -29,14 +28,12 @@ namespace TEngine.Core.Network
             base.Dispose();
             Pool<OuterPackInfo>.Return(this);
         }
-        
+
         public override object Deserialize(Type messageType)
         {
-            using (MemoryStream)
-            {
-                MemoryStream.Seek(Packet.OuterPacketHeadLength, SeekOrigin.Begin);
-                return ProtoBufHelper.FromStream(messageType, MemoryStream);
-            }
+            var memoryOwnerMemory = MemoryOwner.Memory;
+            var memory = memoryOwnerMemory.Slice(Packet.OuterPacketHeadLength, MessagePacketLength);
+            return ProtoBufHelper.FromMemory(messageType, memory);
         }
     }
 
@@ -49,6 +46,11 @@ namespace TEngine.Core.Network
         private bool _isUnPackHead = true;
         private readonly byte[] _messageHead = new byte[Packet.OuterPacketHeadLength];
 
+        public OuterPacketParser()
+        {
+            MemoryPool = MemoryPool<byte>.Shared;
+        }
+        
         public override bool UnPack(CircularBuffer buffer, out APackInfo packInfo)
         {
             packInfo = null;
@@ -84,26 +86,18 @@ namespace TEngine.Core.Network
                     }
                 
                     _isUnPackHead = true;
-                    packInfo = OuterPackInfo.Create(_rpcId, _protocolCode, _routeTypeCode);
-
-                    if (_messagePacketLength <= 0)
-                    {
-                        return true;
-                    }
-                    
-                    var memoryStream = MemoryStreamHelper.GetRecyclableMemoryStream();
+                    // 创建消息包
+                    var memoryOwner = MemoryPool.Rent(Packet.OuterPacketMaxLength);
+                    packInfo = OuterPackInfo.Create(memoryOwner);
+                    packInfo.RpcId = _rpcId;
+                    packInfo.ProtocolCode = _protocolCode;
+                    packInfo.RouteTypeCode = _routeTypeCode;
+                    packInfo.MessagePacketLength = _messagePacketLength;
                     // 写入消息体的信息到内存中
-                    memoryStream.Seek(Packet.OuterPacketHeadLength, SeekOrigin.Begin);
-                    buffer.Read(memoryStream, _messagePacketLength);
+                    buffer.Read(memoryOwner.Memory.Slice(Packet.OuterPacketHeadLength), _messagePacketLength);
                     // 写入消息头的信息到内存中
-                    memoryStream.Seek(0, SeekOrigin.Begin);
-                    memoryStream.Write(BitConverter.GetBytes(_messagePacketLength));
-                    memoryStream.Write(BitConverter.GetBytes(_protocolCode));
-                    memoryStream.Write(BitConverter.GetBytes(_rpcId));
-                    memoryStream.Write(BitConverter.GetBytes(_routeTypeCode));
-                    memoryStream.Seek(0, SeekOrigin.Begin);
-                    packInfo.MemoryStream = memoryStream;
-                    return true;
+                    _messageHead.AsMemory().CopyTo(memoryOwner.Memory.Slice(0, Packet.OuterPacketHeadLength));
+                    return _messagePacketLength > 0;
                 }
                 catch (Exception e)
                 {
@@ -116,60 +110,44 @@ namespace TEngine.Core.Network
             return false;
         }
 
-        public override APackInfo UnPack(MemoryStream memoryStream)
+        public override bool UnPack(IMemoryOwner<byte> memoryOwner, out APackInfo packInfo)
         {
-            OuterPackInfo packInfo = null;
-            
+            packInfo = null;
+            var memory = memoryOwner.Memory;
+
             try
             {
-                if (memoryStream == null)
+                if (memory.Length < Packet.OuterPacketHeadLength)
                 {
-                    return null;
+                    return false;
                 }
 
-                if (memoryStream.Length < Packet.OuterPacketHeadLength)
-                {
-                    return null;
-                }
-
-                _ = memoryStream.Read(_messageHead, 0, Packet.OuterPacketHeadLength);
-                _messagePacketLength = BitConverter.ToInt32(_messageHead, 0);
+                var memorySpan = memory.Span;
+                _messagePacketLength = BitConverter.ToInt32(memorySpan);
 #if TENGINE_NET
                 if (_messagePacketLength > Packet.PacketBodyMaxLength)
                 {
                     throw new ScanException($"The received information exceeds the maximum limit = {_messagePacketLength}");
                 }
 #endif
-                packInfo = OuterPackInfo.Create();
-                if (packInfo == null)
-                {
-                    return null;
-                }
-                packInfo.ProtocolCode = BitConverter.ToUInt32(_messageHead, Packet.PacketLength);
-                packInfo.RpcId = BitConverter.ToUInt32(_messageHead, Packet.OuterPacketRpcIdLocation);
-                packInfo.RouteTypeCode = BitConverter.ToUInt16(_messageHead, Packet.OuterPacketRouteTypeOpCodeLocation);
+                packInfo = OuterPackInfo.Create(memoryOwner);
+                packInfo.MessagePacketLength = _messagePacketLength;
+                packInfo.ProtocolCode = BitConverter.ToUInt32(memorySpan.Slice(Packet.PacketLength));
+                packInfo.RpcId = BitConverter.ToUInt32(memorySpan.Slice(Packet.OuterPacketRpcIdLocation));
+                packInfo.RouteTypeCode = BitConverter.ToUInt16(memorySpan.Slice(Packet.OuterPacketRouteTypeOpCodeLocation));
 
-                if (memoryStream.Length < _messagePacketLength)
+                if (memory.Length < _messagePacketLength)
                 {
-                    return null;
+                    return false;
                 }
 
-                if (_messagePacketLength <= 0)
-                {
-                    return packInfo;
-                }
-                
-                var outMemoryStream = MemoryStreamHelper.GetRecyclableMemoryStream();
-                memoryStream.WriteTo(outMemoryStream);
-                outMemoryStream.Seek(0, SeekOrigin.Begin);
-                packInfo.MemoryStream = outMemoryStream;
-                return packInfo;
+                return _messagePacketLength >= 0;
             }
             catch (Exception e)
             {
                 packInfo?.Dispose();
                 Log.Error(e);
-                return null;
+                return false;
             }
         }
 

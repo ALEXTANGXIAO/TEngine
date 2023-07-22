@@ -1,12 +1,13 @@
 using System;
+using System.Buffers;
 using System.IO;
 using TEngine.DataStructure;
-using TEngine.Core;
 
 namespace TEngine.Core.Network
 {
     public abstract class APacketParser : IDisposable
     {
+        protected MemoryPool<byte> MemoryPool;
         protected bool IsDisposed { get; private set; }
 
         public static APacketParser CreatePacketParser(NetworkTarget networkTarget)
@@ -17,8 +18,8 @@ namespace TEngine.Core.Network
                 {
 #if TENGINE_NET
                     return new InnerPacketParser();
-                    #else
-                    return null;
+#else
+                    throw new NotSupportedException($"PacketParserHelper Create NotSupport {networkTarget}");
 #endif
                 }
                 case NetworkTarget.Outer:
@@ -33,11 +34,11 @@ namespace TEngine.Core.Network
         }
 
         public abstract bool UnPack(CircularBuffer buffer, out APackInfo packInfo);
-        public abstract APackInfo UnPack(MemoryStream memoryStream);
-
+        public abstract bool UnPack(IMemoryOwner<byte> memoryOwner, out APackInfo packInfo);
         public virtual void Dispose()
         {
             IsDisposed = true;
+            MemoryPool.Dispose();
         }
     }
 }

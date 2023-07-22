@@ -7,11 +7,10 @@ namespace TEngine.Core.Network
     {
         protected override async FTask Handler(Session session, Type messageType, APackInfo packInfo)
         {
-            var disposeMemoryStream = true;
-            var packInfoMemoryStream = packInfo.MemoryStream;
-            
             try
             {
+                DisposePackInfo = false;
+
                 switch (packInfo.ProtocolCode)
                 {
                     case >= Opcode.InnerBsonRouteResponse:
@@ -80,8 +79,7 @@ namespace TEngine.Core.Network
                             case Session gateSession:
                             {
                                 // 这里如果是Session只可能是Gate的Session、如果是的话、肯定是转发Address消息
-                                disposeMemoryStream = false;
-                                gateSession.Send(packInfoMemoryStream, packInfo.RpcId);
+                                gateSession.Send(packInfo.CreateMemoryStream(), packInfo.RpcId);
                                 return;
                             }
                             default:
@@ -94,19 +92,107 @@ namespace TEngine.Core.Network
                     }
                     default:
                     {
-                        throw new NotSupportedException($"Received unsupported message protocolCode:{packInfo.ProtocolCode} messageType:{messageType}");
+                        throw new NotSupportedException(
+                            $"Received unsupported message protocolCode:{packInfo.ProtocolCode} messageType:{messageType}");
                     }
                 }
             }
             catch (Exception e)
             {
-                if (disposeMemoryStream && packInfoMemoryStream.CanRead)
-                {
-                    // ReSharper disable once MethodHasAsyncOverload
-                    packInfoMemoryStream.Dispose();
-                }
-                
                 Log.Error($"InnerMessageSchedulerHandler error messageProtocolCode:{packInfo.ProtocolCode} messageType:{messageType} {e}");
+            }
+            finally
+            {
+                packInfo.Dispose();
+            }
+        }
+
+        protected override async FTask InnerHandler(Session session, uint rpcId, long routeId, uint protocolCode, long routeTypeCode, Type messageType, object message)
+        {
+            try
+            {
+                switch (protocolCode)
+                {
+                    case >= Opcode.InnerBsonRouteResponse:
+                    case >= Opcode.InnerRouteResponse:
+                    {
+                        MessageHelper.ResponseHandler(rpcId, (IRouteResponse)message);
+                        return;
+                    }
+                    case >= Opcode.OuterRouteResponse:
+                    {
+                        // 如果Gate服务器、需要转发Addressable协议、所以这里有可能会接收到该类型协议
+                        MessageHelper.ResponseHandler(rpcId, (IResponse)message);
+                        return;
+                    }
+                    case > Opcode.InnerBsonRouteMessage:
+                    {
+                        var entity = Entity.GetEntity(routeId);
+
+                        if (entity == null)
+                        {
+                            if (protocolCode > Opcode.InnerBsonRouteRequest)
+                            {
+                                MessageDispatcherSystem.Instance.FailResponse(session, (IRouteRequest)message, CoreErrorCode.ErrNotFoundRoute, rpcId);
+                            }
+
+                            return;
+                        }
+
+                        await MessageDispatcherSystem.Instance.RouteMessageHandler(session, messageType, entity, message, rpcId);
+                        return;
+                    }
+                    case > Opcode.InnerRouteMessage:
+                    {
+                        var entity = Entity.GetEntity(routeId);
+
+                        if (entity == null)
+                        {
+                            if (protocolCode > Opcode.InnerRouteRequest)
+                            {
+                                MessageDispatcherSystem.Instance.FailResponse(session, (IRouteRequest)message, CoreErrorCode.ErrNotFoundRoute, rpcId);
+                            }
+
+                            return;
+                        }
+
+                        await MessageDispatcherSystem.Instance.RouteMessageHandler(session, messageType, entity, message, rpcId);
+                        return;
+                    }
+                    case > Opcode.OuterRouteMessage:
+                    {
+                        var entity = Entity.GetEntity(routeId);
+
+                        switch (entity)
+                        {
+                            case null:
+                            {
+                                var response = MessageDispatcherSystem.Instance.CreateResponse((IRouteMessage)message, CoreErrorCode.ErrNotFoundRoute);
+                                session.Send(response, rpcId, routeId);
+                                return;
+                            }
+                            case Session gateSession:
+                            {
+                                // 这里如果是Session只可能是Gate的Session、如果是的话、肯定是转发Address消息
+                                gateSession.Send(message, rpcId);
+                                return;
+                            }
+                            default:
+                            {
+                                await MessageDispatcherSystem.Instance.RouteMessageHandler(session, messageType, entity, message, rpcId);
+                                return;
+                            }
+                        }
+                    }
+                    default:
+                    {
+                        throw new NotSupportedException($"Received unsupported message protocolCode:{protocolCode} messageType:{messageType}");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error($"InnerMessageSchedulerHandler error messageProtocolCode:{protocolCode} messageType:{messageType} {e}");
             }
         }
     }

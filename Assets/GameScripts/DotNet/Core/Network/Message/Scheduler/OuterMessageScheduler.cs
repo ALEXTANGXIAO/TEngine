@@ -11,6 +11,11 @@ namespace TEngine.Core.Network
         {
             throw new NotSupportedException($"Received unsupported message protocolCode:{packInfo.ProtocolCode} messageType:{messageType}");
         }
+
+        protected override FTask InnerHandler(Session session, uint rpcId, long routeId, uint protocolCode, long routeTypeCode, Type messageType, object message)
+        {
+            throw new NotImplementedException();
+        }
     }
 #endif
 #if TENGINE_NET
@@ -23,10 +28,10 @@ namespace TEngine.Core.Network
                 throw new NotSupportedException($"Received unsupported message protocolCode:{packInfo.ProtocolCode} messageType:{messageType}");
             }
 
-            var packInfoMemoryStream = packInfo.MemoryStream;
-
             try
             {
+                DisposePackInfo = false;
+
                 switch (packInfo.RouteTypeCode)
                 {
                     case CoreRouteType.Route:
@@ -49,10 +54,8 @@ namespace TEngine.Core.Network
                             case > Opcode.OuterRouteRequest:
                             {
                                 var runtimeId = session.RuntimeId;
-                                var response = await addressableRouteComponent.Call(packInfo.RouteTypeCode, messageType, packInfoMemoryStream);
-                                
+                                var response = await addressableRouteComponent.Call(packInfo.RouteTypeCode, messageType, packInfo.CreateMemoryStream());
                                 // session可能已经断开了，所以这里需要判断
-                                
                                 if (session.RuntimeId == runtimeId)
                                 {
                                     session.Send(response, packInfo.RpcId);
@@ -62,7 +65,7 @@ namespace TEngine.Core.Network
                             }
                             case > Opcode.OuterRouteMessage:
                             {
-                                addressableRouteComponent.Send(packInfo.RouteTypeCode, messageType, packInfoMemoryStream);
+                                addressableRouteComponent.Send(packInfo.RouteTypeCode, messageType, packInfo.CreateMemoryStream());
                                 return;
                             }
                         }
@@ -90,7 +93,7 @@ namespace TEngine.Core.Network
                             case > Opcode.OuterRouteRequest:
                             {
                                 var runtimeId = session.RuntimeId;
-                                var response = await MessageHelper.CallInnerRoute(session.Scene, routeId, packInfo.RouteTypeCode, messageType, packInfoMemoryStream);
+                                var response = await MessageHelper.CallInnerRoute(session.Scene, routeId, packInfo.RouteTypeCode, messageType, packInfo.CreateMemoryStream());
                                 // session可能已经断开了，所以这里需要判断
                                 if (session.RuntimeId == runtimeId)
                                 {
@@ -101,7 +104,7 @@ namespace TEngine.Core.Network
                             }
                             case > Opcode.OuterRouteMessage:
                             {
-                                MessageHelper.SendInnerRoute(session.Scene, routeId, packInfo.RouteTypeCode, packInfoMemoryStream);
+                                MessageHelper.SendInnerRoute(session.Scene, routeId, packInfo.RouteTypeCode, packInfo.CreateMemoryStream());
                                 return;
                             }
                         }
@@ -112,17 +115,20 @@ namespace TEngine.Core.Network
             }
             catch (Exception e)
             {
-                if (packInfoMemoryStream.CanRead)
-                {
-                    // ReSharper disable once MethodHasAsyncOverload
-                    packInfoMemoryStream.Dispose();
-                }
-                
                 Log.Error(e);
                 return;
             }
+            finally
+            {
+                packInfo.Dispose();
+            }
 
             throw new NotSupportedException($"Received unsupported message protocolCode:{packInfo.ProtocolCode} messageType:{messageType}");
+        }
+
+        protected override FTask InnerHandler(Session session, uint rpcId, long routeId, uint protocolCode, long routeTypeCode, Type messageType, object message)
+        {
+            throw new NotSupportedException($"OuterMessageScheduler NotSupported InnerHandler");
         }
     }
 #endif

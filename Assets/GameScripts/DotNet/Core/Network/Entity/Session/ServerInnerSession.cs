@@ -1,5 +1,3 @@
-using TEngine.Core;
-
 #if TENGINE_NET
 namespace TEngine.Core.Network;
 
@@ -11,14 +9,8 @@ public sealed class ServerInnerSession : Session
         {
             return;
         }
-
-        // 序列化消息到流中
-        var memoryStream = MemoryStreamHelper.GetRecyclableMemoryStream();
-        InnerPacketParser.Serialize(message, memoryStream);
-        memoryStream.Seek(0, SeekOrigin.Begin);
-        // 分发消息
-        var packInfo = InnerPackInfo.Create(rpcId, routeId, ((IMessage)message).OpCode(), 0, memoryStream);
-        NetworkMessageScheduler.Scheduler(this, packInfo).Coroutine();
+        
+        NetworkMessageScheduler.InnerScheduler(this, rpcId, routeId, ((IMessage)message).OpCode(), 0, message).Coroutine();
     }
 
     public override void Send(IRouteMessage routeMessage, uint rpcId = 0, long routeId = 0)
@@ -27,13 +19,8 @@ public sealed class ServerInnerSession : Session
         {
             return;
         }
-        // 序列化消息到流中
-        var memoryStream = MemoryStreamHelper.GetRecyclableMemoryStream();
-        InnerPacketParser.Serialize(routeMessage, memoryStream);
-        memoryStream.Seek(0, SeekOrigin.Begin);
-        // 分发消息
-        var packInfo = InnerPackInfo.Create(rpcId, routeId, routeMessage.OpCode(), routeMessage.RouteTypeOpCode(), memoryStream);
-        NetworkMessageScheduler.Scheduler(this, packInfo).Coroutine();
+
+        NetworkMessageScheduler.InnerScheduler(this, rpcId, routeId, routeMessage.OpCode(), routeMessage.RouteTypeOpCode(), routeMessage).Coroutine();
     }
 
     public override void Send(MemoryStream memoryStream, uint rpcId = 0, long routeTypeOpCode = 0, long routeId = 0)

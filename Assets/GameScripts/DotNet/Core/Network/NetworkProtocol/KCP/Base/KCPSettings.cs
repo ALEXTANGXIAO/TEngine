@@ -4,9 +4,9 @@ namespace TEngine.Core.Network
 {
     public class KCPSettings
     {
-        public int Mtu { get; private set; }
-        public int SendWindowSize { get; private set; }
-        public int ReceiveWindowSize { get; private set; }
+        public uint Mtu { get; private set; }
+        public uint SendWindowSize { get; private set; }
+        public uint ReceiveWindowSize { get; private set; }
         public int MaxSendWindowSize { get; private set; }
 
         public static KCPSettings Create(NetworkTarget networkTarget)

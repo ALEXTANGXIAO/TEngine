@@ -45,7 +45,11 @@ namespace TEngine.Core.Network
         /// <summary>
         /// 外网消息总长度（消息体最大长度 + 外网消息头长度）
         /// </summary>
-        public const int PacketMaxLength = OuterPacketHeadLength + PacketBodyMaxLength;
+        public const int OuterPacketMaxLength = OuterPacketHeadLength + PacketBodyMaxLength;
+        /// <summary>
+        /// 内网消息总长度（消息体最大长度 + 外网消息头长度）
+        /// </summary>
+        public const int InnerPacketMaxLength = InnerPacketHeadLength + PacketBodyMaxLength;
         /// <summary>
         /// 外网消息头长度（消息体长度在消息头占用的长度 + 协议编号在消息头占用的长度 + RPCId长度 + RouteTypeOpCode长度）
         /// </summary>
