@@ -15,14 +15,14 @@ namespace TEngine
 
             public override void Initialize(params object[] args)
             {
-                _mRootModule = GameEntry.GetModule<RootModule>();
+                _mRootModule = GameModuleSystem.GetModule<RootModule>();
                 if (_mRootModule == null)
                 {
                     Log.Fatal("Base component is invalid.");
                     return;
                 }
 
-                _mResourceModule = GameEntry.GetModule<ResourceModule>();
+                _mResourceModule = GameModuleSystem.GetModule<ResourceModule>();
                 if (_mResourceModule == null)
                 {
                     Log.Fatal("Resource component is invalid.");

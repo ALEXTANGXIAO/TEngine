@@ -72,14 +72,14 @@ namespace TEngine
 
         private void Start()
         {
-            RootModule rootModule = GameEntry.GetModule<RootModule>();
+            RootModule rootModule = GameModuleSystem.GetModule<RootModule>();
             if (rootModule == null)
             {
                 Log.Fatal("Base component is invalid.");
                 return;
             }
             
-            ResourceModule resourceModule = GameEntry.GetModule<ResourceModule>();
+            ResourceModule resourceModule = GameModuleSystem.GetModule<ResourceModule>();
             if (resourceModule == null)
             {
                 Log.Fatal("Base component is invalid.");

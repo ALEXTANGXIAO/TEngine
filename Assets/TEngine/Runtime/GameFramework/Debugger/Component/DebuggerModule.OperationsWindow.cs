@@ -11,7 +11,7 @@ namespace TEngine
                 GUILayout.Label("<b>Operations</b>");
                 GUILayout.BeginVertical("box");
                 {
-                    ObjectPoolModule objectPoolModule = GameEntry.GetModule<ObjectPoolModule>();
+                    ObjectPoolModule objectPoolModule = GameModuleSystem.GetModule<ObjectPoolModule>();
                     if (objectPoolModule != null)
                     {
                         if (GUILayout.Button("Object Pool Release", GUILayout.Height(30f)))
@@ -25,7 +25,7 @@ namespace TEngine
                         }
                     }
 
-                    ResourceModule resourceCompoent = GameEntry.GetModule<ResourceModule>();
+                    ResourceModule resourceCompoent = GameModuleSystem.GetModule<ResourceModule>();
                     if (resourceCompoent != null)
                     {
                         if (GUILayout.Button("Unload Unused Assets", GUILayout.Height(30f)))
@@ -41,15 +41,15 @@ namespace TEngine
 
                     if (GUILayout.Button("Shutdown Game Framework (None)", GUILayout.Height(30f)))
                     {
-                        GameEntry.Shutdown(ShutdownType.None);
+                        GameModuleSystem.Shutdown(ShutdownType.None);
                     }
                     if (GUILayout.Button("Shutdown Game Framework (Restart)", GUILayout.Height(30f)))
                     {
-                        GameEntry.Shutdown(ShutdownType.Restart);
+                        GameModuleSystem.Shutdown(ShutdownType.Restart);
                     }
                     if (GUILayout.Button("Shutdown Game Framework (Quit)", GUILayout.Height(30f)))
                     {
-                        GameEntry.Shutdown(ShutdownType.Quit);
+                        GameModuleSystem.Shutdown(ShutdownType.Quit);
                     }
                 }
                 GUILayout.EndVertical();

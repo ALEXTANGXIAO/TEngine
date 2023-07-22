@@ -6,9 +6,9 @@ using UnityEngine.SceneManagement;
 namespace TEngine
 {
     /// <summary>
-    /// 游戏入口。
+    /// 游戏框架模块管理系统。
     /// </summary>
-    public static class GameEntry
+    public static class GameModuleSystem
     {
         private static readonly GameFrameworkLinkedList<GameFrameworkModuleBase> s_GameFrameworkModules = new GameFrameworkLinkedList<GameFrameworkModuleBase>();
 

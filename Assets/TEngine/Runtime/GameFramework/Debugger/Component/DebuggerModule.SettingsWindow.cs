@@ -18,14 +18,14 @@ namespace TEngine
 
             public override void Initialize(params object[] args)
             {
-                _mDebuggerModule = GameEntry.GetModule<DebuggerModule>();
+                _mDebuggerModule = GameModuleSystem.GetModule<DebuggerModule>();
                 if (_mDebuggerModule == null)
                 {
                     Log.Fatal("Debugger component is invalid.");
                     return;
                 }
 
-                _mSettingModule = GameEntry.GetModule<SettingModule>();
+                _mSettingModule = GameModuleSystem.GetModule<SettingModule>();
                 if (_mSettingModule == null)
                 {
                     Log.Fatal("Setting component is invalid.");

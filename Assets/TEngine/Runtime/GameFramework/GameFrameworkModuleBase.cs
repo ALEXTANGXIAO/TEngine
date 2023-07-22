@@ -12,7 +12,7 @@ namespace TEngine
         /// </summary>
         protected virtual void Awake()
         {
-            GameEntry.RegisterModule(this);
+            GameModuleSystem.RegisterModule(this);
         }
     }
 }

@@ -100,7 +100,7 @@ public class GameModule:MonoBehaviour
             return Modules[type] as T;
         }
         
-        T module = TEngine.GameEntry.GetModule<T>();
+        T module = TEngine.GameModuleSystem.GetModule<T>();
         
         Log.Assert(condition:module != null,$"{typeof(T)} is null");
         

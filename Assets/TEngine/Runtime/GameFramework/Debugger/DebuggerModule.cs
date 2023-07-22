@@ -172,7 +172,7 @@ namespace TEngine
 
             m_FpsCounter = new FpsCounter(0.5f);
             
-            _mSettingModule = GameEntry.GetModule<SettingModule>();
+            _mSettingModule = GameModuleSystem.GetModule<SettingModule>();
             if (_mSettingModule == null)
             {
                 Log.Fatal("Setting component is invalid.");

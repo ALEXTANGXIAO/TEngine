@@ -10,7 +10,7 @@ namespace TEngine
 
             public override void Initialize(params object[] args)
             {
-                _mObjectPoolModule = GameEntry.GetModule<ObjectPoolModule>();
+                _mObjectPoolModule = GameModuleSystem.GetModule<ObjectPoolModule>();
                 if (_mObjectPoolModule == null)
                 {
                     Log.Fatal("Object pool component is invalid.");

@@ -321,13 +321,13 @@ namespace TEngine
         {
             Log.Warning("Low memory reported...");
 
-            ObjectPoolModule objectPoolModule = GameEntry.GetModule<ObjectPoolModule>();
+            ObjectPoolModule objectPoolModule = GameModuleSystem.GetModule<ObjectPoolModule>();
             if (objectPoolModule != null)
             {
                 objectPoolModule.ReleaseAllUnused();
             }
 
-            ResourceModule ResourceModule = GameEntry.GetModule<ResourceModule>();
+            ResourceModule ResourceModule = GameModuleSystem.GetModule<ResourceModule>();
             if (ResourceModule != null)
             {
                 ResourceModule.ForceUnloadUnusedAssets(true);

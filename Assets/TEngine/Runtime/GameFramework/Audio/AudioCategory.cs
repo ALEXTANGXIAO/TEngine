@@ -86,7 +86,7 @@ namespace TEngine
             }
             AudioAgents = new List<AudioAgent>(16);
             InstanceRoot = new GameObject(Utility.Text.Format("Audio Category - {0}", _audioMixerGroup.name)).transform;
-            InstanceRoot.SetParent(GameEntry.GetModule<AudioModule>().InstanceRoot);
+            InstanceRoot.SetParent(GameModuleSystem.GetModule<AudioModule>().InstanceRoot);
             for (int index = 0; index < _maxChannel; index++)
             {
                 AudioAgent audioAgent = new AudioAgent();

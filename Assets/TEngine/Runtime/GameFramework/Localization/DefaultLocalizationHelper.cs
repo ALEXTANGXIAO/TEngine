@@ -187,7 +187,7 @@ namespace TEngine
 
         private void Start()
         {
-            m_ResourceModule = GameEntry.GetModule<ResourceModule>();
+            m_ResourceModule = GameModuleSystem.GetModule<ResourceModule>();
             if (m_ResourceModule == null)
             {
                 Log.Fatal("Resource component is invalid.");

@@ -331,7 +331,7 @@ namespace TEngine
         /// </summary>
         private void Initialize()
         {
-            RootModule rootModule = GameEntry.GetModule<RootModule>();
+            RootModule rootModule = GameModuleSystem.GetModule<RootModule>();
             if (rootModule == null)
             {
                 Log.Fatal("Base component is invalid.");
