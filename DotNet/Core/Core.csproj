@@ -30,6 +30,7 @@
     <PackageReference Include="MongoDB.Driver" Version="2.20.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NLog" Version="5.2.0" />
+    <PackageReference Include="protobuf-net" Version="3.2.26" />
   </ItemGroup>
 
   <ItemGroup>
