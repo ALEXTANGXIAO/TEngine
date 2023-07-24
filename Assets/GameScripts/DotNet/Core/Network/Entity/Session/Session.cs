@@ -125,12 +125,14 @@ namespace TEngine.Core.Network
                     NetworkThread.Instance?.RemoveChannel(networkId, channelId);
                 });
             }
-
+            
+            this.NetworkId = 0;
+            this.ChannelId = 0;
+            base.Dispose();
             Sessions.Remove(id);
 #if NETDEBUG
             Log.Debug($"Sessions Dispose Count:{Sessions.Count}");
 #endif
-            base.Dispose();
         }
 
         public virtual void Send(object message, uint rpcId = 0, long routeId = 0)

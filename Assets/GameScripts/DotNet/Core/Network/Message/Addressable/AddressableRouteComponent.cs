@@ -7,20 +7,20 @@ namespace TEngine.Core.Network;
 public sealed class AddressableRouteComponent : Entity
 {
     private long _routeId;
-    private long _addressableId;
+    public long AddressableId { get; private set; }
     
     public static readonly CoroutineLockQueueType AddressableRouteMessageLock = new CoroutineLockQueueType("AddressableRouteMessageLock");
 
     public override void Dispose()
     {
         _routeId = 0;
-        _addressableId = 0;
+        this.AddressableId = 0;
         base.Dispose();
     }
 
     public void SetAddressableId(long addressableId)
     {
-        _addressableId = addressableId;
+        this.AddressableId = addressableId;
     }
 
     public void Send(IAddressableRouteMessage message)
@@ -44,13 +44,13 @@ public sealed class AddressableRouteComponent : Entity
         var runtimeId = RuntimeId;
         IResponse iRouteResponse = null;
 
-        using (await AddressableRouteMessageLock.Lock(_addressableId, "AddressableRouteComponent Call MemoryStream"))
+        using (await AddressableRouteMessageLock.Lock(this.AddressableId, "AddressableRouteComponent Call MemoryStream"))
         {
             while (!IsDisposed)
             {
                 if (_routeId == 0)
                 {
-                    _routeId = await AddressableHelper.GetAddressableRouteId(Scene, _addressableId);
+                    _routeId = await AddressableHelper.GetAddressableRouteId(Scene, this.AddressableId);
                 }
 
                 if (_routeId == 0)
@@ -110,13 +110,13 @@ public sealed class AddressableRouteComponent : Entity
         var failCount = 0;
         var runtimeId = RuntimeId;
 
-        using (await AddressableRouteMessageLock.Lock(_addressableId,"AddressableRouteComponent Call"))
+        using (await AddressableRouteMessageLock.Lock(this.AddressableId,"AddressableRouteComponent Call"))
         {
             while (true)
             {
                 if (_routeId == 0)
                 {
-                    _routeId = await AddressableHelper.GetAddressableRouteId(Scene, _addressableId);
+                    _routeId = await AddressableHelper.GetAddressableRouteId(Scene, this.AddressableId);
                 }
 
                 if (_routeId == 0)
