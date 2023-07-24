@@ -6,11 +6,13 @@ namespace TEngine.Core.DataBase;
 
 public interface IDateBase
 {
+    public static readonly CoroutineLockQueueType DataBaseLock = new CoroutineLockQueueType("DataBaseLock");
     IDateBase Initialize(string connectionString, string dbName);
     FTask<long> Count<T>(string collection = null) where T : Entity;
     FTask<long> Count<T>(Expression<Func<T, bool>> filter, string collection = null) where T : Entity;
     FTask<bool> Exist<T>(string collection = null) where T : Entity;
     FTask<bool> Exist<T>(Expression<Func<T, bool>> filter, string collection = null) where T : Entity;
+    FTask<T> QueryNotLock<T>(long id, string collection = null) where T : Entity;
     FTask<T> Query<T>(long id, string collection = null) where T : Entity;
     FTask<(int count, List<T> dates)> QueryCountAndDatesByPage<T>(Expression<Func<T, bool>> filter, int pageIndex, int pageSize, string collection = null) where T : Entity;
     FTask<(int count, List<T> dates)> QueryCountAndDatesByPage<T>(Expression<Func<T, bool>> filter, int pageIndex, int pageSize, string[] cols, string collection = null) where T : Entity;

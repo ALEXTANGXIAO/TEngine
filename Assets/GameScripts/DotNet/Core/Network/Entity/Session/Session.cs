@@ -16,7 +16,7 @@ namespace TEngine.Core.Network
         public uint ChannelId { get; private set; }
         public long LastReceiveTime { get; private set; }
         public ANetworkMessageScheduler NetworkMessageScheduler { get; private set;}
-        private static readonly Dictionary<long, Session> Sessions = new ();
+        public static readonly Dictionary<long, Session> Sessions = new ();
         public readonly Dictionary<long, FTask<IResponse>> RequestCallback = new();
 
         public static void Create(ANetworkMessageScheduler networkMessageScheduler, ANetworkChannel channel, NetworkTarget networkTarget)
