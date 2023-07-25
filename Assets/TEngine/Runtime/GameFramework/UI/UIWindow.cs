@@ -354,10 +354,11 @@ namespace TEngine
                 Handle = null;
             }
 
+            OnDestroy();
+            
             // 销毁面板对象
             if (_panel != null)
             {
-                OnDestroy();
                 Object.Destroy(_panel);
                 _panel = null;
             }
