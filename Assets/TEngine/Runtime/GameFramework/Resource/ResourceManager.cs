@@ -421,8 +421,9 @@ namespace TEngine
         public async UniTask<T> LoadAssetAsync<T>(string assetName, CancellationToken cancellationToken) where T : Object
         {
             AssetOperationHandle handle = LoadAssetAsyncHandle<T>(assetName);
-
-            await handle.ToUniTask(cancellationToken:cancellationToken);
+            UniTask uniTask = handle.ToUniTask();
+            uniTask.AttachExternalCancellation(cancellationToken);
+            await uniTask;
             
             if (typeof(T) == typeof(GameObject))
             {
@@ -445,7 +446,9 @@ namespace TEngine
         public async UniTask<GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken)
         {
             AssetOperationHandle handle = LoadAssetAsyncHandle<GameObject>(assetName);
-            await handle.ToUniTask(cancellationToken:cancellationToken);
+            UniTask uniTask = handle.ToUniTask();
+            uniTask.AttachExternalCancellation(cancellationToken);
+            await uniTask;
             GameObject ret = handle.InstantiateSync();
             AssetReference.BindAssetReference(ret, handle, assetName);
             
