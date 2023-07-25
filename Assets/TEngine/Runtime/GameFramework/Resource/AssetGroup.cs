@@ -383,11 +383,7 @@ namespace TEngine
 
             Reference(handle);
 
-            UniTask uniTask = handle.ToUniTask();
-            
-            uniTask.AttachExternalCancellation(cancellationToken);
-
-            bool cancelOrFailed = await uniTask.SuppressCancellationThrow();
+            bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
 
             if (cancelOrFailed)
             {

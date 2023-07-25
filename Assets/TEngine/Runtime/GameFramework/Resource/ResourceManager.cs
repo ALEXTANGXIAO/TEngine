@@ -421,14 +421,20 @@ namespace TEngine
         public async UniTask<T> LoadAssetAsync<T>(string assetName, CancellationToken cancellationToken) where T : Object
         {
             AssetOperationHandle handle = LoadAssetAsyncHandle<T>(assetName);
-            UniTask uniTask = handle.ToUniTask();
-            uniTask.AttachExternalCancellation(cancellationToken);
-            await uniTask;
+            
+            bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
+
+            if (cancelOrFailed)
+            {
+                return null;
+            }
             
             if (typeof(T) == typeof(GameObject))
             {
                 GameObject ret = handle.InstantiateSync();
+                
                 AssetReference.BindAssetReference(ret, handle, assetName);
+                
                 return ret as T;
             }
             else
@@ -446,10 +452,16 @@ namespace TEngine
         public async UniTask<GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken)
         {
             AssetOperationHandle handle = LoadAssetAsyncHandle<GameObject>(assetName);
-            UniTask uniTask = handle.ToUniTask();
-            uniTask.AttachExternalCancellation(cancellationToken);
-            await uniTask;
+            
+            bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
+
+            if (cancelOrFailed)
+            {
+                return null;
+            }
+
             GameObject ret = handle.InstantiateSync();
+            
             AssetReference.BindAssetReference(ret, handle, assetName);
             
             return ret;
