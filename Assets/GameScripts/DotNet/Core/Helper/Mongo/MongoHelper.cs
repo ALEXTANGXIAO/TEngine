@@ -4,7 +4,6 @@ using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
-using TrueSync;
 using Unity.Mathematics;
 using MongoHelper = TEngine.Core.MongoHelper;
 
@@ -23,12 +22,6 @@ public sealed class MongoHelper : Singleton<MongoHelper>
         RegisterStruct<float3>();
         RegisterStruct<float4>();
         RegisterStruct<quaternion>();
-            
-        RegisterStruct<FP>();
-        RegisterStruct<TSVector>();
-        RegisterStruct<TSVector2>();
-        RegisterStruct<TSVector4>();
-        RegisterStruct<TSQuaternion>();
     }
     
     public static void RegisterStruct<T>() where T : struct

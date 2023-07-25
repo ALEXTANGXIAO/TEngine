@@ -31,37 +31,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-
-    <Compile Include="..\..\Assets\GameScripts\ThirdParty\TrueSync\**\*.cs">
-      <Link>TrueSync/%(RecursiveDir)%(FileName)%(Extension)</Link>
-    </Compile>
-
-    <!-- <Compile Include="..\..\Assets\GameScripts\ThirdParty\Kcp\**\*.cs">
-      <Link>Kcp/%(RecursiveDir)%(FileName)%(Extension)</Link>
-    </Compile> -->
-
-    <Compile Include="..\..\Assets\GameScripts\ThirdParty\Recast\Recast.cs">
-      <Link>Recast\Recast.cs</Link>
-    </Compile>
-
     <Compile Include="..\..\Library\PackageCache\com.unity.mathematics*\Unity.Mathematics\**\*.cs">
       <Link>Unity.Mathematics/$([System.String]::new(%(RecursiveDir)).Substring($([System.String]::new(%(RecursiveDir)).Indexof("Unity.Mathematics"))).Replace("Unity.Mathematics", ""))/%(FileName)%(Extension)</Link>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="..\..\Assets\TEngine\Plugins\MacOS\x86_64\libRecastDll.dylib">
-      <Link>libRecastDll.dylib</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\Assets\TEngine\Plugins\x86_64\libRecastDll.so">
-      <Link>libRecastDll.so</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\Assets\TEngine\Plugins\x86_64\RecastDll.dll">
-      <Link>RecastDll.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
