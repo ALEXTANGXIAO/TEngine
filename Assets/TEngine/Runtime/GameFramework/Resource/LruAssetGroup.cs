@@ -300,7 +300,11 @@ namespace TEngine
 
             Reference(handle);
 
-            bool cancelOrFailed = await handle.ToUniTask().SuppressCancellationThrow();
+            UniTask uniTask = handle.ToUniTask();
+            
+            uniTask.AttachExternalCancellation(cancellationToken);
+
+            bool cancelOrFailed = await uniTask.SuppressCancellationThrow();
 
             if (cancelOrFailed)
             {
