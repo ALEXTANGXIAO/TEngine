@@ -240,7 +240,7 @@ namespace TEngine
         /// 组件被销毁调用。
         /// <remarks>请勿手动调用！</remarks>
         /// </summary>
-        public void OnDestroyWidget()
+        internal void OnDestroyWidget()
         {
             RemoveAllUIEvent();
             if (Handle != null)
