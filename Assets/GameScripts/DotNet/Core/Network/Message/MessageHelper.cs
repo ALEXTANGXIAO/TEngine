@@ -35,7 +35,7 @@ public static class MessageHelper
         }
 
         EntityIdStruct entityIdStruct = entityId;
-        var session = scene.Server.GetSession(entityIdStruct.RouteId);
+        var session = scene.Server.GetSession(entityIdStruct.LocationId);
         session.Send(message, 0, entityId);
     }
 
@@ -48,7 +48,7 @@ public static class MessageHelper
         }
 
         EntityIdStruct entityIdStruct = entityId;
-        var session = scene.Server.GetSession(entityIdStruct.RouteId);
+        var session = scene.Server.GetSession(entityIdStruct.LocationId);
         session.Send(message, 0, routeTypeOpCode, entityId);
     }
 
@@ -81,7 +81,7 @@ public static class MessageHelper
 
         EntityIdStruct entityIdStruct = entityId;
         var rpcId = ++_rpcId;
-        var session = scene.Server.GetSession(entityIdStruct.RouteId);
+        var session = scene.Server.GetSession(entityIdStruct.LocationId);
         var requestCallback = FTask<IResponse>.Create(false);
         RequestCallback.Add(rpcId, MessageSender.Create(rpcId, requestType, requestCallback));
         session.Send(request, rpcId, routeTypeOpCode, entityId);
@@ -98,7 +98,7 @@ public static class MessageHelper
         
         EntityIdStruct entityIdStruct = entityId;
         var rpcId = ++_rpcId;
-        var session = scene.Server.GetSession(entityIdStruct.RouteId);
+        var session = scene.Server.GetSession(entityIdStruct.LocationId);
         var requestCallback = FTask<IResponse>.Create(false);
         RequestCallback.Add(rpcId, MessageSender.Create(rpcId, request, requestCallback));
         session.Send(request, rpcId, entityId);

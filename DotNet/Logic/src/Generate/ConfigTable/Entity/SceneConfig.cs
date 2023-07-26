@@ -29,9 +29,9 @@ namespace TEngine
 
         public SceneConfig Get(uint id, bool check = true)
         {
-            if (this._configs.TryGetValue(id, out SceneConfig? config))
+            if (_configs.ContainsKey(id))
             {
-                return config;
+                return _configs[id];
             }
     
             if (check)
@@ -79,7 +79,7 @@ namespace TEngine
 		[ProtoMember(2, IsRequired  = true)]
 		public long EntityId { get; set; } // 实体Id
 		[ProtoMember(3, IsRequired  = true)]
-		public uint RouteId { get; set; } // 路由Id
+		public uint ServerConfigId { get; set; } // 服务配置Id
 		[ProtoMember(4, IsRequired  = true)]
 		public uint WorldId { get; set; } // 世界Id
 		[ProtoMember(5, IsRequired  = true)]

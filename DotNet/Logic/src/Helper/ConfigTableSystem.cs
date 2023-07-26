@@ -74,7 +74,7 @@ public static class ConfigTableSystem
                 SceneType = sceneConfig.SceneType,
                 Name = sceneConfig.Name,
                 NetworkProtocol = sceneConfig.NetworkProtocol,
-                RouteId = sceneConfig.RouteId,
+                ServerConfigId = sceneConfig.ServerConfigId,
                 WorldId = sceneConfig.WorldId,
                 OuterPort = sceneConfig.OuterPort
             };
@@ -126,7 +126,7 @@ public static class ConfigTableSystem
                     SceneType = sceneConfig.SceneType,
                     Name = sceneConfig.Name,
                     NetworkProtocol = sceneConfig.NetworkProtocol,
-                    RouteId = sceneConfig.RouteId,
+                    ServerConfigId = sceneConfig.ServerConfigId,
                     WorldId = sceneConfig.WorldId,
                     OuterPort = sceneConfig.OuterPort
                 });

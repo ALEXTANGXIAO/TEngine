@@ -23,20 +23,14 @@ public enum SceneType: long
     Addressable = 1 << 2,
     
     /// <summary>
-    /// 场景GamePlay
-    /// <remarks>游戏玩法服。</remarks>
-    /// </summary>
-    Gameplay = 1 << 3,
-    
-    /// <summary>
     /// 游戏场景服。
     /// </summary>
-    Map = 1 << 4,
+    Map = 1 << 3,
     
     /// <summary>
     /// 游戏聊天服。
     /// </summary>
-    Chat = 1 << 5,
+    Chat = 1 << 4,
 }
 
 /// <summary>
@@ -51,24 +45,16 @@ public class OnCreateScene : AsyncEventSystem<TEngine.OnCreateScene>
         // OnCreateScene这个事件就是给开发者使用的
         // 比如Address协议这里、我就是做了一个管理Address地址的一个组件挂在到Address这个Scene下面了
         // 比如Map下你需要一些自定义组件、你也可以在这里操作
-        var sceneConfigInfo = self.SceneInfo;
-
-        switch (sceneConfigInfo.SceneType.Parse<SceneType>())
+        var scene = self.Scene;
+        switch (scene.SceneType.Parse<SceneType>())
         {
-            case SceneType.Addressable:
-            {
-                sceneConfigInfo.Scene.AddComponent<AddressableManageComponent>();
-                break;
-            }
             case SceneType.Gate:
             {
-                sceneConfigInfo.Scene.AddComponent<AccountComponent>();
+                self.Scene.AddComponent<AccountComponent>();
                 break;
             }
-            case SceneType.Gameplay:
-                break;
         }
-        Log.Info($"scene create: {self.SceneInfo.SceneType} {self.SceneInfo.Name} SceneId:{self.SceneInfo.Id} ServerId:{self.SceneInfo.RouteId} WorldId:{self.SceneInfo.WorldId}");
+        Log.Info($"scene create: {self.Scene.SceneType} {self.Scene.Name} SceneId:{self.Scene.Id} LocationId:{self.Scene.LocationId} WorldId:{self.Scene.World?.Id}");
 
         await FTask.CompletedTask;
     }

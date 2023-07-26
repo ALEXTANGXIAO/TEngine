@@ -5,13 +5,11 @@ namespace TEngine
 {
     public struct OnCreateScene
     {
-        public readonly SceneConfigInfo SceneInfo;
-        public readonly Action<Session> OnSetNetworkComplete;
+        public readonly Scene Scene;
 
-        public OnCreateScene(SceneConfigInfo sceneInfo, Action<Session> onSetNetworkComplete)
+        public OnCreateScene(Scene scene)
         {
-            SceneInfo = sceneInfo;
-            OnSetNetworkComplete = onSetNetworkComplete;
+            Scene = scene;
         }
     }
 }

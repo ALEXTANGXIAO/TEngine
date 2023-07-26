@@ -10,7 +10,7 @@ public static class AddressableSceneHelper
         var sceneEntityId = 0L;
         foreach (var sceneConfig in SceneConfigData.Instance.List)
         {
-            if (sceneConfig.RouteId == 3072)
+            if (sceneConfig.ServerConfigId == 3072)
             {
                 sceneEntityId = sceneConfig.EntityId;
                 break;

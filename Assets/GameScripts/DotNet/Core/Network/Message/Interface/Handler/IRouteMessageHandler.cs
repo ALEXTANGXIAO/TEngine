@@ -41,7 +41,7 @@ namespace TEngine.Core.Network
                     scene = entity.Scene;
                 }
                 
-                Log.Error($"SceneWorld:{session.Scene.World.Id} SceneRouteId:{scene.RouteId} SceneType:{scene.SceneInfo.SceneType} EntityId {tEntity.Id} : Error {e}");
+                Log.Error($"SceneWorld:{session.Scene.World.Id} ServerConfigId:{scene.Server?.Id} SceneType:{scene.SceneType} EntityId {tEntity.Id} : Error {e}");
             }
         }
         
@@ -100,7 +100,7 @@ namespace TEngine.Core.Network
                     scene = entity.Scene;
                 }
                 
-                Log.Error($"SceneWorld:{session.Scene.World.Id} SceneRouteId:{scene.RouteId} SceneType:{scene.SceneInfo.SceneType} EntityId {tEntity.Id} : Error {e}");
+                Log.Error($"SceneWorld:{session.Scene.World?.Id} ServerConfigId:{scene.Server?.Id} SceneType:{scene.SceneType} EntityId {tEntity.Id} : Error {e}");
                 response.ErrorCode = CoreErrorCode.ErrRpcFail;
             }
             finally
@@ -144,7 +144,7 @@ namespace TEngine.Core.Network
                     scene = entity.Scene;
                 }
                 
-                Log.Error($"SceneWorld:{session.Scene.World?.Id} SceneRouteId:{scene.RouteId} SceneType:{scene.SceneInfo.SceneType} EntityId {tEntity.Id} : Error {e}");
+                Log.Error($"SceneWorld:{session.Scene.World.Id} ServerConfigId:{scene.Server?.Id} SceneType:{scene.SceneType} EntityId {tEntity.Id} : Error {e}");
             }
             finally
             {
@@ -207,7 +207,7 @@ namespace TEngine.Core.Network
                     scene = entity.Scene;
                 }
                 
-                Log.Error($"SceneWorld:{session.Scene.World.Id} SceneRouteId:{scene.RouteId} SceneType:{scene.SceneInfo.SceneType} EntityId {tEntity.Id} : Error {e}");
+                Log.Error($"SceneWorld:{session.Scene.World?.Id} ServerConfigId:{scene.Server?.Id} SceneType:{scene.SceneType} EntityId {tEntity.Id} : Error {e}");
                 response.ErrorCode = CoreErrorCode.ErrRpcFail;
             }
             finally

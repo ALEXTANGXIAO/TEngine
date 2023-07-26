@@ -103,13 +103,13 @@ namespace TEngine
 
         private static readonly Dictionary<uint, Server> Servers = new Dictionary<uint, Server>();
         
-        public static async FTask Create(uint routeId)
+        public static async FTask Create(uint serverConfigId)
         {
-            var serverConfigInfo = ConfigTableManage.ServerConfig(routeId);
+            var serverConfigInfo = ConfigTableManage.ServerConfig(serverConfigId);
             
             if (serverConfigInfo == null)
             {
-                Log.Error($"not found server by Id:{routeId}");
+                Log.Error($"not found server by Id:{serverConfigId}");
                 return;
             }
 
@@ -121,14 +121,14 @@ namespace TEngine
                 return;
             }
             
-            var sceneInfos = Scene.GetSceneInfoByRouteId(routeId);
-            await Create(routeId, machineConfigInfo.InnerBindIP, serverConfigInfo.InnerPort, machineConfigInfo.OuterBindIP, sceneInfos);
-            // Log.Info($"ServerId:{routeId} is start complete");
+            var sceneInfos = Scene.GetSceneInfoByServerConfigId(serverConfigId);
+            await Create(serverConfigId, machineConfigInfo.InnerBindIP, serverConfigInfo.InnerPort, machineConfigInfo.OuterBindIP, sceneInfos);
+            // Log.Info($"ServerId:{serverConfigId} is start complete");
         }
 
-        public static async FTask<Server> Create(uint routeId, string innerBindIp, int innerPort, string outerBindIp, List<SceneConfigInfo> sceneInfos)
+        public static async FTask<Server> Create(uint serverConfigId, string innerBindIp, int innerPort, string outerBindIp, List<SceneConfigInfo> sceneInfos)
         {
-            if (Servers.TryGetValue(routeId, out var server))
+            if (Servers.TryGetValue(serverConfigId, out var server))
             {
                 return server;
             }
@@ -137,10 +137,10 @@ namespace TEngine
 
             server = new Server
             {
-                Id = routeId
+                Id = serverConfigId
             };
 
-            server.Scene = await Scene.Create($"ServerScene{routeId}", server, new EntityIdStruct(routeId, 0, 0));
+            server.Scene = await Scene.Create(server,null,$"ServerScene{serverConfigId}");
 
             // 创建网络、Server下的网络只能是内部网络、外部网络是在Scene中定义
             
@@ -155,16 +155,17 @@ namespace TEngine
             
             foreach (var sceneConfig in sceneInfos)
             {
-                await Scene.Create(server, outerBindIp, sceneConfig);
+                await Scene.Create(server, sceneConfig.SceneType, sceneConfig.Name, sceneConfig.EntityId,
+                    sceneConfig.WorldId, sceneConfig.NetworkProtocol, outerBindIp, sceneConfig.OuterPort);
             }
 
-            Servers.Add(routeId, server);
+            Servers.Add(serverConfigId, server);
             return server;
         }
         
-        public static Server Get(uint routeId)
+        public static Server Get(uint serverConfigId)
         {
-            return Servers.TryGetValue(routeId, out var server) ? server : null;
+            return Servers.TryGetValue(serverConfigId, out var server) ? server : null;
         }
 
         #endregion

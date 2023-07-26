@@ -14,26 +14,26 @@ namespace TEngine.Core
         
         public uint Time{ get; private set; }
         public uint Sequence{ get; private set; }
-        public uint RouteId { get; private set; }
+        public uint LocationId { get; private set; }
 
-        public ushort AppId => (ushort)(RouteId >> 10 & RouteIdStruct.MaskAppId);
-        public ushort WordId=> (ushort)(RouteId & RouteIdStruct.MaskWordId);
+        public ushort AppId => (ushort)(this.LocationId >> 10 & RouteIdStruct.MaskAppId);
+        public ushort WordId=> (ushort)(this.LocationId & RouteIdStruct.MaskWordId);
         
         public const int MaskRouteId = 0x3FFFF;
         public const int MaskSequence = 0xFFFF;
 
-        public EntityIdStruct(uint routeId, uint time, uint sequence)
+        public EntityIdStruct(uint locationId, uint time, uint sequence)
         {
             Time = time;
             Sequence = sequence;
-            RouteId = routeId;
+            LocationId = locationId;
         }
 
         public static implicit operator long(EntityIdStruct entityIdStruct)
         {
             ulong result = 0;
             result |= entityIdStruct.Sequence;
-            result |= (ulong)entityIdStruct.RouteId << 16;
+            result |= (ulong)entityIdStruct.LocationId << 16;
             result |= (ulong)entityIdStruct.Time << 34;
             return (long)result;
         }
@@ -46,7 +46,7 @@ namespace TEngine.Core
                 Sequence = (uint) (result & MaskSequence)
             };
             result >>= 16;
-            idStruct.RouteId = (uint) (result & 0x3FFFF);
+            idStruct.LocationId = (uint) (result & 0x3FFFF);
             result >>= 18;
             idStruct.Time = (uint) result;
             return idStruct;
