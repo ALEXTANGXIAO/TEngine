@@ -1,3 +1,4 @@
+cd /d %~dp0
 set WORKSPACE=..
 
 set GEN_CLIENT=%WORKSPACE%\Luban\Luban.ClientServer\Luban.ClientServer.exe
