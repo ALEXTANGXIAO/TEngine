@@ -36,46 +36,41 @@ public static class TEngineSettingsHelper
     private static void LoadProtoConfig(IConfigurationRoot root)
     {
         // ProtoBuf文件所在的位置文件夹位置
-        Define.ProtoBufDirectory = root["Export:ProtoBufDirectory:Value"].GetFullPath();
+        Define.ProtoBufDirectory = FileHelper.GetFullPath(root["Export:ProtoBufDirectory:Value"]);
         // ProtoBuf生成到服务端的文件夹位置
-        Define.ProtoBufServerDirectory = root["Export:ProtoBufServerDirectory:Value"].GetFullPath();
+        Define.ProtoBufServerDirectory = FileHelper.GetFullPath(root["Export:ProtoBufServerDirectory:Value"]);
         // ProtoBuf生成到客户端的文件夹位置
-        Define.ProtoBufClientDirectory = root["Export:ProtoBufClientDirectory:Value"].GetFullPath();
+        Define.ProtoBufClientDirectory = FileHelper.GetFullPath(root["Export:ProtoBufClientDirectory:Value"]);
         // ProtoBuf生成代码模板的位置
-        Define.ProtoBufTemplatePath = root["Export:ProtoBufTemplatePath:Value"].GetFullPath();
+        Define.ProtoBufTemplatePath = FileHelper.GetFullPath(root["Export:ProtoBufTemplatePath:Value"]);
     }
 
     private static void LoadExcelConfig(IConfigurationRoot root)
     {
         // Excel配置文件根目录
-        Define.ExcelProgramPath = root["Export:ExcelProgramPath:Value"].GetFullPath();
+        Define.ExcelProgramPath = FileHelper.GetFullPath(root["Export:ExcelProgramPath:Value"]);
         // Excel版本文件的位置
-        Define.ExcelVersionFile = root["Export:ExcelVersionFile:Value"].GetFullPath();
+        Define.ExcelVersionFile = FileHelper.GetFullPath(root["Export:ExcelVersionFile:Value"]);
         // Excel生成服务器代码的文件夹位置
-        Define.ExcelServerFileDirectory = root["Export:ExcelServerFileDirectory:Value"].GetFullPath();
+        Define.ExcelServerFileDirectory = FileHelper.GetFullPath(root["Export:ExcelServerFileDirectory:Value"]);
         // Excel生成客户端代码文件夹位置
-        Define.ExcelClientFileDirectory = root["Export:ExcelClientFileDirectory:Value"].GetFullPath();
+        Define.ExcelClientFileDirectory = FileHelper.GetFullPath(root["Export:ExcelClientFileDirectory:Value"]);
         // Excel生成服务器二进制数据文件夹位置
-        Define.ExcelServerBinaryDirectory = root["Export:ExcelServerBinaryDirectory:Value"].GetFullPath();
+        Define.ExcelServerBinaryDirectory = FileHelper.GetFullPath(root["Export:ExcelServerBinaryDirectory:Value"]);
         // Excel生成客户端二进制数据文件夹位置
-        Define.ExcelClientBinaryDirectory = root["Export:ExcelClientBinaryDirectory:Value"].GetFullPath();
+        Define.ExcelClientBinaryDirectory = FileHelper.GetFullPath(root["Export:ExcelClientBinaryDirectory:Value"]);
         // Excel生成服务器Json数据文件夹位置
-        Define.ExcelServerJsonDirectory = root["Export:ExcelServerJsonDirectory:Value"].GetFullPath();
+        Define.ExcelServerJsonDirectory = FileHelper.GetFullPath(root["Export:ExcelServerJsonDirectory:Value"]);
         // Excel生成客户端Json数据文件夹位置
-        Define.ExcelClientJsonDirectory = root["Export:ExcelClientJsonDirectory:Value"].GetFullPath();
+        Define.ExcelClientJsonDirectory = FileHelper.GetFullPath(root["Export:ExcelClientJsonDirectory:Value"]);
         // Excel生成代码模板的位置
-        Define.ExcelTemplatePath = root["Export:ExcelTemplatePath:Value"].GetFullPath();
+        Define.ExcelTemplatePath = FileHelper.GetFullPath(root["Export:ExcelTemplatePath:Value"]);
         // 服务器自定义导出代码文件夹位置
-        Define.ServerCustomExportDirectory = root["Export:ServerCustomExportDirectory:Value"].GetFullPath();
+        Define.ServerCustomExportDirectory = FileHelper.GetFullPath(root["Export:ServerCustomExportDirectory:Value"]);
         // 客户端自定义导出代码
-        Define.ClientCustomExportDirectory = root["Export:ClientCustomExportDirectory:Value"].GetFullPath();
+        Define.ClientCustomExportDirectory = FileHelper.GetFullPath(root["Export:ClientCustomExportDirectory:Value"]);
         // 自定义导出代码存放的程序集
-        Define.CustomExportAssembly = root["Export:CustomExportAssembly:Value"].GetFullPath();
-    }
-    
-    private static string GetFullPath(this string relativePath)
-    {
-        return Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), relativePath));
+        Define.CustomExportAssembly = FileHelper.GetFullPath(root["Export:CustomExportAssembly:Value"]);
     }
 }
 #endif

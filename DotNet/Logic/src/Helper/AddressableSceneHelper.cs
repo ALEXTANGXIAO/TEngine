@@ -19,12 +19,12 @@ public static class AddressableSceneHelper
         return sceneEntityId;
     }
     
-    public static long GetSceneEntityIdByType(Logic.SceneType sceneType)
+    public static long GetSceneEntityIdByType(string sceneType)
     {
         var sceneEntityId = 0L;
         foreach (var sceneConfig in SceneConfigData.Instance.List)
         {
-            if (sceneConfig.SceneType.Parse<Logic.SceneType>() == sceneType)
+            if (sceneConfig.SceneType == sceneType)
             {
                 sceneEntityId = sceneConfig.EntityId;
                 break;

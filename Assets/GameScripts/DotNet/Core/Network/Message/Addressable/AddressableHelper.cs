@@ -12,7 +12,7 @@ namespace TEngine.Core.Network
 
             foreach (var sceneConfigInfo in sceneConfigInfos)
             {
-                if (sceneConfigInfo.SceneType == "Addressable")
+                if (sceneConfigInfo.SceneTypeStr == "Addressable")
                 {
                     AddressableScenes.Add(sceneConfigInfo);
                 }

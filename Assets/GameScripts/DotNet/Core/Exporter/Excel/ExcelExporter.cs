@@ -4,17 +4,12 @@ using System.Reflection;
 using System.Runtime.Loader;
 using System.Text;
 using System.Text.RegularExpressions;
+using TEngine.CustomExport;
 using TEngine.DataStructure;
-using TEngine.Core;
 using Newtonsoft.Json;
 using OfficeOpenXml;
+using TEngine.Helper;
 using static System.String;
-#pragma warning disable CS8625
-#pragma warning disable CS8604
-#pragma warning disable CS8602
-#pragma warning disable CS8601
-#pragma warning disable CS8600
-#pragma warning disable CS8618
 
 namespace TEngine.Core;
 
@@ -28,10 +23,14 @@ public sealed class ExcelExporter
     private readonly OneToManyList<string, ExportInfo> _tables = new OneToManyList<string, ExportInfo>();
     private readonly ConcurrentDictionary<string, ExcelTable> _excelTables = new ConcurrentDictionary<string, ExcelTable>();
     private readonly ConcurrentDictionary<string, ExcelWorksheet> _worksheets = new ConcurrentDictionary<string, ExcelWorksheet>();
+
+    static ExcelExporter()
+    {
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+    }
     
     public ExcelExporter(ExportType exportType)
     {
-        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         var versionFilePath = Define.ExcelVersionFile;
         
         switch (exportType)
@@ -86,6 +85,9 @@ public sealed class ExcelExporter
                 task.Add(Task.Run(customExport.Run));
             }
         }
+        
+        // 添加生成SceneType的自定义导出
+        task.Add(Task.Run(new SceneTypeConfigToEnum().Run));
 
         Task.WaitAll(task.ToArray());
     }
@@ -226,7 +228,7 @@ public sealed class ExcelExporter
                         {
                             // 列名字第一个字符是#不参与导出
 
-                            var colName = GetCellValue(worksheet, 5, col);
+                            var colName = worksheet.GetCellValue(5, col);
                             if (colName.StartsWith("#", StringComparison.Ordinal))
                             {
                                 continue;
@@ -234,14 +236,14 @@ public sealed class ExcelExporter
 
                             // 数值列不参与导出
 
-                            var numericalCol = GetCellValue(worksheet, 3, col);
+                            var numericalCol = worksheet.GetCellValue(3, col);
                             if (numericalCol != "" && numericalCol != "0")
                             {
                                 continue;
                             }
 
-                            var serverType = GetCellValue(worksheet, 1, col);
-                            var clientType = GetCellValue(worksheet, 2, col);
+                            var serverType = worksheet.GetCellValue(1, col);
+                            var clientType = worksheet.GetCellValue(2, col);
                             var isExportServer = !IsNullOrEmpty(serverType) && serverType != "0";
                             var isExportClient = !IsNullOrEmpty(clientType) && clientType != "0";
 
@@ -350,7 +352,7 @@ public sealed class ExcelExporter
 
             foreach (var colIndex in cols)
             {
-                var colName = GetCellValue(excelWorksheet, 5, colIndex);
+                var colName = excelWorksheet.GetCellValue(5, colIndex);
 
                 if (colNameSet.Contains(colName))
                 {
@@ -363,19 +365,19 @@ public sealed class ExcelExporter
 
                 if (isServer)
                 {
-                    colType = GetCellValue(excelWorksheet, 1, colIndex);
+                    colType = excelWorksheet.GetCellValue(1, colIndex);
 
                     if (IsNullOrEmpty(colType) || colType == "0")
                     {
-                        colType = GetCellValue(excelWorksheet, 2, colIndex);
+                        colType = excelWorksheet.GetCellValue(2, colIndex);
                     }
                 }
                 else
                 {
-                    colType = GetCellValue(excelWorksheet, 2, colIndex);
+                    colType = excelWorksheet.GetCellValue(2, colIndex);
                 }
 
-                var remarks = GetCellValue(excelWorksheet, 4, colIndex);
+                var remarks = excelWorksheet.GetCellValue(4, colIndex);
 
                 fileBuilder.Append($"\n\t\t[ProtoMember({++index}, IsRequired  = true)]\n");
                 fileBuilder.Append(
@@ -436,12 +438,12 @@ public sealed class ExcelExporter
 
                         for (var row = 7; row <= rows; row++)
                         {
-                            if (GetCellValue(excelWorksheet, row, 1).StartsWith("#", StringComparison.Ordinal))
+                            if (excelWorksheet.GetCellValue(row, 1).StartsWith("#", StringComparison.Ordinal))
                             {
                                 continue;
                             }
                             
-                            var id = GetCellValue(excelWorksheet, row, 3);
+                            var id = excelWorksheet.GetCellValue(row, 3);
 
                             if (idCheck.Contains(id))
                             {
@@ -525,21 +527,21 @@ public sealed class ExcelExporter
         {
             string colType;
             var colIndex = cols[i];
-            var colName = GetCellValue(excelWorksheet, 5, colIndex);
-            var value = GetCellValue(excelWorksheet, row, colIndex);
+            var colName = excelWorksheet.GetCellValue(5, colIndex);
+            var value = excelWorksheet.GetCellValue(row, colIndex);
             
             if (isServer)
             {
-                colType = GetCellValue(excelWorksheet, 1, colIndex);
+                colType = excelWorksheet.GetCellValue(1, colIndex);
                     
                 if (IsNullOrEmpty(colType) || colType == "0")
                 {
-                    colType = GetCellValue(excelWorksheet, 2, colIndex);
+                    colType = excelWorksheet.GetCellValue(2, colIndex);
                 }
             }
             else
             {
-                colType = GetCellValue(excelWorksheet, 2, colIndex);
+                colType = excelWorksheet.GetCellValue(2, colIndex);
             }
 
             try
@@ -566,7 +568,7 @@ public sealed class ExcelExporter
             dynamicInfo.Json.AppendLine($"{json},");
         }
     }
-    
+
     public ExcelWorksheet LoadExcel(string name, bool isAddToDic)
     {
         if (_worksheets.TryGetValue(name, out var worksheet))
@@ -574,7 +576,7 @@ public sealed class ExcelExporter
             return worksheet;
         }
 
-        worksheet = new ExcelPackage(name).Workbook.Worksheets[0];
+        worksheet = ExcelHelper.LoadExcel(name).Workbook.Worksheets[0];
 
         if (isAddToDic)
         {
@@ -583,26 +585,6 @@ public sealed class ExcelExporter
         
         Exporter.LogInfo(name);
         return worksheet;
-    }
-
-    private string GetCellValue(ExcelWorksheet sheet, int row, int column)
-    {
-        var cell = sheet.Cells[row, column];
-            
-        try
-        {
-            if (cell.Value == null)
-            {
-                return "";
-            }
-
-            var s = cell.GetValue<string>();
-            return s.Trim();
-        }
-        catch (Exception e)
-        {
-            throw new Exception($"Rows {row} Columns {column} Content {cell.Text} {e}");
-        }
     }
 
     private void SetNewValue(PropertyInfo propertyInfo, AProto config, string type, string value)
@@ -753,20 +735,6 @@ public sealed class ExcelExporter
 
                 return;
             }
-            // case "AttrConfig":
-            // {
-            //     if (value.Trim() == "" || value.Trim() == "{}")
-            //     {
-            //         propertyInfo.SetValue(config, null);
-            //         return;
-            //     }
-            //
-            //     var attr = new AttrConfig {KV = JsonConvert.DeserializeObject<Dictionary<int, int>>(value)};
-            //
-            //     propertyInfo.SetValue(config, attr);
-            //
-            //     return;
-            // }
             default:
                 throw new NotSupportedException($"不支持此类型: {type}");
         }

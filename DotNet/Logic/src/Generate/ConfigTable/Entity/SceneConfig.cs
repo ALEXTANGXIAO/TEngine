@@ -79,13 +79,13 @@ namespace TEngine
 		[ProtoMember(2, IsRequired  = true)]
 		public long EntityId { get; set; } // 实体Id
 		[ProtoMember(3, IsRequired  = true)]
-		public uint ServerConfigId { get; set; } // 服务配置Id
+		public uint ServerConfigId { get; set; } // 路由Id
 		[ProtoMember(4, IsRequired  = true)]
 		public uint WorldId { get; set; } // 世界Id
 		[ProtoMember(5, IsRequired  = true)]
 		public string SceneType { get; set; } // Scene类型
 		[ProtoMember(6, IsRequired  = true)]
-		public string Name { get; set; } // 名称
+		public string SceneSubType { get; set; } // Scene子类型
 		[ProtoMember(7, IsRequired  = true)]
 		public string NetworkProtocol { get; set; } // 协议类型
 		[ProtoMember(8, IsRequired  = true)]
