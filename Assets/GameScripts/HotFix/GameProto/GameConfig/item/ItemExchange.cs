@@ -7,32 +7,22 @@
 //------------------------------------------------------------------------------
 using Bright.Serialization;
 using System.Collections.Generic;
-using SimpleJSON;
-
 
 
 namespace GameConfig.item
-{ 
-
+{
 public sealed partial class ItemExchange :  Bright.Config.BeanBase 
 {
-    public ItemExchange(JSONNode _json) 
+    public ItemExchange(ByteBuf _buf) 
     {
-        { if(!_json["id"].IsNumber) { throw new SerializationException(); }  Id = _json["id"]; }
-        { if(!_json["num"].IsNumber) { throw new SerializationException(); }  Num = _json["num"]; }
+        Id = _buf.ReadInt();
+        Num = _buf.ReadInt();
         PostInit();
     }
 
-    public ItemExchange(int id, int num ) 
+    public static ItemExchange DeserializeItemExchange(ByteBuf _buf)
     {
-        this.Id = id;
-        this.Num = num;
-        PostInit();
-    }
-
-    public static ItemExchange DeserializeItemExchange(JSONNode _json)
-    {
-        return new item.ItemExchange(_json);
+        return new item.ItemExchange(_buf);
     }
 
     /// <summary>
@@ -67,4 +57,5 @@ public sealed partial class ItemExchange :  Bright.Config.BeanBase
     partial void PostInit();
     partial void PostResolve();
 }
+
 }

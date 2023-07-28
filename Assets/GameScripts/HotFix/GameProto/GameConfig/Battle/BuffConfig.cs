@@ -7,44 +7,28 @@
 //------------------------------------------------------------------------------
 using Bright.Serialization;
 using System.Collections.Generic;
-using SimpleJSON;
-
 
 
 namespace GameConfig.Battle
-{ 
-
+{
 public sealed partial class BuffConfig :  Bright.Config.BeanBase 
 {
-    public BuffConfig(JSONNode _json) 
+    public BuffConfig(ByteBuf _buf) 
     {
-        { if(!_json["BuffID"].IsNumber) { throw new SerializationException(); }  BuffID = _json["BuffID"]; }
-        { if(!_json["name"].IsString) { throw new SerializationException(); }  Name = _json["name"]; }
-        { if(!_json["prefId"].IsNumber) { throw new SerializationException(); }  PrefId = _json["prefId"]; }
-        { if(!_json["desc"].IsString) { throw new SerializationException(); }  Desc = _json["desc"]; }
-        { if(!_json["icon"].IsString) { throw new SerializationException(); }  Icon = _json["icon"]; }
-        { if(!_json["TimeType"].IsNumber) { throw new SerializationException(); }  TimeType = (Battle.BuffTimeType)_json["TimeType"].AsInt; }
-        { if(!_json["ReplaceType"].IsNumber) { throw new SerializationException(); }  ReplaceType = (Battle.BuffReplaceType)_json["ReplaceType"].AsInt; }
-        { if(!_json["State"].IsObject) { throw new SerializationException(); }  State = Battle.BuffTriggleState.DeserializeBuffTriggleState(_json["State"]);  }
+        BuffID = _buf.ReadInt();
+        Name = _buf.ReadString();
+        PrefId = _buf.ReadInt();
+        Desc = _buf.ReadString();
+        Icon = _buf.ReadString();
+        TimeType = (Battle.BuffTimeType)_buf.ReadInt();
+        ReplaceType = (Battle.BuffReplaceType)_buf.ReadInt();
+        State = Battle.BuffTriggleState.DeserializeBuffTriggleState(_buf);
         PostInit();
     }
 
-    public BuffConfig(int BuffID, string name, int prefId, string desc, string icon, Battle.BuffTimeType TimeType, Battle.BuffReplaceType ReplaceType, Battle.BuffTriggleState State ) 
+    public static BuffConfig DeserializeBuffConfig(ByteBuf _buf)
     {
-        this.BuffID = BuffID;
-        this.Name = name;
-        this.PrefId = prefId;
-        this.Desc = desc;
-        this.Icon = icon;
-        this.TimeType = TimeType;
-        this.ReplaceType = ReplaceType;
-        this.State = State;
-        PostInit();
-    }
-
-    public static BuffConfig DeserializeBuffConfig(JSONNode _json)
-    {
-        return new Battle.BuffConfig(_json);
+        return new Battle.BuffConfig(_buf);
     }
 
     /// <summary>
@@ -108,4 +92,5 @@ public sealed partial class BuffConfig :  Bright.Config.BeanBase
     partial void PostInit();
     partial void PostResolve();
 }
+
 }

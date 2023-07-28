@@ -25,8 +25,8 @@ public sealed class Exporter
 
         LogInfo("请输入你想要做的操作:");
         LogInfo("1:导出网络协议（ProtoBuf）");
-        LogInfo("2:增量导出Excel（包含常量枚举）");
-        LogInfo("3:全量导出Excel（包含常量枚举）");
+        LogInfo("2:增量导出服务器启动Excel（包含常量枚举）");
+        LogInfo("3:全量导出服务器启动Excel（包含常量枚举）");
 
         var keyChar = Console.ReadKey().KeyChar;
             

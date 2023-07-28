@@ -7,34 +7,23 @@
 //------------------------------------------------------------------------------
 using Bright.Serialization;
 using System.Collections.Generic;
-using SimpleJSON;
-
 
 
 namespace GameConfig.Battle
-{ 
-
+{
 public sealed partial class ResAttrImpactData :  Bright.Config.BeanBase 
 {
-    public ResAttrImpactData(JSONNode _json) 
+    public ResAttrImpactData(ByteBuf _buf) 
     {
-        { if(!_json["DataType"].IsNumber) { throw new SerializationException(); }  DataType = (Battle.ActorAttrDataType)_json["DataType"].AsInt; }
-        { if(!_json["AddType"].IsNumber) { throw new SerializationException(); }  AddType = (Battle.ActorAttrAddType)_json["AddType"].AsInt; }
-        { if(!_json["Value"].IsNumber) { throw new SerializationException(); }  Value = _json["Value"]; }
+        DataType = (Battle.ActorAttrDataType)_buf.ReadInt();
+        AddType = (Battle.ActorAttrAddType)_buf.ReadInt();
+        Value = _buf.ReadFloat();
         PostInit();
     }
 
-    public ResAttrImpactData(Battle.ActorAttrDataType DataType, Battle.ActorAttrAddType AddType, float Value ) 
+    public static ResAttrImpactData DeserializeResAttrImpactData(ByteBuf _buf)
     {
-        this.DataType = DataType;
-        this.AddType = AddType;
-        this.Value = Value;
-        PostInit();
-    }
-
-    public static ResAttrImpactData DeserializeResAttrImpactData(JSONNode _json)
-    {
-        return new Battle.ResAttrImpactData(_json);
+        return new Battle.ResAttrImpactData(_buf);
     }
 
     public Battle.ActorAttrDataType DataType { get; private set; }
@@ -65,4 +54,5 @@ public sealed partial class ResAttrImpactData :  Bright.Config.BeanBase
     partial void PostInit();
     partial void PostResolve();
 }
+
 }

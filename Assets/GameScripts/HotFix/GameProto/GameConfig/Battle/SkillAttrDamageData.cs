@@ -7,40 +7,26 @@
 //------------------------------------------------------------------------------
 using Bright.Serialization;
 using System.Collections.Generic;
-using SimpleJSON;
-
 
 
 namespace GameConfig.Battle
-{ 
-
+{
 public sealed partial class SkillAttrDamageData :  Bright.Config.BeanBase 
 {
-    public SkillAttrDamageData(JSONNode _json) 
+    public SkillAttrDamageData(ByteBuf _buf) 
     {
-        { if(!_json["MagicType"].IsNumber) { throw new SerializationException(); }  MagicType = (Battle.SkillMagicType)_json["MagicType"].AsInt; }
-        { if(!_json["AttrType"].IsNumber) { throw new SerializationException(); }  AttrType = (Battle.SkillAttrDamageType)_json["AttrType"].AsInt; }
-        { if(!_json["Param1"].IsNumber) { throw new SerializationException(); }  Param1 = _json["Param1"]; }
-        { if(!_json["Param2"].IsNumber) { throw new SerializationException(); }  Param2 = _json["Param2"]; }
-        { if(!_json["Param3"].IsNumber) { throw new SerializationException(); }  Param3 = _json["Param3"]; }
-        { if(!_json["MaxLimit"].IsNumber) { throw new SerializationException(); }  MaxLimit = _json["MaxLimit"]; }
+        MagicType = (Battle.SkillMagicType)_buf.ReadInt();
+        AttrType = (Battle.SkillAttrDamageType)_buf.ReadInt();
+        Param1 = _buf.ReadFloat();
+        Param2 = _buf.ReadFloat();
+        Param3 = _buf.ReadFloat();
+        MaxLimit = _buf.ReadFloat();
         PostInit();
     }
 
-    public SkillAttrDamageData(Battle.SkillMagicType MagicType, Battle.SkillAttrDamageType AttrType, float Param1, float Param2, float Param3, float MaxLimit ) 
+    public static SkillAttrDamageData DeserializeSkillAttrDamageData(ByteBuf _buf)
     {
-        this.MagicType = MagicType;
-        this.AttrType = AttrType;
-        this.Param1 = Param1;
-        this.Param2 = Param2;
-        this.Param3 = Param3;
-        this.MaxLimit = MaxLimit;
-        PostInit();
-    }
-
-    public static SkillAttrDamageData DeserializeSkillAttrDamageData(JSONNode _json)
-    {
-        return new Battle.SkillAttrDamageData(_json);
+        return new Battle.SkillAttrDamageData(_buf);
     }
 
     public Battle.SkillMagicType MagicType { get; private set; }
@@ -77,4 +63,5 @@ public sealed partial class SkillAttrDamageData :  Bright.Config.BeanBase
     partial void PostInit();
     partial void PostResolve();
 }
+
 }

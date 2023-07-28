@@ -7,46 +7,29 @@
 //------------------------------------------------------------------------------
 using Bright.Serialization;
 using System.Collections.Generic;
-using SimpleJSON;
-
 
 
 namespace GameConfig.Battle
-{ 
-
+{
 public sealed partial class BuffAttrConfig :  Bright.Config.BeanBase 
 {
-    public BuffAttrConfig(JSONNode _json) 
+    public BuffAttrConfig(ByteBuf _buf) 
     {
-        { if(!_json["BuffID"].IsNumber) { throw new SerializationException(); }  BuffID = _json["BuffID"]; }
-        { if(!_json["name"].IsString) { throw new SerializationException(); }  Name = _json["name"]; }
-        { if(!_json["StackNum"].IsNumber) { throw new SerializationException(); }  StackNum = _json["StackNum"]; }
-        { if(!_json["DurTime"].IsNumber) { throw new SerializationException(); }  DurTime = _json["DurTime"]; }
-        { if(!_json["ResultType"].IsNumber) { throw new SerializationException(); }  ResultType = (Battle.BuffResultType)_json["ResultType"].AsInt; }
-        { if(!_json["RemoveWhenDie"].IsNumber) { throw new SerializationException(); }  RemoveWhenDie = _json["RemoveWhenDie"]; }
-        { if(!_json["DotDamageData"].IsObject) { throw new SerializationException(); }  DotDamageData = Battle.SkillAttrDamageData.DeserializeSkillAttrDamageData(_json["DotDamageData"]);  }
-        { if(!_json["DotTickConfig"].IsObject) { throw new SerializationException(); }  DotTickConfig = Battle.BuffDotTickConfig.DeserializeBuffDotTickConfig(_json["DotTickConfig"]);  }
-        { var __json0 = _json["AttrData"]; if(!__json0.IsArray) { throw new SerializationException(); } AttrData = new System.Collections.Generic.List<Battle.ResAttrImpactData>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { Battle.ResAttrImpactData __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = Battle.ResAttrImpactData.DeserializeResAttrImpactData(__e0);  }  AttrData.Add(__v0); }   }
+        BuffID = _buf.ReadInt();
+        Name = _buf.ReadString();
+        StackNum = _buf.ReadInt();
+        DurTime = _buf.ReadFloat();
+        ResultType = (Battle.BuffResultType)_buf.ReadInt();
+        RemoveWhenDie = _buf.ReadInt();
+        DotDamageData = Battle.SkillAttrDamageData.DeserializeSkillAttrDamageData(_buf);
+        DotTickConfig = Battle.BuffDotTickConfig.DeserializeBuffDotTickConfig(_buf);
+        {int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);AttrData = new System.Collections.Generic.List<Battle.ResAttrImpactData>(n0);for(var i0 = 0 ; i0 < n0 ; i0++) { Battle.ResAttrImpactData _e0;  _e0 = Battle.ResAttrImpactData.DeserializeResAttrImpactData(_buf); AttrData.Add(_e0);}}
         PostInit();
     }
 
-    public BuffAttrConfig(int BuffID, string name, int StackNum, float DurTime, Battle.BuffResultType ResultType, int RemoveWhenDie, Battle.SkillAttrDamageData DotDamageData, Battle.BuffDotTickConfig DotTickConfig, System.Collections.Generic.List<Battle.ResAttrImpactData> AttrData ) 
+    public static BuffAttrConfig DeserializeBuffAttrConfig(ByteBuf _buf)
     {
-        this.BuffID = BuffID;
-        this.Name = name;
-        this.StackNum = StackNum;
-        this.DurTime = DurTime;
-        this.ResultType = ResultType;
-        this.RemoveWhenDie = RemoveWhenDie;
-        this.DotDamageData = DotDamageData;
-        this.DotTickConfig = DotTickConfig;
-        this.AttrData = AttrData;
-        PostInit();
-    }
-
-    public static BuffAttrConfig DeserializeBuffAttrConfig(JSONNode _json)
-    {
-        return new Battle.BuffAttrConfig(_json);
+        return new Battle.BuffAttrConfig(_buf);
     }
 
     /// <summary>
@@ -113,4 +96,5 @@ public sealed partial class BuffAttrConfig :  Bright.Config.BeanBase
     partial void PostInit();
     partial void PostResolve();
 }
+
 }

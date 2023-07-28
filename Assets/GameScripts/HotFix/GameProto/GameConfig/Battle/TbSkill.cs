@@ -7,26 +7,25 @@
 //------------------------------------------------------------------------------
 using Bright.Serialization;
 using System.Collections.Generic;
-using SimpleJSON;
-
 
 
 namespace GameConfig.Battle
-{ 
-
-public sealed partial class TbSkill
+{
+   
+public partial class TbSkill
 {
     private readonly Dictionary<int, Battle.SkillBaseConfig> _dataMap;
     private readonly List<Battle.SkillBaseConfig> _dataList;
     
-    public TbSkill(JSONNode _json)
+    public TbSkill(ByteBuf _buf)
     {
         _dataMap = new Dictionary<int, Battle.SkillBaseConfig>();
         _dataList = new List<Battle.SkillBaseConfig>();
         
-        foreach(JSONNode _row in _json.Children)
+        for(int n = _buf.ReadSize() ; n > 0 ; --n)
         {
-            var _v = Battle.SkillBaseConfig.DeserializeSkillBaseConfig(_row);
+            Battle.SkillBaseConfig _v;
+            _v = Battle.SkillBaseConfig.DeserializeSkillBaseConfig(_buf);
             _dataList.Add(_v);
             _dataMap.Add(_v.Id, _v);
         }
@@ -56,7 +55,6 @@ public sealed partial class TbSkill
             v.TranslateText(translator);
         }
     }
-    
     
     partial void PostInit();
     partial void PostResolve();

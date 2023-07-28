@@ -7,32 +7,22 @@
 //------------------------------------------------------------------------------
 using Bright.Serialization;
 using System.Collections.Generic;
-using SimpleJSON;
-
 
 
 namespace GameConfig.Battle
-{ 
-
+{
 public sealed partial class BuffDotTickConfig :  Bright.Config.BeanBase 
 {
-    public BuffDotTickConfig(JSONNode _json) 
+    public BuffDotTickConfig(ByteBuf _buf) 
     {
-        { if(!_json["TickTime"].IsNumber) { throw new SerializationException(); }  TickTime = _json["TickTime"]; }
-        { if(!_json["TickWhenAdd"].IsNumber) { throw new SerializationException(); }  TickWhenAdd = _json["TickWhenAdd"]; }
+        TickTime = _buf.ReadFloat();
+        TickWhenAdd = _buf.ReadInt();
         PostInit();
     }
 
-    public BuffDotTickConfig(float TickTime, int TickWhenAdd ) 
+    public static BuffDotTickConfig DeserializeBuffDotTickConfig(ByteBuf _buf)
     {
-        this.TickTime = TickTime;
-        this.TickWhenAdd = TickWhenAdd;
-        PostInit();
-    }
-
-    public static BuffDotTickConfig DeserializeBuffDotTickConfig(JSONNode _json)
-    {
-        return new Battle.BuffDotTickConfig(_json);
+        return new Battle.BuffDotTickConfig(_buf);
     }
 
     public float TickTime { get; private set; }
@@ -61,4 +51,5 @@ public sealed partial class BuffDotTickConfig :  Bright.Config.BeanBase
     partial void PostInit();
     partial void PostResolve();
 }
+
 }

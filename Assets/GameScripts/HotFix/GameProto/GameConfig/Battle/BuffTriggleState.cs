@@ -7,32 +7,22 @@
 //------------------------------------------------------------------------------
 using Bright.Serialization;
 using System.Collections.Generic;
-using SimpleJSON;
-
 
 
 namespace GameConfig.Battle
-{ 
-
+{
 public sealed partial class BuffTriggleState :  Bright.Config.BeanBase 
 {
-    public BuffTriggleState(JSONNode _json) 
+    public BuffTriggleState(ByteBuf _buf) 
     {
-        { if(!_json["StateID"].IsNumber) { throw new SerializationException(); }  StateID = (Battle.BuffStateID)_json["StateID"].AsInt; }
-        { if(!_json["StateParam"].IsNumber) { throw new SerializationException(); }  StateParam = _json["StateParam"]; }
+        StateID = (Battle.BuffStateID)_buf.ReadInt();
+        StateParam = _buf.ReadFloat();
         PostInit();
     }
 
-    public BuffTriggleState(Battle.BuffStateID StateID, float StateParam ) 
+    public static BuffTriggleState DeserializeBuffTriggleState(ByteBuf _buf)
     {
-        this.StateID = StateID;
-        this.StateParam = StateParam;
-        PostInit();
-    }
-
-    public static BuffTriggleState DeserializeBuffTriggleState(JSONNode _json)
-    {
-        return new Battle.BuffTriggleState(_json);
+        return new Battle.BuffTriggleState(_buf);
     }
 
     public Battle.BuffStateID StateID { get; private set; }
@@ -61,4 +51,5 @@ public sealed partial class BuffTriggleState :  Bright.Config.BeanBase
     partial void PostInit();
     partial void PostResolve();
 }
+
 }

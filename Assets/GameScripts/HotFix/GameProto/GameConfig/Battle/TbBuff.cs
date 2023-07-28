@@ -7,26 +7,25 @@
 //------------------------------------------------------------------------------
 using Bright.Serialization;
 using System.Collections.Generic;
-using SimpleJSON;
-
 
 
 namespace GameConfig.Battle
-{ 
-
-public sealed partial class TbBuff
+{
+   
+public partial class TbBuff
 {
     private readonly Dictionary<int, Battle.BuffConfig> _dataMap;
     private readonly List<Battle.BuffConfig> _dataList;
     
-    public TbBuff(JSONNode _json)
+    public TbBuff(ByteBuf _buf)
     {
         _dataMap = new Dictionary<int, Battle.BuffConfig>();
         _dataList = new List<Battle.BuffConfig>();
         
-        foreach(JSONNode _row in _json.Children)
+        for(int n = _buf.ReadSize() ; n > 0 ; --n)
         {
-            var _v = Battle.BuffConfig.DeserializeBuffConfig(_row);
+            Battle.BuffConfig _v;
+            _v = Battle.BuffConfig.DeserializeBuffConfig(_buf);
             _dataList.Add(_v);
             _dataMap.Add(_v.BuffID, _v);
         }
@@ -56,7 +55,6 @@ public sealed partial class TbBuff
             v.TranslateText(translator);
         }
     }
-    
     
     partial void PostInit();
     partial void PostResolve();

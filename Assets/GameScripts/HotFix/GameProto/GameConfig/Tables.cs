@@ -6,20 +6,19 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using Bright.Serialization;
-using SimpleJSON;
+
 
 
 namespace GameConfig
 { 
-   
-public sealed partial class Tables
+public partial class Tables
 {
     public item.TbItem TbItem {get; }
     public Battle.TbSkill TbSkill {get; }
     public Battle.TbBuff TbBuff {get; }
     public Battle.TbBuffAttr TbBuffAttr {get; }
 
-    public Tables(System.Func<string, JSONNode> loader)
+    public Tables(System.Func<string, ByteBuf> loader)
     {
         var tables = new System.Collections.Generic.Dictionary<string, object>();
         TbItem = new item.TbItem(loader("item_tbitem")); 
@@ -30,8 +29,8 @@ public sealed partial class Tables
         tables.Add("Battle.TbBuff", TbBuff);
         TbBuffAttr = new Battle.TbBuffAttr(loader("battle_tbbuffattr")); 
         tables.Add("Battle.TbBuffAttr", TbBuffAttr);
-        PostInit();
 
+        PostInit();
         TbItem.Resolve(tables); 
         TbSkill.Resolve(tables); 
         TbBuff.Resolve(tables); 

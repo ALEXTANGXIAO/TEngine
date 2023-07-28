@@ -7,50 +7,31 @@
 //------------------------------------------------------------------------------
 using Bright.Serialization;
 using System.Collections.Generic;
-using SimpleJSON;
-
 
 
 namespace GameConfig.Battle
-{ 
-
+{
 public sealed partial class SkillBaseConfig :  Bright.Config.BeanBase 
 {
-    public SkillBaseConfig(JSONNode _json) 
+    public SkillBaseConfig(ByteBuf _buf) 
     {
-        { if(!_json["id"].IsNumber) { throw new SerializationException(); }  Id = _json["id"]; }
-        { if(!_json["name"].IsString) { throw new SerializationException(); }  Name = _json["name"]; }
-        { if(!_json["SkillDispID"].IsNumber) { throw new SerializationException(); }  SkillDispID = _json["SkillDispID"]; }
-        { if(!_json["SkillType"].IsNumber) { throw new SerializationException(); }  SkillType = _json["SkillType"]; }
-        { if(!_json["desc"].IsString) { throw new SerializationException(); }  Desc = _json["desc"]; }
-        { if(!_json["CostMP"].IsNumber) { throw new SerializationException(); }  CostMP = _json["CostMP"]; }
-        { if(!_json["GCDID"].IsNumber) { throw new SerializationException(); }  GCDID = _json["GCDID"]; }
-        { if(!_json["SkillCD"].IsNumber) { throw new SerializationException(); }  SkillCD = _json["SkillCD"]; }
-        { if(!_json["IsRepeatTrigger"].IsBoolean) { throw new SerializationException(); }  IsRepeatTrigger = _json["IsRepeatTrigger"]; }
-        { var __json0 = _json["BuffID"]; if(!__json0.IsArray) { throw new SerializationException(); } BuffID = new System.Collections.Generic.List<int>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { int __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = __e0; }  BuffID.Add(__v0); }   }
-        { var __json0 = _json["AttrDamageData"]; if(!__json0.IsArray) { throw new SerializationException(); } AttrDamageData = new System.Collections.Generic.List<Battle.SkillAttrDamageData>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { Battle.SkillAttrDamageData __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = Battle.SkillAttrDamageData.DeserializeSkillAttrDamageData(__e0);  }  AttrDamageData.Add(__v0); }   }
+        Id = _buf.ReadInt();
+        Name = _buf.ReadString();
+        SkillDispID = _buf.ReadInt();
+        SkillType = _buf.ReadInt();
+        Desc = _buf.ReadString();
+        CostMP = _buf.ReadInt();
+        GCDID = _buf.ReadInt();
+        SkillCD = _buf.ReadFloat();
+        IsRepeatTrigger = _buf.ReadBool();
+        {int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);BuffID = new System.Collections.Generic.List<int>(n0);for(var i0 = 0 ; i0 < n0 ; i0++) { int _e0;  _e0 = _buf.ReadInt(); BuffID.Add(_e0);}}
+        {int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);AttrDamageData = new System.Collections.Generic.List<Battle.SkillAttrDamageData>(n0);for(var i0 = 0 ; i0 < n0 ; i0++) { Battle.SkillAttrDamageData _e0;  _e0 = Battle.SkillAttrDamageData.DeserializeSkillAttrDamageData(_buf); AttrDamageData.Add(_e0);}}
         PostInit();
     }
 
-    public SkillBaseConfig(int id, string name, int SkillDispID, int SkillType, string desc, int CostMP, int GCDID, float SkillCD, bool IsRepeatTrigger, System.Collections.Generic.List<int> BuffID, System.Collections.Generic.List<Battle.SkillAttrDamageData> AttrDamageData ) 
+    public static SkillBaseConfig DeserializeSkillBaseConfig(ByteBuf _buf)
     {
-        this.Id = id;
-        this.Name = name;
-        this.SkillDispID = SkillDispID;
-        this.SkillType = SkillType;
-        this.Desc = desc;
-        this.CostMP = CostMP;
-        this.GCDID = GCDID;
-        this.SkillCD = SkillCD;
-        this.IsRepeatTrigger = IsRepeatTrigger;
-        this.BuffID = BuffID;
-        this.AttrDamageData = AttrDamageData;
-        PostInit();
-    }
-
-    public static SkillBaseConfig DeserializeSkillBaseConfig(JSONNode _json)
-    {
-        return new Battle.SkillBaseConfig(_json);
+        return new Battle.SkillBaseConfig(_buf);
     }
 
     /// <summary>
@@ -129,4 +110,5 @@ public sealed partial class SkillBaseConfig :  Bright.Config.BeanBase
     partial void PostInit();
     partial void PostResolve();
 }
+
 }
