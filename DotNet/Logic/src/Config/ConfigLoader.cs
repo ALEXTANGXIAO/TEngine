@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Bright.Serialization;
 using GameConfig;
 using TEngine;
@@ -35,11 +36,18 @@ public class ConfigLoader:Singleton<ConfigLoader>
     /// </summary>
     public void Load()
     {
-        var tablesCtor = typeof(Tables).GetConstructors()[0];
-        var loaderReturnType = tablesCtor.GetParameters()[0].ParameterType.GetGenericArguments()[1];
+        try
+        {
+            var tablesCtor = typeof(Tables).GetConstructors()[0];
+            var loaderReturnType = tablesCtor.GetParameters()[0].ParameterType.GetGenericArguments()[1];
 
-        System.Delegate loader =  new System.Func<string, ByteBuf>(LoadByteBuf);
-        _tables = (Tables)tablesCtor.Invoke(new object[] { loader });
+            System.Delegate loader =  new System.Func<string, ByteBuf>(LoadByteBuf);
+            _tables = (Tables)tablesCtor.Invoke(new object[] { loader });
+        }
+        catch (Exception e)
+        {
+            Log.Warning($"找不到游戏配置 启动项目前请运行Luban目录gen_code_bin_to_server.bat."+e.Message);
+        }
     }
 
 
