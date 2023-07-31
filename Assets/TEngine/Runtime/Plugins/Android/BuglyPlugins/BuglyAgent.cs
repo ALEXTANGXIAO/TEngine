@@ -312,7 +312,7 @@ public sealed class BuglyAgent
         LogRecord (level, string.Format (format, args));
     }
     
-    #if UNITY_EDITOR || UNITY_STANDALONE
+    #if UNITY_EDITOR || UNITY_STANDALONE || (UNITY_IPHONE || UNITY_IOS)
     
     #region Interface(Empty) in Editor 
     private static void InitBuglyAgent (string appId)
@@ -502,7 +502,7 @@ public sealed class BuglyAgent
     
     #endregion
     
-    #elif UNITY_IPHONE || UNITY_IOS
+    #elif false && (UNITY_IPHONE || UNITY_IOS)
     
     #region Interface for iOS
     
