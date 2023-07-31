@@ -51,7 +51,7 @@ public class ConfigLoader:Singleton<ConfigLoader>
 #if UNITY_EDITOR
         var ret = File.ReadAllText($"{Application.dataPath}/../GenerateDatas/json/{file}.json", System.Text.Encoding.UTF8);
 #else
-        var textAssets = GameModule.Resource.LoadAsset<TextAsset>($"{SettingsUtils.FrameworkGlobalSettings.ConfigFolderName}{file}.json");
+        var textAssets = GameModule.Resource.LoadAsset<TextAsset>(file);
         var ret = textAssets.text;
 #endif
         return JSON.Parse(ret);
@@ -68,7 +68,7 @@ public class ConfigLoader:Singleton<ConfigLoader>
 #if UNITY_EDITOR
         ret = File.ReadAllBytes($"{Application.dataPath}/../GenerateDatas/bytes/{file}.bytes");
 #else
-        var textAssets = GameModule.Resource.LoadAsset<TextAsset>($"{SettingsUtils.FrameworkGlobalSettings.ConfigFolderName}{file}.bytes");
+        var textAssets = GameModule.Resource.LoadAsset<TextAsset>(file);
         ret = textAssets.bytes;
 #endif
         return new ByteBuf(ret);
