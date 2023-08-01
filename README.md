@@ -143,10 +143,13 @@ Assets
 ---
 ## <strong>优质开源项目推荐
 
-### <a href="https://github.com/tuyoogame/YooAsset"><strong>YooAsset</strong></a> - YooAsset是一套商业级经历百万DAU游戏验证的资源管理系统。
+#### <a href="https://github.com/tuyoogame/YooAsset"><strong>YooAsset</strong></a> - YooAsset是一套商业级经历百万DAU游戏验证的资源管理系统。
+
 #### <a href="https://github.com/JasonXuDeveloper/JEngine"><strong>JEngine</strong></a> - 使Unity开发的游戏支持热更新的解决方案。
 
 #### <a href="https://github.com/focus-creative-games/hybridclr"><strong>HybridCLR</strong></a> - 特性完整、零成本、高性能、低内存的近乎完美的Unity全平台原生c#热更方案
-    
+
+#### <a href="https://github.com/qq362946/Fantasy"><strong>Fantasy</strong></a> - Fantasy是一套源于ETServer但极为简洁，性能更强，更好上手的一套商业级服务器框架。
+
 ## <strong>交流群
 ### <a href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=MzOcQIzGVLQ5AC5LHaqqA3h_F6lZ_DX4&authKey=LctqAWGHkJ7voQvuj1oaSe5tsGrc1XmQG3U4QniieGUlxY3lC7FtDIpEvPOX0vT8&noverify=0&group_code=862987645">群   号：862987645 </strong></a>
