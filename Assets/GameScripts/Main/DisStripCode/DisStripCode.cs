@@ -29,11 +29,6 @@ public class DisStripCode : MonoBehaviour
         RegisterType<AnimationState>();
         RegisterType<Animator>();
         RegisterType<Animation>();
-
-        //IOSCamera ios下相机权限的问题，用这种方法就可以解决了 问题防裁剪。
-        foreach (var _ in WebCamTexture.devices)
-        {
-        }
     }
 
     private void RegisterType<T>()
