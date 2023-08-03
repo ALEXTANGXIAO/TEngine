@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using ProtoBuf;
 
 namespace TEngine.Core
