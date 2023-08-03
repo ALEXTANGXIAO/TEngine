@@ -91,7 +91,7 @@ namespace TEngine
         }
 #else
         /// <summary>
-        /// 创建一个Scene、但这个Scene是在某个Scene下面的Scene。
+        /// 创建一个Scene。
         /// </summary>
         /// <param name="scene"></param>
         /// <param name="sceneType"></param>
@@ -101,24 +101,24 @@ namespace TEngine
         public static async FTask<T> Create<T>(Scene scene, int sceneType, int sceneSubType) where T : Scene, new()
         {
             var newScene = Create<T>(scene);
-            newScene.Scene = scene;
+            newScene.Scene = newScene;
             newScene.Parent = scene;
             newScene.SceneType = sceneType;
             newScene.SceneSubType = sceneSubType;
             newScene.Server = scene.Server;
             newScene.LocationId = scene.Server.Id;
             
-            if (scene.World !=null)
+            if (scene.World != null)
             {
                 newScene.World = scene.World;
             }
             
             if (sceneType > 0)
             {
-                await EventSystem.Instance.PublishAsync(new OnCreateScene(scene));
+                await EventSystem.Instance.PublishAsync(new OnCreateScene(newScene));
             }
             
-            Scenes.Add(scene);
+            Scenes.Add(newScene);
             return newScene;
         }
         

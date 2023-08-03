@@ -735,6 +735,34 @@ public sealed class ExcelExporter
 
                 return;
             }
+            case "IntDictionaryConfig":
+            {
+                if (value.Trim() == "" || value.Trim() == "{}")
+                {
+                    propertyInfo.SetValue(config, null);
+                    return;
+                }
+
+                var attr = new IntDictionaryConfig {Dic = JsonConvert.DeserializeObject<Dictionary<int, int>>(value)};
+
+                propertyInfo.SetValue(config, attr);
+
+                return;
+            }
+            case "StringDictionaryConfig":
+            {
+                if (value.Trim() == "" || value.Trim() == "{}")
+                {
+                    propertyInfo.SetValue(config, null);
+                    return;
+                }
+
+                var attr = new StringDictionaryConfig {Dic = JsonConvert.DeserializeObject<Dictionary<int, string>>(value)};
+
+                propertyInfo.SetValue(config, attr);
+
+                return;
+            }
             default:
                 throw new NotSupportedException($"不支持此类型: {type}");
         }

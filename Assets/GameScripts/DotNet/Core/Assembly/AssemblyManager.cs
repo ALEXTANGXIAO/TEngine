@@ -63,6 +63,14 @@ namespace TEngine.Core
 
             LoadAssembly(assemblyName, assembly);
         }
+        
+        public static IEnumerable<int> ForEachAssemblyName()
+        {
+            foreach (var (key, _) in AssemblyList)
+            {
+                yield return key;
+            }
+        }
 
         public static IEnumerable<Type> ForEach()
         {

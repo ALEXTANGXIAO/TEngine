@@ -179,9 +179,8 @@ public sealed class MongoHelper : Singleton<MongoHelper>
 
     public void SerializeTo<T>(T t, MemoryStream stream)
     {
-        var bytes = t.ToBson();
-
-        stream.Write(bytes, 0, bytes.Length);
+        using var writer = new BsonBinaryWriter(stream, BsonBinaryWriterSettings.Defaults);
+        BsonSerializer.Serialize(writer, typeof(T), t);
     }
 
     public T Clone<T>(T t)

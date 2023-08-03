@@ -79,6 +79,7 @@ public static class Define
     public static readonly HashSet<string> ColTypeSet = new HashSet<string>()
     {
         "", "0", "bool", "byte", "short", "ushort", "int", "uint", "long", "ulong", "float", "string", "AttrConfig",
+        "IntDictionaryConfig", "StringDictionaryConfig",
         "short[]", "int[]", "long[]", "float[]", "string[]"
     };
     /// <summary>

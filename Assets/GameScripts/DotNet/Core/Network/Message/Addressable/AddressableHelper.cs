@@ -19,15 +19,14 @@ namespace TEngine.Core.Network
             }
         }
 
-        public static async FTask AddAddressable(Scene scene, long addressableId, long routeId)
+        public static async FTask AddAddressable(Scene scene, long addressableId, long routeId, bool isLock = true)
         {
             var addressableScene = AddressableScenes[(int)addressableId % AddressableScenes.Count];
             var response = await MessageHelper.CallInnerRoute(scene, addressableScene.EntityId,
                 new I_AddressableAdd_Request
                 {
-                    AddressableId = addressableId, RouteId = routeId
+                    AddressableId = addressableId, RouteId = routeId, IsLock = isLock
                 });
-            
             if (response.ErrorCode != 0)
             {
                 Log.Error($"AddAddressable error is {response.ErrorCode}");

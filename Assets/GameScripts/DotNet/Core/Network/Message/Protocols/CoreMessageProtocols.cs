@@ -63,6 +63,8 @@ namespace TEngine
         public long AddressableId { get; set; }
         [ProtoMember(2)]
         public long RouteId { get; set; }
+        [ProtoMember(3)] 
+        public bool IsLock { get; set; }
     }
     [ProtoContract]
     public partial class I_AddressableAdd_Response : AProto, IRouteResponse

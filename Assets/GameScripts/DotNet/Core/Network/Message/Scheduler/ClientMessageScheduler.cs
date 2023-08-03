@@ -46,7 +46,7 @@ namespace TEngine.Core.Network
             }
             finally
             {
-                packInfo.Dispose();
+                NetworkThread.Instance.SynchronizationContext.Post(packInfo.Dispose);
             }
 
             await FTask.CompletedTask;

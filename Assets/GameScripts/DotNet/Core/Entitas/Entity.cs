@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 
 // ReSharper disable SuspiciousTypeConversion.Global
 // ReSharper disable InconsistentNaming
+// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 
 namespace TEngine
 {
@@ -401,11 +402,54 @@ namespace TEngine
         }
         
         #endregion
+        
+#if TENGINE_NET
+        #region ForEach
+        public IEnumerable<Entity> ForEachSingleCollection
+        {
+            get
+            {
+                foreach (var (_, treeEntity) in _tree)
+                {
+                    if (treeEntity is not ISupportedSingleCollection)
+                    {
+                        continue;
+                    }
+                    yield return treeEntity;
+                }
+            }
+        }
+        public IEnumerable<Entity> ForEachTransfer
+        {
+            get
+            {
+                if (_tree != null)
+                {
+                    foreach (var (_, treeEntity) in _tree)
+                    {
+                        if (treeEntity is ISupportedSingleCollection || treeEntity is ISupportedTransfer)
+                        {
+                            yield return treeEntity;
+                        }
+                    }
+                }
+                if (_multiDb != null)
+                {
+                    foreach (var treeEntity in _multiDb)
+                    {
+                        if (treeEntity is not ISupportedTransfer)
+                        {
+                            continue;
+                        }
+                        yield return treeEntity;
+                    }
+                }
+            }
+        }
+        #endregion
+#endif
 
         #region GetComponent
-        
-        public DictionaryPool<Type, Entity> GetTree => _tree;
-
         public T GetComponent<T>() where T : Entity, new()
         {
             return GetComponent(typeof(T)) as T;

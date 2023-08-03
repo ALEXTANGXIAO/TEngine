@@ -5,7 +5,7 @@ public sealed class I_AddressableAddHandler : RouteRPC<Scene, I_AddressableAdd_R
 {
     protected override async FTask Run(Scene scene, I_AddressableAdd_Request request, I_AddressableAdd_Response response, Action reply)
     {
-        await scene.GetComponent<AddressableManageComponent>().Add(request.AddressableId, request.RouteId);
+        await scene.GetComponent<AddressableManageComponent>().Add(request.AddressableId, request.RouteId, request.IsLock);
     }
 }
 #endif

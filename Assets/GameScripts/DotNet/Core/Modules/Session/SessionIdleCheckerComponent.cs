@@ -51,7 +51,7 @@ public class SessionIdleCheckerComponent: Entity
             return;
         }
 
-        Log.Warning($"session timeout id:{Id}");
+        Log.Warning($"session timeout id:{Id} timeNow:{timeNow} _session.LastReceiveTime:{_session.LastReceiveTime} _timeOut:{_timeOut}");
         _session.Dispose();
     }
 }

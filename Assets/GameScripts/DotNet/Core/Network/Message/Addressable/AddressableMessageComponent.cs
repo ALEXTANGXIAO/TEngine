@@ -19,7 +19,7 @@ namespace TEngine.Core.Network
             base.Dispose();
         }
 
-        public FTask Register()
+        public FTask Register(bool isLock = true)
         {
             if (Parent == null)
             {
@@ -36,7 +36,7 @@ namespace TEngine.Core.Network
 #if TENGINE_DEVELOP
             Log.Debug($"AddressableMessageComponent Register addressableId:{AddressableId} RouteId:{Parent.RuntimeId}");
 #endif
-            return AddressableHelper.AddAddressable(Scene, AddressableId, Parent.RuntimeId);
+            return AddressableHelper.AddAddressable(Scene, AddressableId, Parent.RuntimeId, isLock);
         }
 
         public FTask Lock()

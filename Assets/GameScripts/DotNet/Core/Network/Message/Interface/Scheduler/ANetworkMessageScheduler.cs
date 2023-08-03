@@ -78,7 +78,7 @@ namespace TEngine.Core.Network
             {
                 if (DisposePackInfo)
                 {
-                    packInfo.Dispose();
+                    NetworkThread.Instance.SynchronizationContext.Post(packInfo.Dispose);
                 }
             }
         }

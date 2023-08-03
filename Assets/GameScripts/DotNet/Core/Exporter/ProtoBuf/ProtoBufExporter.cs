@@ -424,7 +424,9 @@ public sealed class ProtoBufExporter
             "int32[]" => "int[] { }",
             "int64[]" => "long[] { }",
             "int32" => "int",
+            "uint32" => "uint",
             "int64" => "long",
+            "uint64" => "ulong",
             _ => type
         };
     }

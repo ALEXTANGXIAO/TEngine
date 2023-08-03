@@ -120,7 +120,7 @@ namespace TEngine.Core.Network
             }
             finally
             {
-                packInfo.Dispose();
+                NetworkThread.Instance.SynchronizationContext.Post(packInfo.Dispose);
             }
 
             throw new NotSupportedException($"Received unsupported message protocolCode:{packInfo.ProtocolCode} messageType:{messageType}");

@@ -1,6 +1,8 @@
 #if TENGINE_NET
 using System.Buffers;
 using TEngine.DataStructure;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 
 namespace TEngine.Core.Network;
@@ -199,7 +201,16 @@ public sealed class InnerPacketParser : APacketParser
         {
             if (message is IBsonMessage)
             {
-                MongoHelper.Instance.SerializeTo(message, memoryStream);
+                try
+                {
+                    
+                    MongoHelper.Instance.SerializeTo(message, memoryStream);
+                }
+                catch (Exception e)
+                {
+                    Log.Fatal(e);
+                    throw;
+                }
             }
             else
             {

@@ -92,7 +92,7 @@ public class SingleCollection : Singleton<SingleCollection>
 
         using var collections = ListPool<Entity>.Create();
         
-        foreach (var (_, treeEntity) in entity.GetTree)
+        foreach (var treeEntity in entity.ForEachSingleCollection)
         {
             if (treeEntity is not ISupportedSingleCollection)
             {

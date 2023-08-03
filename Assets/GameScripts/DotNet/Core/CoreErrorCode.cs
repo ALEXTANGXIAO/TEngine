@@ -7,5 +7,6 @@ namespace TEngine.Core
         public const uint ErrRouteTimeout = 100000004; // 发送Route消息超时
         public const uint Error_NotFindEntity = 100000008; // 没有找到Entity
         public const uint Error_CopyTimeout = 100000009; // CopyTimeout不能小于或等于0
+        public const uint Error_Transfer = 100000010;// 传送发生了错误
     }
 }
