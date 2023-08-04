@@ -29,95 +29,38 @@
 </p>
 
 
-# <strong>TEngine v3.0.0
+# <strong>TEngine
 
-#### TEngine是一个简单(新手友好)且强大的Unity框架,对于需要一套上手快、文档清晰、高性能且可拓展性极强的开发者或者团队来说是一个很好的游戏开发框架解决方案。
+#### TEngine是一个简单(新手友好开箱即用)且强大的Unity框架解决方案,对于需要一套上手快、文档清晰、高性能且可拓展性极强的商业级解决方案的开发者或者团队来说是一个很好的选择。
 
 
 ## <a href="http://1.12.241.46:5000/"><strong>文档快速入门 »</strong></a>
-## <a href="https://github.com/ALEXTANGXIAO/TEngineServer"><strong>服务端GitHub入口 »</strong></a>
+
+## 文档快速预览 - 5分钟
+* [全平台跑通示意](Books/99-各平台运行RunAble.md): 全平台跑通示意。
+* [01_介绍](Books/0-介绍.md): 简单介绍。
+* [02_框架概览](Books/2-框架概览.md): 展示框架概览。
+* [03_资源模块](Books/3-1-资源模块.md): 展示资源模块概览。
+* [04_事件模块](Books/3-2-事件模块.md): 展示事件模块概览。
+* [05_内存池模块](Books/3-3-%E5%86%85%E5%AD%98%E6%B1%A0%E6%A8%A1%E5%9D%97.md): 展示内存池模块概览。
+* [06_对象池模块](Books/3-4-%E5%AF%B9%E8%B1%A1%E6%B1%A0%E6%A8%A1%E5%9D%97.md): 展示对象池模块概览。
+* [07_配置表模块](Books/3-6-%E9%85%8D%E7%BD%AE%E8%A1%A8%E6%A8%A1%E5%9D%97.md): 展示配置表模块概览。
+* [08_流程模块](Books/3-7-%E6%B5%81%E7%A8%8B%E6%A8%A1%E5%9D%97.md): 展示商业化流程模块。
+
 
 ## <strong>为什么要使用TEngine
-0. 五分钟即可上手整套开发流程，代码整洁，思路清晰，功能强大。模块化和可定制度高，模块间的耦合度极低，您可以随时把您不需要的模块进行移除。
-1. 强大的日志系统Log，可以编辑器/真机输出日志和日志文件到可持久化目录，捕捉到Excepion的时候自定义上传。
-```Csharp
-public void Test()
-{
-  Log.Info("some things");
-  Log.Assert(bool:condition,"assert log");
-  Log.Error("error some things");
-...
-}
-[TEngine][INFO][2022-05-20 23:44:19 871] - DevicePerformanceLevel 设备性能评级:High
+0. 开箱即用5分钟即可上手整套开发流程，代码整洁，思路清晰，功能强大。高内聚低耦合。您可以很轻易的把您不需要的模块进行移除替换。
+1. 使用次世代的HybridClr进行热更新、强大的Luban配置表、百万DAU游戏验证过的YooAsset资源框架，全平台热更新流程已跑通。
+2. 严格按照商业化流程执行的热更新、商业化的UI开发流程、以及资源管理等等。
+3. C#双端解决方案，服务器使用Fantasy，是一套源于ETServer但极为简洁，性能更强，更好上手的一套商业级服务器框架。
+4. 已有项目使用TEngine上架Steam、Wechat-minigame、AppStore。
+
+## <strong>为什么服务器使用C#
+Net Core现在已经更新到了8.0的版本，在性能和设计上其实是远超JAVA和GO。在JAVAER还在为JVM更新和添加更多功能时，其实他们已经被国内大环境所包围了，看不到.Net Core的性能之强，组件化的结构。国内大环境是JAVA和GO的天下这个不可否认，但是国外C#也确实很多。其实.Net Core最大的问题是大多数自己人都不知道他的优点(AOT、JIT混合编译、热重载等等)，甚至很多守旧派抵制core。GO喜欢吹性能，但其实目前来看，除了协程的轻量级，大多数性能测试其实不如JAVA和.Net。简单可以说出了C++的性能以外，Net Core其实都打得过。
+<strong>当然作为商业级解决方案服务器的耦合度也极低，如果不喜欢您也可以很轻松直接移除替换成你的服务器。</strong>
+
+## <strong>项目结构概览
 ```
-2. <strong>高效的事件系统GameEventMgr，可以指定事件ID/事件String监听和分发事件。通过事件来驱动模块，如战斗的角色身上的事件流、UI和网络以及Model的数据流、开发中的绝大部分情况都可以通过事件来进行驱动。(配合UI模块或者拓展的战斗模块实现MVE[Model - View - Event]事件驱动架构)
-```Csharp
-
-public static int Hellp = StringId.StringToHash("Hellp.Hellp");
-
-class A
-{
-   public A()
-   {
-     //添加事件监听string
-     GameEvent.AddEventListener("TEngine很好用",TodoSomeThings);
-     //添加事件监听int 事件ID
-     GameEvent.AddEventListener(Hellp,TodoSomeThings2);
-   }
-}
-
-class B
-{
-  private void SaySomeThings()
-  {
-      //发送事件流
-      GameEvent.Send("TEngine很好用");
-      GameEvent.Send(Hellp);
-  }
-}
-
-【举个例子：游戏中血量扣除的时候，服务器发来了一个减少Hp的消息包，
-我们可以在收到这个消息包的时候发送一个事件流，在玩家头顶的HP进度
-条组件/左上角Hp的UI血条组件添加一个监听事件，各个模块负责自己监听后的逻辑】
-Server -> SendMessage(ReduceHP)
-
-class ClientHandle
-{
-  private void HandleMessage(MainPack mainpack)
-  {
-    ...
-    HpPack hpPack = mainpack.hpPack;
-    int playerId = mainpack.playerId;
-    var player = PlayerMgr.Instance.GetPlayer(playerId);
-    if(player != null){
-      player.Event.Send("Hpchange",hpPack);       //局部的事件管理器
-      GameEvent.Send("Hpchange",hpPack);  //全局事件中心
-    }
-  }
-}
-
-class PlayerHp
-{
-  public ECSEventCmpt Event { get; set; }
-  PlayerHp(){
-    Event.AddEventListener<HpPack>(Hellp,HandleUpChange);
-  }
-}
-
-class PlayerHpUI
-{
-  PlayerHpUI(){
-    GameEvent.AddEventListener<HpPack>(Hellp,HandleUpChange);
-  }
-}
-```
-3. 健壮的资源模块TResources,开发者只用关注一个接口便可以通用的在编辑器进行资源加载或者真机加载AB，包括打包AB等等。通过类AssetConfig统一配置本地资源加载和AB打包的路径(AssetRootPath),AB加密偏移也在底层处理，更安全的保护了您的项目，测试无法被AssetStudio解密，并且经测试AB加密偏移性能几乎无影响。   
-增加了AB资源计数的概念，提供了AB桥接器IResourceHelper，你可以拓展此接口实现自己的资源管理器以便于接入XAssets或者是YooAssets等等。
-
-<strong>4.救世的<a href="https://github.com/focus-creative-games/hybridclr"><strong>HybirdCLR(huatuo)</strong></a>热更新(目前支持大部分Unity2020-2021 lts等版本)
-
-```
-//项目结构
 Assets
 ├── AssetRaw            // 热更资源目录
 ├── Atlas               // 自动生成图集目录
@@ -137,8 +80,6 @@ Assets
 
  - 必要：项目使用了以下第三方插件，请自行购买导入：
    - /Unity/Assets/Plugins/Sirenix
----
-
 
 ---
 ## <strong>优质开源项目推荐
