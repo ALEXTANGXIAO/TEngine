@@ -19,7 +19,6 @@ public sealed partial class SkillBaseConfig :  Bright.Config.BeanBase
         Name = _buf.ReadString();
         SkillDispID = _buf.ReadInt();
         SkillType = _buf.ReadInt();
-        Desc = _buf.ReadString();
         CostMP = _buf.ReadInt();
         GCDID = _buf.ReadInt();
         SkillCD = _buf.ReadFloat();
@@ -50,10 +49,6 @@ public sealed partial class SkillBaseConfig :  Bright.Config.BeanBase
     /// 技能类型SkillType
     /// </summary>
     public int SkillType { get; private set; }
-    /// <summary>
-    /// 描述
-    /// </summary>
-    public string Desc { get; private set; }
     /// <summary>
     /// 消耗MP
     /// </summary>
@@ -97,7 +92,6 @@ public sealed partial class SkillBaseConfig :  Bright.Config.BeanBase
         + "Name:" + Name + ","
         + "SkillDispID:" + SkillDispID + ","
         + "SkillType:" + SkillType + ","
-        + "Desc:" + Desc + ","
         + "CostMP:" + CostMP + ","
         + "GCDID:" + GCDID + ","
         + "SkillCD:" + SkillCD + ","

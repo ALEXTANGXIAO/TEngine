@@ -18,8 +18,6 @@ public sealed partial class BuffConfig :  Bright.Config.BeanBase
         BuffID = _buf.ReadInt();
         Name = _buf.ReadString();
         PrefId = _buf.ReadInt();
-        Desc = _buf.ReadString();
-        Icon = _buf.ReadString();
         TimeType = (Battle.BuffTimeType)_buf.ReadInt();
         ReplaceType = (Battle.BuffReplaceType)_buf.ReadInt();
         State = Battle.BuffTriggleState.DeserializeBuffTriggleState(_buf);
@@ -43,14 +41,6 @@ public sealed partial class BuffConfig :  Bright.Config.BeanBase
     /// 表现ID
     /// </summary>
     public int PrefId { get; private set; }
-    /// <summary>
-    /// 描述
-    /// </summary>
-    public string Desc { get; private set; }
-    /// <summary>
-    /// 图标
-    /// </summary>
-    public string Icon { get; private set; }
     /// <summary>
     /// 持续类型
     /// </summary>
@@ -81,8 +71,6 @@ public sealed partial class BuffConfig :  Bright.Config.BeanBase
         + "BuffID:" + BuffID + ","
         + "Name:" + Name + ","
         + "PrefId:" + PrefId + ","
-        + "Desc:" + Desc + ","
-        + "Icon:" + Icon + ","
         + "TimeType:" + TimeType + ","
         + "ReplaceType:" + ReplaceType + ","
         + "State:" + State + ","

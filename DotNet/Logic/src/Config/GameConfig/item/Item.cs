@@ -17,13 +17,10 @@ public sealed partial class Item :  Bright.Config.BeanBase
     {
         Id = _buf.ReadInt();
         Name = _buf.ReadString();
-        Desc = _buf.ReadString();
         Price = _buf.ReadInt();
         UpgradeToItemId = _buf.ReadInt();
         if(_buf.ReadBool()){ ExpireTime = _buf.ReadInt(); } else { ExpireTime = null; }
-        BatchUseable = _buf.ReadBool();
         Quality = (item.EQuality)_buf.ReadInt();
-        ExchangeStream = item.ItemExchange.DeserializeItemExchange(_buf);
         {int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);ExchangeList = new System.Collections.Generic.List<item.ItemExchange>(n0);for(var i0 = 0 ; i0 < n0 ; i0++) { item.ItemExchange _e0;  _e0 = item.ItemExchange.DeserializeItemExchange(_buf); ExchangeList.Add(_e0);}}
         ExchangeColumn = item.ItemExchange.DeserializeItemExchange(_buf);
         PostInit();
@@ -43,10 +40,6 @@ public sealed partial class Item :  Bright.Config.BeanBase
     /// </summary>
     public string Name { get; private set; }
     /// <summary>
-    /// 描述
-    /// </summary>
-    public string Desc { get; private set; }
-    /// <summary>
     /// 价格
     /// </summary>
     public int Price { get; private set; }
@@ -60,17 +53,9 @@ public sealed partial class Item :  Bright.Config.BeanBase
     /// </summary>
     public int? ExpireTime { get; private set; }
     /// <summary>
-    /// 能否批量使用
-    /// </summary>
-    public bool BatchUseable { get; private set; }
-    /// <summary>
     /// 品质
     /// </summary>
     public item.EQuality Quality { get; private set; }
-    /// <summary>
-    /// 道具兑换配置
-    /// </summary>
-    public item.ItemExchange ExchangeStream { get; private set; }
     public System.Collections.Generic.List<item.ItemExchange> ExchangeList { get; private set; }
     /// <summary>
     /// 道具兑换配置
@@ -83,7 +68,6 @@ public sealed partial class Item :  Bright.Config.BeanBase
     public  void Resolve(Dictionary<string, object> _tables)
     {
         this.UpgradeToItemId_Ref = (_tables["item.TbItem"] as item.TbItem).GetOrDefault(UpgradeToItemId);
-        ExchangeStream?.Resolve(_tables);
         foreach(var _e in ExchangeList) { _e?.Resolve(_tables); }
         ExchangeColumn?.Resolve(_tables);
         PostResolve();
@@ -91,7 +75,6 @@ public sealed partial class Item :  Bright.Config.BeanBase
 
     public  void TranslateText(System.Func<string, string, string> translator)
     {
-        ExchangeStream?.TranslateText(translator);
         foreach(var _e in ExchangeList) { _e?.TranslateText(translator); }
         ExchangeColumn?.TranslateText(translator);
     }
@@ -101,13 +84,10 @@ public sealed partial class Item :  Bright.Config.BeanBase
         return "{ "
         + "Id:" + Id + ","
         + "Name:" + Name + ","
-        + "Desc:" + Desc + ","
         + "Price:" + Price + ","
         + "UpgradeToItemId:" + UpgradeToItemId + ","
         + "ExpireTime:" + ExpireTime + ","
-        + "BatchUseable:" + BatchUseable + ","
         + "Quality:" + Quality + ","
-        + "ExchangeStream:" + ExchangeStream + ","
         + "ExchangeList:" + Bright.Common.StringUtil.CollectionToString(ExchangeList) + ","
         + "ExchangeColumn:" + ExchangeColumn + ","
         + "}";

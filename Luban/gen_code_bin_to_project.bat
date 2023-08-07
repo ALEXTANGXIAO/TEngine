@@ -11,7 +11,7 @@ set DATA_OUTPUT=%ROOT_PATH%..\GenerateDatas
  --output_code_dir %WORKSPACE%/Assets/GameScripts/HotFix/GameProto/GameConfig ^
  --output_data_dir %WORKSPACE%/Assets/AssetRaw/Configs/bytes/ ^
  --gen_types code_cs_unity_bin,data_bin ^
- -s all 
+ -s client
 
 echo ======== 生成配置文件结束 ========
 
