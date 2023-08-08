@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace TEngine
 {
@@ -45,43 +46,43 @@ namespace TEngine
 
             public override void OnUpdate(float elapseSeconds, float realElapseSeconds)
             {
-                if (m_LastIconX != _mDebuggerModule.IconRect.x)
+                if (Math.Abs(m_LastIconX - _mDebuggerModule.IconRect.x) > 0.01f)
                 {
                     m_LastIconX = _mDebuggerModule.IconRect.x;
                     _mSettingModule.SetFloat("Debugger.Icon.X", _mDebuggerModule.IconRect.x);
                 }
 
-                if (m_LastIconY != _mDebuggerModule.IconRect.y)
+                if (Math.Abs(m_LastIconY - _mDebuggerModule.IconRect.y) > 0.01f)
                 {
                     m_LastIconY = _mDebuggerModule.IconRect.y;
                     _mSettingModule.SetFloat("Debugger.Icon.Y", _mDebuggerModule.IconRect.y);
                 }
 
-                if (m_LastWindowX != _mDebuggerModule.WindowRect.x)
+                if (Math.Abs(m_LastWindowX - _mDebuggerModule.WindowRect.x) > 0.01f)
                 {
                     m_LastWindowX = _mDebuggerModule.WindowRect.x;
                     _mSettingModule.SetFloat("Debugger.Window.X", _mDebuggerModule.WindowRect.x);
                 }
 
-                if (m_LastWindowY != _mDebuggerModule.WindowRect.y)
+                if (Math.Abs(m_LastWindowY - _mDebuggerModule.WindowRect.y) > 0.01f)
                 {
                     m_LastWindowY = _mDebuggerModule.WindowRect.y;
                     _mSettingModule.SetFloat("Debugger.Window.Y", _mDebuggerModule.WindowRect.y);
                 }
 
-                if (m_LastWindowWidth != _mDebuggerModule.WindowRect.width)
+                if (Math.Abs(m_LastWindowWidth - _mDebuggerModule.WindowRect.width) > 0.01f)
                 {
                     m_LastWindowWidth = _mDebuggerModule.WindowRect.width;
                     _mSettingModule.SetFloat("Debugger.Window.Width", _mDebuggerModule.WindowRect.width);
                 }
 
-                if (m_LastWindowHeight != _mDebuggerModule.WindowRect.height)
+                if (Math.Abs(m_LastWindowHeight - _mDebuggerModule.WindowRect.height) > 0.01f)
                 {
                     m_LastWindowHeight = _mDebuggerModule.WindowRect.height;
                     _mSettingModule.SetFloat("Debugger.Window.Height", _mDebuggerModule.WindowRect.height);
                 }
 
-                if (m_LastWindowScale != _mDebuggerModule.WindowScale)
+                if (Math.Abs(m_LastWindowScale - _mDebuggerModule.WindowScale) > 0.01f)
                 {
                     m_LastWindowScale = _mDebuggerModule.WindowScale;
                     _mSettingModule.SetFloat("Debugger.Window.Scale", _mDebuggerModule.WindowScale);
@@ -114,7 +115,7 @@ namespace TEngine
                             width++;
                         }
                         width = Mathf.Clamp(width, 100f, Screen.width - 20f);
-                        if (width != _mDebuggerModule.WindowRect.width)
+                        if (Math.Abs(width - _mDebuggerModule.WindowRect.width) > 0.01f)
                         {
                             _mDebuggerModule.WindowRect = new Rect(_mDebuggerModule.WindowRect.x, _mDebuggerModule.WindowRect.y, width, _mDebuggerModule.WindowRect.height);
                         }
@@ -135,7 +136,7 @@ namespace TEngine
                             height++;
                         }
                         height = Mathf.Clamp(height, 100f, Screen.height - 20f);
-                        if (height != _mDebuggerModule.WindowRect.height)
+                        if (Math.Abs(height - _mDebuggerModule.WindowRect.height) > 0.01f)
                         {
                             _mDebuggerModule.WindowRect = new Rect(_mDebuggerModule.WindowRect.x, _mDebuggerModule.WindowRect.y, _mDebuggerModule.WindowRect.width, height);
                         }
@@ -156,7 +157,7 @@ namespace TEngine
                             scale += 0.01f;
                         }
                         scale = Mathf.Clamp(scale, 0.5f, 4f);
-                        if (scale != _mDebuggerModule.WindowScale)
+                        if (Math.Abs(scale - _mDebuggerModule.WindowScale) > 0.01f)
                         {
                             _mDebuggerModule.WindowScale = scale;
                         }
@@ -206,6 +207,11 @@ namespace TEngine
                     }
                 }
                 GUILayout.EndVertical();
+            }
+
+            public override void OnLeave()
+            {
+                _mSettingModule.Save();
             }
         }
     }
