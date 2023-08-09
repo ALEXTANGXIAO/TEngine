@@ -80,7 +80,7 @@ public static class Define
     {
         "", "0", "bool", "byte", "short", "ushort", "int", "uint", "long", "ulong", "float", "string", "AttrConfig",
         "IntDictionaryConfig", "StringDictionaryConfig",
-        "short[]", "int[]", "long[]", "float[]", "string[]"
+        "short[]", "int[]", "long[]", "float[]", "string[]","uint[]"
     };
     /// <summary>
     /// Excel生成代码模板的位置
