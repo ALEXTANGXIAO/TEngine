@@ -9,6 +9,7 @@ namespace GameLogic
     public delegate void HandleGM(List<string> @params);
 
     [Update]
+    [LateUpdate]
     public class GMBehaviourSystem : BehaviourSingleton<GMBehaviourSystem>
     {
         public override void Active()
@@ -17,14 +18,22 @@ namespace GameLogic
             base.Active();
         }
 
+        public override void Start()
+        {
+            base.Start();
+        }
+
         public override void Update()
         {
             if (Input.GetKeyDown(KeyCode.F1))
             {
                 GameModule.UI.ShowUIAsync<GMPanel>();
             }
+        }
 
-            ;
+        public override void LateUpdate()
+        {
+            base.LateUpdate();
         }
     }
 
