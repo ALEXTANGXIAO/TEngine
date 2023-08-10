@@ -1,16 +1,28 @@
+using System.Collections.Generic;
 using GameLogic;
 using UnityEngine;
 using UnityEngine.UI;
 using TEngine;
 
+class TempData
+{
+    
+}
+
+class TempItem : UILoopItemWidget, IListDataItem<TempData>
+{
+    public void SetItemData(TempData d)
+    {
+        
+    }
+}
+
 [Window(UILayer.UI)]
 class NetWorkDemoUI : UIWindow
 {
+    protected UILoopListWidget<TempItem, TempData> m_loopList;
+    
     #region 脚本工具生成的代码
-
-    private GameObject m_goScrollView;
-    private Transform m_tfContent;
-    private GameObject m_itemNetLog;
     private GameObject m_goConnect;
     private Button m_btnConnect;
     private GameObject m_goLogin;
@@ -18,12 +30,11 @@ class NetWorkDemoUI : UIWindow
     private InputField m_inputName;
     private Button m_btnLogin;
     private Button m_btnRegister;
-
+    private ScrollRect m_scrollRect;
+    private Transform m_tfContent;
+    private GameObject m_itemTemp;
     public override void ScriptGenerator()
     {
-        m_goScrollView = FindChild("Panel/m_goScrollView").gameObject;
-        m_tfContent = FindChild("Panel/m_goScrollView/Viewport/m_tfContent");
-        m_itemNetLog = FindChild("Panel/m_goScrollView/Viewport/m_tfContent/m_itemNetLog").gameObject;
         m_goConnect = FindChild("Panel/m_goConnect").gameObject;
         m_btnConnect = FindChildComponent<Button>("Panel/m_goConnect/m_btnConnect");
         m_goLogin = FindChild("Panel/m_goLogin").gameObject;
@@ -31,12 +42,27 @@ class NetWorkDemoUI : UIWindow
         m_inputName = FindChildComponent<InputField>("Panel/m_goLogin/m_inputName");
         m_btnLogin = FindChildComponent<Button>("Panel/m_goLogin/m_btnLogin");
         m_btnRegister = FindChildComponent<Button>("Panel/m_goLogin/m_btnRegister");
+        m_scrollRect = FindChildComponent<ScrollRect>("Panel/m_scrollRect");
+        m_tfContent = FindChild("Panel/m_scrollRect/Viewport/m_tfContent");
+        m_itemTemp = FindChild("Panel/m_scrollRect/Viewport/m_tfContent/m_itemTemp").gameObject;
         m_btnConnect.onClick.AddListener(OnClickConnectBtn);
         m_btnLogin.onClick.AddListener(OnClickLoginBtn);
         m_btnRegister.onClick.AddListener(OnClickRegisterBtn);
     }
-
     #endregion
+
+    public override void OnRefresh()
+    {
+        m_loopList = CreateWidget<UILoopListWidget<TempItem, TempData>>(m_scrollRect.gameObject);
+        m_loopList.itemBase = m_itemTemp;
+        List<TempData> datas = new List<TempData>();
+        for (int i = 0; i < 100; i++)
+        {
+            datas.Add(new TempData());
+        }
+        m_loopList.SetDatas(datas);
+        base.OnRefresh();
+    }
 
     #region 事件
 

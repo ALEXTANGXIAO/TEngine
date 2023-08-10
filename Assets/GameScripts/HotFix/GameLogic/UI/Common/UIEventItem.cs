@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace GameLogic
 {
-    class UIEventItem<T> : UIWidget where T : UIEventItem<T>
+    public class UIEventItem<T> : UIWidget where T : UIEventItem<T>
     {
         private object _eventParam1;
         private object _eventParam2;
