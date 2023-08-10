@@ -1,12 +1,13 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace TEngine
 {
     /// <summary>
     /// 通过LogicSys来驱动且具备Unity完整生命周期的单例（不继承MonoBehaviour）。
+    /// <remarks>Update、FixUpdate以及LateUpdate这些敏感帧更新需要加上对应的Attribute以最优化性能。</remarks>
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">完整生命周期的类型。</typeparam>
     public abstract class BehaviourSingleton<T> : BaseBehaviourSingleton where T : BaseBehaviourSingleton, new()
     {
         private static T _instance;
@@ -43,11 +44,6 @@ namespace TEngine
 
         public virtual void Awake()
         {
-        }
-
-        public virtual bool IsHaveLateUpdate()
-        {
-            return false;
         }
 
         public virtual void Start()
@@ -159,7 +155,6 @@ namespace TEngine
         {
             var listStart = _listStart;
             var listToUpdate = _listUpdate;
-            var listToLateUpdate = _listLateUpdate;
             if (listStart.Count > 0)
             {
                 for (int i = 0; i < listStart.Count; i++)
@@ -169,12 +164,6 @@ namespace TEngine
 
                     inst.IsStart = true;
                     inst.Start();
-                    listToUpdate.Add(inst);
-
-                    if (inst.IsHaveLateUpdate())
-                    {
-                        listToLateUpdate.Add(inst);
-                    }
                 }
 
                 listStart.Clear();
