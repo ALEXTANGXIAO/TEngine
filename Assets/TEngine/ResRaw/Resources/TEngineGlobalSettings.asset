@@ -86,6 +86,7 @@ MonoBehaviour:
     HotUpdateAssemblies:
     - GameBase.dll
     - GameProto.dll
+    - DotNet.dll
     - BattleCore.Runtime.dll
     - GameLogic.dll
     AOTMetaAssemblies:
