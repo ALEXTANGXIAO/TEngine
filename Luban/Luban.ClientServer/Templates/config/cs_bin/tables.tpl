@@ -1,14 +1,15 @@
 using Bright.Serialization;
+using System.Threading.Tasks;
 
 {{
     name = x.name
     namespace = x.namespace
     tables = x.tables
-
 }}
-
-{{cs_start_name_space_grace x.namespace}} 
-public partial class {{name}}
+namespace {{namespace}}
+{
+   
+public sealed class {{name}}
 {
     {{~for table in tables ~}}
 {{~if table.comment != '' ~}}
@@ -16,22 +17,22 @@ public partial class {{name}}
     /// {{table.escape_comment}}
     /// </summary>
 {{~end~}}
-    public {{table.full_name}} {{table.name}} {get; }
+    public {{table.full_name}} {{table.name}} {get; private set; }
     {{~end~}}
 
-    public {{name}}(System.Func<string, ByteBuf> loader)
+    public {{name}}() { }
+    
+    public async Task LoadAsync(System.Func<string, Task<ByteBuf>> loader)
     {
         var tables = new System.Collections.Generic.Dictionary<string, object>();
         {{~for table in tables ~}}
-        {{table.name}} = new {{table.full_name}}(loader("{{table.output_data_file}}")); 
+        {{table.name}} = new {{table.full_name}}(await loader("{{table.output_data_file}}")); 
         tables.Add("{{table.full_name}}", {{table.name}});
         {{~end~}}
 
-        PostInit();
         {{~for table in tables ~}}
         {{table.name}}.Resolve(tables); 
         {{~end~}}
-        PostResolve();
     }
 
     public void TranslateText(System.Func<string, string, string> translator)
@@ -40,9 +41,6 @@ public partial class {{name}}
         {{table.name}}.TranslateText(translator); 
         {{~end~}}
     }
-    
-    partial void PostInit();
-    partial void PostResolve();
 }
 
-{{cs_end_name_space_grace x.namespace}}
+}

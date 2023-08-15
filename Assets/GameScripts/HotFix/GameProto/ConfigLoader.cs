@@ -1,8 +1,11 @@
+using System.Collections.Generic;
+using System.Threading;
 using Bright.Serialization;
-using System.IO;
+using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using GameBase;
 using GameConfig;
-using SimpleJSON;
+using TEngine;
 using UnityEngine;
 
 /// <summary>
@@ -20,57 +23,84 @@ public class ConfigLoader:Singleton<ConfigLoader>
         {
             if (!_init)
             {
-                _init = true;
-                Load();
+                Log.Error("Config not loaded. You need Take LoadAsync at first.");
             }
             return _tables;
         }
     }
-
+    
+    private readonly Dictionary<string, TextAsset> _configs = new Dictionary<string, TextAsset>();
+    
     /// <summary>
-    /// 加载配置
+    /// 异步加载配置。
     /// </summary>
-    public void Load()
+    public async Task LoadAsync()
     {
-        var tablesCtor = typeof(Tables).GetConstructors()[0];
-        var loaderReturnType = tablesCtor.GetParameters()[0].ParameterType.GetGenericArguments()[1];
-
-        System.Delegate loader = loaderReturnType == typeof(ByteBuf)
-            ? new System.Func<string, ByteBuf>(LoadByteBuf)
-            : (System.Delegate)new System.Func<string, JSONNode>(LoadJson);
-        _tables = (Tables)tablesCtor.Invoke(new object[] { loader });
+        _tables = new Tables();
+        await _tables.LoadAsync(LoadByteBufAsync);
+        _init = true;
     }
 
     /// <summary>
-    /// 加载Json配置。
-    /// </summary>
-    /// <param name="file">FileName</param>
-    /// <returns>JSONNode</returns>
-    private JSONNode LoadJson(string file)
-    {
-#if UNITY_EDITOR
-        var ret = File.ReadAllText($"{Application.dataPath}/../GenerateDatas/json/{file}.json", System.Text.Encoding.UTF8);
-#else
-        var textAssets = GameModule.Resource.LoadAsset<TextAsset>(file);
-        var ret = textAssets.text;
-#endif
-        return JSON.Parse(ret);
-    }
-
-    /// <summary>
-    /// 加载二进制配置。
+    /// 异步加载二进制配置。
     /// </summary>
     /// <param name="file">FileName</param>
     /// <returns>ByteBuf</returns>
-    private ByteBuf LoadByteBuf(string file)
+    private async Task<ByteBuf> LoadByteBufAsync(string file)
     {
-        byte[] ret = null;
-#if UNITY_EDITOR
-        ret = File.ReadAllBytes($"{Application.dataPath}/../GenerateDatas/bytes/{file}.bytes");
-#else
-        var textAssets = GameModule.Resource.LoadAsset<TextAsset>(file);
-        ret = textAssets.bytes;
+#if false
+        GameTickWatcher gameTickWatcher = new GameTickWatcher();
+#endif
+        byte[] ret;
+        var location = file;
+        if (_configs.TryGetValue(location, out var config))
+        {
+            ret = config.bytes;
+        }
+        else
+        {
+            var textAssets = await GameModule.Resource.LoadAssetAsync<TextAsset>(location,CancellationToken.None);
+            ret = textAssets.bytes;
+            RegisterTextAssets(file, textAssets);
+        }
+#if false
+        Log.Warning($"LoadByteBuf {file} used time {gameTickWatcher.ElapseTime()}");
 #endif
         return new ByteBuf(ret);
+    }
+    
+    /// <summary>
+    /// 注册配置资源。
+    /// </summary>
+    /// <param name="key">资源Key。</param>
+    /// <param name="value">资源实例。</param>
+    /// <returns>注册成功。</returns>
+    private bool RegisterTextAssets(string key, TextAsset value)
+    {
+        if (string.IsNullOrEmpty(key))
+        {
+            return false;
+        }
+
+        if (value == null)
+        {
+            return false;
+        }
+        _configs[key] = value;
+        return true;
+    }
+}
+
+public class ConfigSystem : BaseLogicSys<ConfigSystem>
+{
+    public override bool OnInit()
+    {
+        InitConfig().Forget();
+        return base.OnInit();
+    }
+
+    private async UniTaskVoid InitConfig()
+    {
+        await ConfigLoader.Instance.LoadAsync();
     }
 }

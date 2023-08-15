@@ -38,6 +38,7 @@ public partial class GameApp
         //带生命周期的单例系统。
         AddLogicSys(BehaviourSingleSystem.Instance);
         AddLogicSys(DataCenterSys.Instance);
+        AddLogicSys(ConfigSystem.Instance);
         GMBehaviourSystem.Instance.Active();
     }
     

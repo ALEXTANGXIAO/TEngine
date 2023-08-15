@@ -9,6 +9,8 @@ public static class ConfigTableSystem
 {
     public static void Bind()
     {
+        LoadConfigAsync();
+        
         // 框架需要一些的配置文件来启动服务器和创建网络服务所以需要ServerConfig.xlsx和MachineConfig.xlsx的配置
         // 由于配置表的代码是生成在框架外面的、框架没办法直接获取到配置文件
         // 考虑到这两个配置文件开发者可能会修改结构、所以提供了一个委托来让开发者开自己定义如何获取框架需要的东西
@@ -138,6 +140,11 @@ public static class ConfigTableSystem
         
             return list;
         };
+    }
+
+    public static async Task LoadConfigAsync()
+    {
+        await ConfigLoader.Instance.LoadAsync();
     }
 }
 #endif
