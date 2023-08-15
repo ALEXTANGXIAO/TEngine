@@ -6,7 +6,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using Bright.Serialization;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
 
 
 namespace GameConfig
@@ -21,17 +22,32 @@ public sealed class Tables
 
     public Tables() { }
     
-    public async Task LoadAsync(System.Func<string, Task<ByteBuf>> loader)
+    public async UniTask LoadAsync(System.Func<string, UniTask<ByteBuf>> loader)
     {
         var tables = new System.Collections.Generic.Dictionary<string, object>();
-        TbItem = new item.TbItem(await loader("item_tbitem")); 
-        tables.Add("item.TbItem", TbItem);
-        TbSkill = new Battle.TbSkill(await loader("battle_tbskill")); 
-        tables.Add("Battle.TbSkill", TbSkill);
-        TbBuff = new Battle.TbBuff(await loader("battle_tbbuff")); 
-        tables.Add("Battle.TbBuff", TbBuff);
-        TbBuffAttr = new Battle.TbBuffAttr(await loader("battle_tbbuffattr")); 
-        tables.Add("Battle.TbBuffAttr", TbBuffAttr);
+		List<UniTask> list = new List<UniTask>();
+		list.Add(UniTask.Create(async () =>
+		{
+			TbItem = new item.TbItem(await loader("item_tbitem")); 
+			tables.Add("item.TbItem", TbItem);
+		}));
+		list.Add(UniTask.Create(async () =>
+		{
+			TbSkill = new Battle.TbSkill(await loader("battle_tbskill")); 
+			tables.Add("Battle.TbSkill", TbSkill);
+		}));
+		list.Add(UniTask.Create(async () =>
+		{
+			TbBuff = new Battle.TbBuff(await loader("battle_tbbuff")); 
+			tables.Add("Battle.TbBuff", TbBuff);
+		}));
+		list.Add(UniTask.Create(async () =>
+		{
+			TbBuffAttr = new Battle.TbBuffAttr(await loader("battle_tbbuffattr")); 
+			tables.Add("Battle.TbBuffAttr", TbBuffAttr);
+		}));
+
+		await UniTask.WhenAll(list);
 
         TbItem.Resolve(tables); 
         TbSkill.Resolve(tables); 

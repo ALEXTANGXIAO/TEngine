@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using Bright.Serialization;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using GameBase;
 using GameConfig;
@@ -34,7 +33,7 @@ public class ConfigLoader:Singleton<ConfigLoader>
     /// <summary>
     /// 异步加载配置。
     /// </summary>
-    public async Task LoadAsync()
+    public async UniTask LoadAsync()
     {
         _tables = new Tables();
         await _tables.LoadAsync(LoadByteBufAsync);
@@ -46,7 +45,7 @@ public class ConfigLoader:Singleton<ConfigLoader>
     /// </summary>
     /// <param name="file">FileName</param>
     /// <returns>ByteBuf</returns>
-    private async Task<ByteBuf> LoadByteBufAsync(string file)
+    private async UniTask<ByteBuf> LoadByteBufAsync(string file)
     {
 #if false
         GameTickWatcher gameTickWatcher = new GameTickWatcher();
