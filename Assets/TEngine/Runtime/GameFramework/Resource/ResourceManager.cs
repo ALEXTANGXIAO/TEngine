@@ -413,61 +413,6 @@ namespace TEngine
         }
 
         /// <summary>
-        /// 异步加载资源实例。
-        /// </summary>
-        /// <param name="assetName">要加载的实例名称。</param>
-        /// <param name="cancellationToken">取消操作Token。</param>
-        /// <returns>资源实实例。</returns>
-        public async UniTask<T> LoadAssetAsync<T>(string assetName, CancellationToken cancellationToken) where T : Object
-        {
-            AssetOperationHandle handle = LoadAssetAsyncHandle<T>(assetName);
-            
-            bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
-
-            if (cancelOrFailed)
-            {
-                return null;
-            }
-            
-            if (typeof(T) == typeof(GameObject))
-            {
-                GameObject ret = handle.InstantiateSync();
-                
-                AssetReference.BindAssetReference(ret, handle, assetName);
-                
-                return ret as T;
-            }
-            else
-            {
-                return handle.AssetObject as T;
-            }
-        }
-
-        /// <summary>
-        /// 异步加载游戏物体。
-        /// </summary>
-        /// <param name="assetName">要加载的游戏物体名称。</param>
-        /// <param name="cancellationToken">取消操作Token。</param>
-        /// <returns>异步游戏物体实例。</returns>
-        public async UniTask<GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken)
-        {
-            AssetOperationHandle handle = LoadAssetAsyncHandle<GameObject>(assetName);
-            
-            bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
-
-            if (cancelOrFailed)
-            {
-                return null;
-            }
-
-            GameObject ret = handle.InstantiateSync();
-            
-            AssetReference.BindAssetReference(ret, handle, assetName);
-            
-            return ret;
-        }
-
-        /// <summary>
         /// 同步加载资源并获取句柄。
         /// </summary>
         /// <param name="assetName">要加载资源的名称。</param>
@@ -542,6 +487,164 @@ namespace TEngine
         public SceneOperationHandle LoadSceneAsync(AssetInfo assetInfo, LoadSceneMode sceneMode = LoadSceneMode.Single, bool activateOnLoad = true, int priority = 100)
         {
             return YooAssets.LoadSceneAsync(assetInfo,sceneMode,activateOnLoad,priority);
+        }
+        
+        
+        /// <summary>
+        /// 异步加载资源实例。
+        /// </summary>
+        /// <param name="assetName">要加载的实例名称。</param>
+        /// <param name="cancellationToken">取消操作Token。</param>
+        /// <returns>资源实实例。</returns>
+        public async UniTask<T> LoadAssetAsync<T>(string assetName, CancellationToken cancellationToken) where T : Object
+        {
+            AssetOperationHandle handle = LoadAssetAsyncHandle<T>(assetName);
+            
+            bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
+
+            if (cancelOrFailed)
+            {
+                return null;
+            }
+            
+            if (typeof(T) == typeof(GameObject))
+            {
+                GameObject ret = handle.InstantiateSync();
+                
+                AssetReference.BindAssetReference(ret, handle, assetName);
+                
+                return ret as T;
+            }
+            else
+            {
+                return handle.AssetObject as T;
+            }
+        }
+
+        /// <summary>
+        /// 异步加载游戏物体。
+        /// </summary>
+        /// <param name="assetName">要加载的游戏物体名称。</param>
+        /// <param name="cancellationToken">取消操作Token。</param>
+        /// <returns>异步游戏物体实例。</returns>
+        public async UniTask<GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken)
+        {
+            AssetOperationHandle handle = LoadAssetAsyncHandle<GameObject>(assetName);
+            
+            bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
+
+            if (cancelOrFailed)
+            {
+                return null;
+            }
+
+            GameObject ret = handle.InstantiateSync();
+            
+            AssetReference.BindAssetReference(ret, handle, assetName);
+            
+            return ret;
+        }
+        
+        /// <summary>
+        /// 异步加载游戏物体。
+        /// </summary>
+        /// <param name="location">资源定位地址。</param>
+        /// <param name="parent">父节点位置。</param>
+        /// <param name="cancellationToken">取消操作Token。</param>
+        /// <returns>异步游戏物体实例。</returns>
+        public async UniTask<GameObject> LoadGameObjectAsync(string location, Transform parent, CancellationToken cancellationToken)
+        {
+            GameObject gameObject = await LoadGameObjectAsync(location,cancellationToken);
+            if (parent != null)
+            {
+                gameObject.transform.SetParent(parent);
+            }
+            else
+            {
+                Log.Error("Set Parent Failed");
+            }
+            return gameObject;
+        }
+
+        /// <summary>
+        /// 异步加载原生文件。
+        /// </summary>
+        /// <param name="location">资源定位地址。</param>
+        /// <param name="cancellationToken">取消操作Token。</param>
+        /// <returns>原生文件资源实例操作句柄。</returns>
+        public async UniTask<RawFileOperationHandle> LoadRawAssetAsync(string location, CancellationToken cancellationToken)
+        {
+            RawFileOperationHandle handle = YooAssets.LoadRawFileAsync(location);
+            
+            bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
+
+            return cancelOrFailed ? null : handle;
+        }
+
+        /// <summary>
+        /// 异步加载子文件。
+        /// </summary>
+        /// <param name="location">资源定位地址。</param>
+        /// <param name="assetName">资源名称。</param>
+        /// <param name="cancellationToken">取消操作Token。</param>
+        /// <typeparam name="T">资源实例类型。</typeparam>
+        /// <returns>原生文件资源实例。</returns>
+        public async UniTask<T> LoadSubAssetAsync<T>(string location,string assetName, CancellationToken cancellationToken) where T : Object
+        {
+            var assetInfo = GetAssetInfo(location);
+            if (assetInfo == null)
+            {
+                Log.Fatal($"AssetsInfo is null");
+                return null;
+            }
+            
+            SubAssetsOperationHandle handle = YooAssets.LoadSubAssetsAsync(assetInfo);
+            
+            bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
+
+            return cancelOrFailed ? null : handle.GetSubAssetObject<T>(assetName);
+        }
+        
+        /// <summary>
+        /// 异步加载子文件。
+        /// </summary>
+        /// <param name="location">资源定位地址。</param>
+        /// <param name="cancellationToken">取消操作Token。</param>
+        /// <typeparam name="T">资源实例类型。</typeparam>
+        /// <returns>原生文件资源实例。</returns>
+        public async UniTask<T[]> LoadAllSubAssetAsync<T>(string location,CancellationToken cancellationToken) where T : Object
+        {
+            var assetInfo = GetAssetInfo(location);
+            if (assetInfo == null)
+            {
+                Log.Fatal($"AssetsInfo is null");
+                return null;
+            }
+            
+            SubAssetsOperationHandle handle = YooAssets.LoadSubAssetsAsync(assetInfo);
+            
+            bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
+
+            return cancelOrFailed ? null : handle.GetSubAssetObjects<T>();
+        }
+
+        /// <summary>
+        /// 异步加载场景.
+        /// </summary>
+        /// <param name="location">场景的定位地址.</param>
+        /// <param name="cancellationToken">取消操作Token。</param>
+        /// <param name="sceneMode">场景加载模式.</param>
+        /// <param name="activateOnLoad">加载完毕时是否主动激活.</param>
+        /// <param name="priority">优先级.</param>
+        /// <returns>场景资源实例。</returns>
+        public async UniTask<Scene> LoadSceneAsyncByUniTask(string location,CancellationToken cancellationToken,LoadSceneMode sceneMode = LoadSceneMode.Single,
+            bool activateOnLoad = true, int priority = 100)
+        {
+            SceneOperationHandle handle = YooAssets.LoadSceneAsync(location,sceneMode,activateOnLoad,priority);
+            
+            bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
+
+            return cancelOrFailed ? default : handle.SceneObject;
         }
     }
 }

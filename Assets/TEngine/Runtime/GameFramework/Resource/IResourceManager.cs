@@ -186,23 +186,6 @@ namespace TEngine
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
         T LoadAsset<T>(string assetName, Transform parent,out AssetOperationHandle handle) where T :Object;
-        
-        /// <summary>
-        /// 异步加载资源。
-        /// </summary>
-        /// <param name="assetName">要加载资源的名称。</param>
-        /// <param name="cancellationToken">取消操作Token。</param>
-        /// <typeparam name="T">要加载资源的类型。</typeparam>
-        /// <returns>异步资源实例。</returns>
-        UniTask<T> LoadAssetAsync<T>(string assetName,CancellationToken cancellationToken) where T : Object;
-
-        /// <summary>
-        /// 异步加载游戏物体。
-        /// </summary>
-        /// <param name="assetName">要加载的游戏物体名称。</param>
-        /// <param name="cancellationToken">取消操作Token。</param>
-        /// <returns>异步游戏物体实例。</returns>
-        UniTask<UnityEngine.GameObject> LoadGameObjectAsync(string assetName,CancellationToken cancellationToken);
 
         /// <summary>
         /// 同步加载资源并获取句柄。
@@ -221,21 +204,21 @@ namespace TEngine
         AssetOperationHandle LoadAssetAsyncHandle<T>(string assetName) where T : Object;
         
         /// <summary>
-        /// 同步加载子资源对象
+        /// 同步加载子资源对象。
         /// </summary>
-        /// <typeparam name="TObject">资源类型</typeparam>
-        /// <param name="location">资源的定位地址</param>
-        public SubAssetsOperationHandle LoadSubAssetsSync<TObject>(string location) where TObject : UnityEngine.Object;
+        /// <typeparam name="TObject">资源类型。</typeparam>
+        /// <param name="location">资源的定位地址。</param>
+        public SubAssetsOperationHandle LoadSubAssetsSync<TObject>(string location) where TObject : Object;
 
         /// <summary>
         /// 异步加载子资源对象
         /// </summary>
-        /// <typeparam name="TObject">资源类型</typeparam>
-        /// <param name="location">资源的定位地址</param>
-        public SubAssetsOperationHandle LoadSubAssetsAsync<TObject>(string location) where TObject : UnityEngine.Object;
+        /// <typeparam name="TObject">资源类型。</typeparam>
+        /// <param name="location">资源的定位地址。</param>
+        public SubAssetsOperationHandle LoadSubAssetsAsync<TObject>(string location) where TObject : Object;
 
         /// <summary>
-        /// 同步加载子资源对象
+        /// 同步加载子资源对象。
         /// </summary>
         /// <param name="assetInfo">资源信息。</param>
         public SubAssetsOperationHandle LoadSubAssetsSync(AssetInfo assetInfo);
@@ -251,7 +234,7 @@ namespace TEngine
         SceneOperationHandle LoadSceneAsync(string location, LoadSceneMode sceneMode = LoadSceneMode.Single, bool activateOnLoad = true, int priority = 100);
 
         /// <summary>
-        /// 异步加载场景
+        /// 异步加载场景.
         /// </summary>
         /// <param name="assetInfo">场景的资源信息</param>
         /// <param name="sceneMode">场景加载模式</param>
@@ -259,5 +242,69 @@ namespace TEngine
         /// <param name="priority">优先级</param>
         /// <returns>异步加载场景句柄。</returns>
         SceneOperationHandle LoadSceneAsync(AssetInfo assetInfo, LoadSceneMode sceneMode = LoadSceneMode.Single, bool activateOnLoad = true, int priority = 100);
+        
+        /// <summary>
+        /// 异步加载资源。
+        /// </summary>
+        /// <param name="location">资源定位地址。</param>
+        /// <param name="cancellationToken">取消操作Token。</param>
+        /// <typeparam name="T">要加载资源的类型。</typeparam>
+        /// <returns>异步资源实例。</returns>
+        UniTask<T> LoadAssetAsync<T>(string location,CancellationToken cancellationToken) where T : Object;
+
+        /// <summary>
+        /// 异步加载游戏物体。
+        /// </summary>
+        /// <param name="location">资源定位地址。</param>
+        /// <param name="cancellationToken">取消操作Token。</param>
+        /// <returns>异步游戏物体实例。</returns>
+        UniTask<GameObject> LoadGameObjectAsync(string location,CancellationToken cancellationToken);
+        
+        /// <summary>
+        /// 异步加载游戏物体。
+        /// </summary>
+        /// <param name="location">资源定位地址。</param>
+        /// <param name="parent">父节点位置。</param>
+        /// <param name="cancellationToken">取消操作Token。</param>
+        /// <returns>异步游戏物体实例。</returns>
+        UniTask<GameObject> LoadGameObjectAsync(string location,Transform parent,CancellationToken cancellationToken);
+        
+        /// <summary>
+        /// 异步加载原生文件。
+        /// </summary>
+        /// <param name="location">资源定位地址。</param>
+        /// <param name="cancellationToken">取消操作Token。</param>
+        /// <returns>原生文件资源实例。</returns>
+        UniTask<RawFileOperationHandle> LoadRawAssetAsync(string location,CancellationToken cancellationToken);
+
+        /// <summary>
+        /// 异步加载子文件。
+        /// </summary>
+        /// <param name="location">资源定位地址。</param>
+        /// <param name="assetName">资源名称。</param>
+        /// <param name="cancellationToken">取消操作Token。</param>
+        /// <typeparam name="T">资源实例类型。</typeparam>
+        /// <returns>原生文件资源实例。</returns>
+        UniTask<T> LoadSubAssetAsync<T>(string location, string assetName, CancellationToken cancellationToken) where T : Object;
+        
+        /// <summary>
+        /// 异步加载所有子文件。
+        /// </summary>
+        /// <param name="location">资源定位地址。</param>
+        /// <param name="cancellationToken">取消操作Token。</param>
+        /// <typeparam name="T">资源实例类型。</typeparam>
+        /// <returns>原生文件资源实例。</returns>
+        UniTask<T[]> LoadAllSubAssetAsync<T>(string location,CancellationToken cancellationToken) where T : Object;
+        
+        /// <summary>
+        /// 异步加载场景。
+        /// </summary>
+        /// <param name="location">场景的定位地址。</param>
+        /// <param name="cancellationToken">取消操作Token。</param>
+        /// <param name="sceneMode">场景加载模式。</param>
+        /// <param name="activateOnLoad">加载完毕时是否主动激活。</param>
+        /// <param name="priority">优先级。</param>
+        /// <returns>场景资源实例。</returns>
+        UniTask<Scene> LoadSceneAsyncByUniTask(string location,CancellationToken cancellationToken,LoadSceneMode sceneMode = LoadSceneMode.Single, bool activateOnLoad = true, int priority = 100);
     }
 }
