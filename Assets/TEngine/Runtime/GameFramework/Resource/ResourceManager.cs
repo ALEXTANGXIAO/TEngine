@@ -578,6 +578,8 @@ namespace TEngine
             
             bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
 
+            handle.Dispose();
+            
             return cancelOrFailed ? null : handle;
         }
 
@@ -602,6 +604,8 @@ namespace TEngine
             
             bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
 
+            handle.Dispose();
+            
             return cancelOrFailed ? null : handle.GetSubAssetObject<T>(assetName);
         }
         
@@ -625,6 +629,8 @@ namespace TEngine
             
             bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
 
+            handle.Dispose();
+            
             return cancelOrFailed ? null : handle.GetSubAssetObjects<T>();
         }
 
