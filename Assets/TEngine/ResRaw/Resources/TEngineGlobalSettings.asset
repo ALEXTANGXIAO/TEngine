@@ -85,8 +85,8 @@ MonoBehaviour:
     m_Gitee: 1
     HotUpdateAssemblies:
     - GameBase.dll
-    - GameProto.dll
     - DotNet.dll
+    - GameProto.dll
     - BattleCore.Runtime.dll
     - GameLogic.dll
     AOTMetaAssemblies:

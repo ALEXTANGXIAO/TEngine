@@ -30,7 +30,7 @@ public class HybridCLRCustomGlobalSettings
 
     [Header("Auto sync with [HybridCLRGlobalSettings]")]
     [Tooltip("You should modify the file form file path [Assets/CustomHybridCLR/Settings/HybridCLRGlobalSettings.asset]")]
-    public List<string> HotUpdateAssemblies = new List<string>() { "GameBase.dll","GameProto.dll","BattleCore.Runtime.dll","GameLogic.dll"};
+    public List<string> HotUpdateAssemblies = new List<string>() { "GameBase.dll","DotNet.dll","GameProto.dll","BattleCore.Runtime.dll","GameLogic.dll"};
 
     [Header("Need manual setting!")] public List<string> AOTMetaAssemblies= new List<string>() {"mscorlib.dll","System.dll","System.Core.dll" };
 
