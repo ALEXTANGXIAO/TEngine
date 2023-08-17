@@ -1,3 +1,4 @@
+#if !UNITY_WEBGL
 using System;
 using System.IO;
 using System.Net.Sockets;
@@ -347,3 +348,4 @@ namespace TEngine.Core.Network
         #endregion
     }
 }
+#endif

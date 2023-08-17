@@ -1,3 +1,4 @@
+#if !UNITY_WEBGL
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -566,3 +567,4 @@ namespace TEngine.Core.Network
         #endregion
     }
 }
+#endif

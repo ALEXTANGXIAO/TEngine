@@ -7,8 +7,6 @@ public partial class GameApp:Singleton<GameApp>
 {
     private static List<Assembly> _hotfixAssembly;
     
-    public Scene Scene { private set; get; }
-    
     /// <summary>
     /// 热更域App主入口。
     /// </summary>

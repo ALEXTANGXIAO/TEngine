@@ -1,3 +1,4 @@
+#if !UNITY_WEBGL
 using System.Net.Sockets;
 
 namespace TEngine.Core.Network
@@ -49,3 +50,4 @@ namespace TEngine.Core.Network
         }
     }
 }
+#endif

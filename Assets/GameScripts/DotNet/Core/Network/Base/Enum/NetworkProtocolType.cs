@@ -4,6 +4,7 @@ namespace TEngine.Core.Network
     {
         None = 0,
         KCP = 1,
-        TCP = 2
+        TCP = 2,
+        WebSocket = 3,
     }
 }

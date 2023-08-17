@@ -13,6 +13,7 @@ namespace TEngine.Core.Network
         {
             switch (networkProtocolType)
             {
+#if !UNITY_WEBGL
                 case NetworkProtocolType.KCP:
                 {
                     Network = new KCPServerNetwork(Scene, networkTarget, address);
@@ -25,6 +26,7 @@ namespace TEngine.Core.Network
                     // Log.Info($"NetworkProtocol:TCP IPEndPoint:{address}");
                     return;
                 }
+#endif
                 default:
                 {
                     throw new NotSupportedException($"Unsupported NetworkProtocolType:{networkProtocolType}");

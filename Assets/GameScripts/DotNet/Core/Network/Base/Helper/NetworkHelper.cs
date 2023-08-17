@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.NetworkInformation;
+#if !UNITY_WEBGL
 using System.Net.Sockets;
+#endif
 using System.Runtime.InteropServices;
 
 // ReSharper disable InconsistentNaming
@@ -49,6 +51,7 @@ namespace TEngine.Core
             return $"{self.Address}:{self.Port}";
         }
     
+#if !UNITY_WEBGL
         public static void SetSioUdpConnReset(Socket socket)
         {
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -70,5 +73,6 @@ namespace TEngine.Core
     
             socket.IOControl(SIO_UDP_CONNRESET, new[] {Convert.ToByte(false)}, null);
         }
+#endif
     }
 }

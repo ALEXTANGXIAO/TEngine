@@ -23,6 +23,11 @@ public partial class GameApp
     }
 
     /// <summary>
+    /// Entity框架根节点。
+    /// </summary>
+    public Scene Scene { private set; get; }
+    
+    /// <summary>
     /// 注册所有逻辑系统
     /// </summary>
     private void RegisterAllSystem()
