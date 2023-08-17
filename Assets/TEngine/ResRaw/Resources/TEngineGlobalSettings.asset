@@ -31,9 +31,10 @@ MonoBehaviour:
     FallbackHostServerURL: http://127.0.0.1:8081/AssetsRoot/
     EnableUpdateData: 1
     WindowsUpdateDataUrl: http://127.0.0.1:8081/AssetsRoot/UpdateData.json
-    MacOSUpdateDataUrl: http://127.0.0.1
-    IOSUpdateDataUrl: http://127.0.0.1
-    AndroidUpdateDataUrl: http://127.0.0.1
+    MacOSUpdateDataUrl: http://127.0.0.1:8081/AssetsRoot/UpdateData.json
+    IOSUpdateDataUrl: http://127.0.0.1:8081/AssetsRoot/UpdateData.json
+    AndroidUpdateDataUrl: http://127.0.0.1:8081/AssetsRoot/UpdateData.json
+    WebGLUpdateDataUrl: http://127.0.0.1:8081/AssetsRoot/UpdateData.json
     m_CurUseServerChannel: 
     m_ServerChannelInfos: []
     m_IsReadLocalConfigInEditor: 1

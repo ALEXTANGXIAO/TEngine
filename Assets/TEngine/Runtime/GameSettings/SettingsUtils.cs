@@ -54,6 +54,8 @@ public static class SettingsUtils
             url = FrameworkGlobalSettings.IOSUpdateDataUrl;
 #elif UNITY_ANDROID
             url = FrameworkGlobalSettings.AndroidUpdateDataUrl;
+#elif UNITY_WEBGL
+            url = FrameworkGlobalSettings.WebGLUpdateDataUrl;
 #endif
         return url;
     }

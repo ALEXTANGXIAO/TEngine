@@ -225,6 +225,7 @@ public class FrameworkGlobalSettings
     public string MacOSUpdateDataUrl = "http://127.0.0.1";
     public string IOSUpdateDataUrl = "http://127.0.0.1";
     public string AndroidUpdateDataUrl = "http://127.0.0.1";
+    public string WebGLUpdateDataUrl = "http://127.0.0.1";
     [Header("Server")] [SerializeField] private string m_CurUseServerChannel;
 
     public string CurUseServerChannel
