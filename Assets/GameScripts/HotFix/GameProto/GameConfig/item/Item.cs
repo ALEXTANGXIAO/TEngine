@@ -22,6 +22,7 @@ public sealed partial class Item :  Bright.Config.BeanBase
         UpgradeToItemId = _buf.ReadInt();
         if(_buf.ReadBool()){ ExpireTime = _buf.ReadInt(); } else { ExpireTime = null; }
         BatchUseable = _buf.ReadBool();
+        Quality = (item.EQuality)_buf.ReadInt();
         ExchangeStream = item.ItemExchange.DeserializeItemExchange(_buf);
         {int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);ExchangeList = new System.Collections.Generic.List<item.ItemExchange>(n0);for(var i0 = 0 ; i0 < n0 ; i0++) { item.ItemExchange _e0;  _e0 = item.ItemExchange.DeserializeItemExchange(_buf); ExchangeList.Add(_e0);}}
         ExchangeColumn = item.ItemExchange.DeserializeItemExchange(_buf);
@@ -63,6 +64,10 @@ public sealed partial class Item :  Bright.Config.BeanBase
     /// </summary>
     public bool BatchUseable { get; private set; }
     /// <summary>
+    /// 品质
+    /// </summary>
+    public item.EQuality Quality { get; private set; }
+    /// <summary>
     /// 道具兑换配置
     /// </summary>
     public item.ItemExchange ExchangeStream { get; private set; }
@@ -101,6 +106,7 @@ public sealed partial class Item :  Bright.Config.BeanBase
         + "UpgradeToItemId:" + UpgradeToItemId + ","
         + "ExpireTime:" + ExpireTime + ","
         + "BatchUseable:" + BatchUseable + ","
+        + "Quality:" + Quality + ","
         + "ExchangeStream:" + ExchangeStream + ","
         + "ExchangeList:" + Bright.Common.StringUtil.CollectionToString(ExchangeList) + ","
         + "ExchangeColumn:" + ExchangeColumn + ","

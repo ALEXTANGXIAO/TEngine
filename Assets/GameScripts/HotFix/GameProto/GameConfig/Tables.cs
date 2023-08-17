@@ -6,53 +6,36 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using Bright.Serialization;
-using Cysharp.Threading.Tasks;
-using System.Collections.Generic;
+
 
 
 namespace GameConfig
+{ 
+public partial class Tables
 {
-   
-public sealed class Tables
-{
-    public item.TbItem TbItem {get; private set; }
-    public Battle.TbSkill TbSkill {get; private set; }
-    public Battle.TbBuff TbBuff {get; private set; }
-    public Battle.TbBuffAttr TbBuffAttr {get; private set; }
+    public item.TbItem TbItem {get; }
+    public Battle.TbSkill TbSkill {get; }
+    public Battle.TbBuff TbBuff {get; }
+    public Battle.TbBuffAttr TbBuffAttr {get; }
 
-    public Tables() { }
-    
-    public async UniTask LoadAsync(System.Func<string, UniTask<ByteBuf>> loader)
+    public Tables(System.Func<string, ByteBuf> loader)
     {
         var tables = new System.Collections.Generic.Dictionary<string, object>();
-		List<UniTask> list = new List<UniTask>();
-		list.Add(UniTask.Create(async () =>
-		{
-			TbItem = new item.TbItem(await loader("item_tbitem")); 
-			tables.Add("item.TbItem", TbItem);
-		}));
-		list.Add(UniTask.Create(async () =>
-		{
-			TbSkill = new Battle.TbSkill(await loader("battle_tbskill")); 
-			tables.Add("Battle.TbSkill", TbSkill);
-		}));
-		list.Add(UniTask.Create(async () =>
-		{
-			TbBuff = new Battle.TbBuff(await loader("battle_tbbuff")); 
-			tables.Add("Battle.TbBuff", TbBuff);
-		}));
-		list.Add(UniTask.Create(async () =>
-		{
-			TbBuffAttr = new Battle.TbBuffAttr(await loader("battle_tbbuffattr")); 
-			tables.Add("Battle.TbBuffAttr", TbBuffAttr);
-		}));
+        TbItem = new item.TbItem(loader("item_tbitem")); 
+        tables.Add("item.TbItem", TbItem);
+        TbSkill = new Battle.TbSkill(loader("battle_tbskill")); 
+        tables.Add("Battle.TbSkill", TbSkill);
+        TbBuff = new Battle.TbBuff(loader("battle_tbbuff")); 
+        tables.Add("Battle.TbBuff", TbBuff);
+        TbBuffAttr = new Battle.TbBuffAttr(loader("battle_tbbuffattr")); 
+        tables.Add("Battle.TbBuffAttr", TbBuffAttr);
 
-		await UniTask.WhenAll(list);
-
+        PostInit();
         TbItem.Resolve(tables); 
         TbSkill.Resolve(tables); 
         TbBuff.Resolve(tables); 
         TbBuffAttr.Resolve(tables); 
+        PostResolve();
     }
 
     public void TranslateText(System.Func<string, string, string> translator)
@@ -62,6 +45,9 @@ public sealed class Tables
         TbBuff.TranslateText(translator); 
         TbBuffAttr.TranslateText(translator); 
     }
+    
+    partial void PostInit();
+    partial void PostResolve();
 }
 
 }
