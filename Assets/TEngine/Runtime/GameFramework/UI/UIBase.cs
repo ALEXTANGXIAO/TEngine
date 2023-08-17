@@ -42,7 +42,7 @@ namespace TEngine
         /// UI父节点。
         /// </summary>
         public UIBase Parent => parent;
-        
+
         /// <summary>
         /// 自动逸数据集。
         /// </summary>
@@ -240,8 +240,10 @@ namespace TEngine
         #endregion
 
         #region UIWidget
+
         /// <summary>
         /// 创建UIWidget通过父UI位置节点。
+        /// <remarks>因为资源示例已经存在父物体所以不需要异步。</remarks>
         /// </summary>
         /// <param name="goPath">父UI位置节点。</param>
         /// <param name="visible">是否可见。</param>
@@ -255,12 +257,14 @@ namespace TEngine
             {
                 return CreateWidget<T>(goRootTrans.gameObject, visible);
             }
+
             return null;
         }
-        
-        
+
+
         /// <summary>
         /// 创建UIWidget通过父UI位置节点。
+        /// <remarks>因为资源示例已经存在父物体所以不需要异步。</remarks>
         /// </summary>
         /// <param name="parentTrans"></param>
         /// <param name="goPath">父UI位置节点。</param>
@@ -274,11 +278,13 @@ namespace TEngine
             {
                 return CreateWidget<T>(goRootTrans.gameObject, visible);
             }
+
             return null;
         }
 
         /// <summary>
         /// 创建UIWidget通过游戏物体。
+        /// <remarks>因为资源示例已经存在父物体所以不需要异步。</remarks>
         /// </summary>
         /// <param name="goRoot">游戏物体。</param>
         /// <param name="visible">是否可见。</param>
@@ -291,25 +297,48 @@ namespace TEngine
             {
                 return widget;
             }
+
             return null;
         }
 
         /// <summary>
-        /// 创建UIWidget通过资源路径。
+        /// 创建UIWidget通过资源定位地址。
         /// </summary>
         /// <param name="parentTrans">资源父节点。</param>
-        /// <param name="assetPath">资源路径。</param>
+        /// <param name="assetLocation">资源定位地址。</param>
         /// <param name="visible">是否可见。</param>
         /// <typeparam name="T">UIWidget。</typeparam>
         /// <returns>UIWidget实例。</returns>
-        public T CreateWidgetByPath<T>(Transform parentTrans, string assetPath, bool visible = true) where T : UIWidget, new()
+        public T CreateWidgetByPath<T>(Transform parentTrans, string assetLocation, bool visible = true) where T : UIWidget, new()
         {
             if (AssetReference == null)
             {
                 Log.Fatal($"CreateWidgetByPath Failed => {this}.AssetReference is null");
                 return null;
             }
-            GameObject goInst = AssetReference.LoadAsset<GameObject>(assetPath, parentTrans);
+
+            GameObject goInst = AssetReference.LoadAsset<GameObject>(assetLocation, parentTrans);
+            return CreateWidget<T>(goInst, visible);
+        }
+
+        /// <summary>
+        /// 创建UIWidget通过资源定位地址。
+        /// </summary>
+        /// <param name="parentTrans">资源父节点。</param>
+        /// <param name="assetLocation">资源定位地址。</param>
+        /// <param name="visible">是否可见。</param>
+        /// <typeparam name="T">UIWidget。</typeparam>
+        /// <returns>UIWidget实例。</returns>
+        public async UniTask<T> CreateWidgetByPathAsync<T>(Transform parentTrans, string assetLocation, bool visible = true) where T : UIWidget, new()
+        {
+            if (AssetReference == null)
+            {
+                Log.Fatal($"CreateWidgetByPath Failed => {this}.AssetReference is null");
+                return null;
+            }
+
+            GameObject goInst = await AssetReference.LoadAssetAsync<GameObject>(assetLocation, gameObject.GetCancellationTokenOnDestroy());
+            goInst.transform.SetParent(parentTrans);
             return CreateWidget<T>(goInst, visible);
         }
 
@@ -345,6 +374,18 @@ namespace TEngine
         }
 
         /// <summary>
+        /// 通过UI类型来创建widget。
+        /// </summary>
+        /// <param name="parentTrans">资源父节点。</param>
+        /// <param name="visible">是否可见。</param>
+        /// <typeparam name="T">UIWidget。</typeparam>
+        /// <returns>UIWidget实例。</returns>
+        public async UniTask<T> CreateWidgetByTypeAsync<T>(Transform parentTrans, bool visible = true) where T : UIWidget, new()
+        {
+            return await CreateWidgetByPathAsync<T>(parentTrans, typeof(T).Name, visible);
+        }
+
+        /// <summary>
         /// 调整图标数量。
         /// </summary>
         /// <remarks>常用于Icon创建。</remarks>
@@ -354,7 +395,8 @@ namespace TEngine
         /// <param name="prefab">资产副本。</param>
         /// <param name="assetPath">资产地址。</param>
         /// <typeparam name="T">图标类型。</typeparam>
-        public void AdjustIconNum<T>(List<T> listIcon, int number, Transform parentTrans, GameObject prefab = null, string assetPath = "") where T : UIWidget, new()
+        public void AdjustIconNum<T>(List<T> listIcon, int number, Transform parentTrans, GameObject prefab = null, string assetPath = "")
+            where T : UIWidget, new()
         {
             if (listIcon == null)
             {
@@ -475,14 +517,17 @@ namespace TEngine
                 icon.OnDestroy();
                 icon.OnDestroyWidget();
                 ListChild.Remove(icon);
-                UnityEngine.Object.Destroy(icon.gameObject);
+                if (icon.gameObject != null)
+                {
+                    UnityEngine.Object.Destroy(icon.gameObject);
+                }
             }
         }
 
         #endregion
 
         #region AssetRefrence Methods
-        
+
         /// <summary>
         /// 引用资源数据到资源组内。
         /// </summary>
@@ -496,6 +541,7 @@ namespace TEngine
                 Log.Fatal($"Reference Failed => {this}.AssetReference is null");
                 return false;
             }
+
             return AssetReference.Reference(handle, assetTag);
         }
 
@@ -513,6 +559,7 @@ namespace TEngine
                 Log.Fatal($"Reference Failed => {this}.AssetReference is null");
                 return false;
             }
+
             return AssetReference.Reference(address, handle, assetTag);
         }
 
@@ -528,6 +575,7 @@ namespace TEngine
                 Log.Fatal($"Release Failed => {this}.AssetReference is null");
                 return false;
             }
+
             return AssetReference.ReleaseByTag(assetTag);
         }
 
@@ -543,6 +591,7 @@ namespace TEngine
                 Log.Fatal($"Release Failed => {this}.AssetReference is null");
                 return false;
             }
+
             return AssetReference.Release(handle);
         }
 
@@ -558,6 +607,7 @@ namespace TEngine
                 Log.Fatal($"Release Failed => {this}.AssetReference is null");
                 return false;
             }
+
             return AssetReference.Release(address);
         }
 
@@ -574,6 +624,7 @@ namespace TEngine
                 Log.Fatal($"LoadAsset Failed => {this}.AssetReference is null");
                 return default;
             }
+
             return AssetReference.LoadAsset<T>(assetName);
         }
 
@@ -591,6 +642,7 @@ namespace TEngine
                 Log.Fatal($"LoadAsset Failed => {this}.AssetReference is null");
                 return default;
             }
+
             return AssetReference.LoadAsset<T>(assetName, parentTrans);
         }
 
@@ -608,6 +660,7 @@ namespace TEngine
                 Log.Fatal($"LoadAssetAsync Failed => {this}.AssetReference is null");
                 return default;
             }
+
             return await AssetReference.LoadAssetAsync<T>(assetName, cancellationToken);
         }
 
@@ -624,8 +677,10 @@ namespace TEngine
                 Log.Fatal($"LoadAssetAsync Failed => {this}.AssetReference is null");
                 return default;
             }
+
             return await AssetReference.LoadGameObjectAsync(assetName, cancellationToken);
         }
+
         #endregion
     }
 }

@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace TEngine
 {
-    public abstract class UIWidget:UIBase,IUIBehaviour
+    public abstract class UIWidget : UIBase, IUIBehaviour
     {
         /// <summary>
         /// 窗口组件的实例资源对象。
         /// </summary>
         public override GameObject gameObject { protected set; get; }
-        
+
         /// <summary>
         /// 窗口组件矩阵位置组件。
         /// </summary>
@@ -20,12 +20,12 @@ namespace TEngine
         /// </summary>
         // ReSharper disable once InconsistentNaming
         public string name { private set; get; } = nameof(UIWidget);
-        
+
         /// <summary>
         /// UI类型。
         /// </summary>
         public override UIBaseType BaseType => UIBaseType.Widget;
-        
+
         /// <summary>
         /// 所属的窗口。
         /// </summary>
@@ -47,14 +47,14 @@ namespace TEngine
                 return null;
             }
         }
-        
+
         internal bool InternalUpdate()
         {
             if (!IsPrepare)
             {
                 return false;
             }
-            
+
             List<UIWidget> listNextUpdateChild = null;
             if (ListChild != null && ListChild.Count > 0)
             {
@@ -94,7 +94,7 @@ namespace TEngine
                     }
                 }
 
-                if (!updateListValid) 
+                if (!updateListValid)
                 {
                     m_updateListValid = true;
                 }
@@ -114,12 +114,14 @@ namespace TEngine
                 OnUpdate();
                 needUpdate = true;
             }
+
             TProfiler.EndSample();
-                
+
             return needUpdate;
         }
 
         #region Create
+
         /// <summary>
         /// 创建窗口内嵌的界面。
         /// </summary>
@@ -131,7 +133,7 @@ namespace TEngine
         {
             return CreateImp(parentUI, widgetRoot, false, visible);
         }
-        
+
         /// <summary>
         /// 根据资源名创建
         /// </summary>
@@ -147,29 +149,33 @@ namespace TEngine
             {
                 return false;
             }
+
             if (!Create(parentUI, goInst, visible))
             {
                 return false;
             }
+
             goInst.transform.localScale = Vector3.one;
             goInst.transform.localPosition = Vector3.zero;
             return true;
         }
-        
+
         /// <summary>
         /// 根据prefab或者模版来创建新的 widget。
+        /// <remarks>存在父物体得资源故不需要异步加载。</remarks>
         /// </summary>
-        /// <param name="parentUI"></param>
-        /// <param name="goPrefab"></param>
-        /// <param name="parentTrans"></param>
-        /// <param name="visible"></param>
-        /// <returns></returns>
+        /// <param name="parentUI">父物体UI。</param>
+        /// <param name="goPrefab">实例化预制体。</param>
+        /// <param name="parentTrans">实例化父节点。</param>
+        /// <param name="visible">是否可见。</param>
+        /// <returns>是否创建成功。</returns>
         public bool CreateByPrefab(UIBase parentUI, GameObject goPrefab, Transform parentTrans, bool visible = true)
         {
             if (parentTrans == null)
             {
                 parentTrans = parentUI.rectTransform;
             }
+
             return CreateImp(parentUI, Object.Instantiate(goPrefab, parentTrans), true, visible);
         }
 
@@ -179,10 +185,12 @@ namespace TEngine
             {
                 return false;
             }
+
             if (AssetReference == null)
             {
-                AssetReference = AssetReference.BindAssetReference(widgetRoot,parent:parentUI.AssetReference);
+                AssetReference = AssetReference.BindAssetReference(widgetRoot, parent: parentUI.AssetReference);
             }
+
             RestChildCanvas(parentUI);
             parent = parentUI;
             Parent.ListChild.Add(this);
@@ -191,37 +199,41 @@ namespace TEngine
             RegisterEvent();
             OnCreate();
             IsPrepare = true;
-            
+
             if (!visible)
             {
                 gameObject.SetActive(false);
             }
+
             return true;
         }
-        
+
         protected bool CreateBase(GameObject go, bool bindGo)
         {
             if (go == null)
             {
                 return false;
             }
+
             rectTransform = go.GetComponent<RectTransform>();
             gameObject = go;
             Log.Assert(rectTransform != null, $"{go.name} ui base element need to be RectTransform");
             return true;
         }
-        
+
         protected void RestChildCanvas(UIBase parentUI)
         {
             if (parentUI == null || parentUI.gameObject == null)
             {
                 return;
             }
+
             Canvas parentCanvas = parentUI.gameObject.GetComponentInParent<Canvas>();
             if (parentCanvas == null)
             {
                 return;
             }
+
             if (gameObject != null)
             {
                 var listCanvas = gameObject.GetComponentsInChildren<Canvas>(true);
@@ -232,6 +244,7 @@ namespace TEngine
                 }
             }
         }
+
         #endregion
 
         #region Destroy
@@ -243,6 +256,13 @@ namespace TEngine
         internal void OnDestroyWidget()
         {
             RemoveAllUIEvent();
+
+            foreach (var uiChild in ListChild)
+            {
+                uiChild.OnDestroy();
+                uiChild.OnDestroyWidget();
+            }
+
             if (Handle != null)
             {
                 if (AssetReference != null && AssetReference.Parent != null)
@@ -250,8 +270,25 @@ namespace TEngine
                     AssetReference.Parent.Release(Handle);
                 }
             }
+
+            if (gameObject != null)
+            {
+                Object.Destroy(gameObject);
+            }
         }
-        
+
+        /// <summary>
+        /// 主动销毁组件。
+        /// </summary>
+        public void Destroy()
+        {
+            if (parent != null)
+            {
+                parent.ListChild.Remove(this);
+                OnDestroy();
+                OnDestroyWidget();
+            }
+        }
 
         #endregion
     }
