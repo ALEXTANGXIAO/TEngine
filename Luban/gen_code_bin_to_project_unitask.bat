@@ -6,7 +6,7 @@ set CONF_ROOT=%WORKSPACE%\Luban\Config
 set DATA_OUTPUT=%ROOT_PATH%..\GenerateDatas
 set CUSTOM_TEMP=%WORKSPACE%\Luban\CustomTemplate_Client_UniTask
 
-xcopy %CUSTOM_TEMP%\ConfigLoader.cs %WORKSPACE%\Assets\GameScripts\HotFix\GameProto\\ConfigLoader.cs /s /e /i /y
+xcopy %CUSTOM_TEMP%\ConfigLoader.cs %WORKSPACE%\Assets\GameScripts\HotFix\GameProto\ConfigLoader.cs /s /e /i /y
 
 %GEN_CLIENT% --template_search_path CustomTemplate_Client_UniTask -j cfg --^
  -d %CONF_ROOT%\Defines\__root__.xml ^

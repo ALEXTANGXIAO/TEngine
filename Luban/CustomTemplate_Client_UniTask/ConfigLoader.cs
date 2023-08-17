@@ -10,12 +10,12 @@ using UnityEngine;
 /// <summary>
 /// 配置加载器
 /// </summary>
-public class ConfigLoader:Singleton<ConfigLoader>
+public class ConfigLoader : Singleton<ConfigLoader>
 {
     private bool _init = false;
-    
+
     private Tables _tables;
-    
+
     public Tables Tables
     {
         get
@@ -24,16 +24,16 @@ public class ConfigLoader:Singleton<ConfigLoader>
             {
 #if !UNITY_WEBGL
                 _init = true;
-                
+
 #endif
                 Log.Error("Config not loaded. You need Take LoadAsync at first.");
             }
             return _tables;
         }
     }
-    
+
     private readonly Dictionary<string, TextAsset> _configs = new Dictionary<string, TextAsset>();
-    
+
     /// <summary>
     /// 异步加载配置。
     /// </summary>
@@ -62,7 +62,7 @@ public class ConfigLoader:Singleton<ConfigLoader>
         }
         else
         {
-            var textAssets = await GameModule.Resource.LoadAssetAsync<TextAsset>(location,CancellationToken.None);
+            var textAssets = await GameModule.Resource.LoadAssetAsync<TextAsset>(location, CancellationToken.None);
             ret = textAssets.bytes;
             RegisterTextAssets(file, textAssets);
         }
@@ -71,7 +71,7 @@ public class ConfigLoader:Singleton<ConfigLoader>
 #endif
         return new ByteBuf(ret);
     }
-    
+
     /// <summary>
     /// 注册配置资源。
     /// </summary>
@@ -96,6 +96,8 @@ public class ConfigLoader:Singleton<ConfigLoader>
 
 public class ConfigSystem : BaseLogicSys<ConfigSystem>
 {
+    public Tables Tables => ConfigLoader.Instance.Tables;
+
     public override bool OnInit()
     {
         Log.Warning("ConfigSystem OnInit");

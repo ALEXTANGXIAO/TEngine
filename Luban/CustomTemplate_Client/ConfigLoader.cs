@@ -7,12 +7,12 @@ using UnityEngine;
 /// <summary>
 /// 配置加载器。
 /// </summary>
-public class ConfigLoader:Singleton<ConfigLoader>
+public class ConfigLoader : Singleton<ConfigLoader>
 {
     private bool _init = false;
-    
+
     private Tables _tables;
-    
+
     public Tables Tables
     {
         get
@@ -41,7 +41,7 @@ public class ConfigLoader:Singleton<ConfigLoader>
     /// <returns>ByteBuf</returns>
     private ByteBuf LoadByteBuf(string file)
     {
-        var textAssets = GameModule.Resource.LoadAsset<TextAsset>($"{SettingsUtils.FrameworkGlobalSettings.ConfigFolderName}{file}.bytes");
+        var textAssets = GameModule.Resource.LoadAsset<TextAsset>(file);
         byte[] ret = textAssets.bytes;
         return new ByteBuf(ret);
     }
@@ -49,6 +49,8 @@ public class ConfigLoader:Singleton<ConfigLoader>
 
 public class ConfigSystem : BaseLogicSys<ConfigSystem>
 {
+    public Tables Tables => ConfigLoader.Instance.Tables;
+
     public override bool OnInit()
     {
         Log.Warning("ConfigSystem OnInit");
