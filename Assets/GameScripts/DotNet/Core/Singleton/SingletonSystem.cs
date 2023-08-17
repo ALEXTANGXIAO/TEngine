@@ -3,7 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+#if UNITY_WEBGL
+using Cysharp.Threading.Tasks;
+#else
 using System.Threading.Tasks;
+#endif
 using TEngine.DataStructure;
 #pragma warning disable CS8601
 #pragma warning disable CS8604
@@ -25,10 +29,10 @@ namespace TEngine.Core
         private static void Load(int assemblyName)
         {
             var count = 0;
-            var task = new List<Task>();
-
+#if !UNITY_WEBGL
+           var task = new List<Task>();
+#endif
             UnLoad(assemblyName);
-
             foreach (var singletonType in AssemblyManager.ForEach(assemblyName, typeof(ISingleton)))
             {
                 var instance = (ISingleton) Activator.CreateInstance(singletonType);
@@ -38,7 +42,11 @@ namespace TEngine.Core
                 
                 if (initializeMethodInfo != null)
                 {
+#if !UNITY_WEBGL
                     task.Add((Task) initializeMethodInfo.Invoke(instance, null));
+#else
+                    initializeMethodInfo.Invoke(instance, null);
+#endif
                 }
                 
                 registerMethodInfo?.Invoke(instance, new object[] {instance});
@@ -58,7 +66,9 @@ namespace TEngine.Core
                 Singletons.Enqueue(assemblyName, instance);
             }
 
+#if !UNITY_WEBGL
             Task.WaitAll(task.ToArray());
+#endif
             Log.Info($"assembly:{assemblyName} load Singleton count:{count}");
         }
 
