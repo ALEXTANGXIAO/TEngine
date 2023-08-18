@@ -208,7 +208,7 @@ public static class SettingsUtils
     {
         return FrameworkGlobalSettings.ScriptGenerateRule;
     }
-    
+
     public static string GetUINameSpace()
     {
         return FrameworkGlobalSettings.NameSpace;

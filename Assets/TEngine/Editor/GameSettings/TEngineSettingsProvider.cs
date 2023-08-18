@@ -2,6 +2,7 @@
 using UnityEditor;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class TEngineSettingsProvider : SettingsProvider
 {
@@ -30,6 +31,14 @@ public class TEngineSettingsProvider : SettingsProvider
         base.OnGUI(searchContext);
         using var changeCheckScope = new EditorGUI.ChangeCheckScope();
         EditorGUILayout.PropertyField(m_CustomSettings.FindProperty("m_FrameworkGlobalSettings"));
+        
+        if ( GUILayout.Button( "Refresh HotUpdateAssemblies" ) )
+        {
+            SyncAssemblyContent.RefreshAssembly();
+            m_CustomSettings.ApplyModifiedPropertiesWithoutUndo();
+            m_CustomSettings = null;
+            m_CustomSettings = GetSerializedSettings();
+        }
         EditorGUILayout.PropertyField(m_CustomSettings.FindProperty("m_BybridCLRCustomGlobalSettings"));
         EditorGUILayout.Space(20);
         if (!changeCheckScope.changed) return;
@@ -51,7 +60,7 @@ public class TEngineSettingsProvider : SettingsProvider
         }
         else
         {
-            UnityEngine.Debug.LogError($"Open GameFramework Settings error,Please Create Game Framework/GameFrameworkSettings.assets File in Path GameMain/Resources/Settings");
+            UnityEngine.Debug.LogError($"Open TEngine Settings error,Please Create TEngine TEngineGlobalSettings.assets File in Path TEngine/ResRaw/Resources/");
         }
 
         return null;
