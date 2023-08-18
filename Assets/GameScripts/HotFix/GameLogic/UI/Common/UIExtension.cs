@@ -112,8 +112,8 @@ public static class UIExtension
 
         return hadMouseDown;
     }
-
-    public static void SetSprite(this Image image, string spriteName, UIBase uiBase, bool isSetNativeSize = false)
+    
+    public static void SetSprite(this Image image, string spriteName, bool isSetNativeSize = false,bool isAsync = false)
     {
         if (image == null)
         {
@@ -126,31 +126,30 @@ public static class UIExtension
         }
         else
         {
-            image.sprite = uiBase.LoadAsset<Sprite>(spriteName);
-            if (isSetNativeSize)
+            if (!isAsync)
             {
-                image.SetNativeSize();
+                image.sprite = GameModule.Resource.LoadAsset<Sprite>(spriteName);
+                if (isSetNativeSize)
+                {
+                    image.SetNativeSize();
+                }
             }
-        }
-    }
-
-    public static void SetSprite(this UIBase uiBase, string spriteName, Image image, bool isSetNativeSize = false)
-    {
-        if (image == null)
-        {
-            return;
-        }
-
-        if (string.IsNullOrEmpty(spriteName))
-        {
-            image.sprite = null;
-        }
-        else
-        {
-            image.sprite = uiBase.LoadAsset<Sprite>(spriteName);
-            if (isSetNativeSize)
+            else
             {
-                image.SetNativeSize();
+                GameModule.Resource.LoadAssetAsync<Sprite>(spriteName, operation =>
+                {
+                    if (image == null)
+                    {
+                        goto Dispose;
+                    }
+                    image.sprite = operation.AssetObject as Sprite;
+                    if (isSetNativeSize)
+                    {
+                        image.SetNativeSize();
+                    }
+                    Dispose:
+                    operation.Dispose();
+                });
             }
         }
     }
