@@ -77,11 +77,11 @@ namespace GameMain
 
         private void InitSoundSettings()
         {
-            GameModule.Audio.MusicEnable = GameModule.Setting.GetBool(Constant.Setting.MusicMuted, true);
+            GameModule.Audio.MusicEnable = !GameModule.Setting.GetBool(Constant.Setting.MusicMuted, false);
             GameModule.Audio.MusicVolume = GameModule.Setting.GetFloat(Constant.Setting.MusicVolume, 1f);
-            GameModule.Audio.SoundEnable = GameModule.Setting.GetBool(Constant.Setting.SoundMuted, true);
+            GameModule.Audio.SoundEnable = !GameModule.Setting.GetBool(Constant.Setting.SoundMuted, false);
             GameModule.Audio.SoundVolume = GameModule.Setting.GetFloat(Constant.Setting.SoundVolume, 1f);
-            GameModule.Audio.UISoundEnable = GameModule.Setting.GetBool(Constant.Setting.UISoundMuted, true);
+            GameModule.Audio.UISoundEnable = !GameModule.Setting.GetBool(Constant.Setting.UISoundMuted, false);
             GameModule.Audio.UISoundVolume = GameModule.Setting.GetFloat(Constant.Setting.UISoundVolume, 1f);
             Log.Info("Init sound settings complete.");
         }
