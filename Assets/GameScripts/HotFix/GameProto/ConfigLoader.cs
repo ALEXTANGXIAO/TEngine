@@ -66,7 +66,6 @@ public class ConfigSystem : BaseLogicSys<ConfigSystem>
 
     public override bool OnInit()
     {
-        Log.Warning("ConfigSystem OnInit");
         return base.OnInit();
     }
 }
