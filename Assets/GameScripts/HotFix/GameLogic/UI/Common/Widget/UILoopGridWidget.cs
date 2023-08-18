@@ -7,12 +7,12 @@ namespace GameLogic
     /// <summary>
     /// UI列表。
     /// </summary>
-    public class UILoopListWidget<TItem, TData> : UIListBase<TItem, TData> where TItem : UILoopItemWidget, new()
+    public class UILoopGridWidget<TItem, TData> : UIListBase<TItem, TData> where TItem : UILoopGridItemWidget, new()
     {
         /// <summary>
         /// LoopRectView
         /// </summary>
-        public LoopListView LoopRectView { private set; get; }
+        public LoopGridView LoopRectView { private set; get; }
 
         /// <summary>
         /// Item字典
@@ -32,13 +32,13 @@ namespace GameLogic
         public override void BindMemberProperty()
         {
             base.BindMemberProperty();
-            LoopRectView = rectTransform.GetComponent<LoopListView>();
+            LoopRectView = rectTransform.GetComponent<LoopGridView>();
         }
 
         public override void OnCreate()
         {
             base.OnCreate();
-            LoopRectView.InitListView(0, OnGetItemByIndex);
+            LoopRectView.InitGridView(0, OnGetItemByIndex);
         }
 
         public override void OnDestroy()
@@ -71,15 +71,17 @@ namespace GameLogic
         /// 获取Item
         /// </summary>
         /// <param name="listView"></param>
-        /// <param name="index"></param>
+        /// <param name="itemIndex"></param>
+        /// <param name="row"></param>
+        /// <param name="column"></param>
         /// <returns></returns>
-        protected LoopListViewItem OnGetItemByIndex(LoopListView listView, int index)
+        protected LoopGridViewItem OnGetItemByIndex(LoopGridView listView, int itemIndex,int row,int column)
         {
-            if (index < 0 || index >= num) return null;
+            if (itemIndex < 0 || itemIndex >= num) return null;
             var item = itemBase == null ? CreateItem() : CreateItem(itemBase);
             if (item == null) return null;
-            item.SetItemIndex(index);
-            UpdateListItem(item, index, m_tpFuncItem);
+            item.SetItemIndex(itemIndex);
+            UpdateListItem(item, itemIndex, m_tpFuncItem);
             return item.LoopItem;
         }
 
@@ -100,7 +102,7 @@ namespace GameLogic
         public TItem CreateItem(string itemName)
         {
             TItem widget = null;
-            LoopListViewItem item = LoopRectView.AllocOrNewListViewItem(itemName);
+            LoopGridViewItem item = LoopRectView.AllocOrNewListViewItem(itemName);
             if (item != null)
             {
                 widget = CreateItem(item);
@@ -116,7 +118,7 @@ namespace GameLogic
         public TItem CreateItem(GameObject prefab)
         {
             TItem widget = null;
-            LoopListViewItem item = LoopRectView.AllocOrNewListViewItem(prefab);
+            LoopGridViewItem item = LoopRectView.AllocOrNewListViewItem(prefab);
             if (item != null)
             {
                 widget = CreateItem(item);
@@ -129,7 +131,7 @@ namespace GameLogic
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        private TItem CreateItem(LoopListViewItem item)
+        private TItem CreateItem(LoopGridViewItem item)
         {
             TItem widget;
             if (!m_itemCache.TryGetValue(item.GoId, out widget))
@@ -164,15 +166,6 @@ namespace GameLogic
                 m_items.Add(m_itemCache[i]);
             }
             return m_items;
-        }
-       
-        /// <summary>
-        /// 获取当前起始索引
-        /// </summary>
-        /// <returns></returns>
-        public int GetItemStartIndex()
-        {
-            return LoopRectView.GetItemStartIndex();
         }
     }
 }

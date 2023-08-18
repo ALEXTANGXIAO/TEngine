@@ -8,23 +8,6 @@ using Object = UnityEngine.Object;
 
 namespace GameLogic
 {
-    public enum ItemCornerEnum
-    {
-        LeftBottom = 0,
-        LeftTop,
-        RightTop,
-        RightBottom,
-    }
-
-
-    public enum ListItemArrangeType
-    {
-        TopToBottom,
-        BottomToTop,
-        LeftToRight,
-        RightToLeft,
-    }
-
     public class ItemPool
     {
         private GameObject _prefabObj;
@@ -171,13 +154,6 @@ namespace GameLogic
     public delegate LoopListViewItem
         OnGetItemByIndex(LoopListView listView, int index); // System.Func<LoopListView, int, LoopListViewItem> 
 
-    public enum SnapStatus
-    {
-        NoTargetSet = 0,
-        TargetHasSet = 1,
-        SnapMoving = 2,
-        SnapMoveFinish = 3
-    }
 
     public class LoopListView : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler
     {
