@@ -1,3 +1,4 @@
+#if !UNITY_WEBGL
 using UnityEngine;
 using System.Collections.Generic;
 using System;
@@ -10,19 +11,18 @@ using System.Linq;
        {
           aucThread = new Thread(ReceiveMsg);
           aucThread.Start();
-       } 
-       
+       }
+
        //进程调用主线程方法
         MainPack pack = (MainPack)MainPack.Descriptor.Parser.ParseFrom(buffer, 0, len);
         Loom.QueueOnMainThread((param) =>
        {
              UdpHandleResponse(pack);
        }, null);
- 
+
  *******************************************************************************/
 namespace GameBase
 {
-
     /// <summary>
     /// Loom多线程通信。
     /// <remarks></remarks>
@@ -188,3 +188,4 @@ namespace GameBase
         }
     }
 }
+#endif
