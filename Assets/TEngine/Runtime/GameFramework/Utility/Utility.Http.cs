@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -13,31 +14,94 @@ namespace TEngine
         /// </summary>
         public static partial class Http
         {
-            /// <summary> 
-            /// GET请求与获取结果.
-            /// </summary> 
-            public static async UniTask<string> Get(string url,float timeout = 5f)
+            /// <summary>
+            /// GET请求与获取结果。
+            /// </summary>
+            /// <param name="url">网络URL。</param>
+            /// <param name="timeout">超时时间。</param>
+            /// <returns>请求结果。</returns>
+            public static async UniTask<string> Get(string url, float timeout = 5f)
             {
                 var cts = new CancellationTokenSource();
                 cts.CancelAfterSlim(TimeSpan.FromSeconds(timeout));
 
                 UnityWebRequest unityWebRequest = UnityWebRequest.Get(url);
+                return await SendWebRequest(unityWebRequest, cts);
+            }
+
+            /// <summary>
+            /// Post请求与获取结果.
+            /// </summary>
+            /// <param name="url">网络URL。</param>
+            /// <param name="postData">Post数据。</param>
+            /// <param name="timeout">超时时间。</param>
+            /// <returns>请求结果。</returns>
+            public static async UniTask<string> Post(string url, string postData, float timeout = 5f)
+            {
+                var cts = new CancellationTokenSource();
+                cts.CancelAfterSlim(TimeSpan.FromSeconds(timeout));
+
+                UnityWebRequest unityWebRequest = UnityWebRequest.Post(url, postData);
+                return await SendWebRequest(unityWebRequest, cts);
+            }
+
+            /// <summary>
+            /// Post请求与获取结果.
+            /// </summary>
+            /// <param name="url">网络URL。</param>
+            /// <param name="formFields">Post数据。</param>
+            /// <param name="timeout">超时时间。</param>
+            /// <returns>请求结果。</returns>
+            public static async UniTask<string> Post(string url, Dictionary<string, string> formFields, float timeout = 5f)
+            {
+                var cts = new CancellationTokenSource();
+                cts.CancelAfterSlim(TimeSpan.FromSeconds(timeout));
+
+                UnityWebRequest unityWebRequest = UnityWebRequest.Post(url, formFields);
+                return await SendWebRequest(unityWebRequest, cts);
+            }
+
+            /// <summary>
+            /// Post请求与获取结果.
+            /// </summary>
+            /// <param name="url">网络URL。</param>
+            /// <param name="formData">Post数据。</param>
+            /// <param name="timeout">超时时间。</param>
+            /// <returns>请求结果。</returns>
+            public static async UniTask<string> Post(string url, WWWForm formData, float timeout = 5f)
+            {
+                var cts = new CancellationTokenSource();
+                cts.CancelAfterSlim(TimeSpan.FromSeconds(timeout));
+
+                UnityWebRequest unityWebRequest = UnityWebRequest.Post(url, formData);
+                return await SendWebRequest(unityWebRequest, cts);
+            }
+
+            /// <summary>
+            /// 抛出网络请求。
+            /// </summary>
+            /// <param name="unityWebRequest">UnityWebRequest。</param>
+            /// <param name="cts">CancellationTokenSource。</param>
+            /// <returns>请求结果。</returns>
+            public static async UniTask<string> SendWebRequest(UnityWebRequest unityWebRequest, CancellationTokenSource cts)
+            {
                 try
                 {
                     var (isCanceled, _) = await unityWebRequest.SendWebRequest().WithCancellation(cts.Token).SuppressCancellationThrow();
                     if (isCanceled)
                     {
-                        Log.Warning($"HttpGet {url} be canceled!");
+                        Log.Warning($"HttpPost {unityWebRequest.url} be canceled!");
                     }
                 }
                 catch (OperationCanceledException ex)
                 {
                     if (ex.CancellationToken == cts.Token)
                     {
-                        Log.Debug("HttpGet Timeout");
+                        Log.Debug("HttpPost Timeout");
                         return string.Empty;
                     }
                 }
+
                 return unityWebRequest.downloadHandler.text;
             }
         }
