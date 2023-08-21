@@ -31,7 +31,7 @@
       <Collector CollectPath="Assets/AssetRaw/Shaders" CollectGUID="2a4bceb84ed685447ace957f497eb810" CollectType="MainAssetCollector" AddressRule="AddressByFileName" PackRule="PackShaderVariants" FilterRule="CollectShaderVariants" UserData="" AssetTags="" />
     </Group>
     <Group GroupActiveRule="EnableGroup" GroupName="UI" GroupDesc="UI面板" AssetTags="UI">
-      <Collector CollectPath="Assets/AssetRaw/UI" CollectGUID="27e87d83814156648b58f380b834e046" CollectType="MainAssetCollector" AddressRule="AddressByFileName" PackRule="PackDirectory" FilterRule="CollectAll" UserData="" AssetTags="" />
+      <Collector CollectPath="Assets/AssetRaw/UI" CollectGUID="27e87d83814156648b58f380b834e046" CollectType="MainAssetCollector" AddressRule="AddressByFileName" PackRule="PackSeparately" FilterRule="CollectAll" UserData="" AssetTags="" />
     </Group>
     <Group GroupActiveRule="EnableGroup" GroupName="Fonts" GroupDesc="字体" AssetTags="Fonts">
       <Collector CollectPath="Assets/AssetRaw/Fonts" CollectGUID="2473375c9ee163a4b861278b38091455" CollectType="MainAssetCollector" AddressRule="AddressByFileName" PackRule="PackDirectory" FilterRule="CollectAll" UserData="" AssetTags="" />
