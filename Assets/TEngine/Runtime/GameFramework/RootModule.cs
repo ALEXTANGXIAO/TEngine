@@ -113,8 +113,6 @@ namespace TEngine
             BuglyManager.Instance.Init(Resources.Load<BuglyConfig>("BuglyConfig"));
 #endif
             
-            GameTime.StartFrame();
-
             InitTextHelper();
             InitVersionHelper();
             InitLogHelper();
@@ -141,7 +139,6 @@ namespace TEngine
 
         private void Update()
         {
-            GameTime.StartFrame();
             GameFrameworkModuleSystem.Update(Time.deltaTime, Time.unscaledDeltaTime);
         }
 
