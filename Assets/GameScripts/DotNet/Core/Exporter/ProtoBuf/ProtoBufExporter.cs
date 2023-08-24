@@ -50,14 +50,14 @@ public sealed class ProtoBufExporter
             Directory.CreateDirectory(Define.ProtoBufClientDirectory);
         }
         
-        if (!Directory.Exists($"{Define.ProtoBufDirectory}Inner"))
-        {
-            Directory.CreateDirectory($"{Define.ProtoBufDirectory}Inner");
-        }
-        
         if (!Directory.Exists($"{Define.ProtoBufDirectory}Outer"))
         {
             Directory.CreateDirectory($"{Define.ProtoBufDirectory}Outer");
+        }
+                
+        if (!Directory.Exists($"{Define.ProtoBufDirectory}Inner"))
+        {
+            Directory.CreateDirectory($"{Define.ProtoBufDirectory}Inner");
         }
         
         if (!Directory.Exists($"{Define.ProtoBufDirectory}Bson"))
@@ -80,14 +80,8 @@ public sealed class ProtoBufExporter
     private async Task Start(ProtoBufOpCodeType opCodeType)
     {
         List<string> files = new List<string>();
-        var protoFile = "";
         var opCodeName = "";
-        var parameter = "";
-        var className = "";
-        var isMsgHead = false;
         OpcodeInfo opcodeInfo = null;
-        string responseTypeStr = null;
-        string customRouteType = null;
         _opcodes.Clear();
         var file = new StringBuilder();
         var saveDirectory = new Dictionary<string, string>();
@@ -103,10 +97,9 @@ public sealed class ProtoBufExporter
                 _aRouteRequest = Opcode.OuterRouteRequest;
                 _aRouteResponse = Opcode.OuterRouteResponse;
                 opCodeName = "OuterOpcode";
-                protoFile = $"{Define.ProtoBufDirectory}OuterMessage.proto";
                 saveDirectory.Add(Define.ProtoBufServerDirectory, _serverTemplate);
                 saveDirectory.Add(Define.ProtoBufClientDirectory, _clientTemplate);
-                files.Add(protoFile);
+                files.Add($"{Define.ProtoBufDirectory}OuterMessage.proto");
                 files.AddRange(Directory.GetFiles($"{Define.ProtoBufDirectory}Outer").ToList());
                 break;
             }
@@ -120,9 +113,8 @@ public sealed class ProtoBufExporter
                 _aRouteRequest = Opcode.InnerRouteRequest + 1000;
                 _aRouteResponse = Opcode.InnerRouteResponse + 1000;
                 opCodeName = "InnerOpcode";
-                protoFile = $"{Define.ProtoBufDirectory}InnerMessage.proto";
                 saveDirectory.Add(Define.ProtoBufServerDirectory, _serverTemplate);
-                files.Add(protoFile);
+                files.Add($"{Define.ProtoBufDirectory}InnerMessage.proto");
                 files.AddRange(Directory.GetFiles($"{Define.ProtoBufDirectory}Inner").ToList());
                 break;
             }
@@ -136,18 +128,21 @@ public sealed class ProtoBufExporter
                 _aRouteRequest = Opcode.InnerBsonRouteRequest + 1000;
                 _aRouteResponse = Opcode.InnerBsonRouteResponse + 1000;
                 opCodeName = "InnerBsonOpcode";
-                protoFile = $"{Define.ProtoBufDirectory}InnerBsonMessage.proto";
                 saveDirectory.Add(Define.ProtoBufServerDirectory, _serverTemplate);
-                files.Add(protoFile);
+                files.Add($"{Define.ProtoBufDirectory}InnerBsonMessage.proto");
                 files.AddRange(Directory.GetFiles($"{Define.ProtoBufDirectory}Bson").ToList());
                 break;
             }
         }
 
-
-
+        #region GenerateProtoFiles
         foreach (var filePath in files)
         {
+            var parameter = "";
+            var className = "";
+            var isMsgHead = false;
+            string responseTypeStr = null;
+            string customRouteType = null;
             var protoFileText = await File.ReadAllTextAsync(filePath);
 
             foreach (var line in protoFileText.Split('\n'))
@@ -340,9 +335,10 @@ public sealed class ProtoBufExporter
 
             file.Clear();
         }
-
+        #endregion
+        
         #region GenerateOpCode
-
+        file.Clear();
         file.AppendLine("namespace TEngine");
         file.AppendLine("{");
         file.AppendLine($"\tpublic static partial class {opCodeName}");
