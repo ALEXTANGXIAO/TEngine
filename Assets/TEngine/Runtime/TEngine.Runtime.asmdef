@@ -41,6 +41,16 @@
             "name": "com.unity.modules.particlesystem",
             "expression": "",
             "define": "UNITASK_PARTICLESYSTEM_SUPPORT"
+        },
+        {
+            "name": "com.unity.textmeshpro",
+            "expression": "",
+            "define": "UNITASK_TEXTMESHPRO_SUPPORT"
+        },
+        {
+            "name": "com.demigiant.dotween",
+            "expression": "",
+            "define": "UNITASK_DOTWEEN_SUPPORT"
         }
     ],
     "noEngineReferences": false
