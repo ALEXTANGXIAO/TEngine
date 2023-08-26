@@ -116,6 +116,7 @@ namespace GameMain
         
         private void AllAssemblyLoadComplete()
         {
+            ChangeState<ProcedureStartGame>(m_procedureOwner);
 #if UNITY_EDITOR
             m_MainLogicAssembly = AppDomain.CurrentDomain.GetAssemblies().
                 First(assembly => $"{assembly.GetName().Name}.dll" == SettingsUtils.HybridCLRCustomGlobalSettings.LogicMainDllName);
@@ -139,7 +140,6 @@ namespace GameMain
             }
             object[] objects = new object[] { new object[] { m_HotfixAssemblys } };
             entryMethod.Invoke(appType, objects);
-            ChangeState<ProcedureStartGame>(m_procedureOwner);
         }
 
         private Assembly GetMainLogicAssembly()
