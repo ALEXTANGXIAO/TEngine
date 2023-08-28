@@ -23,7 +23,7 @@ namespace TEngine
         
         private float _volume = 1f;
         private bool _enable = true;
-        private AudioCategory[] _audioCategories = new AudioCategory[(int)AudioType.Max];
+        private readonly AudioCategory[] _audioCategories = new AudioCategory[(int)AudioType.Max];
         private readonly float[] _categoriesVolume = new float[(int)AudioType.Max];
         public readonly Dictionary<string, AssetOperationHandle> AudioClipPool = new Dictionary<string, AssetOperationHandle>();
         public IResourceManager ResourceManager;
@@ -392,19 +392,20 @@ namespace TEngine
 
             for (int i = 0; i < (int)AudioType.Max; ++i)
             {
-                if (_audioCategories[i] != null)
+                var audioCategory = _audioCategories[i];
+                if (audioCategory != null)
                 {
-                    for (int j = 0; j < _audioCategories[i].AudioAgents.Count; ++j)
+                    for (int j = 0; j < audioCategory.AudioAgents.Count; ++j)
                     {
-                        if (_audioCategories[i].AudioAgents[j] != null)
+                        var audioAgent = audioCategory.AudioAgents[j];
+                        if (audioAgent != null)
                         {
-                            _audioCategories[i].AudioAgents[j].Destroy();
-                            _audioCategories[i].AudioAgents[j] = null;
+                            audioAgent.Destroy();
+                            audioAgent = null;
                         }
                     }
                 }
-
-                _audioCategories[i] = null;
+                audioCategory = null;
             }
 
             Initialize();
@@ -538,11 +539,11 @@ namespace TEngine
         /// </summary>
         private void Update()
         {
-            for (int i = 0; i < _audioCategories.Length; ++i)
+            foreach (var audioCategory in _audioCategories)
             {
-                if (_audioCategories[i] != null)
+                if (audioCategory != null)
                 {
-                    _audioCategories[i].Update(GameTime.deltaTime);
+                    audioCategory.Update(Time.deltaTime);
                 }
             }
         }
