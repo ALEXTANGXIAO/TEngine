@@ -14,10 +14,6 @@ namespace TEngine.Editor
             "Assembly-CSharp",
             "GameMain.Runtime",
             "GameMain",
-            "GameBase",
-            "GameLogic",
-            "GameProto",
-            "BattleCore.Runtime",
         };
 
         private static readonly string[] RuntimeOrEditorAssemblyNames =
@@ -27,11 +23,7 @@ namespace TEngine.Editor
             "TEngine.Editor",
             "Assembly-CSharp-Editor",
             "GameMain",
-            "GameMain.Editor",
-            "GameBase",
-            "GameLogic",
-            "GameProto",
-            "BattleCore.Runtime",
+            "GameMain.Editor"
         };
 
         /// <summary>
