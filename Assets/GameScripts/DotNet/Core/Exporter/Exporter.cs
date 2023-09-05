@@ -3,16 +3,21 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Text;
-using TEngine.Core;
+using TEngine.Helper;
 using Microsoft.Extensions.Configuration;
 #pragma warning disable CS8601
 
-#pragma warning disable CS8618
 
 namespace TEngine.Core;
 
+/// <summary>
+/// 数据导出器，用于执行导出操作。
+/// </summary>
 public sealed class Exporter
 {
+    /// <summary>
+    /// 开始执行数据导出操作。
+    /// </summary>
     public void Start()
     {
         Console.OutputEncoding = Encoding.UTF8;
@@ -25,8 +30,9 @@ public sealed class Exporter
 
         LogInfo("请输入你想要做的操作:");
         LogInfo("1:导出网络协议（ProtoBuf）");
-        LogInfo("2:增量导出服务器启动Excel（包含常量枚举）");
-        LogInfo("3:全量导出服务器启动Excel（包含常量枚举）");
+        LogInfo("2:导出网络协议并重新生成OpCode（ProtoBuf）");
+        LogInfo("3:增量导出Excel（包含常量枚举）");
+        LogInfo("4:全量导出Excel（包含常量枚举）");
 
         var keyChar = Console.ReadKey().KeyChar;
             
@@ -39,13 +45,17 @@ public sealed class Exporter
             
         LogInfo("");
         exportType = (ExportType) key;
-        // LoadConfig();
-        
+
         switch (exportType)
         {
             case ExportType.ProtoBuf:
             {
-                _ = new ProtoBufExporter();
+                _ = new ProtoBufExporter(false);
+                break;
+            }
+            case ExportType.ProtoBufAndOpCodeCache:
+            {
+                _ = new ProtoBufExporter(true);
                 break;
             }
             case ExportType.AllExcel:
@@ -61,11 +71,19 @@ public sealed class Exporter
         Environment.Exit(0);
     }
 
+    /// <summary>
+    /// 输出信息到控制台。
+    /// </summary>
+    /// <param name="msg">要输出的信息。</param>
     public static void LogInfo(string msg)
     {
         Console.WriteLine(msg);
     }
 
+    /// <summary>
+    /// 输出错误信息到控制台。
+    /// </summary>
+    /// <param name="msg">要输出的错误信息。</param>
     public static void LogError(string msg)
     {
         ConsoleColor color = Console.ForegroundColor;
@@ -74,6 +92,10 @@ public sealed class Exporter
         Console.ForegroundColor = color;
     }
 
+    /// <summary>
+    /// 输出异常信息到控制台。
+    /// </summary>
+    /// <param name="e">要输出的异常。</param>
     public static void LogError(Exception e)
     {
         ConsoleColor color = Console.ForegroundColor;

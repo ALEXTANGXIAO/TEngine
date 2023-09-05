@@ -1,26 +1,29 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace TEngine.Core
+namespace TEngine
 {
+    /// <summary>
+    /// 文件操作助手类，提供了各种文件操作方法。
+    /// </summary>
     public static class FileHelper
     {
         /// <summary>
-        /// 获取文件全路径。
+        /// 获取相对路径的完整路径。
         /// </summary>
-        /// <param name="relativePath"></param>
-        /// <returns></returns>
+        /// <param name="relativePath">相对路径。</param>
+        /// <returns>完整路径。</returns>
         public static string GetFullPath(string relativePath)
         {
             return Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), relativePath));
         }
 
         /// <summary>
-        /// 拷贝文件到目标路径、如果目标目录不存在会自动创建目录
+        /// 将文件复制到目标路径，如果目标目录不存在会自动创建目录。
         /// </summary>
-        /// <param name="sourceFile"></param>
-        /// <param name="destinationFile"></param>
-        /// <param name="overwrite"></param>
+        /// <param name="sourceFile">源文件路径。</param>
+        /// <param name="destinationFile">目标文件路径。</param>
+        /// <param name="overwrite">是否覆盖已存在的目标文件。</param>
         public static void Copy(string sourceFile, string destinationFile, bool overwrite)
         {
             var directoriesByFilePath = GetDirectoriesByFilePath(destinationFile);
@@ -39,10 +42,10 @@ namespace TEngine.Core
         }
 
         /// <summary>
-        /// 获取文件路径内的所有文件夹路径
+        /// 获取文件路径内的所有文件夹路径。
         /// </summary>
-        /// <param name="filePath"></param>
-        /// <returns></returns>
+        /// <param name="filePath">文件路径。</param>
+        /// <returns>文件夹路径列表。</returns>
         public static List<string> GetDirectoriesByFilePath(string filePath)
         {
             var dir = "";
@@ -59,11 +62,11 @@ namespace TEngine.Core
         }
 
         /// <summary>
-        /// 把文件夹里所有内容拷贝的目标位置
+        /// 将文件夹内的所有内容复制到目标位置。
         /// </summary>
-        /// <param name="sourceDirectory"></param>
-        /// <param name="destinationDirectory"></param>
-        /// <param name="overwrite"></param>
+        /// <param name="sourceDirectory">源文件夹路径。</param>
+        /// <param name="destinationDirectory">目标文件夹路径。</param>
+        /// <param name="overwrite">是否覆盖已存在的文件。</param>
         public static void CopyDirectory(string sourceDirectory, string destinationDirectory, bool overwrite)
         {
             // 创建目标文件夹
@@ -99,11 +102,23 @@ namespace TEngine.Core
                 CopyDirectory(directory, destinationPath, overwrite);
             }
         }
-        
+
         /// <summary>
-        /// 清除文件夹里的所有文件
+        /// 获取目录下的所有文件
         /// </summary>
-        /// <param name="folderPath"></param>
+        /// <param name="folderPath">文件夹路径。</param>
+        /// <param name="searchPattern">需要查找的文件通配符</param>
+        /// <param name="searchOption">查找的类型</param>
+        /// <returns></returns>
+        public static string[] GetDirectoryFile(string folderPath, string searchPattern, SearchOption searchOption)
+        {
+            return Directory.GetFiles(folderPath, searchPattern, searchOption);
+        }
+
+        /// <summary>
+        /// 清空文件夹内的所有文件。
+        /// </summary>
+        /// <param name="folderPath">文件夹路径。</param>
         public static void ClearDirectoryFile(string folderPath)
         {
             if (!Directory.Exists(folderPath))

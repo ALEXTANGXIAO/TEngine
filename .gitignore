@@ -130,3 +130,4 @@ Bin/
 
 #Server_Config
 DotNet/Config/GameConfig
+DotNet/Config/ProtoBuf/OpCode.Cache
