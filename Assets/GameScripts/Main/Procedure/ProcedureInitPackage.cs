@@ -25,17 +25,20 @@ namespace GameMain
         {
             if (GameModule.Resource.PlayMode == EPlayMode.HostPlayMode)
             {
-                UpdateData updateData = await RequestUpdateData();
-
-                if (updateData!=null)
+                if (SettingsUtils.EnableUpdateData())
                 {
-                    if (!string.IsNullOrEmpty(updateData.HostServerURL))
+                    UpdateData updateData = await RequestUpdateData();
+
+                    if (updateData!=null)
                     {
-                        SettingsUtils.FrameworkGlobalSettings.HostServerURL = updateData.HostServerURL;
-                    }
-                    if (!string.IsNullOrEmpty(updateData.FallbackHostServerURL))
-                    {
-                        SettingsUtils.FrameworkGlobalSettings.FallbackHostServerURL = updateData.FallbackHostServerURL;
+                        if (!string.IsNullOrEmpty(updateData.HostServerURL))
+                        {
+                            SettingsUtils.FrameworkGlobalSettings.HostServerURL = updateData.HostServerURL;
+                        }
+                        if (!string.IsNullOrEmpty(updateData.FallbackHostServerURL))
+                        {
+                            SettingsUtils.FrameworkGlobalSettings.FallbackHostServerURL = updateData.FallbackHostServerURL;
+                        }
                     }
                 }
             }
