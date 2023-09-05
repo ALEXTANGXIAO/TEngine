@@ -40,6 +40,7 @@ namespace Bright.Serialization
 
     public sealed class ByteBuf : ICloneable, IEquatable<ByteBuf>
     {
+#pragma warning disable CS8618
         public ByteBuf()
         {
             Bytes = Array.Empty<byte>();
@@ -76,6 +77,7 @@ namespace Bright.Serialization
         {
             return new ByteBuf(bytes, 0, bytes.Length);
         }
+#pragma warning restore CS8618
 
         public void Replace(byte[] bytes)
         {
@@ -1015,20 +1017,24 @@ namespace Bright.Serialization
             return ((long)((ulong)x >> 1) ^ ((x & 1) << 63));
         }
 
-        public void WriteString(string x)
+        public void WriteString(string? x)
         {
             var n = x != null ? Encoding.UTF8.GetByteCount(x) : 0;
             WriteSize(n);
             if (n > 0)
             {
                 EnsureWrite(n);
-                Encoding.UTF8.GetBytes(x, 0, x.Length, Bytes, WriterIndex);
+                if (x != null)
+                {
+                    Encoding.UTF8.GetBytes(x, 0, x.Length, this.Bytes, this.WriterIndex);
+                }
+
                 WriterIndex += n;
             }
         }
 
         // byte[], [start, end)
-        public static Func<byte[], int, int, string> StringCacheFinder { get; set; }
+        public static Func<byte[], int, int, string>? StringCacheFinder { get; set; }
 
         public string ReadString()
         {
@@ -1056,14 +1062,14 @@ namespace Bright.Serialization
             }
         }
 
-        public void WriteBytes(byte[] x)
+        public void WriteBytes(byte[]? x)
         {
             var n = x != null ? x.Length : 0;
             WriteSize(n);
             if (n > 0)
             {
                 EnsureWrite(n);
-                x.CopyTo(Bytes, WriterIndex);
+                x?.CopyTo(Bytes, WriterIndex);
                 WriterIndex += n;
             }
         }
@@ -1485,12 +1491,12 @@ namespace Bright.Serialization
             return string.Join(".", datas);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return (obj is ByteBuf other) && Equals(other);
         }
 
-        public bool Equals(ByteBuf other)
+        public bool Equals(ByteBuf? other)
         {
             if (other == null)
             {
