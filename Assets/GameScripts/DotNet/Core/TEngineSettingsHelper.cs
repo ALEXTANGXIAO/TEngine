@@ -69,6 +69,8 @@ public static class TEngineSettingsHelper
         Define.ServerCustomExportDirectory = FileHelper.GetFullPath(root["Export:ServerCustomExportDirectory:Value"]);
         // 客户端自定义导出代码
         Define.ClientCustomExportDirectory = FileHelper.GetFullPath(root["Export:ClientCustomExportDirectory:Value"]);
+        // SceneConfig.xlsx的位置
+        Define.SceneConfigPath = FileHelper.GetFullPath(root["Export:SceneConfigPath:Value"]);
         // 自定义导出代码存放的程序集
         Define.CustomExportAssembly = FileHelper.GetFullPath(root["Export:CustomExportAssembly:Value"]);
     }

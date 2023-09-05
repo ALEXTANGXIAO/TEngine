@@ -7,6 +7,7 @@ namespace TEngine
 		public const int Addressable = 2;
 		public const int Map = 3;
 		public const int Chat = 4;
+		public const int Center = 5;
 
 		public static readonly Dictionary<string, int> SceneTypeDic = new Dictionary<string, int>()
 		{
@@ -14,6 +15,7 @@ namespace TEngine
 			{ "Addressable", 2 },
 			{ "Map", 3 },
 			{ "Chat", 4 },
+			{ "Center", 5 },
 		};
 	}
 

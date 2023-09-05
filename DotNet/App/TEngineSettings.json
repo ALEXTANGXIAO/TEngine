@@ -60,6 +60,10 @@
             "Value": "../../Client/Unity/Assets/Scripts/Hotfix/Generate/CustomExport/",
             "Comment": "客户端自定义导出代码文件夹位置"
         },
+        "SceneConfigPath": {
+            "Value": "../../../Config/Excel/Server/SceneConfig.xlsx",
+            "Comment": "SceneConfig.xlsx的位置"
+        },
         "CustomExportAssembly": {
             "Value": "Logic",
             "Comment": "自定义导出代码存放的程序集"

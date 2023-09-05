@@ -70,6 +70,10 @@ public static class Define
     /// </summary>
     public static string ClientCustomExportDirectory;
     /// <summary>
+    /// SceneConfig.xlsx的位置
+    /// </summary>
+    public static string SceneConfigPath;
+    /// <summary>
     /// 自定义导出代码存放的程序集
     /// </summary>
     public static string CustomExportAssembly;
