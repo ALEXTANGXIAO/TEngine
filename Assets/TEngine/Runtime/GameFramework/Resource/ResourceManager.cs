@@ -9,9 +9,10 @@ namespace TEngine
     /// <summary>
     /// 资源管理器。
     /// </summary>
-    internal partial class ResourceManager: GameFrameworkModule,IResourceManager
+    internal partial class ResourceManager : GameFrameworkModule, IResourceManager
     {
         #region Propreties
+
         /// <summary>
         /// 资源包名称。
         /// </summary>
@@ -21,21 +22,21 @@ namespace TEngine
         /// 获取当前资源适用的游戏版本号。
         /// </summary>
         public string ApplicableGameVersion => m_ApplicableGameVersion;
-        
+
         private string m_ApplicableGameVersion;
 
         /// <summary>
         /// 获取当前内部资源版本号。
         /// </summary>
         public int InternalResourceVersion => m_InternalResourceVersion;
-        
+
         private int m_InternalResourceVersion;
-        
+
         /// <summary>
         /// 同时下载的最大数目。
         /// </summary>
         public int DownloadingMaxNum { get; set; }
-        
+
         /// <summary>
         /// 失败重试最大数目。
         /// </summary>
@@ -45,50 +46,56 @@ namespace TEngine
         /// 获取资源只读区路径。
         /// </summary>
         public string ReadOnlyPath => m_ReadOnlyPath;
-        
+
         private string m_ReadOnlyPath;
 
         /// <summary>
         /// 获取资源读写区路径。
         /// </summary>
         public string ReadWritePath => m_ReadWritePath;
-        
+
         private string m_ReadWritePath;
-        
+
         /// <summary>
         /// 资源系统运行模式。
         /// </summary>
         public EPlayMode PlayMode { get; set; }
-        
+
         /// <summary>
         /// 下载文件校验等级。
         /// </summary>
         public EVerifyLevel VerifyLevel { get; set; }
-        
+
         /// <summary>
         /// 设置异步系统参数，每帧执行消耗的最大时间切片（单位：毫秒）。
         /// </summary>
         public long Milliseconds { get; set; }
-        
+
         /// <summary>
         /// 获取游戏框架模块优先级。
         /// </summary>
         /// <remarks>优先级较高的模块会优先轮询，并且关闭操作会后进行。</remarks>
         internal override int Priority => 4;
+
         #endregion
 
         #region 生命周期
+
         internal override void Update(float elapseSeconds, float realElapseSeconds)
         {
+            ResourcePool.Update();
         }
 
         internal override void Shutdown()
         {
             YooAssets.Destroy();
+            ResourcePool.Destroy();
         }
+
         #endregion
 
         #region 设置接口
+
         /// <summary>
         /// 设置资源只读区路径。
         /// </summary>
@@ -116,6 +123,7 @@ namespace TEngine
 
             m_ReadWritePath = readWritePath;
         }
+
         #endregion
 
         public void Initialize()
@@ -133,6 +141,7 @@ namespace TEngine
                 defaultPackage = YooAssets.CreatePackage(packageName);
                 YooAssets.SetDefaultPackage(defaultPackage);
             }
+            ResourcePool.Initialize(GameModule.Resource.gameObject);
         }
 
         public InitializationOperation InitPackage()
@@ -154,7 +163,7 @@ namespace TEngine
             //运行时使用。
             EPlayMode playMode = PlayMode;
 #endif
-            
+
             // 编辑器下的模拟模式
             InitializationOperation initializationOperation = null;
             if (playMode == EPlayMode.EditorSimulateMode)
@@ -185,7 +194,7 @@ namespace TEngine
 
             return initializationOperation;
         }
-        
+
         public void UnloadAsset(object asset)
         {
             throw new System.NotImplementedException();
@@ -207,14 +216,14 @@ namespace TEngine
             {
                 throw new GameFrameworkException("Asset name is invalid.");
             }
-            
+
             AssetInfo assetInfo = YooAssets.GetAssetInfo(assetName);
-            
+
             if (!CheckLocationValid(assetName))
             {
                 return HasAssetResult.Valid;
             }
-            
+
             if (assetInfo == null)
             {
                 return HasAssetResult.NotExist;
@@ -296,6 +305,7 @@ namespace TEngine
         }
 
         #endregion
+
         /// <summary>
         /// 同步加载资源。
         /// </summary>
@@ -309,6 +319,7 @@ namespace TEngine
                 Log.Error("Asset name is invalid.");
                 return default;
             }
+
             AssetOperationHandle handle = YooAssets.LoadAssetSync<T>(assetName);
 
             if (typeof(T) == typeof(GameObject))
@@ -339,6 +350,7 @@ namespace TEngine
                 Log.Error("Asset name is invalid.");
                 return default;
             }
+
             AssetOperationHandle handle = YooAssets.LoadAssetSync<T>(assetName);
 
             if (typeof(T) == typeof(GameObject))
@@ -362,7 +374,7 @@ namespace TEngine
         /// <param name="assetName">要加载资源的名称。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string assetName,out AssetOperationHandle handle) where T : Object
+        public T LoadAsset<T>(string assetName, out AssetOperationHandle handle) where T : Object
         {
             handle = YooAssets.LoadAssetSync<T>(assetName);
 
@@ -391,7 +403,7 @@ namespace TEngine
         /// <param name="parent">父节点位置。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string assetName, Transform parent,out AssetOperationHandle handle) where T : Object
+        public T LoadAsset<T>(string assetName, Transform parent, out AssetOperationHandle handle) where T : Object
         {
             handle = YooAssets.LoadAssetSync<T>(assetName);
 
@@ -453,7 +465,7 @@ namespace TEngine
         {
             return YooAssets.LoadSubAssetsAsync<TObject>(location: location);
         }
-        
+
         /// <summary>
         /// 同步加载子资源对象
         /// </summary>
@@ -471,9 +483,10 @@ namespace TEngine
         /// <param name="activateOnLoad">加载完毕时是否主动激活</param>
         /// <param name="priority">优先级</param>
         /// <returns>异步加载场景句柄。</returns>
-        public SceneOperationHandle LoadSceneAsync(string location, LoadSceneMode sceneMode = LoadSceneMode.Single, bool activateOnLoad = true, int priority = 100)
+        public SceneOperationHandle LoadSceneAsync(string location, LoadSceneMode sceneMode = LoadSceneMode.Single, bool activateOnLoad = true,
+            int priority = 100)
         {
-            return YooAssets.LoadSceneAsync(location,sceneMode,activateOnLoad,priority);
+            return YooAssets.LoadSceneAsync(location, sceneMode, activateOnLoad, priority);
         }
 
         /// <summary>
@@ -484,12 +497,13 @@ namespace TEngine
         /// <param name="activateOnLoad">加载完毕时是否主动激活</param>
         /// <param name="priority">优先级</param>
         /// <returns>异步加载场景句柄。</returns>
-        public SceneOperationHandle LoadSceneAsync(AssetInfo assetInfo, LoadSceneMode sceneMode = LoadSceneMode.Single, bool activateOnLoad = true, int priority = 100)
+        public SceneOperationHandle LoadSceneAsync(AssetInfo assetInfo, LoadSceneMode sceneMode = LoadSceneMode.Single, bool activateOnLoad = true,
+            int priority = 100)
         {
-            return YooAssets.LoadSceneAsync(assetInfo,sceneMode,activateOnLoad,priority);
+            return YooAssets.LoadSceneAsync(assetInfo, sceneMode, activateOnLoad, priority);
         }
-        
-        
+
+
         /// <summary>
         /// 异步加载资源实例。
         /// </summary>
@@ -499,20 +513,20 @@ namespace TEngine
         public async UniTask<T> LoadAssetAsync<T>(string assetName, CancellationToken cancellationToken) where T : Object
         {
             AssetOperationHandle handle = LoadAssetAsyncHandle<T>(assetName);
-            
+
             bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
 
             if (cancelOrFailed)
             {
                 return null;
             }
-            
+
             if (typeof(T) == typeof(GameObject))
             {
                 GameObject ret = handle.InstantiateSync();
-                
+
                 AssetReference.BindAssetReference(ret, handle, assetName);
-                
+
                 return ret as T;
             }
             else
@@ -530,7 +544,7 @@ namespace TEngine
         public async UniTask<GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken)
         {
             AssetOperationHandle handle = LoadAssetAsyncHandle<GameObject>(assetName);
-            
+
             bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
 
             if (cancelOrFailed)
@@ -539,12 +553,12 @@ namespace TEngine
             }
 
             GameObject ret = handle.InstantiateSync();
-            
+
             AssetReference.BindAssetReference(ret, handle, assetName);
-            
+
             return ret;
         }
-        
+
         /// <summary>
         /// 异步加载游戏物体。
         /// </summary>
@@ -554,7 +568,7 @@ namespace TEngine
         /// <returns>异步游戏物体实例。</returns>
         public async UniTask<GameObject> LoadGameObjectAsync(string location, Transform parent, CancellationToken cancellationToken)
         {
-            GameObject gameObject = await LoadGameObjectAsync(location,cancellationToken);
+            GameObject gameObject = await LoadGameObjectAsync(location, cancellationToken);
             if (parent != null)
             {
                 gameObject.transform.SetParent(parent);
@@ -563,6 +577,7 @@ namespace TEngine
             {
                 Log.Error("Set Parent Failed");
             }
+
             return gameObject;
         }
 
@@ -575,11 +590,11 @@ namespace TEngine
         public async UniTask<RawFileOperationHandle> LoadRawAssetAsync(string location, CancellationToken cancellationToken)
         {
             RawFileOperationHandle handle = YooAssets.LoadRawFileAsync(location);
-            
+
             bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
 
             handle.Dispose();
-            
+
             return cancelOrFailed ? null : handle;
         }
 
@@ -591,7 +606,7 @@ namespace TEngine
         /// <param name="cancellationToken">取消操作Token。</param>
         /// <typeparam name="T">资源实例类型。</typeparam>
         /// <returns>原生文件资源实例。</returns>
-        public async UniTask<T> LoadSubAssetAsync<T>(string location,string assetName, CancellationToken cancellationToken) where T : Object
+        public async UniTask<T> LoadSubAssetAsync<T>(string location, string assetName, CancellationToken cancellationToken) where T : Object
         {
             var assetInfo = GetAssetInfo(location);
             if (assetInfo == null)
@@ -599,16 +614,16 @@ namespace TEngine
                 Log.Fatal($"AssetsInfo is null");
                 return null;
             }
-            
+
             SubAssetsOperationHandle handle = YooAssets.LoadSubAssetsAsync(assetInfo);
-            
+
             bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
 
             handle.Dispose();
-            
+
             return cancelOrFailed ? null : handle.GetSubAssetObject<T>(assetName);
         }
-        
+
         /// <summary>
         /// 异步加载子文件。
         /// </summary>
@@ -616,7 +631,7 @@ namespace TEngine
         /// <param name="cancellationToken">取消操作Token。</param>
         /// <typeparam name="T">资源实例类型。</typeparam>
         /// <returns>原生文件资源实例。</returns>
-        public async UniTask<T[]> LoadAllSubAssetAsync<T>(string location,CancellationToken cancellationToken) where T : Object
+        public async UniTask<T[]> LoadAllSubAssetAsync<T>(string location, CancellationToken cancellationToken) where T : Object
         {
             var assetInfo = GetAssetInfo(location);
             if (assetInfo == null)
@@ -624,13 +639,13 @@ namespace TEngine
                 Log.Fatal($"AssetsInfo is null");
                 return null;
             }
-            
+
             SubAssetsOperationHandle handle = YooAssets.LoadSubAssetsAsync(assetInfo);
-            
+
             bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
 
             handle.Dispose();
-            
+
             return cancelOrFailed ? null : handle.GetSubAssetObjects<T>();
         }
 
@@ -643,11 +658,12 @@ namespace TEngine
         /// <param name="activateOnLoad">加载完毕时是否主动激活.</param>
         /// <param name="priority">优先级.</param>
         /// <returns>场景资源实例。</returns>
-        public async UniTask<Scene> LoadSceneAsyncByUniTask(string location,CancellationToken cancellationToken,LoadSceneMode sceneMode = LoadSceneMode.Single,
+        public async UniTask<Scene> LoadSceneAsyncByUniTask(string location, CancellationToken cancellationToken,
+            LoadSceneMode sceneMode = LoadSceneMode.Single,
             bool activateOnLoad = true, int priority = 100)
         {
-            SceneOperationHandle handle = YooAssets.LoadSceneAsync(location,sceneMode,activateOnLoad,priority);
-            
+            SceneOperationHandle handle = YooAssets.LoadSceneAsync(location, sceneMode, activateOnLoad, priority);
+
             bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
 
             return cancelOrFailed ? default : handle.SceneObject;
