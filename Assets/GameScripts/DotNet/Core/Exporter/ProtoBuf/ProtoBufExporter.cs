@@ -179,6 +179,8 @@ public sealed class ProtoBufExporter
 
             foreach (var line in protoFileText.Split('\n'))
             {
+                bool hadOpCode = true;
+                
                 var currentLine = line.Trim();
 
                 if (string.IsNullOrWhiteSpace(currentLine))
@@ -249,7 +251,11 @@ public sealed class ProtoBufExporter
                     {
                         file.AppendLine("\n\t{");
 
-                        if (string.IsNullOrWhiteSpace(parameter) || parameter == "IMessage")
+                        if (string.IsNullOrWhiteSpace(parameter))
+                        {
+                            hadOpCode = false;
+                        }
+                        else if(parameter == "IMessage")
                         {
                             opcodeInfo.Code = _opCodeCache.GetOpcodeCache(className, ref _aMessage);
                             file.AppendLine($"\t\tpublic uint OpCode() {{ return {opCodeName}.{className}; }}");
@@ -328,7 +334,10 @@ public sealed class ProtoBufExporter
                             }
                         }
 
-                        _opcodes.Add(opcodeInfo);
+                        if (hadOpCode)
+                        {
+                            _opcodes.Add(opcodeInfo);
+                        }
                         continue;
                     }
                     case "}":
