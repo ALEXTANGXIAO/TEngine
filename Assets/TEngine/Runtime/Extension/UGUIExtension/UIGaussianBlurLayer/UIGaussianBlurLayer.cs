@@ -104,7 +104,7 @@ namespace TEngine
 
             int renderWidth = src.width >> DownSampleNum;
             int renderHeight = src.height >> DownSampleNum;
-            m_renderTexture = RenderTexture.GetTemporary(renderWidth, renderHeight, 0, RenderTextureFormat.RGB111110Float);
+            m_renderTexture = RenderTexture.GetTemporary(renderWidth, renderHeight, 0, RenderTextureFormat.Default);
             m_renderTexture.filterMode = FilterMode.Bilinear;
 
             Graphics.Blit(src, m_renderTexture, material, 0);
@@ -117,7 +117,7 @@ namespace TEngine
                 material.SetFloat(DownSampleValue, BlurSpreadSize * widthMod + iterationOffs);
                 // 【2.2】处理Shader的通道1，垂直方向模糊处理 || Pass1,for vertical blur
                 // 定义一个临时渲染的缓存tempBuffer
-                RenderTexture tempBuffer = RenderTexture.GetTemporary(renderWidth, renderHeight, 0, RenderTextureFormat.RGB111110Float);
+                RenderTexture tempBuffer = RenderTexture.GetTemporary(renderWidth, renderHeight, 0, RenderTextureFormat.Default);
                 // 拷贝rawTexture中的渲染数据到tempBuffer,并仅绘制指定的pass1的纹理数据
                 Graphics.Blit(m_renderTexture, tempBuffer, material, 1);
                 //  清空rawTexture
@@ -126,7 +126,7 @@ namespace TEngine
                 m_renderTexture = tempBuffer;
                 // 【2.3】处理Shader的通道2，竖直方向模糊处理 || Pass2,for horizontal blur
                 // 获取临时渲染纹理
-                tempBuffer = RenderTexture.GetTemporary(renderWidth, renderHeight, 0, RenderTextureFormat.RGB111110Float);
+                tempBuffer = RenderTexture.GetTemporary(renderWidth, renderHeight, 0, RenderTextureFormat.Default);
                 // 拷贝rawTexture中的渲染数据到tempBuffer,并仅绘制指定的pass2的纹理数据
                 Graphics.Blit(m_renderTexture, tempBuffer, m_material, 2);
                 //【2.4】得到pass0、pass1和pass2的数据都已经准备好的rawTexture
