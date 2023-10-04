@@ -587,13 +587,12 @@ namespace TEngine
         /// <param name="location">资源定位地址。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
         /// <returns>原生文件资源实例操作句柄。</returns>
+        /// <remarks>需要自行释放资源句柄(RawFileOperationHandle)。</remarks>
         public async UniTask<RawFileOperationHandle> LoadRawAssetAsync(string location, CancellationToken cancellationToken)
         {
             RawFileOperationHandle handle = YooAssets.LoadRawFileAsync(location);
 
             bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
-
-            handle.Dispose();
 
             return cancelOrFailed ? null : handle;
         }
