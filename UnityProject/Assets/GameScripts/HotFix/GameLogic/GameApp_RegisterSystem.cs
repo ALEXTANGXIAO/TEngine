@@ -18,8 +18,7 @@ public partial class GameApp
     /// </summary>
     private void InitSystemSetting()
     {
-        Application.targetFrameRate = 120;
-        Log.Warning("Set UnityEngine.Application.targetFrameRate = 120");
+        
     }
 
     /// <summary>
@@ -36,7 +35,7 @@ public partial class GameApp
     /// </summary>
     /// <param name="logicSys">ILogicSys</param>
     /// <returns></returns>
-    protected bool AddLogicSys(ILogicSys logicSys)
+    private bool AddLogicSys(ILogicSys logicSys)
     {
         if (_listLogicMgr.Contains(logicSys))
         {

@@ -3,7 +3,7 @@
 namespace GameBase
 {
     /// <summary>
-    /// 用来在多线程下检测耗时。
+    /// 用于检测耗时。
     /// </summary>
     public class GameTickWatcher
     {

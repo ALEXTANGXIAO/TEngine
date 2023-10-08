@@ -7,13 +7,6 @@
       "dependencies": {},
       "hash": "b024a18ba16cccb7ac3c72cf3ce272ef025eb5e4"
     },
-    "com.cysharp.memorypack": {
-      "version": "https://github.com/Cysharp/MemoryPack.git?path=src/MemoryPack.Unity/Assets/Plugins/MemoryPack",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "09eb5f1535d0d01dee98c84fa110c21a436bd896"
-    },
     "com.cysharp.unitask": {
       "version": "file:UniTask",
       "depth": 0,
@@ -168,6 +161,16 @@
       "source": "registry",
       "dependencies": {
         "com.unity.ugui": "1.0.0"
+      },
+      "url": "https://packages.unity.cn"
+    },
+    "com.unity.toolchain.win-x86_64-linux-x86_64": {
+      "version": "2.0.6",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.sysroot": "2.0.7",
+        "com.unity.sysroot.linux-x86_64": "2.0.6"
       },
       "url": "https://packages.unity.cn"
     },

@@ -34,6 +34,47 @@ namespace TEngine
         }
     }
 
+    #region Attribute
+
+    /// <summary>
+    /// 帧更新属性。
+    /// <remarks>适用于BehaviourSingleton。</remarks>
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class)]
+    public class UpdateAttribute : Attribute
+    {
+    }
+
+    /// <summary>
+    /// 物理帧更新属性。
+    /// <remarks>适用于BehaviourSingleton。</remarks>
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class)]
+    public class FixedUpdateAttribute : Attribute
+    {
+    }
+
+    /// <summary>
+    /// 后帧更新属性。
+    /// <remarks>适用于BehaviourSingleton。</remarks>
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class)]
+    public class LateUpdateAttribute : Attribute
+    {
+    }
+
+    [AttributeUsage(AttributeTargets.Class)]
+    public class RoleLoginAttribute : Attribute
+    {
+    }
+
+    [AttributeUsage(AttributeTargets.Class)]
+    public class RoleLogoutAttribute : Attribute
+    {
+    }
+
+    #endregion
+
     /// <summary>
     /// 基础Behaviour单例。
     /// <remarks>（抽象类）</remarks>
@@ -97,7 +138,7 @@ namespace TEngine
     /// <summary>
     /// 通过LogicSys来驱动且具备Unity完整生命周期的驱动系统（不继承MonoBehaviour）。
     /// </summary>
-    public class BehaviourSingleSystem : BaseLogicSys<BehaviourSingleSystem>
+    public sealed class BehaviourSingleSystem : BaseLogicSys<BehaviourSingleSystem>
     {
         private readonly List<BaseBehaviourSingleton> _listInst = new List<BaseBehaviourSingleton>();
         private readonly List<BaseBehaviourSingleton> _listStart = new List<BaseBehaviourSingleton>();
@@ -262,7 +303,6 @@ namespace TEngine
         private bool HadAttribute<T>(Type type) where T : Attribute
         {
             T attribute = Attribute.GetCustomAttribute(type, typeof(T)) as T;
-
             return attribute != null;
         }
     }

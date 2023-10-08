@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace GameLogic
 {
     /// <summary>
-    /// 红点个体行为
+    /// 红点个体行为。
     /// </summary>
     public class RedNoteBehaviour : UIWidget
     {
