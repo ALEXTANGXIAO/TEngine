@@ -1,0 +1,23 @@
+{
+  "name": "com.tengine",
+  "displayName": "TEngine",
+  "version": "4.0.0",
+  "unity": "2021.3",
+  "description": "A Unity development framework.",
+  "licensesUrl": "https://github.com/ALEXTANGXIAO/TEngine/blob/main/LICENSE",
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ALEXTANGXIAO/TEngine.git"
+  },
+  "keywords": [
+    "TEngine",
+    "Framework",
+    "unity-framework"
+  ],
+  "author": {
+    "name": "ALEXTANGXIAO",
+    "email": "574809918@qq.com",
+    "url": "https://github.com/ALEXTANGXIAO/TEngine"
+  }
+}
