@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -533,6 +534,22 @@ namespace TEngine
         public SubAssetsOperationHandle LoadSubAssetsSync(AssetInfo assetInfo)
         {
             return YooAssets.LoadSubAssetsSync(assetInfo);
+        }
+        
+        /// <summary>
+        /// 通过Tag加载资源对象集合。
+        /// </summary>
+        /// <param name="assetTag">资源标识。</param>
+        /// <typeparam name="T">资源类型。</typeparam>
+        /// <returns>资源对象集合。</returns>
+        public async UniTask<List<T>>LoadAssetsByTagAsync<T>(string assetTag) where T: UnityEngine.Object
+        {
+            LoadAssetsByTagOperation<T> operation = new LoadAssetsByTagOperation<T>(assetTag);
+            YooAssets.StartOperation(operation);
+            await operation.ToUniTask();
+            List<T> assetObjects = operation.AssetObjects;
+            operation.ReleaseHandle();
+            return assetObjects;
         }
 
         /// <summary>

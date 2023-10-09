@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -226,6 +227,14 @@ namespace TEngine
         /// <param name="assetInfo">资源信息。</param>
         public SubAssetsOperationHandle LoadSubAssetsSync(AssetInfo assetInfo);
 
+        /// <summary>
+        /// 通过Tag加载资源对象集合。
+        /// </summary>
+        /// <param name="assetTag">资源标识。</param>
+        /// <typeparam name="T">资源类型。</typeparam>
+        /// <returns>资源对象集合。</returns>
+        UniTask<List<T>> LoadAssetsByTagAsync<T>(string assetTag) where T : UnityEngine.Object;
+        
         /// <summary>
         /// 异步加载场景。
         /// </summary>

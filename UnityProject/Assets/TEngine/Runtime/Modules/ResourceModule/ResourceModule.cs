@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -535,6 +536,17 @@ namespace TEngine
             }
 
             return m_ResourceManager.LoadSubAssetsSync(assetInfo);
+        }
+        
+        /// <summary>
+        /// 通过Tag加载资源对象集合。
+        /// </summary>
+        /// <param name="assetTag">资源标识。</param>
+        /// <typeparam name="T">资源类型。</typeparam>
+        /// <returns>资源对象集合。</returns>
+        public async UniTask<List<T>>LoadAssetsByTagAsync<T>(string assetTag) where T: UnityEngine.Object
+        {
+            return await m_ResourceManager.LoadAssetsByTagAsync<T>(assetTag);
         }
 
         /// <summary>
