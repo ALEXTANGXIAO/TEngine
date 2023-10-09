@@ -5,7 +5,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "b024a18ba16cccb7ac3c72cf3ce272ef025eb5e4"
+      "hash": "a77ed7369a01a5f8037a21c8fc25cc3171c18f4e"
     },
     "com.cysharp.unitask": {
       "version": "file:UniTask",
@@ -45,6 +45,13 @@
       },
       "url": "https://packages.unity.cn"
     },
+    "com.unity.editorcoroutines": {
+      "version": "1.0.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.cn"
+    },
     "com.unity.ext.nunit": {
       "version": "1.0.6",
       "depth": 1,
@@ -75,6 +82,15 @@
       "depth": 1,
       "source": "registry",
       "dependencies": {},
+      "url": "https://packages.unity.cn"
+    },
+    "com.unity.memoryprofiler": {
+      "version": "0.7.1-preview.1",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.editorcoroutines": "1.0.0"
+      },
       "url": "https://packages.unity.cn"
     },
     "com.unity.nuget.newtonsoft-json": {
