@@ -397,6 +397,10 @@ public static class EditorSpriteSaveInfo
         atlas.Add(spriteList.ToArray());
 
         AssetDatabase.CreateAsset(atlas, path);
+        if (File.Exists(pathv2))
+        {
+            AssetDatabase.DeleteAsset(pathv2);
+        }
         File.Move(path, pathv2);
         AssetDatabase.Refresh();
     }
@@ -413,6 +417,7 @@ public static class EditorSpriteSaveInfo
         Init();
         List<string> needSaveAtlas = new List<string>();
         m_tempAllASprites.Clear();
+        m_allASprites.Clear();
         var findAssets = AssetDatabase.FindAssets("t:sprite", new[] { UIAtlasPath });
         foreach (var findAsset in findAssets)
         {
