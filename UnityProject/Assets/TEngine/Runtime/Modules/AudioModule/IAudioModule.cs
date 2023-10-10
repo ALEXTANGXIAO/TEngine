@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace TEngine
 {
@@ -60,7 +61,9 @@ namespace TEngine
         /// </summary>
         /// <param name="audioGroupConfigs">音频轨道组配置。</param>
         /// <param name="instanceRoot">实例化根节点。</param>
-        public void Initialize(AudioGroupConfig[] audioGroupConfigs, Transform instanceRoot = null);
+        /// <param name="audioMixer">音频混响器。</param>
+        /// <exception cref="GameFrameworkException"></exception>
+        public void Initialize(AudioGroupConfig[] audioGroupConfigs, Transform instanceRoot = null, AudioMixer audioMixer = null);
 
         /// <summary>
         /// 重启音频模块。

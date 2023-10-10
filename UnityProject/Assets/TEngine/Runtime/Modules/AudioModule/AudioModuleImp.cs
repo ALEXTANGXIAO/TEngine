@@ -324,8 +324,9 @@ namespace TEngine
         /// </summary>
         /// <param name="audioGroupConfigs">音频轨道组配置。</param>
         /// <param name="instanceRoot">实例化根节点。</param>
+        /// <param name="audioMixer">音频混响器。</param>
         /// <exception cref="GameFrameworkException"></exception>
-        public void Initialize(AudioGroupConfig[] audioGroupConfigs, Transform instanceRoot = null)
+        public void Initialize(AudioGroupConfig[] audioGroupConfigs, Transform instanceRoot = null,AudioMixer audioMixer = null)
         {
             if (_instanceRoot == null)
             {
@@ -362,6 +363,11 @@ namespace TEngine
             catch (Exception e)
             {
                 Log.Error(e.ToString());
+            }
+
+            if (audioMixer != null)
+            {
+                _audioMixer = audioMixer;
             }
 
             if (_audioMixer == null)

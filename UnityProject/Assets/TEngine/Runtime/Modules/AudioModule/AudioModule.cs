@@ -143,7 +143,7 @@ namespace TEngine
                 m_InstanceRoot.localScale = Vector3.one;
             }
 
-            AudioModuleImp.Initialize(m_AudioGroupConfigs, m_InstanceRoot);
+            AudioModuleImp.Initialize(m_AudioGroupConfigs, m_InstanceRoot, m_AudioMixer);
         }
 
         /// <summary>
