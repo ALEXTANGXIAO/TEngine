@@ -48,7 +48,7 @@ namespace TEngine
             _listHandles.Clear();
         }
 
-        private void AddEvent(int eventType, Delegate handler)
+        private void AddEventImp(int eventType, Delegate handler)
         {
             _listEventTypes.Add(eventType);
             _listHandles.Add(handler);
@@ -56,51 +56,51 @@ namespace TEngine
 
         #region UIEvent
 
-        public void AddUIEvent(int eventType, Action handler)
+        public void AddEvent(int eventType, Action handler)
         {
             if (GameEvent.AddEventListener(eventType, handler))
             {
-                AddEvent(eventType, handler);
+                AddEventImp(eventType, handler);
             }
         }
 
-        public void AddUIEvent<T>(int eventType, Action<T> handler)
+        public void AddEvent<T>(int eventType, Action<T> handler)
         {
             if (GameEvent.AddEventListener(eventType, handler))
             {
-                AddEvent(eventType, handler);
+                AddEventImp(eventType, handler);
             }
         }
 
-        public void AddUIEvent<T1, T2>(int eventType, Action<T1, T2> handler)
+        public void AddEvent<T1, T2>(int eventType, Action<T1, T2> handler)
         {
             if (GameEvent.AddEventListener(eventType, handler))
             {
-                AddEvent(eventType, handler);
+                AddEventImp(eventType, handler);
             }
         }
 
-        public void AddUIEvent<T1, T2, T3>(int eventType, Action<T1, T2, T3> handler)
+        public void AddEvent<T1, T2, T3>(int eventType, Action<T1, T2, T3> handler)
         {
             if (GameEvent.AddEventListener(eventType, handler))
             {
-                AddEvent(eventType, handler);
+                AddEventImp(eventType, handler);
             }
         }
 
-        public void AddUIEvent<T1, T2, T3, T4>(int eventType, Action<T1, T2, T3, T4> handler)
+        public void AddEvent<T1, T2, T3, T4>(int eventType, Action<T1, T2, T3, T4> handler)
         {
             if (GameEvent.AddEventListener(eventType, handler))
             {
-                AddEvent(eventType, handler);
+                AddEventImp(eventType, handler);
             }
         }
 
-        public void AddUIEvent<T1, T2, T3, T4, T5>(int eventType, Action<T1, T2, T3, T4, T5> handler)
+        public void AddEvent<T1, T2, T3, T4, T5>(int eventType, Action<T1, T2, T3, T4, T5> handler)
         {
             if (GameEvent.AddEventListener(eventType, handler))
             {
-                AddEvent(eventType, handler);
+                AddEventImp(eventType, handler);
             }
         }
 

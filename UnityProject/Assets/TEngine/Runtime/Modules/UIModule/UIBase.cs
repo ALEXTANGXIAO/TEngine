@@ -211,27 +211,27 @@ namespace TEngine
 
         public void AddUIEvent(int eventType, Action handler)
         {
-            EventMgr.AddUIEvent(eventType, handler);
+            EventMgr.AddEvent(eventType, handler);
         }
 
         protected void AddUIEvent<T>(int eventType, Action<T> handler)
         {
-            EventMgr.AddUIEvent(eventType, handler);
+            EventMgr.AddEvent(eventType, handler);
         }
 
         protected void AddUIEvent<T, U>(int eventType, Action<T, U> handler)
         {
-            EventMgr.AddUIEvent(eventType, handler);
+            EventMgr.AddEvent(eventType, handler);
         }
 
         protected void AddUIEvent<T, U, V>(int eventType, Action<T, U, V> handler)
         {
-            EventMgr.AddUIEvent(eventType, handler);
+            EventMgr.AddEvent(eventType, handler);
         }
 
         protected void AddUIEvent<T, U, V, W>(int eventType, Action<T, U, V, W> handler)
         {
-            EventMgr.AddUIEvent(eventType, handler);
+            EventMgr.AddEvent(eventType, handler);
         }
 
         protected void RemoveAllUIEvent()
