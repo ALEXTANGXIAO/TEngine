@@ -151,6 +151,29 @@ namespace TEngine
             }
         }
 
+        /// <summary>
+        /// 发送事件。
+        /// </summary>
+        /// <param name="eventType">事件类型。</param>
+        /// <param name="arg1">事件参数1。</param>
+        /// <param name="arg2">事件参数2。</param>
+        /// <param name="arg3">事件参数3。</param>
+        /// <param name="arg4">事件参数4。</param>
+        /// <param name="arg5">事件参数5。</param>
+        /// <param name="arg6">事件参数6。</param>
+        /// <typeparam name="TArg1">事件参数1类型。</typeparam>
+        /// <typeparam name="TArg2">事件参数2类型。</typeparam>
+        /// <typeparam name="TArg3">事件参数3类型。</typeparam>
+        /// <typeparam name="TArg4">事件参数4类型。</typeparam>
+        /// <typeparam name="TArg5">事件参数5类型。</typeparam>
+        /// <typeparam name="TArg6">事件参数6类型。</typeparam>
+        public void Send<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6>(int eventType, TArg1 arg1, TArg2 arg2, TArg3 arg3, TArg4 arg4, TArg5 arg5, TArg6 arg6)
+        {
+            if (_eventTable.TryGetValue(eventType, out var d))
+            {
+                d.Callback(arg1, arg2, arg3, arg4, arg5, arg6);
+            }
+        }
         #endregion
     }
 }

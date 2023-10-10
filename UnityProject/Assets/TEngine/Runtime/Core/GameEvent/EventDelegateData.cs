@@ -231,5 +231,35 @@ namespace TEngine
 
             CheckModify();
         }
+        
+        /// <summary>
+        /// 回调调用。
+        /// </summary>
+        /// <param name="arg1">事件参数1。</param>
+        /// <param name="arg2">事件参数2。</param>
+        /// <param name="arg3">事件参数3。</param>
+        /// <param name="arg4">事件参数4。</param>
+        /// <param name="arg5">事件参数5。</param>
+        /// <param name="arg6">事件参数6。</param>
+        /// <typeparam name="TArg1">事件参数1类型。</typeparam>
+        /// <typeparam name="TArg2">事件参数2类型。</typeparam>
+        /// <typeparam name="TArg3">事件参数3类型。</typeparam>
+        /// <typeparam name="TArg4">事件参数4类型。</typeparam>
+        /// <typeparam name="TArg5">事件参数5类型。</typeparam>
+        /// <typeparam name="TArg6">事件参数6类型。</typeparam>
+        public void Callback<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6>(TArg1 arg1, TArg2 arg2, TArg3 arg3, TArg4 arg4, TArg5 arg5, TArg6 arg6)
+        {
+            _isExecute = true;
+            for (var i = 0; i < _listExist.Count; i++)
+            {
+                var d = _listExist[i];
+                if (d is Action<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6> action)
+                {
+                    action(arg1, arg2, arg3, arg4, arg5, arg6);
+                }
+            }
+
+            CheckModify();
+        }
     }
 }
