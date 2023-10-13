@@ -98,6 +98,11 @@ namespace TEngine
         public int downloadingMaxNum = 3;
         public int failedTryAgain = 3;
 
+        /// <summary>
+        /// 资源缓存表容量。
+        /// </summary>
+        public int adaptiveReplacementCacheCapacity = 32;
+        
         private IResourceManager m_ResourceManager;
         private AsyncOperation m_AsyncOperation = null;
         private bool m_ForceUnloadUnusedAssets = false;
@@ -214,6 +219,7 @@ namespace TEngine
             m_ResourceManager.PlayMode = playMode;
             m_ResourceManager.VerifyLevel = verifyLevel;
             m_ResourceManager.Milliseconds = milliseconds;
+            m_ResourceManager.ARCTableCapacity = adaptiveReplacementCacheCapacity;
             m_ResourceManager.Initialize();
             Log.Info($"ResourceModule Run Mode：{playMode}");
             if (playMode == EPlayMode.EditorSimulateMode && !m_InitPackageByProcedure)
@@ -294,8 +300,26 @@ namespace TEngine
         /// </summary>
         public void ClearSandbox()
         {
-            // TODO
             // YooAssets.ClearSandbox();
+        }
+        
+        /// <summary>
+        /// 卸载资源。
+        /// </summary>
+        /// <param name="asset">要卸载的资源。</param>
+        public void UnloadAsset(object asset)
+        {
+            m_ResourceManager.UnloadAsset(asset);
+        }
+        
+        /// <summary>
+        /// 预订执行释放未被使用的资源。
+        /// </summary>
+        /// <param name="performGCCollect">是否使用垃圾回收。</param>
+        public void UnloadUnusedAssets(bool performGCCollect)
+        {
+            m_PreorderUnloadUnusedAssets = true;
+            m_PerformGCCollect = performGCCollect;
         }
 
         /// <summary>
@@ -317,8 +341,10 @@ namespace TEngine
         private void Update()
         {
             m_LastUnloadUnusedAssetsOperationElapseSeconds += GameTime.unscaledDeltaTime;
-            if (m_AsyncOperation == null && (m_ForceUnloadUnusedAssets || m_LastUnloadUnusedAssetsOperationElapseSeconds >= maxUnloadUnusedAssetsInterval ||
-                                             m_PreorderUnloadUnusedAssets && m_LastUnloadUnusedAssetsOperationElapseSeconds >= minUnloadUnusedAssetsInterval))
+            if (m_AsyncOperation == null && 
+                (m_ForceUnloadUnusedAssets || 
+                 m_LastUnloadUnusedAssetsOperationElapseSeconds >= maxUnloadUnusedAssetsInterval ||
+                 m_PreorderUnloadUnusedAssets && m_LastUnloadUnusedAssetsOperationElapseSeconds >= minUnloadUnusedAssetsInterval))
             {
                 Log.Info("Unload unused assets...");
                 m_ForceUnloadUnusedAssets = false;

@@ -34,6 +34,7 @@ namespace TEngine.Editor.Inspector
         private SerializedProperty m_MaxUnloadUnusedAssetsInterval = null;
         private SerializedProperty m_DownloadingMaxNum = null;
         private SerializedProperty m_FailedTryAgain = null;
+        private SerializedProperty m_adaptiveReplacementCacheCapacity = null;
 
         private int m_ResourceModeIndex = 0;
         private int m_PackageIndex = 0;
@@ -54,6 +55,7 @@ namespace TEngine.Editor.Inspector
             m_MaxUnloadUnusedAssetsInterval = serializedObject.FindProperty("maxUnloadUnusedAssetsInterval");
             m_DownloadingMaxNum = serializedObject.FindProperty("downloadingMaxNum");
             m_FailedTryAgain = serializedObject.FindProperty("failedTryAgain");
+            m_adaptiveReplacementCacheCapacity = serializedObject.FindProperty("adaptiveReplacementCacheCapacity");
 
             RefreshModes();
             RefreshTypeNames();
@@ -197,6 +199,19 @@ namespace TEngine.Editor.Inspector
                 else
                 {
                     m_FailedTryAgain.intValue = (int)failedTryAgain;
+                }
+            }
+            
+            int adaptiveReplacementCacheCapacity = (int)EditorGUILayout.Slider("ARC Table Capacity", m_adaptiveReplacementCacheCapacity.intValue, 8f, 128f);
+            if (adaptiveReplacementCacheCapacity != m_adaptiveReplacementCacheCapacity.intValue)
+            {
+                if (EditorApplication.isPlaying)
+                {
+                    t.adaptiveReplacementCacheCapacity = adaptiveReplacementCacheCapacity;
+                }
+                else
+                {
+                    m_adaptiveReplacementCacheCapacity.intValue = adaptiveReplacementCacheCapacity;
                 }
             }
 

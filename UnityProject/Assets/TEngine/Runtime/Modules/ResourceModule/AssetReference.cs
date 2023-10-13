@@ -195,8 +195,7 @@ namespace TEngine
         /// <param name="assetName">要加载的实例名称。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
         /// <returns>资源实实例。</returns>
-        public async UniTask<T> LoadAssetAsync<T>(string assetName, CancellationToken cancellationToken)
-            where T : Object
+        public async UniTask<T> LoadAssetAsync<T>(string assetName, CancellationToken cancellationToken = default) where T : Object
         {
             DirtyInitAssetGroup();
             return await _assetGroup.LoadAssetAsync<T>(assetName, cancellationToken);
@@ -208,7 +207,7 @@ namespace TEngine
         /// <param name="assetName">要加载的游戏物体名称。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
         /// <returns>异步游戏物体实例。</returns>
-        public async UniTask<GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken)
+        public async UniTask<GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken = default)
         {
             DirtyInitAssetGroup();
             return await _assetGroup.LoadGameObjectAsync(assetName, cancellationToken);

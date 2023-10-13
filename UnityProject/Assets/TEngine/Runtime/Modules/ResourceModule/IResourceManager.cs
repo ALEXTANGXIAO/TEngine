@@ -61,6 +61,11 @@ namespace TEngine
         /// 获取或设置异步系统参数，每帧执行消耗的最大时间切片（单位：毫秒）。
         /// </summary>
         long Milliseconds { get; set; }
+        
+        /// <summary>
+        /// 资源缓存表容量。
+        /// </summary>
+        int ARCTableCapacity { get; set; }
 
         /// <summary>
         /// 设置资源只读区路径。

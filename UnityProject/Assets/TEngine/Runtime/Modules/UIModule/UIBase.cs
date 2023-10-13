@@ -74,11 +74,6 @@ namespace TEngine
         public AssetOperationHandle Handle { protected set; get; }
 
         /// <summary>
-        /// 资源引用数据。
-        /// </summary>
-        public AssetReference AssetReference { protected set; get; }
-
-        /// <summary>
         /// 资源是否准备完毕。
         /// </summary>
         public bool IsPrepare { protected set; get; }
@@ -316,13 +311,7 @@ namespace TEngine
         /// <returns>UIWidget实例。</returns>
         public T CreateWidgetByPath<T>(Transform parentTrans, string assetLocation, bool visible = true) where T : UIWidget, new()
         {
-            if (AssetReference == null)
-            {
-                Log.Fatal($"CreateWidgetByPath Failed => {this}.AssetReference is null");
-                return null;
-            }
-
-            GameObject goInst = AssetReference.LoadAsset<GameObject>(assetLocation, parentTrans);
+            GameObject goInst = GameModule.Resource.LoadAsset<GameObject>(assetLocation, parentTrans);
             return CreateWidget<T>(goInst, visible);
         }
 
@@ -336,13 +325,7 @@ namespace TEngine
         /// <returns>UIWidget实例。</returns>
         public async UniTask<T> CreateWidgetByPathAsync<T>(Transform parentTrans, string assetLocation, bool visible = true) where T : UIWidget, new()
         {
-            if (AssetReference == null)
-            {
-                Log.Fatal($"CreateWidgetByPath Failed => {this}.AssetReference is null");
-                return null;
-            }
-
-            GameObject goInst = await AssetReference.LoadAssetAsync<GameObject>(assetLocation, gameObject.GetCancellationTokenOnDestroy());
+            GameObject goInst = await GameModule.Resource.LoadAssetAsync<GameObject>(assetLocation, gameObject.GetCancellationTokenOnDestroy());
             goInst.transform.SetParent(parentTrans);
             return CreateWidget<T>(goInst, visible);
         }
@@ -527,163 +510,6 @@ namespace TEngine
                     UnityEngine.Object.Destroy(icon.gameObject);
                 }
             }
-        }
-
-        #endregion
-
-        #region AssetRefrence Methods
-
-        /// <summary>
-        /// 引用资源数据到资源组内。
-        /// </summary>
-        /// <param name="handle">资源操作句柄。</param>
-        /// <param name="assetTag">资源标识。</param>
-        /// <returns>是否注册成功。</returns>
-        public bool Reference(AssetOperationHandle handle, string assetTag = "")
-        {
-            if (AssetReference == null)
-            {
-                Log.Fatal($"Reference Failed => {this}.AssetReference is null");
-                return false;
-            }
-
-            return AssetReference.Reference(handle, assetTag);
-        }
-
-        /// <summary>
-        /// 引用资源数据到资源组内。
-        /// </summary>
-        /// <param name="address">资源定位地址。</param>
-        /// <param name="handle">资源操作句柄。</param>
-        /// <param name="assetTag">资源标识。</param>
-        /// <returns>是否注册成功。</returns>
-        public bool Reference(string address, AssetOperationHandle handle, string assetTag = "")
-        {
-            if (AssetReference == null)
-            {
-                Log.Fatal($"Reference Failed => {this}.AssetReference is null");
-                return false;
-            }
-
-            return AssetReference.Reference(address, handle, assetTag);
-        }
-
-        /// <summary>
-        /// 从资源组内释放资源数据。
-        /// </summary>
-        /// <param name="assetTag"></param>
-        /// <returns></returns>
-        public bool ReleaseByTag(string assetTag)
-        {
-            if (AssetReference == null)
-            {
-                Log.Fatal($"Release Failed => {this}.AssetReference is null");
-                return false;
-            }
-
-            return AssetReference.ReleaseByTag(assetTag);
-        }
-
-        /// <summary>
-        /// 从资源组内释放资源数据。
-        /// </summary>
-        /// <param name="handle"></param>
-        /// <returns></returns>
-        public bool Release(AssetOperationHandle handle)
-        {
-            if (AssetReference == null)
-            {
-                Log.Fatal($"Release Failed => {this}.AssetReference is null");
-                return false;
-            }
-
-            return AssetReference.Release(handle);
-        }
-
-        /// <summary>
-        /// 从资源组内释放资源数据。
-        /// </summary>
-        /// <param name="address">资源定位地址。</param>
-        /// <returns>是否释放成功。</returns>
-        public bool Release(string address)
-        {
-            if (AssetReference == null)
-            {
-                Log.Fatal($"Release Failed => {this}.AssetReference is null");
-                return false;
-            }
-
-            return AssetReference.Release(address);
-        }
-
-        /// <summary>
-        /// 同步加载资源。
-        /// </summary>
-        /// <param name="assetName">要加载资源的名称。</param>
-        /// <typeparam name="T">要加载资源的类型。</typeparam>
-        /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string assetName) where T : UnityEngine.Object
-        {
-            if (AssetReference == null)
-            {
-                Log.Fatal($"LoadAsset Failed => {this}.AssetReference is null");
-                return default;
-            }
-
-            return AssetReference.LoadAsset<T>(assetName);
-        }
-
-        /// <summary>
-        /// 同步加载资源。
-        /// </summary>
-        /// <param name="assetName">要加载资源的名称。</param>
-        /// <param name="parentTrans">父节点位置。</param>
-        /// <typeparam name="T">要加载资源的类型。</typeparam>
-        /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string assetName, Transform parentTrans) where T : UnityEngine.Object
-        {
-            if (AssetReference == null)
-            {
-                Log.Fatal($"LoadAsset Failed => {this}.AssetReference is null");
-                return default;
-            }
-
-            return AssetReference.LoadAsset<T>(assetName, parentTrans);
-        }
-
-        /// <summary>
-        /// 异步加载资源实例。
-        /// </summary>
-        /// <param name="assetName">要加载的实例名称。</param>
-        /// <param name="cancellationToken">取消操作Token。</param>
-        /// <returns>资源实实例。</returns>
-        public async UniTask<T> LoadAssetAsync<T>(string assetName, CancellationToken cancellationToken)
-            where T : UnityEngine.Object
-        {
-            if (AssetReference == null)
-            {
-                Log.Fatal($"LoadAssetAsync Failed => {this}.AssetReference is null");
-                return default;
-            }
-
-            return await AssetReference.LoadAssetAsync<T>(assetName, cancellationToken);
-        }
-
-        /// <summary>
-        /// 异步加载游戏物体。
-        /// </summary>
-        /// <param name="assetName">要加载的游戏物体名称。</param>
-        /// <param name="cancellationToken">取消操作Token。</param>
-        /// <returns>异步游戏物体实例。</returns>
-        public async UniTask<GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken)
-        {
-            if (AssetReference == null)
-            {
-                Log.Fatal($"LoadAssetAsync Failed => {this}.AssetReference is null");
-                return default;
-            }
-
-            return await AssetReference.LoadGameObjectAsync(assetName, cancellationToken);
         }
 
         #endregion

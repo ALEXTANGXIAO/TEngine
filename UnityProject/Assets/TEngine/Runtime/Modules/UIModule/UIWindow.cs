@@ -245,17 +245,11 @@ namespace TEngine
 
         internal void InternalLoad(string location, System.Action<UIWindow> prepareCallback, System.Object[] userDatas)
         {
-            if (Handle != null)
-            {
-                return;
-            }
-
             _prepareCallback = prepareCallback;
             this.userDatas = userDatas;
             if (!FromResources)
             {
-                Handle = YooAssets.LoadAssetAsync<GameObject>(location);
-                Handle.Completed += Handle_Completed;
+                GameModule.Resource.LoadAssetAsync<GameObject>(location, Handle_Completed);
             }
             else
             {
@@ -369,13 +363,6 @@ namespace TEngine
             // 注销回调函数
             _prepareCallback = null;
 
-            // 卸载面板资源
-            if (Handle != null)
-            {
-                Handle.Release();
-                Handle = null;
-            }
-
             OnDestroy();
 
             // 销毁面板对象
@@ -393,11 +380,16 @@ namespace TEngine
         /// <exception cref="Exception"></exception>
         private void Handle_Completed(AssetOperationHandle handle)
         {
+            if (handle == null)
+            {
+                throw new GameFrameworkException("Load uiWindows failed because AssetOperationHandle is null");
+            }
             if (handle.AssetObject == null)
             {
-                return;
+                throw new GameFrameworkException("Load uiWindows Failed because AssetObject is null");
             }
-
+            Handle = handle;
+            
             // 实例化对象
             var panel = handle.InstantiateSync(UIModule.UIRootStatic);
             Handle_Completed(panel);
@@ -416,9 +408,6 @@ namespace TEngine
 
             _panel = panel;
             _panel.transform.localPosition = Vector3.zero;
-
-            // 绑定引用
-            AssetReference = AssetReference.BindAssetReference(_panel);
 
             // 获取组件
             _canvas = _panel.GetComponent<Canvas>();

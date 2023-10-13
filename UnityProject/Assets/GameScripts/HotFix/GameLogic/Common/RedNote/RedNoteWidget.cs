@@ -42,8 +42,7 @@ namespace GameLogic
 
         public void SetSprite(string sprite)
         {
-            m_image.sprite = LoadAsset<Sprite>(sprite);
-            m_image.SetNativeSize();
+            m_image.SetSprite(sprite);
         }
 
         public override void OnUpdate()

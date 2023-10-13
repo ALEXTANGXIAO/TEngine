@@ -159,7 +159,7 @@ namespace TEngine
                     {
                         if (image == null)
                         {
-                            goto Dispose;
+                            return;
                         }
 
                         image.sprite = operation.AssetObject as Sprite;
@@ -167,9 +167,6 @@ namespace TEngine
                         {
                             image.SetNativeSize();
                         }
-
-                        Dispose:
-                        operation.Dispose();
                     });
                 }
             }
@@ -204,13 +201,10 @@ namespace TEngine
                     {
                         if (spriteRenderer == null)
                         {
-                            goto Dispose;
+                            return;
                         }
 
                         spriteRenderer.sprite = operation.AssetObject as Sprite;
-
-                        Dispose:
-                        operation.Dispose();
                     });
                 }
             }

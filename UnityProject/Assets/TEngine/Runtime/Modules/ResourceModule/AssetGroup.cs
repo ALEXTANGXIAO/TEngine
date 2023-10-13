@@ -245,7 +245,7 @@ namespace TEngine
                 }
             }
 
-            AssetOperationHandle handle = GameModule.Resource.LoadAssetGetOperation<T>(assetName);
+            AssetOperationHandle handle = YooAssets.LoadAssetSync<T>(assetName);
 
             Reference(handle);
 
@@ -289,7 +289,7 @@ namespace TEngine
                 }
             }
 
-            assetOperationHandle = GameModule.Resource.LoadAssetGetOperation<T>(assetName);
+            assetOperationHandle = YooAssets.LoadAssetSync<T>(assetName);
 
             Reference(assetOperationHandle);
 
@@ -334,7 +334,7 @@ namespace TEngine
                 }
             }
             
-            assetOperationHandle = GameModule.Resource.LoadAssetGetOperation<T>(assetName);
+            assetOperationHandle = YooAssets.LoadAssetSync<T>(assetName);
 
             Reference(assetOperationHandle);
 
@@ -354,11 +354,10 @@ namespace TEngine
         /// </summary>
         /// <param name="assetName">要加载的实例名称。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
-        /// <param name="assetOperationHandle">资源操作句柄。</param>
         /// <returns>资源实实例。</returns>
         // ReSharper disable once UnusedParameter.Global
         // ReSharper disable once RedundantAssignment
-        public async UniTask<T> LoadAssetAsync<T>(string assetName, CancellationToken cancellationToken,AssetOperationHandle assetOperationHandle = null) where T : Object
+        public async UniTask<T> LoadAssetAsync<T>(string assetName, CancellationToken cancellationToken = default) where T : Object
         {
             if (string.IsNullOrEmpty(assetName))
             {
@@ -379,7 +378,7 @@ namespace TEngine
                 }
             }
             
-            AssetOperationHandle handle = GameModule.Resource.LoadAssetAsyncHandle<T>(assetName);
+            AssetOperationHandle handle = YooAssets.LoadAssetAsync<T>(assetName);
 
             Reference(handle);
 
@@ -391,8 +390,6 @@ namespace TEngine
 
                 return null;
             }
-
-            assetOperationHandle = handle;
             
             if (typeof(T) == typeof(GameObject))
             {
@@ -411,21 +408,9 @@ namespace TEngine
         /// <param name="assetName">要加载的游戏物体名称。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
         /// <returns>异步游戏物体实例。</returns>
-        public async UniTask<GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken)
+        public async UniTask<GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken = default)
         {
             return await LoadAssetAsync<GameObject>(assetName,cancellationToken);
-        }
-        
-        /// <summary>
-        /// 异步加载游戏物体。
-        /// </summary>
-        /// <param name="assetName">要加载的游戏物体名称。</param>
-        /// <param name="cancellationToken">取消操作Token。</param>
-        /// <param name="assetOperationHandle">资源操作句柄。</param>
-        /// <returns>异步游戏物体实例。</returns>
-        public async UniTask<GameObject> LoadGameObjectAsync(string assetName, CancellationToken cancellationToken,AssetOperationHandle assetOperationHandle)
-        {
-            return await LoadAssetAsync<GameObject>(assetName,cancellationToken,assetOperationHandle);
         }
     }
 }

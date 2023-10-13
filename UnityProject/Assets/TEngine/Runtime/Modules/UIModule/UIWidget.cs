@@ -149,7 +149,7 @@ namespace TEngine
         /// <returns></returns>
         public bool CreateByPath(string resPath, UIBase parentUI, Transform parentTrans = null, bool visible = true)
         {
-            GameObject goInst = parentUI.AssetReference.LoadAsset<GameObject>(resPath, parentTrans);
+            GameObject goInst = GameModule.Resource.LoadAsset<GameObject>(resPath, parentTrans);
             if (goInst == null)
             {
                 return false;
@@ -191,11 +191,6 @@ namespace TEngine
                 return false;
             }
 
-            if (AssetReference == null)
-            {
-                AssetReference = AssetReference.BindAssetReference(widgetRoot, parent: parentUI.AssetReference);
-            }
-
             RestChildCanvas(parentUI);
             parent = parentUI;
             Parent.ListChild.Add(this);
@@ -203,6 +198,7 @@ namespace TEngine
             BindMemberProperty();
             RegisterEvent();
             OnCreate();
+            OnRefresh();
             IsPrepare = true;
 
             if (!visible)
@@ -267,14 +263,6 @@ namespace TEngine
             {
                 uiChild.OnDestroy();
                 uiChild.OnDestroyWidget();
-            }
-
-            if (Handle != null)
-            {
-                if (AssetReference != null && AssetReference.Parent != null)
-                {
-                    AssetReference.Parent.Release(Handle);
-                }
             }
 
             if (gameObject != null)
