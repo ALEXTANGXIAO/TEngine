@@ -61,7 +61,7 @@ namespace TEngine
         /// 获取或设置异步系统参数，每帧执行消耗的最大时间切片（单位：毫秒）。
         /// </summary>
         long Milliseconds { get; set; }
-        
+
         /// <summary>
         /// 资源缓存表容量。
         /// </summary>
@@ -164,18 +164,20 @@ namespace TEngine
         /// 同步加载资源。
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
+        /// <param name="needInstance">是否需要实例化。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        T LoadAsset<T>(string location) where T : Object;
+        T LoadAsset<T>(string location, bool needInstance) where T : Object;
 
         /// <summary>
         /// 同步加载资源。
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
         /// <param name="parent">父节点位置。</param>
+        /// <param name="needInstance">是否需要实例化。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        T LoadAsset<T>(string location, Transform parent) where T : Object;
+        T LoadAsset<T>(string location, Transform parent, bool needInstance) where T : Object;
 
         /// <summary>
         /// 同步加载资源。
@@ -239,7 +241,7 @@ namespace TEngine
         /// <typeparam name="T">资源类型。</typeparam>
         /// <returns>资源对象集合。</returns>
         UniTask<List<T>> LoadAssetsByTagAsync<T>(string assetTag) where T : UnityEngine.Object;
-        
+
         /// <summary>
         /// 异步加载场景。
         /// </summary>
@@ -248,7 +250,7 @@ namespace TEngine
         /// <param name="suspendLoad">加载完毕时是否主动挂起。</param>
         /// <param name="priority">优先级。</param>
         /// <returns>异步加载场景句柄。</returns>
-        SceneOperationHandle LoadSceneAsync(string location, LoadSceneMode sceneMode = LoadSceneMode.Single, bool suspendLoad = false,int priority = 100);
+        SceneOperationHandle LoadSceneAsync(string location, LoadSceneMode sceneMode = LoadSceneMode.Single, bool suspendLoad = false, int priority = 100);
 
         /// <summary>
         /// 异步加载场景.
@@ -266,9 +268,10 @@ namespace TEngine
         /// </summary>
         /// <param name="location">资源定位地址。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
+        /// <param name="needInstance">是否需要实例化。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>异步资源实例。</returns>
-        UniTask<T> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default) where T : Object;
+        UniTask<T> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default, bool needInstance = true) where T : Object;
 
         /// <summary>
         /// 异步加载游戏物体。

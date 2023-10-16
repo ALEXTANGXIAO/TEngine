@@ -90,6 +90,7 @@ namespace TEngine
         /// 资源缓存表容量。
         /// </summary>
         public int ARCTableCapacity { get; set; }
+
         #endregion
 
         #region 生命周期
@@ -101,8 +102,41 @@ namespace TEngine
 
         internal override void Shutdown()
         {
+            ReleaseAllHandle();
             YooAssets.Destroy();
             ResourcePool.Destroy();
+        }
+
+        private void ReleaseAllHandle()
+        {
+            var iter = _releaseMaps.Values.GetEnumerator();
+            while (iter.MoveNext())
+            {
+                AssetOperationHandle handle = iter.Current;
+                if (handle != null)
+                {
+                    handle.Dispose();
+                    handle = null;
+                }
+            }
+
+            iter.Dispose();
+            _releaseMaps.Clear();
+
+            iter = _operationHandlesMaps.Values.GetEnumerator();
+            while (iter.MoveNext())
+            {
+                AssetOperationHandle handle = iter.Current;
+                if (handle != null)
+                {
+                    handle.Dispose();
+                    handle = null;
+                }
+            }
+
+            iter.Dispose();
+            _operationHandlesMaps.Clear();
+            _arcCacheTable = new ArcCacheTable<string, AssetOperationHandle>(ARCTableCapacity, OnAddAsset, OnRemoveAsset);
         }
 
         #endregion
@@ -140,23 +174,32 @@ namespace TEngine
         #endregion
 
         private Dictionary<string, AssetOperationHandle> _releaseMaps;
-        
+
+        private Dictionary<string, AssetOperationHandle> _operationHandlesMaps;
+
         private ArcCacheTable<string, AssetOperationHandle> _arcCacheTable;
-        
-        private void OnAddAsset(string location,AssetOperationHandle handle)
+
+
+        private void OnAddAsset(string location, AssetOperationHandle handle)
         {
+            _operationHandlesMaps[location] = handle;
             if (_releaseMaps.ContainsKey(location))
             {
                 _releaseMaps.Remove(location);
             }
         }
 
-        private void OnRemoveAsset(string location,AssetOperationHandle handle)
+        private void OnRemoveAsset(string location, AssetOperationHandle handle)
         {
+            if (_operationHandlesMaps.ContainsKey(location))
+            {
+                _operationHandlesMaps.Remove(location);
+            }
+
             _releaseMaps[location] = handle;
-            GameModule.Resource.UnloadUnusedAssets(performGCCollect:false);
+            GameModule.Resource.UnloadUnusedAssets(performGCCollect: false);
         }
-        
+
         /// <summary>
         /// 从缓存中获取同步资源句柄。
         /// </summary>
@@ -168,16 +211,17 @@ namespace TEngine
             AssetOperationHandle handle = null;
             // 尝试从从ARC缓存表取出对象。
             handle = _arcCacheTable.GetCache(location);
-            
+
             if (handle == null)
             {
                 handle = YooAssets.LoadAssetSync<T>(location);
             }
+
             // 对象推入ARC缓存表。
             _arcCacheTable.PutCache(location, handle);
             return handle;
         }
-        
+
         /// <summary>
         /// 从缓存中获取异步资源句柄。
         /// </summary>
@@ -189,16 +233,17 @@ namespace TEngine
             AssetOperationHandle handle = null;
             // 尝试从从ARC缓存表取出对象。
             handle = _arcCacheTable.GetCache(location);
-            
+
             if (handle == null)
             {
                 handle = YooAssets.LoadAssetAsync<T>(location);
             }
+
             // 对象推入ARC缓存表。
             _arcCacheTable.PutCache(location, handle);
             return handle;
         }
-        
+
         /// <summary>
         /// 初始化资源模块。
         /// </summary>
@@ -219,8 +264,9 @@ namespace TEngine
             }
 
             ResourcePool.Initialize(GameModule.Get<ResourceModule>().gameObject);
-            
+
             _releaseMaps ??= new Dictionary<string, AssetOperationHandle>(ARCTableCapacity);
+            _operationHandlesMaps ??= new Dictionary<string, AssetOperationHandle>(ARCTableCapacity);
             _arcCacheTable ??= new ArcCacheTable<string, AssetOperationHandle>(ARCTableCapacity, OnAddAsset, OnRemoveAsset);
         }
 
@@ -277,7 +323,7 @@ namespace TEngine
                 createParameters.RemoteServices = new RemoteServices();
                 initializationOperation = package.InitializeAsync(createParameters);
             }
-            
+
             // WebGL运行模式
             if (playMode == EPlayMode.WebPlayMode)
             {
@@ -317,9 +363,10 @@ namespace TEngine
                     handle = null;
                 }
             }
+
             iter.Dispose();
             _releaseMaps.Clear();
-            
+
             if (DefaultPackage == null)
             {
                 throw new GameFrameworkException("Package is invalid.");
@@ -451,9 +498,10 @@ namespace TEngine
         /// 同步加载资源。
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
+        /// <param name="needInstance">是否需要实例化。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string location) where T : Object
+        public T LoadAsset<T>(string location, bool needInstance = true) where T : Object
         {
             if (string.IsNullOrEmpty(location))
             {
@@ -465,8 +513,13 @@ namespace TEngine
 
             if (typeof(T) == typeof(GameObject))
             {
-                GameObject ret = handle.InstantiateSync();
-                return ret as T;
+                if (needInstance)
+                {
+                    GameObject ret = handle.InstantiateSync();
+                    return ret as T;
+                }
+
+                return handle.AssetObject as T;
             }
             else
             {
@@ -480,9 +533,10 @@ namespace TEngine
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
         /// <param name="parent">父节点位置。</param>
+        /// <param name="needInstance">是否需要实例化。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string location, Transform parent) where T : Object
+        public T LoadAsset<T>(string location, Transform parent, bool needInstance = true) where T : Object
         {
             if (string.IsNullOrEmpty(location))
             {
@@ -494,8 +548,13 @@ namespace TEngine
 
             if (typeof(T) == typeof(GameObject))
             {
-                GameObject ret = handle.InstantiateSync(parent);
-                return ret as T;
+                if (needInstance)
+                {
+                    GameObject ret = handle.InstantiateSync();
+                    return ret as T;
+                }
+
+                return handle.AssetObject as T;
             }
             else
             {
@@ -542,7 +601,7 @@ namespace TEngine
         public T LoadAsset<T>(string location, Transform parent, out AssetOperationHandle handle) where T : Object
         {
             handle = GetHandleSync<T>(location);
-            
+
             if (string.IsNullOrEmpty(location))
             {
                 Log.Error("Asset name is invalid.");
@@ -610,14 +669,14 @@ namespace TEngine
         {
             return YooAssets.LoadSubAssetsSync(assetInfo);
         }
-        
+
         /// <summary>
         /// 通过Tag加载资源对象集合。
         /// </summary>
         /// <param name="assetTag">资源标识。</param>
         /// <typeparam name="T">资源类型。</typeparam>
         /// <returns>资源对象集合。</returns>
-        public async UniTask<List<T>>LoadAssetsByTagAsync<T>(string assetTag) where T: UnityEngine.Object
+        public async UniTask<List<T>> LoadAssetsByTagAsync<T>(string assetTag) where T : UnityEngine.Object
         {
             LoadAssetsByTagOperation<T> operation = new LoadAssetsByTagOperation<T>(assetTag);
             YooAssets.StartOperation(operation);
@@ -661,8 +720,9 @@ namespace TEngine
         /// </summary>
         /// <param name="location">要加载的实例名称。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
+        /// <param name="needInstance">是否需要实例化。</param>
         /// <returns>资源实实例。</returns>
-        public async UniTask<T> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default) where T : Object
+        public async UniTask<T> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default, bool needInstance = true) where T : Object
         {
             AssetOperationHandle handle = LoadAssetAsyncHandle<T>(location);
 
@@ -675,9 +735,13 @@ namespace TEngine
 
             if (typeof(T) == typeof(GameObject))
             {
-                GameObject ret = handle.InstantiateSync();
+                if (needInstance)
+                {
+                    GameObject ret = handle.InstantiateSync();
+                    return ret as T;
+                }
 
-                return ret as T;
+                return handle.AssetObject as T;
             }
             else
             {

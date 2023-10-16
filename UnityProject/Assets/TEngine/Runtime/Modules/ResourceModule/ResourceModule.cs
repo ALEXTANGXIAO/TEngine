@@ -102,7 +102,7 @@ namespace TEngine
         /// 资源缓存表容量。
         /// </summary>
         public int adaptiveReplacementCacheCapacity = 32;
-        
+
         private IResourceManager m_ResourceManager;
         private AsyncOperation m_AsyncOperation = null;
         private bool m_ForceUnloadUnusedAssets = false;
@@ -302,7 +302,7 @@ namespace TEngine
         {
             // YooAssets.ClearSandbox();
         }
-        
+
         /// <summary>
         /// 卸载资源。
         /// </summary>
@@ -311,7 +311,7 @@ namespace TEngine
         {
             m_ResourceManager.UnloadAsset(asset);
         }
-        
+
         /// <summary>
         /// 预订执行释放未被使用的资源。
         /// </summary>
@@ -343,7 +343,7 @@ namespace TEngine
             m_LastUnloadUnusedAssetsOperationElapseSeconds += GameTime.unscaledDeltaTime;
             if (m_AsyncOperation == null && 
                 (m_ForceUnloadUnusedAssets || 
-                 m_LastUnloadUnusedAssetsOperationElapseSeconds >= maxUnloadUnusedAssetsInterval ||
+                 m_LastUnloadUnusedAssetsOperationElapseSeconds >= maxUnloadUnusedAssetsInterval || 
                  m_PreorderUnloadUnusedAssets && m_LastUnloadUnusedAssetsOperationElapseSeconds >= minUnloadUnusedAssetsInterval))
             {
                 Log.Info("Unload unused assets...");
@@ -448,11 +448,12 @@ namespace TEngine
         /// 同步加载资源。
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
+        /// <param name="needInstance">是否需要实例化。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string location) where T : UnityEngine.Object
+        public T LoadAsset<T>(string location, bool needInstance = true) where T : UnityEngine.Object
         {
-            return m_ResourceManager.LoadAsset<T>(location);
+            return m_ResourceManager.LoadAsset<T>(location, needInstance);
         }
 
         /// <summary>
@@ -460,11 +461,12 @@ namespace TEngine
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
         /// <param name="parent">父节点位置。</param>
+        /// <param name="needInstance">是否需要实例化。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string location, Transform parent) where T : UnityEngine.Object
+        public T LoadAsset<T>(string location, Transform parent, bool needInstance = true) where T : UnityEngine.Object
         {
-            return m_ResourceManager.LoadAsset<T>(location, parent);
+            return m_ResourceManager.LoadAsset<T>(location, parent, needInstance);
         }
 
         /// <summary>
@@ -563,14 +565,14 @@ namespace TEngine
 
             return m_ResourceManager.LoadSubAssetsSync(assetInfo);
         }
-        
+
         /// <summary>
         /// 通过Tag加载资源对象集合。
         /// </summary>
         /// <param name="assetTag">资源标识。</param>
         /// <typeparam name="T">资源类型。</typeparam>
         /// <returns>资源对象集合。</returns>
-        public async UniTask<List<T>>LoadAssetsByTagAsync<T>(string assetTag) where T: UnityEngine.Object
+        public async UniTask<List<T>> LoadAssetsByTagAsync<T>(string assetTag) where T : UnityEngine.Object
         {
             return await m_ResourceManager.LoadAssetsByTagAsync<T>(assetTag);
         }
@@ -608,11 +610,12 @@ namespace TEngine
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
+        /// <param name="needInstance">是否需要实例化。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>异步资源实例。</returns>
-        public async UniTask<T> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default) where T : UnityEngine.Object
+        public async UniTask<T> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default, bool needInstance = true) where T : UnityEngine.Object
         {
-            return await m_ResourceManager.LoadAssetAsync<T>(location, cancellationToken);
+            return await m_ResourceManager.LoadAssetAsync<T>(location, cancellationToken, needInstance);
         }
 
         /// <summary>
