@@ -550,7 +550,7 @@ namespace TEngine
             {
                 if (needInstance)
                 {
-                    GameObject ret = handle.InstantiateSync();
+                    GameObject ret = handle.InstantiateSync(parent);
                     return ret as T;
                 }
 
