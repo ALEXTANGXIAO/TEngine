@@ -82,6 +82,12 @@ namespace TEngine
 
         private static LocalizationModule _localization;
         
+        /// <summary>
+        /// 获取场景模块。
+        /// </summary>
+        public static SceneModule Scene => _scene ??= Get<SceneModule>();
+        
+        private static SceneModule _scene;
         #endregion
 
         /// <summary>
