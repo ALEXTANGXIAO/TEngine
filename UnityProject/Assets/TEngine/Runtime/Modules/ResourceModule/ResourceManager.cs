@@ -103,7 +103,9 @@ namespace TEngine
         internal override void Shutdown()
         {
             ReleaseAllHandle();
-            YooAssets.Destroy();
+#if !UNITY_WEBGL
+            YooAssets.Destroy();      
+#endif
             ResourcePool.Destroy();
         }
 
