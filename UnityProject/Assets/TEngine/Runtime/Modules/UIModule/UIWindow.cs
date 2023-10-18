@@ -66,6 +66,11 @@ namespace TEngine
         /// 是内部资源无需AB加载。
         /// </summary>
         public bool FromResources { private set; get; }
+        
+        /// <summary>
+        /// 是否需要缓存。
+        /// </summary>
+        public bool NeedCache { private set; get; }
 
         /// <summary>
         /// 自定义数据。
@@ -221,13 +226,14 @@ namespace TEngine
 
         #endregion
 
-        public void Init(string name, int layer, bool fullScreen, string assetName, bool fromResources)
+        public void Init(string name, int layer, bool fullScreen, string assetName, bool fromResources, bool needCache = false)
         {
             WindowName = name;
             WindowLayer = layer;
             FullScreen = fullScreen;
             AssetName = assetName;
             FromResources = fromResources;
+            NeedCache = needCache;
         }
 
         internal void TryInvoke(System.Action<UIWindow> prepareCallback, System.Object[] userDatas)
@@ -249,7 +255,7 @@ namespace TEngine
             this.userDatas = userDatas;
             if (!FromResources)
             {
-                GameModule.Resource.LoadAssetAsync<GameObject>(location, Handle_Completed);
+                GameModule.Resource.LoadAssetAsync<GameObject>(location, Handle_Completed, needCache: NeedCache);
             }
             else
             {
@@ -392,6 +398,10 @@ namespace TEngine
             
             // 实例化对象
             var panel = handle.InstantiateSync(UIModule.UIRootStatic);
+            if (!NeedCache)
+            {
+                AssetReference.BindAssetReference(panel, handle, AssetName);
+            }
             Handle_Completed(panel);
         }
 

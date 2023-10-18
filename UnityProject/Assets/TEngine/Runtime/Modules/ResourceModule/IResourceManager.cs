@@ -165,9 +165,10 @@ namespace TEngine
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
         /// <param name="needInstance">是否需要实例化。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        T LoadAsset<T>(string location, bool needInstance) where T : Object;
+        T LoadAsset<T>(string location, bool needInstance, bool needCache = false) where T : Object;
 
         /// <summary>
         /// 同步加载资源。
@@ -175,18 +176,20 @@ namespace TEngine
         /// <param name="location">资源的定位地址。</param>
         /// <param name="parent">父节点位置。</param>
         /// <param name="needInstance">是否需要实例化。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        T LoadAsset<T>(string location, Transform parent, bool needInstance) where T : Object;
+        T LoadAsset<T>(string location, Transform parent, bool needInstance, bool needCache = false) where T : Object;
 
         /// <summary>
         /// 同步加载资源。
         /// </summary>
         /// <param name="handle">资源操作句柄。</param>
         /// <param name="location">资源的定位地址。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        T LoadAsset<T>(string location, out AssetOperationHandle handle) where T : Object;
+        T LoadAsset<T>(string location, out AssetOperationHandle handle, bool needCache = false) where T : Object;
 
         /// <summary>
         /// 同步加载资源。
@@ -194,25 +197,28 @@ namespace TEngine
         /// <param name="location">资源的定位地址。</param>
         /// <param name="handle">资源操作句柄。</param>
         /// <param name="parent">父节点位置。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        T LoadAsset<T>(string location, Transform parent, out AssetOperationHandle handle) where T : Object;
+        T LoadAsset<T>(string location, Transform parent, out AssetOperationHandle handle, bool needCache = false) where T : Object;
 
         /// <summary>
         /// 同步加载资源并获取句柄。
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>同步加载资源句柄。</returns>
-        AssetOperationHandle LoadAssetGetOperation<T>(string location) where T : Object;
+        AssetOperationHandle LoadAssetGetOperation<T>(string location, bool needCache = false) where T : Object;
 
         /// <summary>
         /// 异步加载资源并获取句柄。
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>异步加载资源句柄。</returns>
-        AssetOperationHandle LoadAssetAsyncHandle<T>(string location) where T : Object;
+        AssetOperationHandle LoadAssetAsyncHandle<T>(string location, bool needCache = false) where T : Object;
 
         /// <summary>
         /// 同步加载子资源对象。
@@ -269,17 +275,19 @@ namespace TEngine
         /// <param name="location">资源定位地址。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
         /// <param name="needInstance">是否需要实例化。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>异步资源实例。</returns>
-        UniTask<T> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default, bool needInstance = true) where T : Object;
+        UniTask<T> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default, bool needInstance = true, bool needCache = false) where T : Object;
 
         /// <summary>
         /// 异步加载游戏物体。
         /// </summary>
         /// <param name="location">资源定位地址。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <returns>异步游戏物体实例。</returns>
-        UniTask<GameObject> LoadGameObjectAsync(string location, CancellationToken cancellationToken = default);
+        UniTask<GameObject> LoadGameObjectAsync(string location, CancellationToken cancellationToken = default, bool needCache = false);
 
         /// <summary>
         /// 异步加载游戏物体。
@@ -287,8 +295,9 @@ namespace TEngine
         /// <param name="location">资源定位地址。</param>
         /// <param name="parent">父节点位置。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <returns>异步游戏物体实例。</returns>
-        UniTask<GameObject> LoadGameObjectAsync(string location, Transform parent, CancellationToken cancellationToken = default);
+        UniTask<GameObject> LoadGameObjectAsync(string location, Transform parent, CancellationToken cancellationToken = default, bool needCache = false);
 
         /// <summary>
         /// 异步加载原生文件。

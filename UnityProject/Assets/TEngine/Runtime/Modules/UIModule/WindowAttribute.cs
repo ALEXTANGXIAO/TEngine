@@ -37,31 +37,41 @@ namespace TEngine
         /// </summary>
         public readonly bool FromResources;
 
-        public WindowAttribute(int windowLayer, string location = "", bool fullScreen = false)
+        /// <summary>
+        /// 需要缓存。
+        /// <remarks>关闭界面不立刻释放资源。</remarks>
+        /// </summary>
+        public readonly bool NeedCache;
+
+        public WindowAttribute(int windowLayer, string location = "", bool fullScreen = false,bool needCache = false)
         {
             WindowLayer = windowLayer;
             Location = location;
             FullScreen = fullScreen;
+            NeedCache = needCache;
         }
 
-        public WindowAttribute(UILayer windowLayer, string location = "", bool fullScreen = false)
+        public WindowAttribute(UILayer windowLayer, string location = "", bool fullScreen = false,bool needCache = false)
         {
             WindowLayer = (int)windowLayer;
             Location = location;
             FullScreen = fullScreen;
+            NeedCache = needCache;
         }
 
-        public WindowAttribute(UILayer windowLayer, bool fromResources, bool fullScreen = false)
+        public WindowAttribute(UILayer windowLayer, bool fromResources, bool fullScreen = false,bool needCache = false)
         {
             WindowLayer = (int)windowLayer;
             FromResources = fromResources;
+            NeedCache = needCache;
         }
 
-        public WindowAttribute(UILayer windowLayer, bool fromResources, string location, bool fullScreen = false)
+        public WindowAttribute(UILayer windowLayer, bool fromResources, string location, bool fullScreen = false,bool needCache = false)
         {
             WindowLayer = (int)windowLayer;
             FromResources = fromResources;
             Location = location;
+            NeedCache = needCache;
         }
     }
 }

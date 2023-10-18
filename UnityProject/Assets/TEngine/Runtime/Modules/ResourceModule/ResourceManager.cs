@@ -204,10 +204,15 @@ namespace TEngine
         /// 从缓存中获取同步资源句柄。
         /// </summary>
         /// <param name="location">资源定位地址。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <typeparam name="T">资源类型。</typeparam>
         /// <returns>资源句柄。</returns>
-        private AssetOperationHandle GetHandleSync<T>(string location) where T : Object
+        private AssetOperationHandle GetHandleSync<T>(string location, bool needCache = false) where T : Object
         {
+            if (!needCache)
+            {
+                return YooAssets.LoadAssetSync<T>(location);
+            }
             AssetOperationHandle handle = null;
             // 尝试从从ARC缓存表取出对象。
             handle = _arcCacheTable.GetCache(location);
@@ -226,10 +231,15 @@ namespace TEngine
         /// 从缓存中获取异步资源句柄。
         /// </summary>
         /// <param name="location">资源定位地址。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <typeparam name="T">资源类型。</typeparam>
         /// <returns>资源句柄。</returns>
-        private AssetOperationHandle GetHandleAsync<T>(string location) where T : Object
+        private AssetOperationHandle GetHandleAsync<T>(string location, bool needCache = false) where T : Object
         {
+            if (!needCache)
+            {
+                return YooAssets.LoadAssetAsync<T>(location);
+            }
             AssetOperationHandle handle = null;
             // 尝试从从ARC缓存表取出对象。
             handle = _arcCacheTable.GetCache(location);
@@ -499,9 +509,10 @@ namespace TEngine
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
         /// <param name="needInstance">是否需要实例化。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string location, bool needInstance = true) where T : Object
+        public T LoadAsset<T>(string location, bool needInstance = true, bool needCache = false) where T : Object
         {
             if (string.IsNullOrEmpty(location))
             {
@@ -509,23 +520,27 @@ namespace TEngine
                 return default;
             }
 
-            AssetOperationHandle handle = GetHandleSync<T>(location);
+            AssetOperationHandle handle = GetHandleSync<T>(location, needCache);
 
             if (typeof(T) == typeof(GameObject))
             {
                 if (needInstance)
                 {
-                    GameObject ret = handle.InstantiateSync();
-                    return ret as T;
+                    GameObject gameObject = handle.InstantiateSync();
+                    if (!needCache)
+                    {
+                        AssetReference.BindAssetReference(gameObject, handle, location);
+                    }
+                    return gameObject as T;
                 }
-
-                return handle.AssetObject as T;
             }
-            else
+            
+            T ret = handle.AssetObject as T;
+            if (!needCache)
             {
-                T ret = handle.AssetObject as T;
-                return ret;
+                handle.Dispose();
             }
+            return ret;
         }
 
         /// <summary>
@@ -534,9 +549,10 @@ namespace TEngine
         /// <param name="location">资源的定位地址。</param>
         /// <param name="parent">父节点位置。</param>
         /// <param name="needInstance">是否需要实例化。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string location, Transform parent, bool needInstance = true) where T : Object
+        public T LoadAsset<T>(string location, Transform parent, bool needInstance = true, bool needCache = false) where T : Object
         {
             if (string.IsNullOrEmpty(location))
             {
@@ -544,23 +560,27 @@ namespace TEngine
                 return default;
             }
 
-            AssetOperationHandle handle = GetHandleSync<T>(location);
+            AssetOperationHandle handle = GetHandleSync<T>(location, needCache);
 
             if (typeof(T) == typeof(GameObject))
             {
                 if (needInstance)
                 {
-                    GameObject ret = handle.InstantiateSync(parent);
-                    return ret as T;
+                    GameObject gameObject = handle.InstantiateSync(parent);
+                    if (!needCache)
+                    {
+                        AssetReference.BindAssetReference(gameObject, handle, location);
+                    }
+                    return gameObject as T;
                 }
-
-                return handle.AssetObject as T;
             }
-            else
+            
+            T ret = handle.AssetObject as T;
+            if (!needCache)
             {
-                T ret = handle.AssetObject as T;
-                return ret;
+                handle.Dispose();
             }
+            return ret;
         }
 
         /// <summary>
@@ -568,11 +588,12 @@ namespace TEngine
         /// </summary>
         /// <param name="handle">资源操作句柄。</param>
         /// <param name="location">资源的定位地址。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string location, out AssetOperationHandle handle) where T : Object
+        public T LoadAsset<T>(string location, out AssetOperationHandle handle, bool needCache = false) where T : Object
         {
-            handle = GetHandleSync<T>(location);
+            handle = GetHandleSync<T>(location, needCache);
             if (string.IsNullOrEmpty(location))
             {
                 Log.Error("Asset name is invalid.");
@@ -581,13 +602,20 @@ namespace TEngine
 
             if (typeof(T) == typeof(GameObject))
             {
-                GameObject ret = handle.InstantiateSync();
-                return ret as T;
+                GameObject gameObject = handle.InstantiateSync();
+                if (!needCache)
+                {
+                    AssetReference.BindAssetReference(gameObject, handle, location);
+                }
+                return gameObject as T;
             }
-            else
+            
+            T ret = handle.AssetObject as T;
+            if (!needCache)
             {
-                return handle.AssetObject as T;
+                handle.Dispose();
             }
+            return ret;
         }
 
         /// <summary>
@@ -595,12 +623,13 @@ namespace TEngine
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
         /// <param name="handle">资源操作句柄。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <param name="parent">父节点位置。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string location, Transform parent, out AssetOperationHandle handle) where T : Object
+        public T LoadAsset<T>(string location, Transform parent, out AssetOperationHandle handle, bool needCache = false) where T : Object
         {
-            handle = GetHandleSync<T>(location);
+            handle = GetHandleSync<T>(location, needCache);
 
             if (string.IsNullOrEmpty(location))
             {
@@ -610,35 +639,44 @@ namespace TEngine
 
             if (typeof(T) == typeof(GameObject))
             {
-                GameObject ret = handle.InstantiateSync(parent);
-                return ret as T;
+                GameObject gameObject = handle.InstantiateSync(parent);
+                if (!needCache)
+                {
+                    AssetReference.BindAssetReference(gameObject, handle, location);
+                }
+                return gameObject as T;
             }
-            else
+            
+            T ret = handle.AssetObject as T;
+            if (!needCache)
             {
-                return handle.AssetObject as T;
+                handle.Dispose();
             }
+            return ret;
         }
 
         /// <summary>
         /// 同步加载资源并获取句柄。
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>同步加载资源句柄。</returns>
-        public AssetOperationHandle LoadAssetGetOperation<T>(string location) where T : Object
+        public AssetOperationHandle LoadAssetGetOperation<T>(string location, bool needCache = false) where T : Object
         {
-            return GetHandleSync<T>(location);
+            return GetHandleSync<T>(location, needCache);
         }
 
         /// <summary>
         /// 异步加载资源并获取句柄。
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>异步加载资源句柄。</returns>
-        public AssetOperationHandle LoadAssetAsyncHandle<T>(string location) where T : Object
+        public AssetOperationHandle LoadAssetAsyncHandle<T>(string location, bool needCache = false) where T : Object
         {
-            return GetHandleAsync<T>(location);
+            return GetHandleAsync<T>(location, needCache);
         }
 
         /// <summary>
@@ -721,10 +759,11 @@ namespace TEngine
         /// <param name="location">要加载的实例名称。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
         /// <param name="needInstance">是否需要实例化。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <returns>资源实实例。</returns>
-        public async UniTask<T> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default, bool needInstance = true) where T : Object
+        public async UniTask<T> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default, bool needInstance = true, bool needCache = false) where T : Object
         {
-            AssetOperationHandle handle = LoadAssetAsyncHandle<T>(location);
+            AssetOperationHandle handle = LoadAssetAsyncHandle<T>(location, needCache);
 
             bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
 
@@ -737,16 +776,21 @@ namespace TEngine
             {
                 if (needInstance)
                 {
-                    GameObject ret = handle.InstantiateSync();
-                    return ret as T;
+                    GameObject gameObject = handle.InstantiateSync();
+                    if (!needCache)
+                    {
+                        AssetReference.BindAssetReference(gameObject, handle, location);
+                    }
+                    return gameObject as T;
                 }
-
-                return handle.AssetObject as T;
             }
-            else
+            
+            T ret = handle.AssetObject as T;
+            if (!needCache)
             {
-                return handle.AssetObject as T;
+                handle.Dispose();
             }
+            return ret;
         }
 
         /// <summary>
@@ -754,10 +798,11 @@ namespace TEngine
         /// </summary>
         /// <param name="location">要加载的游戏物体名称。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <returns>异步游戏物体实例。</returns>
-        public async UniTask<GameObject> LoadGameObjectAsync(string location, CancellationToken cancellationToken = default)
+        public async UniTask<GameObject> LoadGameObjectAsync(string location, CancellationToken cancellationToken = default, bool needCache = false)
         {
-            AssetOperationHandle handle = LoadAssetAsyncHandle<GameObject>(location);
+            AssetOperationHandle handle = LoadAssetAsyncHandle<GameObject>(location, needCache);
 
             bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
 
@@ -766,9 +811,12 @@ namespace TEngine
                 return null;
             }
 
-            GameObject ret = handle.InstantiateSync();
-
-            return ret;
+            GameObject gameObject = handle.InstantiateSync();
+            if (!needCache)
+            {
+                AssetReference.BindAssetReference(gameObject, handle, location);
+            }
+            return gameObject;
         }
 
         /// <summary>
@@ -777,10 +825,11 @@ namespace TEngine
         /// <param name="location">资源定位地址。</param>
         /// <param name="parent">父节点位置。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <returns>异步游戏物体实例。</returns>
-        public async UniTask<GameObject> LoadGameObjectAsync(string location, Transform parent, CancellationToken cancellationToken = default)
+        public async UniTask<GameObject> LoadGameObjectAsync(string location, Transform parent, CancellationToken cancellationToken = default, bool needCache = false)
         {
-            GameObject gameObject = await LoadGameObjectAsync(location, cancellationToken);
+            GameObject gameObject = await LoadGameObjectAsync(location, cancellationToken, needCache);
             if (parent != null)
             {
                 gameObject.transform.SetParent(parent);

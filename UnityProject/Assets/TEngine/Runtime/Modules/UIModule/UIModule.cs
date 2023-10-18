@@ -400,7 +400,7 @@ namespace TEngine
                 throw new Exception($"Window {type.FullName} not found {nameof(WindowAttribute)} attribute.");
 
             string assetName = string.IsNullOrEmpty(attribute.Location) ? type.Name : attribute.Location;
-            window.Init(type.FullName, attribute.WindowLayer, attribute.FullScreen, assetName, attribute.FromResources);
+            window.Init(type.FullName, attribute.WindowLayer, attribute.FullScreen, assetName, attribute.FromResources, attribute.NeedCache);
             return window;
         }
 

@@ -449,11 +449,12 @@ namespace TEngine
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
         /// <param name="needInstance">是否需要实例化。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string location, bool needInstance = true) where T : UnityEngine.Object
+        public T LoadAsset<T>(string location, bool needInstance = true, bool needCache = false) where T : UnityEngine.Object
         {
-            return m_ResourceManager.LoadAsset<T>(location, needInstance);
+            return m_ResourceManager.LoadAsset<T>(location, needInstance, needCache);
         }
 
         /// <summary>
@@ -462,11 +463,12 @@ namespace TEngine
         /// <param name="location">资源的定位地址。</param>
         /// <param name="parent">父节点位置。</param>
         /// <param name="needInstance">是否需要实例化。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string location, Transform parent, bool needInstance = true) where T : UnityEngine.Object
+        public T LoadAsset<T>(string location, Transform parent, bool needInstance = true, bool needCache = false) where T : UnityEngine.Object
         {
-            return m_ResourceManager.LoadAsset<T>(location, parent, needInstance);
+            return m_ResourceManager.LoadAsset<T>(location, parent, needInstance, needCache);
         }
 
         /// <summary>
@@ -474,11 +476,12 @@ namespace TEngine
         /// </summary>
         /// <param name="handle">资源操作句柄。</param>
         /// <param name="location">资源的定位地址。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string location, out AssetOperationHandle handle) where T : UnityEngine.Object
+        public T LoadAsset<T>(string location, out AssetOperationHandle handle, bool needCache = false) where T : UnityEngine.Object
         {
-            return m_ResourceManager.LoadAsset<T>(location, out handle);
+            return m_ResourceManager.LoadAsset<T>(location, out handle, needCache);
         }
 
         /// <summary>
@@ -487,11 +490,12 @@ namespace TEngine
         /// <param name="location">资源的定位地址。</param>
         /// <param name="handle">资源操作句柄。</param>
         /// <param name="parent">父节点位置。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string location, Transform parent, out AssetOperationHandle handle) where T : UnityEngine.Object
+        public T LoadAsset<T>(string location, Transform parent, out AssetOperationHandle handle, bool needCache = false) where T : UnityEngine.Object
         {
-            return m_ResourceManager.LoadAsset<T>(location, parent, out handle);
+            return m_ResourceManager.LoadAsset<T>(location, parent, out handle, needCache);
         }
 
         /// <summary>
@@ -499,10 +503,11 @@ namespace TEngine
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
         /// <param name="callback">回调函数。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
-        public void LoadAssetAsync<T>(string location, Action<AssetOperationHandle> callback = null) where T : UnityEngine.Object
+        public void LoadAssetAsync<T>(string location, Action<AssetOperationHandle> callback = null, bool needCache = false) where T : UnityEngine.Object
         {
-            AssetOperationHandle handle = m_ResourceManager.LoadAssetAsyncHandle<T>(location);
+            AssetOperationHandle handle = m_ResourceManager.LoadAssetAsyncHandle<T>(location, needCache);
 
             handle.Completed += callback;
         }
@@ -511,22 +516,24 @@ namespace TEngine
         /// 同步加载资源并获取句柄。
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>同步加载资源句柄。</returns>
-        public AssetOperationHandle LoadAssetGetOperation<T>(string location) where T : UnityEngine.Object
+        public AssetOperationHandle LoadAssetGetOperation<T>(string location, bool needCache = false) where T : UnityEngine.Object
         {
-            return m_ResourceManager.LoadAssetGetOperation<T>(location);
+            return m_ResourceManager.LoadAssetGetOperation<T>(location, needCache);
         }
 
         /// <summary>
         /// 异步加载资源并获取句柄。
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>异步加载资源句柄。</returns>
-        public AssetOperationHandle LoadAssetAsyncHandle<T>(string location) where T : UnityEngine.Object
+        public AssetOperationHandle LoadAssetAsyncHandle<T>(string location, bool needCache = false) where T : UnityEngine.Object
         {
-            return m_ResourceManager.LoadAssetAsyncHandle<T>(location);
+            return m_ResourceManager.LoadAssetAsyncHandle<T>(location, needCache);
         }
 
 
@@ -611,11 +618,12 @@ namespace TEngine
         /// <param name="location">资源的定位地址。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
         /// <param name="needInstance">是否需要实例化。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>异步资源实例。</returns>
-        public async UniTask<T> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default, bool needInstance = true) where T : UnityEngine.Object
+        public async UniTask<T> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default, bool needInstance = true, bool needCache = false) where T : UnityEngine.Object
         {
-            return await m_ResourceManager.LoadAssetAsync<T>(location, cancellationToken, needInstance);
+            return await m_ResourceManager.LoadAssetAsync<T>(location, cancellationToken, needInstance, needCache);
         }
 
         /// <summary>
@@ -623,10 +631,11 @@ namespace TEngine
         /// </summary>
         /// <param name="location">要加载的游戏物体名称。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <returns>异步游戏物体实例。</returns>
-        public async UniTask<GameObject> LoadGameObjectAsync(string location, CancellationToken cancellationToken = default)
+        public async UniTask<GameObject> LoadGameObjectAsync(string location, CancellationToken cancellationToken = default, bool needCache = false)
         {
-            return await m_ResourceManager.LoadGameObjectAsync(location, cancellationToken);
+            return await m_ResourceManager.LoadGameObjectAsync(location, cancellationToken, needCache);
         }
 
         /// <summary>
@@ -635,10 +644,11 @@ namespace TEngine
         /// <param name="location">资源定位地址。</param>
         /// <param name="parent">父节点位置。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
+        /// <param name="needCache">是否需要缓存。</param>
         /// <returns>异步游戏物体实例。</returns>
-        public async UniTask<GameObject> LoadGameObjectAsync(string location, Transform parent, CancellationToken cancellationToken = default)
+        public async UniTask<GameObject> LoadGameObjectAsync(string location, Transform parent, CancellationToken cancellationToken = default, bool needCache = false)
         {
-            return await m_ResourceManager.LoadGameObjectAsync(location, parent, cancellationToken);
+            return await m_ResourceManager.LoadGameObjectAsync(location, parent, cancellationToken, needCache);
         }
 
         /// <summary>
