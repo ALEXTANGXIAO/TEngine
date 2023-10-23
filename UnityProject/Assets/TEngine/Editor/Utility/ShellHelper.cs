@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace TEngine
 {
+    /// <summary>
+    /// Unity编辑器主动执行cmd帮助类。
+    /// </summary>
     public static class ShellHelper
     {
         public static void Run(string cmd, string workDirectory, List<string> environmentVars = null)
