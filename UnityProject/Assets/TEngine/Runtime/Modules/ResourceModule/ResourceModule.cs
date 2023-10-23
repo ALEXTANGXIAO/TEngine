@@ -585,34 +585,6 @@ namespace TEngine
         }
 
         /// <summary>
-        /// 异步加载场景。
-        /// </summary>
-        /// <param name="location">场景的定位地址</param>
-        /// <param name="sceneMode">场景加载模式</param>
-        /// <param name="suspendLoad">加载完毕时是否主动挂起</param>
-        /// <param name="priority">优先级</param>
-        /// <returns>异步加载场景句柄。</returns>
-        public SceneOperationHandle LoadSceneAsync(string location, LoadSceneMode sceneMode = LoadSceneMode.Single, bool suspendLoad = false,
-            int priority = 100)
-        {
-            return m_ResourceManager.LoadSceneAsync(location, sceneMode, suspendLoad, priority);
-        }
-
-        /// <summary>
-        /// 异步加载场景
-        /// </summary>
-        /// <param name="assetInfo">场景的资源信息</param>
-        /// <param name="sceneMode">场景加载模式</param>
-        /// <param name="suspendLoad">加载完毕时是否主动挂起</param>
-        /// <param name="priority">优先级</param>
-        /// <returns>异步加载场景句柄。</returns>
-        public SceneOperationHandle LoadSceneAsync(AssetInfo assetInfo, LoadSceneMode sceneMode = LoadSceneMode.Single, bool suspendLoad = false,
-            int priority = 100)
-        {
-            return m_ResourceManager.LoadSceneAsync(assetInfo, sceneMode, suspendLoad, priority);
-        }
-
-        /// <summary>
         /// 异步加载资源。
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
@@ -685,21 +657,6 @@ namespace TEngine
         public async UniTask<T[]> LoadAllSubAssetAsync<T>(string location, CancellationToken cancellationToken = default) where T : UnityEngine.Object
         {
             return await m_ResourceManager.LoadAllSubAssetAsync<T>(location, cancellationToken);
-        }
-
-        /// <summary>
-        /// 异步加载场景。
-        /// </summary>
-        /// <param name="location">场景的定位地址。</param>
-        /// <param name="cancellationToken">取消操作Token。</param>
-        /// <param name="sceneMode">场景加载模式。</param>
-        /// <param name="activateOnLoad">加载完毕时是否主动激活。</param>
-        /// <param name="priority">优先级。</param>
-        /// <returns>场景资源实例。</returns>
-        public async UniTask<Scene> LoadSceneAsyncByUniTask(string location, CancellationToken cancellationToken = default,
-            LoadSceneMode sceneMode = LoadSceneMode.Single, bool activateOnLoad = true, int priority = 100)
-        {
-            return await m_ResourceManager.LoadSceneAsyncByUniTask(location, cancellationToken, sceneMode, activateOnLoad, priority);
         }
     }
 }

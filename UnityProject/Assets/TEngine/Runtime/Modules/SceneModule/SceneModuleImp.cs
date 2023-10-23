@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
 using YooAsset;
 
@@ -8,7 +9,7 @@ namespace TEngine
     /// <summary>
     /// 场景管理器。
     /// </summary>
-    internal class SceneModuleImp : ModuleImp,ISceneModule
+    internal class SceneModuleImp : ModuleImp, ISceneModule
     {
         private string _currentMainSceneName = string.Empty;
         
@@ -40,40 +41,83 @@ namespace TEngine
         /// <summary>
         /// 加载场景。
         /// </summary>
-        /// <param name="location">场景的定位地址</param>
+        /// <param name="location">场景的定位地址</param>R
         /// <param name="sceneMode">场景加载模式</param>
         /// <param name="suspendLoad">加载完毕时是否主动挂起</param>
         /// <param name="priority">优先级</param>
         /// <param name="callBack">加载回调。</param>
         /// <param name="gcCollect">加载主场景是否回收垃圾。</param>
-        public void LoadScene(string location, LoadSceneMode sceneMode = LoadSceneMode.Single, bool suspendLoad = false, int priority = 100, Action<SceneOperationHandle> callBack = null,bool gcCollect = true)
+        /// <param name="progressCallBack">加载进度回调。</param>
+        public SceneOperationHandle LoadScene(string location, 
+            LoadSceneMode sceneMode = LoadSceneMode.Single, 
+            bool suspendLoad = false, 
+            int priority = 100, 
+            Action<SceneOperationHandle> callBack = null,
+            bool gcCollect = true,
+            Action<float> progressCallBack = null)
         {
             if (sceneMode == LoadSceneMode.Additive)
             {
-                if (_subScenes.ContainsKey(location))
+                if (_subScenes.TryGetValue(location, out SceneOperationHandle subScene))
                 {
                     Log.Warning($"Could not load subScene while already loaded. Scene: {location}");
-                    return;
+                    return subScene;
                 }
-                var subScene = GameModule.Resource.LoadSceneAsync(location, sceneMode, suspendLoad, priority);
+                subScene = YooAssets.LoadSceneAsync(location, sceneMode, suspendLoad, priority);
 
                 if (callBack != null)
                 {
                     subScene.Completed += callBack;   
                 }
+
+                if (progressCallBack != null)
+                {
+                    InvokeProgress(subScene, progressCallBack).Forget();
+                }
                 _subScenes.Add(location, subScene);
+
+                return subScene;
             }
-            else if(sceneMode == LoadSceneMode.Single)
+            else
             {
+                if (_currentMainScene is { IsDone: false })
+                {
+                    Log.Warning($"Could not load MainScene while loading. CurrentMainScene: {_currentMainSceneName}.");
+                    return null;
+                }
+                
                 _currentMainSceneName = location;
                 
-                _currentMainScene = GameModule.Resource.LoadSceneAsync(location, sceneMode, suspendLoad, priority);
+                _currentMainScene = YooAssets.LoadSceneAsync(location, sceneMode, suspendLoad, priority);
 
                 if (callBack != null)
                 {
                     _currentMainScene.Completed += callBack;
                 }
+                
+                if (progressCallBack != null)
+                {
+                    InvokeProgress(_currentMainScene, progressCallBack).Forget();
+                }
+                
                 GameModule.Resource.ForceUnloadUnusedAssets(gcCollect);
+
+                return _currentMainScene;
+            }
+        }
+
+        private async UniTaskVoid InvokeProgress(SceneOperationHandle sceneOperationHandle,Action<float> progress)
+        {
+            if (sceneOperationHandle == null)
+            {
+                return;
+            }
+
+            while (!sceneOperationHandle.IsDone)
+            {
+                await UniTask.Yield();
+                
+                progress?.Invoke(sceneOperationHandle.Progress);
             }
         }
 

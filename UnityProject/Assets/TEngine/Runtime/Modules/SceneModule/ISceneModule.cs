@@ -20,8 +20,14 @@ namespace TEngine
         /// <param name="priority">优先级</param>
         /// <param name="callBack">加载回调。</param>
         /// <param name="gcCollect">加载主场景是否回收垃圾。</param>
-        public void LoadScene(string location, LoadSceneMode sceneMode = LoadSceneMode.Single, bool suspendLoad = false, int priority = 100,
-            Action<SceneOperationHandle> callBack = null, bool gcCollect = true);
+        /// <param name="progressCallBack">加载进度回调。</param>
+        public SceneOperationHandle LoadScene(string location, 
+            LoadSceneMode sceneMode = LoadSceneMode.Single,
+            bool suspendLoad = false, 
+            int priority = 100,
+            Action<SceneOperationHandle> callBack = null, 
+            bool gcCollect = true, 
+            Action<float> progressCallBack = null);
 
         /// <summary>
         /// 激活场景（当同时存在多个场景时用于切换激活场景）。
