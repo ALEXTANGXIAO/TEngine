@@ -17,7 +17,7 @@ namespace TEngine.Editor
         {
             if (line <= 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(line));
+                return false;
             }
             var stackTrace = GetStackTrace();
             if (!string.IsNullOrEmpty(stackTrace) && (stackTrace.Contains("[Debug]") || 
@@ -78,7 +78,7 @@ namespace TEngine.Editor
             {
                 var consoleInstance = fieldInfo.GetValue(null);
                 if (consoleInstance != null)
-                    if (EditorWindow.focusedWindow == consoleInstance)
+                    if (EditorWindow.focusedWindow == (EditorWindow)consoleInstance)
                     {
                         // 获取m_ActiveText成员
                         fieldInfo = consoleWindowType.GetField("m_ActiveText",
