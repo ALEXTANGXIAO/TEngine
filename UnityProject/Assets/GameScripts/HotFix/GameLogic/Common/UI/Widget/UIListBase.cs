@@ -277,7 +277,7 @@ namespace GameLogic
                 item.SetSelected(false);
             }
 
-            item = GetItem(selectIndex) as IListSelectItem;
+            item = GetItem(m_selectIndex) as IListSelectItem;
             if (item != null)
             {
                 item.SetSelected(true);
