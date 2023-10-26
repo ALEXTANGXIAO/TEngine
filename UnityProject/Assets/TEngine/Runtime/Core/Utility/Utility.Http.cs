@@ -93,6 +93,7 @@ namespace TEngine
                         Log.Warning($"HttpPost {unityWebRequest.url} be canceled!");
                         unityWebRequest.Dispose();
                         cts.Dispose();
+                        return string.Empty;
                     }
                 }
                 catch (OperationCanceledException ex)
