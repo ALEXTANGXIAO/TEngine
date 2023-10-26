@@ -20,26 +20,22 @@ namespace GameMain
         public MessageShowType ShowType = MessageShowType.None;
 
         #region 脚本工具生成的代码
-
         private Button m_btnPackage;
         private Text m_textTittle;
         private Text m_textInfo;
         private Button m_btnIgnore;
         private Button m_btnUpdate;
-
         public override void ScriptGenerator()
         {
-            CheckUIElement();
-            m_btnPackage = FChild<Button>("m_btnPackage");
-            m_textTittle = FChild<Text>("m_textTittle");
-            m_textInfo = FChild<Text>("m_textInfo");
-            m_btnIgnore = FChild<Button>("m_btnIgnore");
-            m_btnUpdate = FChild<Button>("m_btnUpdate");
+            m_btnPackage = FindChildComponent<Button>("BgImage/m_btnPackage");
+            m_textTittle = FindChildComponent<Text>("BgImage/m_textTittle");
+            m_textInfo = FindChildComponent<Text>("BgImage/m_textInfo");
+            m_btnIgnore = FindChildComponent<Button>("BgImage/Group/m_btnIgnore");
+            m_btnUpdate = FindChildComponent<Button>("BgImage/Group/m_btnUpdate");
             m_btnPackage.onClick.AddListener(OnClickPackageBtn);
             m_btnIgnore.onClick.AddListener(OnClickIgnoreBtn);
             m_btnUpdate.onClick.AddListener(OnClickUpdateBtn);
         }
-
         #endregion
 
         #region 事件
