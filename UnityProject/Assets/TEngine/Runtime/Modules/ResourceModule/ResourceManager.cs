@@ -101,7 +101,6 @@ namespace TEngine
 
         internal override void Shutdown()
         {
-            ReleaseAllHandle();
 #if !UNITY_WEBGL
             YooAssets.Destroy();      
 #endif
@@ -114,13 +113,12 @@ namespace TEngine
             while (iter.MoveNext())
             {
                 AssetOperationHandle handle = iter.Current;
-                if (handle != null)
+                if (handle is { IsValid: true })
                 {
                     handle.Dispose();
                     handle = null;
                 }
             }
-
             iter.Dispose();
             _releaseMaps.Clear();
 
@@ -128,15 +126,15 @@ namespace TEngine
             while (iter.MoveNext())
             {
                 AssetOperationHandle handle = iter.Current;
-                if (handle != null)
+                if (handle is { IsValid: true })
                 {
                     handle.Dispose();
                     handle = null;
                 }
             }
-
             iter.Dispose();
             _operationHandlesMaps.Clear();
+            
             _arcCacheTable = new ArcCacheTable<string, AssetOperationHandle>(ARCTableCapacity, OnAddAsset, OnRemoveAsset);
         }
 
