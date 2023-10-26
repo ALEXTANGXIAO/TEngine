@@ -159,10 +159,7 @@ namespace GameLogic
         public List<TItem> GetItemList()
         {
             m_items.Clear();
-            for (int i = 0; i < m_itemCache.Count; i++)
-            {
-                m_items.Add(m_itemCache[i]);
-            }
+            m_items.AddRange(m_itemCache.Values);
             return m_items;
         }
        
