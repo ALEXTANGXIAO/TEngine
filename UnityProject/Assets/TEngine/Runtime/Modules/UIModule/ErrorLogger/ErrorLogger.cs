@@ -1,15 +1,16 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace TEngine
 {
-    public class ErrorLogger
+    public class ErrorLogger:IDisposable
     {
         public ErrorLogger()
         {
             Application.logMessageReceived += LogHandler;
         }
 
-        ~ErrorLogger()
+        public void Dispose()
         {
             Application.logMessageReceived -= LogHandler;
         }

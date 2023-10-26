@@ -38,6 +38,8 @@ namespace TEngine
         [SerializeField]
         private DebuggerActiveWindowType m_ActiveWindow = DebuggerActiveWindowType.AlwaysOpen;
 
+        public DebuggerActiveWindowType ActiveWindowType => m_ActiveWindow;
+
         [SerializeField]
         private bool m_ShowFullWindow = false;
 

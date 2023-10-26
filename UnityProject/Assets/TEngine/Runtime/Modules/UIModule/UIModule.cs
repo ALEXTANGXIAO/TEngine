@@ -68,6 +68,25 @@ namespace TEngine
 
             m_InstanceRoot.gameObject.layer = LayerMask.NameToLayer("UI");
             UIRootStatic = m_InstanceRoot;
+            
+            switch (GameModule.Debugger.ActiveWindowType)
+            {
+                case DebuggerActiveWindowType.AlwaysOpen:
+                    m_enableErrorLog = true;
+                    break;
+
+                case DebuggerActiveWindowType.OnlyOpenWhenDevelopment:
+                    m_enableErrorLog = Debug.isDebugBuild;
+                    break;
+
+                case DebuggerActiveWindowType.OnlyOpenInEditor:
+                    m_enableErrorLog = Application.isEditor;
+                    break;
+
+                default:
+                    m_enableErrorLog = false;
+                    break;
+            }
             if (m_enableErrorLog)
             {
                 _errorLogger = new ErrorLogger();
@@ -76,6 +95,11 @@ namespace TEngine
 
         private void OnDestroy()
         {
+            if (_errorLogger != null)
+            {
+                _errorLogger.Dispose();
+                _errorLogger = null;
+            }
             CloseAll();
         }
 
