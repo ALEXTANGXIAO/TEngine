@@ -395,7 +395,7 @@ namespace TEngine
                 DrawDebuggerWindowGroup(subDebuggerWindowGroup);
             }
 
-            debuggerWindowGroup.SelectedWindow.OnDraw();
+            debuggerWindowGroup?.SelectedWindow?.OnDraw();
         }
 
         private void DrawDebuggerWindowIcon(int windowId)

@@ -23,6 +23,7 @@ namespace GameMain
             m_btnClear = FindChildComponent<Button>("TopNode/m_btnClear");
             m_textAppid = FindChildComponent<Text>("TopNode/m_textAppid");
             m_textResid = FindChildComponent<Text>("TopNode/m_textResid");
+            m_scrollbarProgress = FindChildComponent<Scrollbar>("m_scrollbarProgress");
             m_btnClear.onClick.AddListener(OnClickClearBtn);
         }
         #endregion
@@ -30,7 +31,6 @@ namespace GameMain
         public override void OnCreate()
         {
             base.OnCreate();
-            m_scrollbarProgress = FindChildComponent<Scrollbar>("m_scrollbarProgress");
             LoadUpdateLogic.Instance.DownloadCompleteAction += DownLoad_Complete_Action;
             LoadUpdateLogic.Instance.DownProgressAction += DownLoad_Progress_Action;
             LoadUpdateLogic.Instance.UnpackedCompleteAction += Unpacked_Complete_Action;
@@ -118,12 +118,12 @@ namespace GameMain
             m_scrollbarProgress.size = progress;
         }
 
-        protected override void Close()
+        public override void OnDestroy()
         {
+            base.OnDestroy();
             OnStop(null);
             LoadUpdateLogic.Instance.DownloadCompleteAction -= DownLoad_Complete_Action;
             LoadUpdateLogic.Instance.DownProgressAction -= DownLoad_Progress_Action;
-            base.Close();
         }
     }
 }

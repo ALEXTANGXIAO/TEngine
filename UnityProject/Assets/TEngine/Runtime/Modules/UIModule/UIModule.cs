@@ -101,6 +101,10 @@ namespace TEngine
                 _errorLogger = null;
             }
             CloseAll();
+            if (m_InstanceRoot != null && m_InstanceRoot.parent != null)
+            {
+                Destroy(m_InstanceRoot.parent.gameObject);
+            }
         }
 
         #region 设置安全区域
