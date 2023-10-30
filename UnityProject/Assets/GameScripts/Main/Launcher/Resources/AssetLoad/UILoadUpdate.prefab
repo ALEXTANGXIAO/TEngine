@@ -773,7 +773,6 @@ GameObject:
   - component: {fileID: 1633508802563447727}
   - component: {fileID: 5827342734203288403}
   - component: {fileID: 4835021223508371640}
-  - component: {fileID: 903919243524269039}
   m_Layer: 5
   m_Name: UILoadUpdate
   m_TagString: Untagged
@@ -843,33 +842,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 55
---- !u!114 &903919243524269039
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9130266365217219149}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bcd11033283847ee8f7c71eedd9a4771, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  elements:
-    m_keys:
-    - m_imgBackGround
-    - m_scrollbarProgress
-    - m_textDesc
-    - m_btnClear
-    - m_textAppid
-    - m_textResid
-    m_values:
-    - {fileID: 4652061626151979521}
-    - {fileID: 2347891492826839465}
-    - {fileID: 8666815445422661327}
-    - {fileID: 4232232858152633415}
-    - {fileID: 3038352660368000718}
-    - {fileID: 8143980099109665604}
 --- !u!1 &9157096376857424144
 GameObject:
   m_ObjectHideFlags: 0

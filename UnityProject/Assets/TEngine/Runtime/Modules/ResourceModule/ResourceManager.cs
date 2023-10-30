@@ -2,7 +2,6 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using YooAsset;
 
 namespace TEngine
@@ -102,7 +101,6 @@ namespace TEngine
 
         internal override void Shutdown()
         {
-            ReleaseAllHandle();
 #if !UNITY_WEBGL
             YooAssets.Destroy();      
 #endif
@@ -115,13 +113,12 @@ namespace TEngine
             while (iter.MoveNext())
             {
                 AssetOperationHandle handle = iter.Current;
-                if (handle != null)
+                if (handle is { IsValid: true })
                 {
                     handle.Dispose();
                     handle = null;
                 }
             }
-
             iter.Dispose();
             _releaseMaps.Clear();
 
@@ -129,15 +126,15 @@ namespace TEngine
             while (iter.MoveNext())
             {
                 AssetOperationHandle handle = iter.Current;
-                if (handle != null)
+                if (handle is { IsValid: true })
                 {
                     handle.Dispose();
                     handle = null;
                 }
             }
-
             iter.Dispose();
             _operationHandlesMaps.Clear();
+            
             _arcCacheTable = new ArcCacheTable<string, AssetOperationHandle>(ARCTableCapacity, OnAddAsset, OnRemoveAsset);
         }
 
@@ -369,7 +366,7 @@ namespace TEngine
             while (iter.MoveNext())
             {
                 AssetOperationHandle handle = iter.Current;
-                if (handle != null)
+                if (handle is { IsValid: true })
                 {
                     handle.Dispose();
                     handle = null;
@@ -880,32 +877,6 @@ namespace TEngine
             handle.Dispose();
 
             return cancelOrFailed ? null : handle.GetSubAssetObjects<T>();
-        }
-    }
-
-    /// <summary>
-    /// 资源管理日志实现器。
-    /// </summary>
-    internal class AssetsLogger : YooAsset.ILogger
-    {
-        public void Log(string message)
-        {
-            TEngine.Log.Info(message);
-        }
-
-        public void Warning(string message)
-        {
-            TEngine.Log.Warning(message);
-        }
-
-        public void Error(string message)
-        {
-            TEngine.Log.Error(message);
-        }
-
-        public void Exception(System.Exception exception)
-        {
-            TEngine.Log.Fatal(exception.Message);
         }
     }
 }

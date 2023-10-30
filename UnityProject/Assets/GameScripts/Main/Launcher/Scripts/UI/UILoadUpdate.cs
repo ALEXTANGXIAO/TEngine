@@ -8,22 +8,22 @@ namespace GameMain
     [Window(UILayer.UI, fromResources: true, location: "AssetLoad/UILoadUpdate",fullScreen:true)]
     public class UILoadUpdate : UIWindow
     {
+        private Scrollbar m_scrollbarProgress;
+        
         #region 脚本工具生成的代码
         private Image m_imgBackGround;
-        private Scrollbar m_scrollbarProgress;
         private Text m_textDesc;
         private Button m_btnClear;
         private Text m_textAppid;
         private Text m_textResid;
         public override void ScriptGenerator()
         {
-            CheckUIElement();
-            m_imgBackGround = FChild<Image>("m_imgBackGround");
-            m_scrollbarProgress = FChild<Scrollbar>("m_scrollbarProgress");
-            m_textDesc = FChild<Text>("m_textDesc");
-            m_btnClear = FChild<Button>("m_btnClear");
-            m_textAppid = FChild<Text>("m_textAppid");
-            m_textResid = FChild<Text>("m_textResid");
+            m_imgBackGround = FindChildComponent<Image>("m_imgBackGround");
+            m_textDesc = FindChildComponent<Text>("m_textDesc");
+            m_btnClear = FindChildComponent<Button>("TopNode/m_btnClear");
+            m_textAppid = FindChildComponent<Text>("TopNode/m_textAppid");
+            m_textResid = FindChildComponent<Text>("TopNode/m_textResid");
+            m_scrollbarProgress = FindChildComponent<Scrollbar>("m_scrollbarProgress");
             m_btnClear.onClick.AddListener(OnClickClearBtn);
         }
         #endregion
@@ -118,12 +118,12 @@ namespace GameMain
             m_scrollbarProgress.size = progress;
         }
 
-        protected override void Close()
+        public override void OnDestroy()
         {
+            base.OnDestroy();
             OnStop(null);
             LoadUpdateLogic.Instance.DownloadCompleteAction -= DownLoad_Complete_Action;
             LoadUpdateLogic.Instance.DownProgressAction -= DownLoad_Progress_Action;
-            base.Close();
         }
     }
 }

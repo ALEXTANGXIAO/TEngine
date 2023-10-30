@@ -8,7 +8,7 @@ namespace GameLogic
     {
         public LoopListView LoopRectView { private set; get; }
 
-        private Dictionary<int, T> m_itemCache = new Dictionary<int, T>();
+        private GameFrameworkDictionary<int, T> m_itemCache = new GameFrameworkDictionary<int, T>();
 
         public override void BindMemberProperty()
         {
@@ -71,9 +71,8 @@ namespace GameLogic
             List<T> list = new List<T>();
             for (int i = 0; i < m_itemCache.Count; i++)
             {
-                list.Add(m_itemCache[i]);
+                list.Add(m_itemCache.GetValueByIndex(i));
             }
-
             return list;
         }
 
@@ -85,11 +84,11 @@ namespace GameLogic
         /// <summary>
         /// 获取Item。
         /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
+        /// <param name="index">索引。</param>
+        /// <returns>TItem。</returns>
         public T GetItemByIndex(int index)
         {
-            return m_itemCache[index];
+            return m_itemCache.GetValueByIndex(index);
         }
     }
 }

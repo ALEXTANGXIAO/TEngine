@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TEngine;
 using UnityEngine;
 
 namespace GameLogic
@@ -17,7 +18,7 @@ namespace GameLogic
         /// <summary>
         /// Item字典
         /// </summary>
-        private Dictionary<int, TItem> m_itemCache = new Dictionary<int, TItem>();
+        private GameFrameworkDictionary<int, TItem> m_itemCache = new GameFrameworkDictionary<int, TItem>();
 
         /// <summary>
         /// 计算偏差后的ItemList
@@ -163,9 +164,19 @@ namespace GameLogic
             m_items.Clear();
             for (int i = 0; i < m_itemCache.Count; i++)
             {
-                m_items.Add(m_itemCache[i]);
+                m_items.Add(m_itemCache.GetValueByIndex(i));
             }
             return m_items;
         }
+       
+       /// <summary>
+       /// 获取Item。
+       /// </summary>
+       /// <param name="index">索引。</param>
+       /// <returns>TItem。</returns>
+       public TItem GetItemByIndex(int index)
+       {
+           return m_itemCache.GetValueByIndex(index);
+       }
     }
 }

@@ -513,54 +513,5 @@ namespace TEngine
         }
 
         #endregion
-
-        #region UIElement
-        
-        /// <summary>
-        /// UI元素节点。
-        /// </summary>
-        protected UIElement UIElement;
-
-        /// <summary>
-        /// 检测UI元素节点。
-        /// </summary>
-        protected virtual void CheckUIElement()
-        {
-            if (rectTransform != null)
-            {
-                UIElement = rectTransform.GetComponent<UIElement>();
-            }
-        }
-
-        /// <summary>
-        /// 获取子节点。
-        /// </summary>
-        /// <param name="childName">子节点名称。</param>
-        /// <returns>子节点位置实例。</returns>
-        protected Transform FChild(string childName)
-        {
-            if (UIElement != null)
-            {
-                var child = UIElement.Get(childName);
-                if (child != null)
-                {
-                    return child;
-                }
-            }
-            return FindChild(childName);
-        }
-
-        /// <summary>
-        /// 获取子节点脚本。
-        /// </summary>
-        /// <typeparam name="T">子节点类型。</typeparam>
-        /// <param name="childName">子节点名称。</param>
-        /// <returns>子节点脚本实例。</returns>
-        protected T FChild<T>(string childName) where T : Component
-        {
-            var child = FChild(childName);
-            return child == null ? null : child.GetComponent<T>();
-        }
-        #endregion
     }
 }

@@ -812,7 +812,6 @@ GameObject:
   - component: {fileID: 4070374929253206932}
   - component: {fileID: 4872533144352319846}
   - component: {fileID: 3352775805385032060}
-  - component: {fileID: 3859027068210555860}
   m_Layer: 5
   m_Name: UILoadTip
   m_TagString: Untagged
@@ -880,31 +879,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 55
---- !u!114 &3859027068210555860
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7666412045263395013}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bcd11033283847ee8f7c71eedd9a4771, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  elements:
-    m_keys:
-    - m_btnUpdate
-    - m_btnIgnore
-    - m_textInfo
-    - m_textTittle
-    - m_btnPackage
-    m_values:
-    - {fileID: 2745714441875214452}
-    - {fileID: 467775921333773033}
-    - {fileID: 3862717357071106210}
-    - {fileID: 9127528276671758327}
-    - {fileID: 1387175525974173601}
 --- !u!1 &8012535748721374403
 GameObject:
   m_ObjectHideFlags: 0

@@ -62,7 +62,7 @@ namespace TEngine
 
         private void OnDestroy()
         {
-            if (_operationHandle != null)
+            if (_operationHandle is { IsValid: true })
             {
                 _operationHandle.Release();
                 _operationHandle = null;

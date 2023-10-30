@@ -25,7 +25,7 @@ namespace TEngine
                 var cts = new CancellationTokenSource();
                 cts.CancelAfterSlim(TimeSpan.FromSeconds(timeout));
 
-                UnityWebRequest unityWebRequest = UnityWebRequest.Get(url);
+                using UnityWebRequest unityWebRequest = UnityWebRequest.Get(url);
                 return await SendWebRequest(unityWebRequest, cts);
             }
 
@@ -41,7 +41,7 @@ namespace TEngine
                 var cts = new CancellationTokenSource();
                 cts.CancelAfterSlim(TimeSpan.FromSeconds(timeout));
 
-                UnityWebRequest unityWebRequest = UnityWebRequest.Post(url, postData);
+                using UnityWebRequest unityWebRequest = UnityWebRequest.Post(url, postData);
                 return await SendWebRequest(unityWebRequest, cts);
             }
 
@@ -57,7 +57,7 @@ namespace TEngine
                 var cts = new CancellationTokenSource();
                 cts.CancelAfterSlim(TimeSpan.FromSeconds(timeout));
 
-                UnityWebRequest unityWebRequest = UnityWebRequest.Post(url, formFields);
+                using UnityWebRequest unityWebRequest = UnityWebRequest.Post(url, formFields);
                 return await SendWebRequest(unityWebRequest, cts);
             }
 
@@ -73,7 +73,7 @@ namespace TEngine
                 var cts = new CancellationTokenSource();
                 cts.CancelAfterSlim(TimeSpan.FromSeconds(timeout));
 
-                UnityWebRequest unityWebRequest = UnityWebRequest.Post(url, formData);
+                using UnityWebRequest unityWebRequest = UnityWebRequest.Post(url, formData);
                 return await SendWebRequest(unityWebRequest, cts);
             }
 
@@ -91,6 +91,9 @@ namespace TEngine
                     if (isCanceled)
                     {
                         Log.Warning($"HttpPost {unityWebRequest.url} be canceled!");
+                        unityWebRequest.Dispose();
+                        cts.Dispose();
+                        return string.Empty;
                     }
                 }
                 catch (OperationCanceledException ex)
@@ -98,11 +101,16 @@ namespace TEngine
                     if (ex.CancellationToken == cts.Token)
                     {
                         Log.Warning("HttpPost Timeout");
+                        unityWebRequest.Dispose();
+                        cts.Dispose();
                         return string.Empty;
                     }
                 }
 
-                return unityWebRequest.downloadHandler.text;
+                string ret = unityWebRequest.downloadHandler.text;
+                unityWebRequest.Dispose();
+                cts.Dispose();
+                return ret;
             }
         }
     }

@@ -11,18 +11,29 @@ namespace TEngine
     {
         private static readonly Dictionary<Type, Module> _moduleMaps = new Dictionary<Type, Module>(ModuleImpSystem.DesignModuleCount);
 
+        private static GameObject _gameModuleRoot;
+        
         #region 框架模块
         /// <summary>
         /// 获取游戏基础模块。
         /// </summary>
-        public static RootModule Base => _base ??= Get<RootModule>();
+        public static RootModule Base
+        {
+            get => _base ??= Get<RootModule>();
+            private set => _base = value;
+        }
 
         private static RootModule _base;
 
         /// <summary>
         /// 获取调试模块。
         /// </summary>
-        public static DebuggerModule Debugger => _debugger ??= Get<DebuggerModule>();
+        public static DebuggerModule Debugger
+        {
+            get => _debugger ??= Get<DebuggerModule>();
+            private set => _debugger = value;
+        }
+
 
         private static DebuggerModule _debugger;
 
@@ -117,7 +128,31 @@ namespace TEngine
         {
             Log.Info("GameModule Active");
             gameObject.name = $"[{nameof(GameModule)}]";
+            _gameModuleRoot = gameObject;
             DontDestroyOnLoad(gameObject);
+        }
+
+        public static void Shutdown(ShutdownType shutdownType)
+        {
+            Log.Info("GameModule Shutdown");
+            if (_gameModuleRoot != null)
+            {
+                Destroy(_gameModuleRoot);
+                _gameModuleRoot = null;
+            }
+            _moduleMaps.Clear();
+            
+            _base = null;
+            _debugger = null;
+            _fsm = null;
+            _procedure = null;
+            _objectPool = null;
+            _resource = null;
+            _audio = null;
+            _setting = null;
+            _ui = null;
+            _localization = null;
+            _scene = null;
         }
     }
 }
