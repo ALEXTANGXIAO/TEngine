@@ -13,10 +13,9 @@ namespace GameMain
         
         private ProcedureOwner _procedureOwner;
 
-        private float _currentDownloadTime;
         private float CurrentSpeed =>
             (GameModule.Resource.Downloader.TotalDownloadBytes -
-             GameModule.Resource.Downloader.CurrentDownloadBytes) / _currentDownloadTime;
+             GameModule.Resource.Downloader.CurrentDownloadBytes) / UnityEngine.Time.time;
         
         protected override void OnEnter(ProcedureOwner procedureOwner)
         {
