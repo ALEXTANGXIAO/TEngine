@@ -15,7 +15,7 @@ namespace GameMain
 
         private float CurrentSpeed =>
             (GameModule.Resource.Downloader.TotalDownloadBytes -
-             GameModule.Resource.Downloader.CurrentDownloadBytes) / UnityEngine.Time.time;
+             GameModule.Resource.Downloader.CurrentDownloadBytes) / GameTime.time;
         
         protected override void OnEnter(ProcedureOwner procedureOwner)
         {
