@@ -4,7 +4,7 @@ using TEngine.Editor;
 using UnityEditor;
 using UnityEngine;
 
-public static class BuildAssetsCommand
+public static class BuildDLLCommand
 {
     private const string EnableHybridClrScriptingDefineSymbol = "ENABLE_HYBRIDCLR";
     
@@ -31,6 +31,12 @@ public static class BuildAssetsCommand
     public static void BuildAndCopyDlls()
     {
         BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
+        CompileDllCommand.CompileDll(target);
+        CopyAOTHotUpdateDlls(target);
+    }
+    
+    public static void BuildAndCopyDlls(BuildTarget target)
+    {
         CompileDllCommand.CompileDll(target);
         CopyAOTHotUpdateDlls(target);
     }
