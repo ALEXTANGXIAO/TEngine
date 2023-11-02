@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using YooAsset;
 
 namespace TEngine
@@ -658,5 +657,28 @@ namespace TEngine
         {
             return await m_ResourceManager.LoadAllSubAssetAsync<T>(location, cancellationToken);
         }
+
+        #region 预加载
+        /// <summary>
+        /// 放入预加载对象。
+        /// </summary>
+        /// <param name="location">资源定位地址。</param>
+        /// <param name="assetObject">预加载对象。</param>
+        public void PushPreLoadAsset(string location, UnityEngine.Object assetObject)
+        {
+            m_ResourceManager.PushPreLoadAsset(location, assetObject);
+        }
+
+        /// <summary>
+        /// 获取预加载的实例对象。
+        /// </summary>
+        /// <param name="location">资源定位地址。</param>
+        /// <typeparam name="T">资源实例类型。</typeparam>
+        /// <returns>预加载对象。</returns>
+        public T GetPreLoadAsset<T>(string location) where T : UnityEngine.Object
+        {
+            return m_ResourceManager.GetPreLoadAsset<T>(location);
+        }
+        #endregion
     }
 }

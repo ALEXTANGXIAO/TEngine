@@ -101,6 +101,7 @@ namespace TEngine
 
         internal override void Shutdown()
         {
+            ReleasePreLoadAssets();            
 #if !UNITY_WEBGL
             YooAssets.Destroy();      
 #endif
@@ -878,5 +879,53 @@ namespace TEngine
 
             return cancelOrFailed ? null : handle.GetSubAssetObjects<T>();
         }
+        
+        #region 预加载
+
+        private readonly Dictionary<string, Object> _preLoadMaps = new Dictionary<string, Object>();
+        
+        /// <summary>
+        /// 放入预加载对象。
+        /// </summary>
+        /// <param name="location">资源定位地址。</param>
+        /// <param name="assetObject">预加载对象。</param>
+        public void PushPreLoadAsset(string location, Object assetObject)
+        {
+            if (_preLoadMaps.ContainsKey(location))
+            {
+                return;
+            }
+            _preLoadMaps.Add(location, assetObject);
+        }
+
+        /// <summary>
+        /// 获取预加载的实例对象。
+        /// </summary>
+        /// <param name="location">资源定位地址。</param>
+        /// <typeparam name="T">资源实例类型。</typeparam>
+        /// <returns>预加载对象。</returns>
+        public T GetPreLoadAsset<T>(string location) where T : Object
+        {
+            if (_preLoadMaps.TryGetValue(location,out Object assetObject))
+            {
+                return assetObject as T;
+            }
+            return default;
+        }
+
+        private void ReleasePreLoadAssets()
+        {
+            using var iter = _preLoadMaps.GetEnumerator();
+            while (iter.MoveNext())
+            {
+                var assetObject = iter.Current.Value;
+                if (assetObject != null)
+                {
+                    UnityEngine.Object.Destroy(assetObject);
+                }
+            }
+            _preLoadMaps.Clear();
+        }
+        #endregion
     }
 }

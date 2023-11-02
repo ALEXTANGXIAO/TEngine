@@ -16,23 +16,23 @@ namespace GameMain
     {
         private float _progress = 0f;
 
-        private Dictionary<string, bool> m_LoadedFlag = new Dictionary<string, bool>();
+        private readonly Dictionary<string, bool> _loadedFlag = new Dictionary<string, bool>();
 
         public override bool UseNativeDialog => true;
 
-        private bool m_needProLoadConfig = false;
+        private readonly bool _needProLoadConfig = true;
 
-        private bool m_InitConfigXml = false;
+        private bool _hadInitConfigXml = false;
 
         protected override void OnEnter(ProcedureOwner procedureOwner)
         {
             base.OnEnter(procedureOwner);
 
-            m_LoadedFlag.Clear();
+            _loadedFlag.Clear();
 
             if (GameModule.Resource.PlayMode == EPlayMode.EditorSimulateMode)
             {
-                m_InitConfigXml = true;
+                _hadInitConfigXml = true;
             }
 
             UILoadMgr.Show(UIDefine.UILoadUpdate, Utility.Text.Format(LoadText.Instance.Label_Load_Load_Progress, 0));
@@ -46,11 +46,11 @@ namespace GameMain
         {
             base.OnUpdate(procedureOwner, elapseSeconds, realElapseSeconds);
 
-            var totalCount = m_LoadedFlag.Count <= 0 ? 1 : m_LoadedFlag.Count;
+            var totalCount = _loadedFlag.Count <= 0 ? 1 : _loadedFlag.Count;
 
-            var loadCount = m_LoadedFlag.Count <= 0 ? 1 : 0;
+            var loadCount = _loadedFlag.Count <= 0 ? 1 : 0;
 
-            foreach (KeyValuePair<string, bool> loadedFlag in m_LoadedFlag)
+            foreach (KeyValuePair<string, bool> loadedFlag in _loadedFlag)
             {
                 if (!loadedFlag.Value)
                 {
@@ -62,7 +62,7 @@ namespace GameMain
                 }
             }
 
-            if (m_LoadedFlag.Count != 0)
+            if (_loadedFlag.Count != 0)
             {
                 UILoadMgr.Show(UIDefine.UILoadUpdate, Utility.Text.Format(LoadText.Instance.Label_Load_Load_Progress, (float)loadCount / totalCount * 100));
             }
@@ -87,7 +87,7 @@ namespace GameMain
                 return;
             }
 
-            if (m_InitConfigXml == false)
+            if (_hadInitConfigXml == false)
             {
                 return;
             }
@@ -116,13 +116,13 @@ namespace GameMain
 
             await UniTask.Delay(TimeSpan.FromSeconds(2.5f));
 
-            if (m_needProLoadConfig)
+            if (_needProLoadConfig)
             {
                 LoadAllConfig();
             }
             else
             {
-                m_InitConfigXml = true;
+                _hadInitConfigXml = true;
             }
         }
 
@@ -130,14 +130,27 @@ namespace GameMain
         {
             if (GameModule.Resource.PlayMode == EPlayMode.EditorSimulateMode)
             {
-                m_InitConfigXml = true;
+                _hadInitConfigXml = true;
                 return;
             }
+            AssetInfo[] assetInfos = GameModule.Resource.GetAssetInfos("PRELOAD");
+            foreach (var assetInfo in assetInfos)
+            {
+                LoadConfig(assetInfo.Address);
+            }
+#if UNITY_WEBGL
+            AssetInfo[] assetInfos = GameModule.Resource.GetAssetInfos("WEBGL_PRELOAD");
+            foreach (var assetInfo in assetInfos)
+            {
+                LoadConfig(assetInfo.Address);
+            }
+#endif
+            _hadInitConfigXml = true;
         }
 
         private void LoadConfig(string configName)
         {
-            m_LoadedFlag.Add(configName, false);
+            _loadedFlag.Add(configName, false);
             GameModule.Resource.LoadAssetAsync<TextAsset>(configName, OnLoadSuccess);
         }
 
@@ -147,10 +160,11 @@ namespace GameMain
             {
                 return;
             }
-
-            var name = assetOperationHandle.GetAssetInfo().Address;
-            m_LoadedFlag[name] = true;
-            Log.Info("Load config '{0}' OK.", name);
+            var location = assetOperationHandle.GetAssetInfo().Address;
+            _loadedFlag[location] = true;
+            GameModule.Resource.PushPreLoadAsset(location, assetOperationHandle.AssetObject);
+            Log.Info("Load config '{0}' OK.", location);
+            assetOperationHandle.Dispose();
         }
     }
 }

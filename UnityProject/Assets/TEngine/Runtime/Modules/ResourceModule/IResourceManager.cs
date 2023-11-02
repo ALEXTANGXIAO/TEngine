@@ -304,5 +304,20 @@ namespace TEngine
         /// <typeparam name="T">资源实例类型。</typeparam>
         /// <returns>原生文件资源实例。</returns>
         UniTask<T[]> LoadAllSubAssetAsync<T>(string location, CancellationToken cancellationToken = default) where T : Object;
+
+        /// <summary>
+        /// 放入预加载对象。
+        /// </summary>
+        /// <param name="location">资源定位地址。</param>
+        /// <param name="assetObject">预加载对象。</param>
+        public void PushPreLoadAsset(string location, Object assetObject);
+
+        /// <summary>
+        /// 获取预加载的实例对象。
+        /// </summary>
+        /// <param name="location">资源定位地址。</param>
+        /// <typeparam name="T">资源实例类型。</typeparam>
+        /// <returns>预加载对象。</returns>
+        public T GetPreLoadAsset<T>(string location) where T : Object;
     }
 }

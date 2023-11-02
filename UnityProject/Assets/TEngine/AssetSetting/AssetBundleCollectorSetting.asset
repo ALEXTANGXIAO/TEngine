@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowPackageView: 0
   EnableAddressable: 1
+  LocationToLower: 0
+  IncludeAssetGUID: 0
   UniqueBundleName: 0
   ShowEditorAlias: 0
   Packages:
@@ -78,7 +80,7 @@ MonoBehaviour:
         AddressRuleName: AddressByFileName
         PackRuleName: PackDirectory
         FilterRuleName: CollectAll
-        AssetTags: 
+        AssetTags: WEBGL_PRELOAD
         UserData: 
     - GroupName: DLL
       GroupDesc: "\u4EE3\u7801"

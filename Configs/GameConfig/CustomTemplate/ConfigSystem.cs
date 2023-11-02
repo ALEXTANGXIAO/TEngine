@@ -42,8 +42,16 @@ public class ConfigSystem : Singleton<ConfigSystem>
     /// <returns>ByteBuf</returns>
     private ByteBuf LoadByteBuf(string file)
     {
-        var textAssets = GameModule.Resource.LoadAsset<TextAsset>(file);
-        byte[] ret = textAssets.bytes;
-        return new ByteBuf(ret);
+        TextAsset textAsset = null;
+        textAsset = GameModule.Resource.GetPreLoadAsset<TextAsset>(file);
+        if (textAsset != null)
+        {
+            return new ByteBuf(textAsset.bytes);
+        }
+        else
+        {
+            textAsset = GameModule.Resource.LoadAsset<TextAsset>(file);
+            return new ByteBuf(textAsset.bytes);
+        }
     }
 }
