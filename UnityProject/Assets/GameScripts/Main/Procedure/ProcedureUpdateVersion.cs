@@ -15,14 +15,14 @@ namespace GameMain
         public override bool UseNativeDialog => true;
 
         private ProcedureOwner _procedureOwner;
-        
+
         protected override void OnEnter(ProcedureOwner procedureOwner)
         {
             _procedureOwner = procedureOwner;
-            
+
             base.OnEnter(procedureOwner);
-            
-            UILoadMgr.Show(UIDefine.UILoadUpdate,$"更新静态版本文件...");
+
+            UILoadMgr.Show(UIDefine.UILoadUpdate, $"更新静态版本文件...");
 
             //检查设备是否能够访问互联网
             if (Application.internetReachability == NetworkReachability.NotReachable)
@@ -34,6 +34,7 @@ namespace GameMain
                     GetStaticVersion().Forget,
                     () => { ChangeState<ProcedureInitResources>(procedureOwner); });
             }
+
             UILoadMgr.Show(UIDefine.UILoadUpdate, LoadText.Instance.Label_RequestVersionIng);
 
             // 用户尝试更新静态版本。
@@ -49,23 +50,35 @@ namespace GameMain
 
             var operation = GameModule.Resource.UpdatePackageVersionAsync();
 
-            await operation.ToUniTask();
+            try
+            {
+                await operation.ToUniTask();
 
-            if (operation.Status == EOperationStatus.Succeed)
-            {
-                //线上最新版本operation.PackageVersion
-                GameModule.Resource.PackageVersion = operation.PackageVersion;
-                Log.Debug($"Updated package Version : from {GameModule.Resource.GetPackageVersion()} to {operation.PackageVersion}");
-                ChangeState<ProcedureUpdateManifest>(_procedureOwner);
+                if (operation.Status == EOperationStatus.Succeed)
+                {
+                    //线上最新版本operation.PackageVersion
+                    GameModule.Resource.PackageVersion = operation.PackageVersion;
+                    Log.Debug($"Updated package Version : from {GameModule.Resource.GetPackageVersion()} to {operation.PackageVersion}");
+                    ChangeState<ProcedureUpdateManifest>(_procedureOwner);
+                }
+                else
+                {
+                    OnGetStaticVersionError(operation.Error);
+                }
             }
-            else
+            catch (Exception e)
             {
-                Log.Error(operation.Error);
-                
-                UILoadTip.ShowMessageBox($"用户尝试更新静态版本失败！点击确认重试 \n \n <color=#FF0000>原因{operation.Error}</color>", MessageShowType.TwoButton,
-                    LoadStyle.StyleEnum.Style_Retry
-                    , () => { ChangeState<ProcedureUpdateVersion>(_procedureOwner); }, UnityEngine.Application.Quit);
+                OnGetStaticVersionError(e.Message);
             }
+        }
+
+        private void OnGetStaticVersionError(string error)
+        {
+            Log.Error(error);
+
+            UILoadTip.ShowMessageBox($"用户尝试更新静态版本失败！点击确认重试 \n \n <color=#FF0000>原因{error}</color>", MessageShowType.TwoButton,
+                LoadStyle.StyleEnum.Style_Retry
+                , () => { ChangeState<ProcedureUpdateVersion>(_procedureOwner); }, UnityEngine.Application.Quit);
         }
     }
 }

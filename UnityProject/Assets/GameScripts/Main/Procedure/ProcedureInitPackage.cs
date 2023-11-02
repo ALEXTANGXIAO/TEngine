@@ -60,8 +60,8 @@ namespace GameMain
             {
                 //热更新阶段文本初始化
                 LoadText.Instance.InitConfigData(null);
-                //热更新UI初始化
-                UILoadMgr.Initialize();
+                
+                GameEvent.Send(RuntimeId.ToRuntimeId("RefreshVersion"));
                 
                 EPlayMode playMode = GameModule.Resource.PlayMode;
 

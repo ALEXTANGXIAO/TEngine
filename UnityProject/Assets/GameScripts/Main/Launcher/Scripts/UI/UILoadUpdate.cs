@@ -38,10 +38,15 @@ namespace GameMain
             m_btnClear.gameObject.SetActive(true);
         }
 
+        public override void RegisterEvent()
+        {
+            base.RegisterEvent();
+            AddUIEvent(RuntimeId.ToRuntimeId("RefreshVersion"),RefreshVersion);
+        }
+
         public override void OnRefresh()
         {
             base.OnRefresh();
-            RefreshVersion();
         }
 
         #region 事件

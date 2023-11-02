@@ -232,19 +232,9 @@ namespace TEngine
                     return;
                 }
 
-                _entity = new GameObject("[Unity.Utility]")
-                {
-                    // hideFlags = HideFlags.HideAndDontSave
-                };
+                _entity = new GameObject("[Unity.Utility]");
                 _entity.SetActive(true);
                 _entity.transform.SetParent(GameModule.Base.transform);
-
-#if UNITY_EDITOR
-                if (Application.isPlaying)
-#endif
-                {
-                    Object.DontDestroyOnLoad(_entity);
-                }
 
                 UnityEngine.Assertions.Assert.IsFalse(_behaviour);
                 _behaviour = _entity.AddComponent<MainBehaviour>();
