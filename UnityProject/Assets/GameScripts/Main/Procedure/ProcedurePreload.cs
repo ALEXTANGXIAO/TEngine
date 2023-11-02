@@ -139,8 +139,8 @@ namespace GameMain
                 LoadConfig(assetInfo.Address);
             }
 #if UNITY_WEBGL
-            AssetInfo[] assetInfos = GameModule.Resource.GetAssetInfos("WEBGL_PRELOAD");
-            foreach (var assetInfo in assetInfos)
+            AssetInfo[] webAssetInfos = GameModule.Resource.GetAssetInfos("WEBGL_PRELOAD");
+            foreach (var assetInfo in webAssetInfos)
             {
                 LoadConfig(assetInfo.Address);
             }
