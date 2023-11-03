@@ -92,7 +92,6 @@ namespace TEngine
                     {
                         Log.Warning($"HttpPost {unityWebRequest.url} be canceled!");
                         unityWebRequest.Dispose();
-                        cts.Dispose();
                         return string.Empty;
                     }
                 }
@@ -102,14 +101,12 @@ namespace TEngine
                     {
                         Log.Warning("HttpPost Timeout");
                         unityWebRequest.Dispose();
-                        cts.Dispose();
                         return string.Empty;
                     }
                 }
 
                 string ret = unityWebRequest.downloadHandler.text;
                 unityWebRequest.Dispose();
-                cts.Dispose();
                 return ret;
             }
         }
