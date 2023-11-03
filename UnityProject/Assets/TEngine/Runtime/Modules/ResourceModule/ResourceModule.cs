@@ -299,7 +299,8 @@ namespace TEngine
         /// </summary>
         public void ClearSandbox()
         {
-            // YooAssets.ClearSandbox();
+            var package = YooAssets.GetPackage(packageName);
+            package.ClearPackageSandbox();
         }
 
         /// <summary>
