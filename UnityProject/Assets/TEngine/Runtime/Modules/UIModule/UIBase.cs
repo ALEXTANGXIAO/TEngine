@@ -93,6 +93,20 @@ namespace TEngine
         /// </summary>
         protected bool m_updateListValid = false;
 
+        private ComponentAutoBindTool _autoBindTool;
+
+        protected ComponentAutoBindTool AutoBindTool
+        {
+            get
+            {
+                if (_autoBindTool == null && gameObject != null)
+                {
+                    _autoBindTool = gameObject.GetComponent<ComponentAutoBindTool>();
+                }
+                return _autoBindTool;
+            }
+        }
+        
         /// <summary>
         /// 代码自动生成绑定。
         /// </summary>
@@ -243,7 +257,7 @@ namespace TEngine
 
         /// <summary>
         /// 创建UIWidget通过父UI位置节点。
-        /// <remarks>因为资源示例已经存在父物体所以不需要异步。</remarks>
+        /// <remarks>因为资源实例已经存在父物体所以不需要异步。</remarks>
         /// </summary>
         /// <param name="goPath">父UI位置节点。</param>
         /// <param name="visible">是否可见。</param>
@@ -264,7 +278,7 @@ namespace TEngine
 
         /// <summary>
         /// 创建UIWidget通过父UI位置节点。
-        /// <remarks>因为资源示例已经存在父物体所以不需要异步。</remarks>
+        /// <remarks>因为资源实例已经存在父物体所以不需要异步。</remarks>
         /// </summary>
         /// <param name="parentTrans"></param>
         /// <param name="goPath">父UI位置节点。</param>
@@ -284,7 +298,7 @@ namespace TEngine
 
         /// <summary>
         /// 创建UIWidget通过游戏物体。
-        /// <remarks>因为资源示例已经存在父物体所以不需要异步。</remarks>
+        /// <remarks>因为资源实例已经存在父物体所以不需要异步。</remarks>
         /// </summary>
         /// <param name="goRoot">游戏物体。</param>
         /// <param name="visible">是否可见。</param>
@@ -456,7 +470,7 @@ namespace TEngine
                 {
                     if (prefab == null)
                     {
-                        tmpT = CreateWidgetByPath<T>(parentTrans, assetPath);
+                        tmpT = await CreateWidgetByPathAsync<T>(parentTrans, assetPath);
                     }
                     else
                     {
