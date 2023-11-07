@@ -44,7 +44,7 @@ namespace TEngine
         public UIBase Parent => parent;
 
         /// <summary>
-        /// 自动逸数据集。
+        /// 自定义数据集。
         /// </summary>
         protected System.Object[] userDatas;
 
