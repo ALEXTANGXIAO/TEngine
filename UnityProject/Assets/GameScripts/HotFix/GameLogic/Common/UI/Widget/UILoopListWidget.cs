@@ -65,7 +65,7 @@ namespace GameLogic
             base.AdjustItemNum(n, datas, funcItem);
             m_tpFuncItem = funcItem;
             LoopRectView.SetListItemCount(n);
-            LoopRectView.RefreshAllShownItem();
+            // LoopRectView.RefreshAllShownItem();
             m_tpFuncItem = null;
         }
 
