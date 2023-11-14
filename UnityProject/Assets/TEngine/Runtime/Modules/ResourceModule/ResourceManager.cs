@@ -101,7 +101,7 @@ namespace TEngine
 
         internal override void Shutdown()
         {
-            ReleasePreLoadAssets();            
+            ReleasePreLoadAssets(isShutDown:true);            
 #if !UNITY_WEBGL
             YooAssets.Destroy();      
 #endif
@@ -913,15 +913,18 @@ namespace TEngine
             return default;
         }
 
-        private void ReleasePreLoadAssets()
+        private void ReleasePreLoadAssets(bool isShutDown = false)
         {
-            using var iter = _preLoadMaps.GetEnumerator();
-            while (iter.MoveNext())
+            if (!isShutDown)
             {
-                var assetObject = iter.Current.Value;
-                if (assetObject != null)
+                using var iter = _preLoadMaps.GetEnumerator();
+                while (iter.MoveNext())
                 {
-                    UnityEngine.Object.Destroy(assetObject);
+                    var assetObject = iter.Current.Value;
+                    if (assetObject != null)
+                    {
+                        Object.Destroy(assetObject);
+                    }
                 }
             }
             _preLoadMaps.Clear();
