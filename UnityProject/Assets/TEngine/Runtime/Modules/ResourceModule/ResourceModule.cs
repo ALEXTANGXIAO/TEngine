@@ -239,10 +239,13 @@ namespace TEngine
         /// <summary>
         /// 获取当前资源包版本。
         /// </summary>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <returns>资源包版本。</returns>
-        public string GetPackageVersion()
+        public string GetPackageVersion(string packageName = "")
         {
-            var package = YooAssets.GetPackage(packageName);
+            var package = string.IsNullOrEmpty(packageName)
+                ? YooAssets.GetPackage(this.packageName)
+                : YooAssets.GetPackage(packageName);
             if (package == null)
             {
                 return string.Empty;
@@ -256,10 +259,14 @@ namespace TEngine
         /// </summary>
         /// <param name="appendTimeTicks">请求URL是否需要带时间戳。</param>
         /// <param name="timeout">超时时间。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <returns>请求远端包裹的最新版本操作句柄。</returns>
-        public UpdatePackageVersionOperation UpdatePackageVersionAsync(bool appendTimeTicks = false, int timeout = 60)
+        public UpdatePackageVersionOperation UpdatePackageVersionAsync(bool appendTimeTicks = false, int timeout = 60,
+            string packageName = "")
         {
-            var package = YooAssets.GetPackage(packageName);
+            var package = string.IsNullOrEmpty(packageName)
+                ? YooAssets.GetPackage(this.packageName)
+                : YooAssets.GetPackage(packageName);
             return package.UpdatePackageVersionAsync(appendTimeTicks, timeout);
         }
 
@@ -269,37 +276,57 @@ namespace TEngine
         /// <param name="packageVersion">更新的包裹版本</param>
         /// <param name="autoSaveVersion">更新成功后自动保存版本号，作为下次初始化的版本。</param>
         /// <param name="timeout">超时时间（默认值：60秒）</param>
-        public UpdatePackageManifestOperation UpdatePackageManifestAsync(string packageVersion, bool autoSaveVersion = true, int timeout = 60)
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
+        public UpdatePackageManifestOperation UpdatePackageManifestAsync(string packageVersion,
+            bool autoSaveVersion = true, int timeout = 60, string packageName = "")
         {
-            var package = YooAssets.GetPackage(packageName);
+            var package = string.IsNullOrEmpty(packageName)
+                ? YooAssets.GetPackage(this.packageName)
+                : YooAssets.GetPackage(packageName);
             return package.UpdatePackageManifestAsync(packageVersion, autoSaveVersion, timeout);
         }
 
         /// <summary>
         /// 创建资源下载器，用于下载当前资源版本所有的资源包文件。
         /// </summary>
-        public ResourceDownloaderOperation CreateResourceDownloader()
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
+        public ResourceDownloaderOperation CreateResourceDownloader(string packageName = "")
         {
-            var package = YooAssets.GetPackage(packageName);
-            Downloader = package.CreateResourceDownloader(downloadingMaxNum, failedTryAgain);
-            return Downloader;
+            if (string.IsNullOrEmpty(packageName))
+            {
+                var package = YooAssets.GetPackage(this.packageName);
+                Downloader = package.CreateResourceDownloader(downloadingMaxNum, failedTryAgain);
+                return Downloader;
+            }
+            else
+            {
+                var package = YooAssets.GetPackage(packageName);
+                Downloader = package.CreateResourceDownloader(downloadingMaxNum, failedTryAgain);
+                return Downloader;
+            }
         }
 
         /// <summary>
         /// 清理包裹未使用的缓存文件。
         /// </summary>
-        public ClearUnusedCacheFilesOperation ClearUnusedCacheFilesAsync()
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
+        public ClearUnusedCacheFilesOperation ClearUnusedCacheFilesAsync(string packageName = "")
         {
-            var package = YooAssets.GetPackage(packageName);
+            var package = string.IsNullOrEmpty(packageName)
+                ? YooAssets.GetPackage(this.packageName)
+                : YooAssets.GetPackage(packageName);
             return package.ClearUnusedCacheFilesAsync();
         }
 
         /// <summary>
         /// 清理沙盒路径。
         /// </summary>
-        public void ClearSandbox()
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
+        public void ClearSandbox(string packageName = "")
         {
-            var package = YooAssets.GetPackage(packageName);
+            var package = string.IsNullOrEmpty(packageName)
+                ? YooAssets.GetPackage(this.packageName)
+                : YooAssets.GetPackage(packageName);
             package.ClearPackageSandbox();
         }
 
@@ -341,10 +368,11 @@ namespace TEngine
         private void Update()
         {
             m_LastUnloadUnusedAssetsOperationElapseSeconds += GameTime.unscaledDeltaTime;
-            if (m_AsyncOperation == null && 
-                (m_ForceUnloadUnusedAssets || 
-                 m_LastUnloadUnusedAssetsOperationElapseSeconds >= maxUnloadUnusedAssetsInterval || 
-                 m_PreorderUnloadUnusedAssets && m_LastUnloadUnusedAssetsOperationElapseSeconds >= minUnloadUnusedAssetsInterval))
+            if (m_AsyncOperation == null &&
+                (m_ForceUnloadUnusedAssets ||
+                 m_LastUnloadUnusedAssetsOperationElapseSeconds >= maxUnloadUnusedAssetsInterval ||
+                 m_PreorderUnloadUnusedAssets &&
+                 m_LastUnloadUnusedAssetsOperationElapseSeconds >= minUnloadUnusedAssetsInterval))
             {
                 Log.Info("Unload unused assets...");
                 m_ForceUnloadUnusedAssets = false;
@@ -370,10 +398,11 @@ namespace TEngine
         /// 检查资源是否存在。
         /// </summary>
         /// <param name="location">要检查资源的名称。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <returns>检查资源是否存在的结果。</returns>
-        public HasAssetResult HasAsset(string location)
+        public HasAssetResult HasAsset(string location, string packageName = "")
         {
-            return m_ResourceManager.HasAsset(location);
+            return m_ResourceManager.HasAsset(location, packageName: packageName);
         }
 
         /// <summary>
@@ -389,59 +418,65 @@ namespace TEngine
         /// 是否需要从远端更新下载。
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <returns></returns>
-        public bool IsNeedDownloadFromRemote(string location)
+        public bool IsNeedDownloadFromRemote(string location, string packageName = "")
         {
-            return m_ResourceManager.IsNeedDownloadFromRemote(location);
+            return m_ResourceManager.IsNeedDownloadFromRemote(location, packageName: packageName);
         }
 
         /// <summary>
         /// 是否需要从远端更新下载。
         /// </summary>
         /// <param name="assetInfo">资源信息。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <returns></returns>
-        public bool IsNeedDownloadFromRemote(AssetInfo assetInfo)
+        public bool IsNeedDownloadFromRemote(AssetInfo assetInfo, string packageName = "")
         {
-            return m_ResourceManager.IsNeedDownloadFromRemote(assetInfo);
+            return m_ResourceManager.IsNeedDownloadFromRemote(assetInfo, packageName: packageName);
         }
 
         /// <summary>
         /// 获取资源信息列表。
         /// </summary>
         /// <param name="resTag">资源标签。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <returns>资源信息列表。</returns>
-        public AssetInfo[] GetAssetInfos(string resTag)
+        public AssetInfo[] GetAssetInfos(string resTag, string packageName = "")
         {
-            return m_ResourceManager.GetAssetInfos(resTag);
+            return m_ResourceManager.GetAssetInfos(resTag, packageName: packageName);
         }
 
         /// <summary>
         /// 获取资源信息列表。
         /// </summary>
         /// <param name="tags">资源标签列表。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <returns>资源信息列表。</returns>
-        public AssetInfo[] GetAssetInfos(string[] tags)
+        public AssetInfo[] GetAssetInfos(string[] tags, string packageName = "")
         {
-            return m_ResourceManager.GetAssetInfos(tags);
+            return m_ResourceManager.GetAssetInfos(tags, packageName: packageName);
         }
 
         /// <summary>
         /// 获取资源信息。
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <returns>资源信息。</returns>
-        public AssetInfo GetAssetInfo(string location)
+        public AssetInfo GetAssetInfo(string location, string packageName = "")
         {
-            return m_ResourceManager.GetAssetInfo(location);
+            return m_ResourceManager.GetAssetInfo(location, packageName: packageName);
         }
 
         /// <summary>
         /// 检查资源定位地址是否有效。
         /// </summary>
         /// <param name="location">资源的定位地址</param>
-        public bool CheckLocationValid(string location)
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
+        public bool CheckLocationValid(string location, string packageName = "")
         {
-            return m_ResourceManager.CheckLocationValid(location);
+            return m_ResourceManager.CheckLocationValid(location, packageName: packageName);
         }
 
         /// <summary>
@@ -450,11 +485,13 @@ namespace TEngine
         /// <param name="location">资源的定位地址。</param>
         /// <param name="needInstance">是否需要实例化。</param>
         /// <param name="needCache">是否需要缓存。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string location, bool needInstance = true, bool needCache = false) where T : UnityEngine.Object
+        public T LoadAsset<T>(string location, bool needInstance = true, bool needCache = false,
+            string packageName = "") where T : UnityEngine.Object
         {
-            return m_ResourceManager.LoadAsset<T>(location, needInstance, needCache);
+            return m_ResourceManager.LoadAsset<T>(location, needInstance, needCache, packageName: packageName);
         }
 
         /// <summary>
@@ -464,11 +501,13 @@ namespace TEngine
         /// <param name="parent">父节点位置。</param>
         /// <param name="needInstance">是否需要实例化。</param>
         /// <param name="needCache">是否需要缓存。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string location, Transform parent, bool needInstance = true, bool needCache = false) where T : UnityEngine.Object
+        public T LoadAsset<T>(string location, Transform parent, bool needInstance = true, bool needCache = false,
+            string packageName = "") where T : UnityEngine.Object
         {
-            return m_ResourceManager.LoadAsset<T>(location, parent, needInstance, needCache);
+            return m_ResourceManager.LoadAsset<T>(location, parent, needInstance, needCache, packageName: packageName);
         }
 
         /// <summary>
@@ -477,11 +516,13 @@ namespace TEngine
         /// <param name="handle">资源操作句柄。</param>
         /// <param name="location">资源的定位地址。</param>
         /// <param name="needCache">是否需要缓存。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string location, out AssetOperationHandle handle, bool needCache = false) where T : UnityEngine.Object
+        public T LoadAsset<T>(string location, out AssetOperationHandle handle, bool needCache = false,
+            string packageName = "") where T : UnityEngine.Object
         {
-            return m_ResourceManager.LoadAsset<T>(location, out handle, needCache);
+            return m_ResourceManager.LoadAsset<T>(location, out handle, needCache, packageName: packageName);
         }
 
         /// <summary>
@@ -491,11 +532,13 @@ namespace TEngine
         /// <param name="handle">资源操作句柄。</param>
         /// <param name="parent">父节点位置。</param>
         /// <param name="needCache">是否需要缓存。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string location, Transform parent, out AssetOperationHandle handle, bool needCache = false) where T : UnityEngine.Object
+        public T LoadAsset<T>(string location, Transform parent, out AssetOperationHandle handle,
+            bool needCache = false, string packageName = "") where T : UnityEngine.Object
         {
-            return m_ResourceManager.LoadAsset<T>(location, parent, out handle, needCache);
+            return m_ResourceManager.LoadAsset<T>(location, parent, out handle, needCache, packageName: packageName);
         }
 
         /// <summary>
@@ -504,10 +547,13 @@ namespace TEngine
         /// <param name="location">资源的定位地址。</param>
         /// <param name="callback">回调函数。</param>
         /// <param name="needCache">是否需要缓存。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
-        public void LoadAssetAsync<T>(string location, Action<AssetOperationHandle> callback = null, bool needCache = false) where T : UnityEngine.Object
+        public void LoadAssetAsync<T>(string location, Action<AssetOperationHandle> callback = null,
+            bool needCache = false, string packageName = "") where T : UnityEngine.Object
         {
-            AssetOperationHandle handle = m_ResourceManager.LoadAssetAsyncHandle<T>(location, needCache);
+            AssetOperationHandle handle =
+                m_ResourceManager.LoadAssetAsyncHandle<T>(location, needCache, packageName: packageName);
 
             handle.Completed += callback;
         }
@@ -517,11 +563,13 @@ namespace TEngine
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
         /// <param name="needCache">是否需要缓存。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>同步加载资源句柄。</returns>
-        public AssetOperationHandle LoadAssetGetOperation<T>(string location, bool needCache = false) where T : UnityEngine.Object
+        public AssetOperationHandle LoadAssetGetOperation<T>(string location, bool needCache = false,
+            string packageName = "") where T : UnityEngine.Object
         {
-            return m_ResourceManager.LoadAssetGetOperation<T>(location, needCache);
+            return m_ResourceManager.LoadAssetGetOperation<T>(location, needCache, packageName: packageName);
         }
 
         /// <summary>
@@ -529,11 +577,13 @@ namespace TEngine
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
         /// <param name="needCache">是否需要缓存。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>异步加载资源句柄。</returns>
-        public AssetOperationHandle LoadAssetAsyncHandle<T>(string location, bool needCache = false) where T : UnityEngine.Object
+        public AssetOperationHandle LoadAssetAsyncHandle<T>(string location, bool needCache = false,
+            string packageName = "") where T : UnityEngine.Object
         {
-            return m_ResourceManager.LoadAssetAsyncHandle<T>(location, needCache);
+            return m_ResourceManager.LoadAssetAsyncHandle<T>(location, needCache, packageName: packageName);
         }
 
 
@@ -542,9 +592,11 @@ namespace TEngine
         /// </summary>
         /// <typeparam name="TObject">资源类型</typeparam>
         /// <param name="location">资源的定位地址</param>
-        public SubAssetsOperationHandle LoadSubAssetsSync<TObject>(string location) where TObject : UnityEngine.Object
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
+        public SubAssetsOperationHandle LoadSubAssetsSync<TObject>(string location, string packageName = "")
+            where TObject : UnityEngine.Object
         {
-            return m_ResourceManager.LoadSubAssetsSync<TObject>(location: location);
+            return m_ResourceManager.LoadSubAssetsSync<TObject>(location: location, packageName: packageName);
         }
 
         /// <summary>
@@ -552,36 +604,41 @@ namespace TEngine
         /// </summary>
         /// <typeparam name="TObject">资源类型</typeparam>
         /// <param name="location">资源的定位地址</param>
-        public SubAssetsOperationHandle LoadSubAssetsAsync<TObject>(string location) where TObject : UnityEngine.Object
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
+        public SubAssetsOperationHandle LoadSubAssetsAsync<TObject>(string location, string packageName = "")
+            where TObject : UnityEngine.Object
         {
-            return m_ResourceManager.LoadSubAssetsAsync<TObject>(location: location);
+            return m_ResourceManager.LoadSubAssetsAsync<TObject>(location: location, packageName: packageName);
         }
 
         /// <summary>
         /// 同步加载子资源对象
         /// </summary>
         /// <param name="location">资源的定位地址</param>
-        public SubAssetsOperationHandle LoadSubAssetsSync(string location)
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
+        public SubAssetsOperationHandle LoadSubAssetsSync(string location, string packageName = "")
         {
-            var assetInfo = GetAssetInfo(location);
+            var assetInfo = GetAssetInfo(location, packageName: packageName);
             if (assetInfo == null)
             {
                 Log.Fatal($"AssetsInfo is null");
                 return null;
             }
 
-            return m_ResourceManager.LoadSubAssetsSync(assetInfo);
+            return m_ResourceManager.LoadSubAssetsSync(assetInfo, packageName: packageName);
         }
 
         /// <summary>
         /// 通过Tag加载资源对象集合。
         /// </summary>
         /// <param name="assetTag">资源标识。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <typeparam name="T">资源类型。</typeparam>
         /// <returns>资源对象集合。</returns>
-        public async UniTask<List<T>> LoadAssetsByTagAsync<T>(string assetTag) where T : UnityEngine.Object
+        public async UniTask<List<T>> LoadAssetsByTagAsync<T>(string assetTag, string packageName = "")
+            where T : UnityEngine.Object
         {
-            return await m_ResourceManager.LoadAssetsByTagAsync<T>(assetTag);
+            return await m_ResourceManager.LoadAssetsByTagAsync<T>(assetTag, packageName: packageName);
         }
 
         /// <summary>
@@ -591,11 +648,14 @@ namespace TEngine
         /// <param name="cancellationToken">取消操作Token。</param>
         /// <param name="needInstance">是否需要实例化。</param>
         /// <param name="needCache">是否需要缓存。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>异步资源实例。</returns>
-        public async UniTask<T> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default, bool needInstance = true, bool needCache = false) where T : UnityEngine.Object
+        public async UniTask<T> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default,
+            bool needInstance = true, bool needCache = false, string packageName = "") where T : UnityEngine.Object
         {
-            return await m_ResourceManager.LoadAssetAsync<T>(location, cancellationToken, needInstance, needCache);
+            return await m_ResourceManager.LoadAssetAsync<T>(location, cancellationToken, needInstance, needCache,
+                packageName: packageName);
         }
 
         /// <summary>
@@ -604,10 +664,13 @@ namespace TEngine
         /// <param name="location">要加载的游戏物体名称。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
         /// <param name="needCache">是否需要缓存。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <returns>异步游戏物体实例。</returns>
-        public async UniTask<GameObject> LoadGameObjectAsync(string location, CancellationToken cancellationToken = default, bool needCache = false)
+        public async UniTask<GameObject> LoadGameObjectAsync(string location,
+            CancellationToken cancellationToken = default, bool needCache = false, string packageName = "")
         {
-            return await m_ResourceManager.LoadGameObjectAsync(location, cancellationToken, needCache);
+            return await m_ResourceManager.LoadGameObjectAsync(location, cancellationToken, needCache,
+                packageName: packageName);
         }
 
         /// <summary>
@@ -617,10 +680,13 @@ namespace TEngine
         /// <param name="parent">父节点位置。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
         /// <param name="needCache">是否需要缓存。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <returns>异步游戏物体实例。</returns>
-        public async UniTask<GameObject> LoadGameObjectAsync(string location, Transform parent, CancellationToken cancellationToken = default, bool needCache = false)
+        public async UniTask<GameObject> LoadGameObjectAsync(string location, Transform parent,
+            CancellationToken cancellationToken = default, bool needCache = false, string packageName = "")
         {
-            return await m_ResourceManager.LoadGameObjectAsync(location, parent, cancellationToken, needCache);
+            return await m_ResourceManager.LoadGameObjectAsync(location, parent, cancellationToken, needCache,
+                packageName: packageName);
         }
 
         /// <summary>
@@ -628,10 +694,12 @@ namespace TEngine
         /// </summary>
         /// <param name="location">资源定位地址。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <returns>原生文件资源实例。</returns>
-        public async UniTask<RawFileOperationHandle> LoadRawAssetAsync(string location, CancellationToken cancellationToken = default)
+        public async UniTask<RawFileOperationHandle> LoadRawAssetAsync(string location,
+            CancellationToken cancellationToken = default, string packageName = "")
         {
-            return await m_ResourceManager.LoadRawAssetAsync(location, cancellationToken);
+            return await m_ResourceManager.LoadRawAssetAsync(location, cancellationToken, packageName: packageName);
         }
 
         /// <summary>
@@ -640,11 +708,14 @@ namespace TEngine
         /// <param name="location">资源定位地址。</param>
         /// <param name="assetName">子资源名称。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <typeparam name="T">资源实例类型。</typeparam>
         /// <returns>原生文件资源实例。</returns>
-        public async UniTask<T> LoadSubAssetAsync<T>(string location, string assetName, CancellationToken cancellationToken = default) where T : UnityEngine.Object
+        public async UniTask<T> LoadSubAssetAsync<T>(string location, string assetName,
+            CancellationToken cancellationToken = default, string packageName = "") where T : UnityEngine.Object
         {
-            return await m_ResourceManager.LoadSubAssetAsync<T>(location, assetName, cancellationToken);
+            return await m_ResourceManager.LoadSubAssetAsync<T>(location, assetName, cancellationToken,
+                packageName: packageName);
         }
 
         /// <summary>
@@ -652,34 +723,41 @@ namespace TEngine
         /// </summary>
         /// <param name="location">资源定位地址。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <typeparam name="T">资源实例类型。</typeparam>
         /// <returns>原生文件资源实例。</returns>
-        public async UniTask<T[]> LoadAllSubAssetAsync<T>(string location, CancellationToken cancellationToken = default) where T : UnityEngine.Object
+        public async UniTask<T[]> LoadAllSubAssetAsync<T>(string location,
+            CancellationToken cancellationToken = default, string packageName = "") where T : UnityEngine.Object
         {
-            return await m_ResourceManager.LoadAllSubAssetAsync<T>(location, cancellationToken);
+            return await m_ResourceManager.LoadAllSubAssetAsync<T>(location, cancellationToken,
+                packageName: packageName);
         }
 
         #region 预加载
+
         /// <summary>
         /// 放入预加载对象。
         /// </summary>
         /// <param name="location">资源定位地址。</param>
         /// <param name="assetObject">预加载对象。</param>
-        public void PushPreLoadAsset(string location, UnityEngine.Object assetObject)
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
+        public void PushPreLoadAsset(string location, UnityEngine.Object assetObject, string packageName = "")
         {
-            m_ResourceManager.PushPreLoadAsset(location, assetObject);
+            m_ResourceManager.PushPreLoadAsset(location, assetObject, packageName: packageName);
         }
 
         /// <summary>
         /// 获取预加载的实例对象。
         /// </summary>
         /// <param name="location">资源定位地址。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <typeparam name="T">资源实例类型。</typeparam>
         /// <returns>预加载对象。</returns>
-        public T GetPreLoadAsset<T>(string location) where T : UnityEngine.Object
+        public T GetPreLoadAsset<T>(string location, string packageName = "") where T : UnityEngine.Object
         {
-            return m_ResourceManager.GetPreLoadAsset<T>(location);
+            return m_ResourceManager.GetPreLoadAsset<T>(location, packageName: packageName);
         }
+
         #endregion
     }
 }
