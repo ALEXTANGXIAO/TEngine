@@ -340,7 +340,7 @@ namespace TEngine
         public async UniTask<T> CreateWidgetByPathAsync<T>(Transform parentTrans, string assetLocation, bool visible = true) where T : UIWidget, new()
         {
             GameObject goInst = await GameModule.Resource.LoadAssetAsync<GameObject>(assetLocation, gameObject.GetCancellationTokenOnDestroy());
-            goInst.transform.SetParent(parentTrans);
+            goInst.transform.SetParent(parentTrans, false);
             return CreateWidget<T>(goInst, visible);
         }
 
