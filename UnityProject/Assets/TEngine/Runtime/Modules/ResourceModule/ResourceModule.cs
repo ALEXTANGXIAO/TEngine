@@ -230,10 +230,11 @@ namespace TEngine
         /// <summary>
         /// 初始化操作。
         /// </summary>
+        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
         /// <returns></returns>
-        public InitializationOperation InitPackage()
+        public InitializationOperation InitPackage(string customPackageName = "")
         {
-            return m_ResourceManager.InitPackage();
+            return m_ResourceManager.InitPackage(customPackageName);
         }
 
         /// <summary>
@@ -528,7 +529,8 @@ namespace TEngine
         public T LoadAsset<T>(string location, Transform parent, bool needInstance = true, bool needCache = false,
             string customPackageName = "") where T : UnityEngine.Object
         {
-            return m_ResourceManager.LoadAsset<T>(location, parent, needInstance, needCache, packageName: customPackageName);
+            return m_ResourceManager.LoadAsset<T>(location, parent, needInstance, needCache,
+                packageName: customPackageName);
         }
 
         /// <summary>
@@ -559,7 +561,8 @@ namespace TEngine
         public T LoadAsset<T>(string location, Transform parent, out AssetOperationHandle handle,
             bool needCache = false, string customPackageName = "") where T : UnityEngine.Object
         {
-            return m_ResourceManager.LoadAsset<T>(location, parent, out handle, needCache, packageName: customPackageName);
+            return m_ResourceManager.LoadAsset<T>(location, parent, out handle, needCache,
+                packageName: customPackageName);
         }
 
         /// <summary>
@@ -673,7 +676,8 @@ namespace TEngine
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>异步资源实例。</returns>
         public async UniTask<T> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default,
-            bool needInstance = true, bool needCache = false, string customPackageName = "") where T : UnityEngine.Object
+            bool needInstance = true, bool needCache = false, string customPackageName = "")
+            where T : UnityEngine.Object
         {
             return await m_ResourceManager.LoadAssetAsync<T>(location, cancellationToken, needInstance, needCache,
                 packageName: customPackageName);
@@ -720,7 +724,8 @@ namespace TEngine
         public async UniTask<RawFileOperationHandle> LoadRawAssetAsync(string location,
             CancellationToken cancellationToken = default, string customPackageName = "")
         {
-            return await m_ResourceManager.LoadRawAssetAsync(location, cancellationToken, packageName: customPackageName);
+            return await m_ResourceManager.LoadRawAssetAsync(location, cancellationToken,
+                packageName: customPackageName);
         }
 
         /// <summary>

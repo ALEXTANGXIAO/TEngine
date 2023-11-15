@@ -332,12 +332,12 @@ namespace TEngine
         /// 初始化资源包裹。
         /// </summary>
         /// <returns>初始化资源包裹操作句柄。</returns>
-        public InitializationOperation InitPackage(string packageName = "")
+        public InitializationOperation InitPackage(string customPackageName = "")
         {
             // 创建默认的资源包
-            var targetPackageName = string.IsNullOrEmpty(packageName) || packageName.Equals(PackageName)
+            var targetPackageName = string.IsNullOrEmpty(customPackageName) || customPackageName.Equals(PackageName)
                 ? PackageName
-                : packageName;
+                : customPackageName;
             var package = YooAssets.TryGetPackage(targetPackageName);
             if (package == null)
             {
