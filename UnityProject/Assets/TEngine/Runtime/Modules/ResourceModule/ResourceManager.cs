@@ -15,7 +15,7 @@ namespace TEngine
         #region Propreties
 
         /// <summary>
-        /// 资源包名称。
+        /// 默认资源包名称。
         /// </summary>
         public string PackageName { get; set; } = "DefaultPackage";
 
@@ -332,18 +332,24 @@ namespace TEngine
         /// 初始化资源包裹。
         /// </summary>
         /// <returns>初始化资源包裹操作句柄。</returns>
-        public InitializationOperation InitPackage()
+        public InitializationOperation InitPackage(string packageName = "")
         {
             // 创建默认的资源包
-            string packageName = PackageName;
-            var package = YooAssets.TryGetPackage(packageName);
+            var targetPackageName = string.IsNullOrEmpty(packageName) || packageName.Equals(PackageName)
+                ? PackageName
+                : packageName;
+            var package = YooAssets.TryGetPackage(targetPackageName);
             if (package == null)
             {
-                package = YooAssets.CreatePackage(packageName);
-                YooAssets.SetDefaultPackage(package);
+                package = YooAssets.CreatePackage(targetPackageName);
             }
 
-            DefaultPackage = package;
+            // 设置默认资源包
+            if (targetPackageName.Equals(PackageName))
+            {
+                YooAssets.SetDefaultPackage(package);
+                DefaultPackage = package;
+            }
 
 #if UNITY_EDITOR
             //编辑器模式使用。
@@ -359,7 +365,7 @@ namespace TEngine
             if (playMode == EPlayMode.EditorSimulateMode)
             {
                 var createParameters = new EditorSimulateModeParameters();
-                createParameters.SimulateManifestFilePath = EditorSimulateModeHelper.SimulateBuild(packageName);
+                createParameters.SimulateManifestFilePath = EditorSimulateModeHelper.SimulateBuild(targetPackageName);
                 initializationOperation = package.InitializeAsync(createParameters);
             }
 
