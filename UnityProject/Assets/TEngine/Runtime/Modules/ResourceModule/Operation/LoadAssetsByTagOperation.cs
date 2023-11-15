@@ -19,6 +19,7 @@ namespace TEngine
         }
 
         private readonly string _tag;
+        private readonly string _packageName; // 指定资源包的名称
         private ESteps _steps = ESteps.None;
         private List<AssetOperationHandle> _handles;
 
@@ -28,9 +29,10 @@ namespace TEngine
         public List<TObject> AssetObjects { private set; get; }
 
 
-        public LoadAssetsByTagOperation(string tag)
+        public LoadAssetsByTagOperation(string tag, string packageName)
         {
             _tag = tag;
+            _packageName = packageName;
         }
 
         protected override void OnStart()
@@ -45,11 +47,32 @@ namespace TEngine
 
             if (_steps == ESteps.LoadAssets)
             {
-                AssetInfo[] assetInfos = YooAssets.GetAssetInfos(_tag);
+                AssetInfo[] assetInfos;
+                if (string.IsNullOrEmpty(_packageName))
+                {
+                    assetInfos = YooAssets.GetAssetInfos(_tag);
+                }
+                else
+                {
+                    var package = YooAssets.GetPackage(_packageName);
+                    assetInfos = package.GetAssetInfos(_tag);
+                }
+
                 _handles = new List<AssetOperationHandle>(assetInfos.Length);
+
                 foreach (var assetInfo in assetInfos)
                 {
-                    var handle = YooAssets.LoadAssetAsync(assetInfo);
+                    AssetOperationHandle handle;
+                    if (string.IsNullOrEmpty(_packageName))
+                    {
+                        handle = YooAssets.LoadAssetAsync(assetInfo);
+                    }
+                    else
+                    {
+                        var package = YooAssets.GetPackage(_packageName);
+                        handle = package.LoadAssetAsync(assetInfo);
+                    }
+
                     _handles.Add(handle);
                 }
 
@@ -101,7 +124,7 @@ namespace TEngine
                 SetFinish(true);
             }
         }
-        
+
         private void SetFinish(bool succeed, string error = "")
         {
             Error = error;
