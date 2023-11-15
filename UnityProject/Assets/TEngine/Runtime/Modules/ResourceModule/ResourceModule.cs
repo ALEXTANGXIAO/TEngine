@@ -307,6 +307,27 @@ namespace TEngine
         }
 
         /// <summary>
+        /// 创建资源下载器，用于下载当前资源版本指定地址的资源文件。
+        /// </summary>
+        /// <param name="location">资源地址</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
+        public ResourceDownloaderOperation CreateResourceDownloader(string location, string packageName = "")
+        {
+            if (string.IsNullOrEmpty(packageName))
+            {
+                var package = YooAssets.GetPackage(this.packageName);
+                Downloader = package.CreateResourceDownloader(location, downloadingMaxNum, failedTryAgain);
+                return Downloader;
+            }
+            else
+            {
+                var package = YooAssets.GetPackage(packageName);
+                Downloader = package.CreateResourceDownloader(location, downloadingMaxNum, failedTryAgain);
+                return Downloader;
+            }
+        }
+
+        /// <summary>
         /// 清理包裹未使用的缓存文件。
         /// </summary>
         /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
