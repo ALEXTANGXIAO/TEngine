@@ -132,7 +132,9 @@ namespace TEngine
         /// <param name="spriteName">图片名称。</param>
         /// <param name="isSetNativeSize">是否使用原生分辨率。</param>
         /// <param name="isAsync">是否使用异步加载。</param>
-        public static void SetSprite(this UnityEngine.UI.Image image, string spriteName, bool isSetNativeSize = false, bool isAsync = false)
+        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
+        public static void SetSprite(this UnityEngine.UI.Image image, string spriteName, bool isSetNativeSize = false,
+            bool isAsync = false, string customPackageName = "")
         {
             if (image == null)
             {
@@ -147,7 +149,8 @@ namespace TEngine
             {
                 if (!isAsync)
                 {
-                    image.sprite = GameModule.Resource.LoadAsset<Sprite>(spriteName);
+                    image.sprite =
+                        GameModule.Resource.LoadAsset<Sprite>(spriteName, customPackageName: customPackageName);
                     if (isSetNativeSize)
                     {
                         image.SetNativeSize();
@@ -167,7 +170,7 @@ namespace TEngine
                         {
                             image.SetNativeSize();
                         }
-                    });
+                    }, customPackageName: customPackageName);
                 }
             }
         }
@@ -178,7 +181,9 @@ namespace TEngine
         /// <param name="spriteRenderer">Image组件。</param>
         /// <param name="spriteName">图片名称。</param>
         /// <param name="isAsync">是否使用异步加载。</param>
-        public static void SetSprite(this SpriteRenderer spriteRenderer, string spriteName, bool isAsync = false)
+        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
+        public static void SetSprite(this SpriteRenderer spriteRenderer, string spriteName, bool isAsync = false,
+            string customPackageName = "")
         {
             if (spriteRenderer == null)
             {
@@ -193,7 +198,8 @@ namespace TEngine
             {
                 if (!isAsync)
                 {
-                    spriteRenderer.sprite = GameModule.Resource.LoadAsset<Sprite>(spriteName);
+                    spriteRenderer.sprite =
+                        GameModule.Resource.LoadAsset<Sprite>(spriteName, customPackageName: customPackageName);
                 }
                 else
                 {
@@ -205,11 +211,11 @@ namespace TEngine
                         }
 
                         spriteRenderer.sprite = operation.AssetObject as Sprite;
-                    });
+                    }, customPackageName: customPackageName);
                 }
             }
         }
-        
+
         /// <summary>
         /// 查找子节点。
         /// </summary>
@@ -221,7 +227,7 @@ namespace TEngine
             var findTrans = transform.Find(path);
             return findTrans != null ? findTrans : null;
         }
-        
+
         /// <summary>
         /// 根据名字找到子节点，主要用于dummy接口。
         /// </summary>
@@ -252,7 +258,7 @@ namespace TEngine
 
             return null;
         }
-        
+
         [TypeInferenceRule(TypeInferenceRules.TypeReferencedByFirstArgument)]
         public static Component FindChildComponent(this Type type, Transform transform, string path)
         {
@@ -264,7 +270,7 @@ namespace TEngine
 
             return null;
         }
-        
+
         public static T FindChildComponent<T>(this Transform transform, string path) where T : Component
         {
             var findTrans = transform.Find(path);

@@ -86,8 +86,9 @@ namespace TEngine
         /// <summary>
         /// 初始化操作。
         /// </summary>
+        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
         /// <returns></returns>
-        InitializationOperation InitPackage();
+        InitializationOperation InitPackage(string customPackageName = "");
 
         /// <summary>
         /// 卸载资源。
