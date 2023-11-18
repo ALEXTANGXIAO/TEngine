@@ -384,7 +384,7 @@ namespace TEngine
                 createParameters.DecryptionServices = new GameDecryptionServices();
                 createParameters.BuildinQueryServices = new BuiltinQueryServices();
                 createParameters.DeliveryQueryServices = new DefaultDeliveryQueryServices();
-                createParameters.RemoteServices = new RemoteServices();
+                createParameters.RemoteServices = new RemoteServices(targetPackageName);
                 initializationOperation = package.InitializeAsync(createParameters);
             }
 
@@ -395,7 +395,7 @@ namespace TEngine
                 var createParameters = new WebPlayModeParameters();
                 createParameters.DecryptionServices = new GameDecryptionServices();
                 createParameters.BuildinQueryServices = new BuiltinQueryServices();
-                createParameters.RemoteServices = new RemoteServices();
+                createParameters.RemoteServices = new RemoteServices(targetPackageName);
                 initializationOperation = package.InitializeAsync(createParameters);
             }
 
