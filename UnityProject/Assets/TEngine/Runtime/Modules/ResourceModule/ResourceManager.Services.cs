@@ -84,6 +84,29 @@ namespace TEngine
                 return $"{_defaultHostServer}/{_packageName}/{fileName}";
             }
         }
+
+        /// <summary>
+        /// 内置文件查询服务类。
+        /// </summary>
+        public class BuiltinQueryServices : IBuildinQueryServices
+        {
+            public bool QueryStreamingAssets(string packageName, string fileName)
+            {
+                // 注意：fileName包含文件格式
+                return BuiltinQueryMgr.FileExists(packageName, fileName);
+            }
+        }
+
+        /// <summary>
+        /// WebGL内置文件查询服务类。WebGL平台不需要内置查询，直接使用远程热更资源。
+        /// </summary>
+        public class WebGLBuiltinQueryServices : IBuildinQueryServices
+        {
+            public bool QueryStreamingAssets(string packageName, string fileName)
+            {
+                return true;
+            }
+        }
     }
 
     public class BundleStream : FileStream

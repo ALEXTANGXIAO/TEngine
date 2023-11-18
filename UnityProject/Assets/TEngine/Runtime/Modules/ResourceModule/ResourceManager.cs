@@ -394,8 +394,11 @@ namespace TEngine
                 YooAssets.SetCacheSystemDisableCacheOnWebGL();
                 var createParameters = new WebPlayModeParameters();
                 createParameters.DecryptionServices = new GameDecryptionServices();
-                createParameters.BuildinQueryServices = new BuiltinQueryServices();
+                createParameters.BuildinQueryServices = new WebGLBuiltinQueryServices();
                 createParameters.RemoteServices = new RemoteServices(targetPackageName);
+                // WebGL运行模式下，直接使用远程热更资源。
+                createParameters.BuildinRootDirectory = SettingsUtils.FrameworkGlobalSettings.HostServerURL;
+                createParameters.SandboxRootDirectory = SettingsUtils.FrameworkGlobalSettings.HostServerURL;
                 initializationOperation = package.InitializeAsync(createParameters);
             }
 
