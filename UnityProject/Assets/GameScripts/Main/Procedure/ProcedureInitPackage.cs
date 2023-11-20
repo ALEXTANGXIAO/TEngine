@@ -29,7 +29,8 @@ namespace GameMain
 
         private async UniTaskVoid InitPackage(ProcedureOwner procedureOwner)
         {
-            if (GameModule.Resource.PlayMode == EPlayMode.HostPlayMode)
+            if (GameModule.Resource.PlayMode == EPlayMode.HostPlayMode ||
+                GameModule.Resource.PlayMode == EPlayMode.WebPlayMode)
             {
                 if (SettingsUtils.EnableUpdateData())
                 {
@@ -44,7 +45,8 @@ namespace GameMain
 
                         if (!string.IsNullOrEmpty(updateData.FallbackHostServerURL))
                         {
-                            SettingsUtils.FrameworkGlobalSettings.FallbackHostServerURL = updateData.FallbackHostServerURL;
+                            SettingsUtils.FrameworkGlobalSettings.FallbackHostServerURL =
+                                updateData.FallbackHostServerURL;
                         }
                     }
                 }
@@ -60,9 +62,9 @@ namespace GameMain
             {
                 //热更新阶段文本初始化
                 LoadText.Instance.InitConfigData(null);
-                
+
                 GameEvent.Send(RuntimeId.ToRuntimeId("RefreshVersion"));
-                
+
                 EPlayMode playMode = GameModule.Resource.PlayMode;
 
                 // 编辑器模式。
@@ -107,7 +109,9 @@ namespace GameMain
                 // 打开启动UI。
                 UILoadMgr.Show(UIDefine.UILoadUpdate, $"资源初始化失败！");
 
-                UILoadTip.ShowMessageBox($"资源初始化失败！点击确认重试 \n \n <color=#FF0000>原因{initializationOperation.Error}</color>", MessageShowType.TwoButton,
+                UILoadTip.ShowMessageBox(
+                    $"资源初始化失败！点击确认重试 \n \n <color=#FF0000>原因{initializationOperation.Error}</color>",
+                    MessageShowType.TwoButton,
                     LoadStyle.StyleEnum.Style_Retry
                     , () => { Retry(procedureOwner); }, UnityEngine.Application.Quit);
             }

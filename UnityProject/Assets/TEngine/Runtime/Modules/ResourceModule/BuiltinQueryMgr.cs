@@ -10,18 +10,6 @@ namespace TEngine
         public const string RootFolderName = "yoo";
     }
 
-    /// <summary>
-    /// 内置文件查询服务类。
-    /// </summary>
-    public class BuiltinQueryServices : IBuildinQueryServices
-    {
-        public bool QueryStreamingAssets(string packageName, string fileName)
-        {
-            // 注意：fileName包含文件格式
-            return BuiltinQueryMgr.FileExists(packageName, fileName);
-        }
-    }
-
 #if UNITY_EDITOR
     /// <summary>
     /// 内置资源资源查询帮助类。
