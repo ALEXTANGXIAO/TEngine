@@ -4,6 +4,7 @@ using System.IO;
 using UnityEditor;
 using UnityEditor.U2D;
 using UnityEngine;
+using UnityEngine.U2D;
 using Object = UnityEngine.Object;
 
 /// <summary>
@@ -55,6 +56,33 @@ public static class EditorSpriteSaveInfo
         }
 
         EditorApplication.update += CheckDirty;
+        
+        //读取所有图集信息
+        string[] findAssets = AssetDatabase.FindAssets("t:SpriteAtlas", new[] { NormalAtlasDir });
+        foreach (var findAsset in findAssets)
+        {
+            var path = AssetDatabase.GUIDToAssetPath(findAsset);
+            SpriteAtlas sa = AssetDatabase.LoadAssetAtPath(path, typeof(SpriteAtlas)) as SpriteAtlas;
+            if (sa == null)
+            {
+                Debug.LogError($"加载图集数据{path}失败");
+                continue;
+            }
+
+            string atlasName = Path.GetFileNameWithoutExtension(path);
+            var objects = sa.GetPackables();
+            foreach (var o in objects)
+            {
+                if (!m_allASprites.TryGetValue(atlasName, out var list))
+                {
+                    list = new List<string>();
+                    m_allASprites.Add(atlasName, list);
+                }
+                list.Add(AssetDatabase.GetAssetPath(o));
+            }
+        }
+        
+        m_inited = true;
     }
 
     public static void CheckDirty()
