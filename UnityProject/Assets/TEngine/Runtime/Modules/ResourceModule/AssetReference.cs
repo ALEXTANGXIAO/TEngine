@@ -59,6 +59,12 @@ namespace TEngine
         public void Bind(AssetOperationHandle operation, string assetLocation, AssetReference parent = null,
             string packageName = "")
         {
+            if (_operationHandle != null)
+            {
+                Log.Warning($"rebind AssetReference gameObject.name:{gameObject.name} assetLocation:{assetLocation}");
+                _operationHandle.Dispose();
+                _operationHandle = null;
+            }
             _operationHandle = operation;
             this._assetLocation = assetLocation;
             this._packageName = packageName;

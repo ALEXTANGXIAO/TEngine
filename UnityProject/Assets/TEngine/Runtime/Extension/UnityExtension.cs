@@ -149,12 +149,14 @@ namespace TEngine
             {
                 if (!isAsync)
                 {
-                    image.sprite =
-                        GameModule.Resource.LoadAsset<Sprite>(spriteName, customPackageName: customPackageName);
+                    var operation = GameModule.Resource.LoadAssetGetOperation<Sprite>(spriteName, customPackageName: customPackageName);
+                    image.sprite = operation.AssetObject as Sprite;
                     if (isSetNativeSize)
                     {
                         image.SetNativeSize();
                     }
+
+                    image.gameObject.GetOrAddComponent<AssetReference>().Reference(operation, spriteName);
                 }
                 else
                 {
@@ -162,14 +164,16 @@ namespace TEngine
                     {
                         if (image == null)
                         {
+                            operation.Dispose();
+                            operation = null;
                             return;
                         }
-
                         image.sprite = operation.AssetObject as Sprite;
                         if (isSetNativeSize)
                         {
                             image.SetNativeSize();
                         }
+                        image.gameObject.GetOrAddComponent<AssetReference>().Reference(operation, spriteName);
                     }, customPackageName: customPackageName);
                 }
             }
@@ -198,8 +202,10 @@ namespace TEngine
             {
                 if (!isAsync)
                 {
-                    spriteRenderer.sprite =
-                        GameModule.Resource.LoadAsset<Sprite>(spriteName, customPackageName: customPackageName);
+                    var operation = GameModule.Resource.LoadAssetGetOperation<Sprite>(spriteName, customPackageName: customPackageName);
+                    spriteRenderer.sprite = operation.AssetObject as Sprite;
+                    
+                    spriteRenderer.gameObject.GetOrAddComponent<AssetReference>().Reference(operation, spriteName);
                 }
                 else
                 {
@@ -207,10 +213,13 @@ namespace TEngine
                     {
                         if (spriteRenderer == null)
                         {
+                            operation.Dispose();
+                            operation = null;
                             return;
                         }
 
                         spriteRenderer.sprite = operation.AssetObject as Sprite;
+                        spriteRenderer.gameObject.GetOrAddComponent<AssetReference>().Reference(operation, spriteName);
                     }, customPackageName: customPackageName);
                 }
             }
@@ -280,6 +289,16 @@ namespace TEngine
             }
 
             return null;
+        }
+
+        public static AssetReference GetAssetReference(this GameObject gameObject)
+        {
+            if (gameObject == null)
+            {
+                return null;
+            }
+
+            return gameObject.GetComponent<AssetReference>();
         }
     }
 }
