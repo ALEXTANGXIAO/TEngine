@@ -45,6 +45,34 @@ namespace TEngine
         /// <param name="resList">持久化的资源起始路径。存在这个路径开始的资源不会释放。</param>
         public void RegPersistResPath(List<string> resList) => _needPersistResList.AddRange((IEnumerable<string>)resList);
 
+        public void InitDefaultCachePool()
+        {
+            if (!ResourceManager.EnableGoPool)
+            {
+                return;
+            }
+
+            string assetLocation = "need_cache_list";
+            
+            GameModule.Resource.LoadAssetAsync<TextAsset>(assetLocation, handle =>
+            {
+                if (handle.AssetObject == null)
+                {
+                    return;
+                }
+                TextAsset textAsset = handle.AssetObject as TextAsset;
+                if (textAsset == null)
+                {
+                    return;
+                }
+                List<ResourceCacheConfig> list = Utility.Json.ToObject<List<ResourceCacheConfig>>(textAsset.text);
+                foreach (var config in list)
+                {
+                    Instance.RegCacheResPath(config.ResPath, config.CacheTime, config.MaxPoolCnt, config.PoolGoFreeTime, config.MinPoolCnt);
+                }
+            });
+        }
+        
         /// <summary>
         /// 注册缓存池的资源。
         /// </summary>
@@ -61,6 +89,10 @@ namespace TEngine
             int poolGoFreeTime = 120,
             int minPoolCnt = 0)
         {
+            if (_enableLog)
+            {
+                Log.Warning($"RegCacheResPath: {resPath} cacheTime: {cacheTime} maxPoolCnt: {maxPoolCnt} poolGoFreeTime: {poolGoFreeTime} minPoolCnt: {minPoolCnt}");
+            }
             _needCacheResList.Add(new ResourceCacheConfig(resPath, cacheTime, maxPoolCnt, poolGoFreeTime, minPoolCnt));
         }
 

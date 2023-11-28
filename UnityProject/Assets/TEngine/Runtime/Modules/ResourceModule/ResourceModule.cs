@@ -234,7 +234,14 @@ namespace TEngine
         /// <returns></returns>
         public InitializationOperation InitPackage(string customPackageName = "")
         {
-            return m_ResourceManager.InitPackage(customPackageName);
+            InitializationOperation operation = m_ResourceManager.InitPackage(customPackageName);
+
+            operation.Completed += _ =>
+            {
+                ResourceCacheMgr.Instance.InitDefaultCachePool();
+            };
+            
+            return operation;
         }
 
         /// <summary>

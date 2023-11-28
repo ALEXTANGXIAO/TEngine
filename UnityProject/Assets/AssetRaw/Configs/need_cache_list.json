@@ -1,0 +1,16 @@
+[
+  {
+    "ResPath": "Assets/AssetRaw/Effects",
+    "CacheTime": 300,
+    "MaxPoolCnt": 30,
+    "PoolGoFreeTime": 300,
+    "MinPoolCnt": 0
+  },
+  {
+    "ResPath": "Assets/AssetRaw/PoolObjects/",
+    "CacheTime": 300,
+    "MaxPoolCnt": 30,
+    "PoolGoFreeTime": 300,
+    "MinPoolCnt": 0
+  }
+]
