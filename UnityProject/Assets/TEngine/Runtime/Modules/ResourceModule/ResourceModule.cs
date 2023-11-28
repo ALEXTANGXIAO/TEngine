@@ -361,6 +361,11 @@ namespace TEngine
             m_ResourceManager.UnloadAsset(asset);
         }
 
+        public void FreeGameObject(GameObject go, bool forceNoPool = false, float delayTime = 0f)
+        {
+            m_ResourceManager.FreeGameObject(go, forceNoPool, delayTime);
+        }
+
         /// <summary>
         /// 预订执行释放未被使用的资源。
         /// </summary>
@@ -672,15 +677,16 @@ namespace TEngine
         /// <param name="cancellationToken">取消操作Token。</param>
         /// <param name="needInstance">是否需要实例化。</param>
         /// <param name="needCache">是否需要缓存。</param>
-        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
+        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包。</param>
+        /// <param name="parent">资源实例父节点。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>异步资源实例。</returns>
         public async UniTask<T> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default,
-            bool needInstance = true, bool needCache = false, string customPackageName = "")
+            bool needInstance = true, bool needCache = false, string customPackageName = "", Transform parent = null)
             where T : UnityEngine.Object
         {
             return await m_ResourceManager.LoadAssetAsync<T>(location, cancellationToken, needInstance, needCache,
-                packageName: customPackageName);
+                packageName: customPackageName,parent:parent);
         }
 
         /// <summary>

@@ -95,6 +95,14 @@ namespace TEngine
         /// </summary>
         /// <param name="asset">要卸载的资源。</param>
         void UnloadAsset(object asset);
+        
+        /// <summary>
+        /// 释放游戏物体。
+        /// </summary>
+        /// <param name="gameObject">游戏物体。</param>
+        /// <param name="forceNoPool">强制不入回收池。</param>
+        /// <param name="delayTime">延迟时间。</param>
+        void FreeGameObject(GameObject gameObject, bool forceNoPool = false, float delayTime = 0f);
 
         /// <summary>
         /// 资源回收（卸载引用计数为零的资源）
@@ -282,10 +290,11 @@ namespace TEngine
         /// <param name="needInstance">是否需要实例化。</param>
         /// <param name="needCache">是否需要缓存。</param>
         /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
+        /// <param name="parent">资源实例父节点。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>异步资源实例。</returns>
         UniTask<T> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default,
-            bool needInstance = true, bool needCache = false, string packageName = "") where T : Object;
+            bool needInstance = true, bool needCache = false, string packageName = "", Transform parent = null) where T : Object;
 
         /// <summary>
         /// 异步加载游戏物体。

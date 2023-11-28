@@ -1,261 +1,512 @@
-﻿using System;
+﻿#region Class Documentation
+/************************************************************************************************************
+Class Name:     ResourcePool对象池。
+Type:           Util, Singleton
+
+Example:
+                //注册 - 添加对象池路径，满足这个路径开头的GameObject开启对象池：
+                ResourceCacheMgr.Instance.RegCacheResPath("Assets/AssetRaw/Effects");
+                
+                //正常引用资源。
+                var obj = await GameModule.Resource.LoadAssetAsync<GameObject>("Sprite",parent:transform);
+                
+                //回收资源
+                GameModule.Resource.FreeGameObject(obj);
+                
+                //删除资源 放心资源不存在泄露。
+                Unity Engine.Object。Destroy(obj);
+************************************************************************************************************/
+#endregion
+
 using System.Collections.Generic;
 using UnityEngine;
 using YooAsset;
 
 namespace TEngine
 {
-    /// <summary>
-    /// 游戏对象池系统。
-    /// <remarks>用法 SpawnHandle handle = ResourcePool.SpawnAsync("Cube");</remarks>
-    /// </summary>
-    public static class ResourcePool
+    internal class ResourcePool
     {
-        private static bool _isInitialize = false;
-        private static readonly List<Spawner> Spawners = new List<Spawner>();
-        private static GameObject _root;
-        private static Spawner _defaultSpawner = null;
+        private static ResourcePool _instance;
 
-        /// <summary>
-        /// 默认Package对象生成器。
-        /// </summary>
-        private static Spawner DefaultSpawner => _defaultSpawner ??= CreateSpawner();
+        internal static ResourcePool Instance => _instance ??= new ResourcePool();
 
-        /// <summary>
-        /// 初始化游戏对象池系统
-        /// </summary>
-        internal static void Initialize(GameObject root)
+        private readonly Dictionary<string, GoPoolNode> _cacheGo = new Dictionary<string, GoPoolNode>();
+        private readonly Dictionary<int, GoProperty> _goProperty = new Dictionary<int, GoProperty>();
+        private readonly List<DelayDestroyGo> _delayDestroyList = new List<DelayDestroyGo>();
+        private readonly List<DelayDestroyGo> _freeDelayNode = new List<DelayDestroyGo>();
+        private readonly List<string> _listToDelete = new List<string>();
+        private Transform _poolRootTrans;
+        private uint _frameID = 1;
+        private float _frameTime;
+        private float _tickLogTime;
+        private bool _pauseGoPool;
+        private int _totalPoolObjectCount;
+        public bool LogWhenPoolFull = true;
+
+        public bool PoolCacheFreeEnable = true;
+
+        public int TotalPoolObjectCount => _totalPoolObjectCount;
+
+        public int DelayDestroyCount => _delayDestroyList.Count;
+
+        public int FreedDestroyCount => _freeDelayNode.Count;
+
+        public static float PoolWaitReuseTime = 0.2f;
+
+        public bool PauseGoPool
         {
-            if (_isInitialize)
-                throw new Exception($"{nameof(ResourcePool)} is initialized !");
-
-            if (_isInitialize == false)
-            {
-                _root = root;
-                _isInitialize = true;
-                Log.Info($"{nameof(ResourcePool)} Initialize !");
-            }
+            set => _pauseGoPool = value;
+            get => _pauseGoPool;
         }
 
-        /// <summary>
-        /// 销毁游戏对象池系统
-        /// </summary>
-        internal static void Destroy()
+        public void OnAwake()
         {
-            if (_isInitialize)
+            GetRootTrans();
+            ResourceCacheMgr.Instance.Init();
+        }
+
+        private Transform GetRootTrans()
+        {
+            if (!Application.isPlaying)
             {
-                foreach (var spawner in Spawners)
+                return null;
+            }
+
+            if (_poolRootTrans != null)
+            {
+                return _poolRootTrans;
+            }
+
+            GameObject target = new GameObject("_GO_POOL_ROOT");
+            Object.DontDestroyOnLoad(target);
+            _poolRootTrans = target.transform;
+            return _poolRootTrans;
+        }
+
+        public void OnDestroy()
+        {
+            FreeAllCacheAndGo();
+        }
+
+        public void AddCacheGo(string resPath, GameObject go)
+        {
+            GoProperty property;
+            property.ResPath = resPath;
+            property.Layer = go.layer;
+            property.FrameID = _frameID;
+            property.FrameTime = _frameTime;
+            property.InitScale = go.transform.localScale;
+            AddCacheGo(resPath, go, property);
+        }
+
+        private DelayDestroyGo AllocDelayNode()
+        {
+            if (_freeDelayNode.Count <= 0)
+            {
+                return new DelayDestroyGo();
+            }
+            int index = _freeDelayNode.Count - 1;
+            DelayDestroyGo delayDestroyGo = _freeDelayNode[index];
+            _freeDelayNode.RemoveAt(index);
+            return delayDestroyGo;
+        }
+
+        private void FreeDelayNode(DelayDestroyGo node) => _freeDelayNode.Add(node);
+
+        public void DelayDestroy(GameObject go, GoProperty property, float delayTime)
+        {
+            if (delayTime <= 1.0 / 1000.0)
+            {
+                AddCacheGo(property.ResPath, go, property);
+            }
+            else
+            {
+                DelayDestroyGo delayDestroyGo = AllocDelayNode();
+                delayDestroyGo.Asset = go;
+                delayDestroyGo.HashId = go.GetHashCode();
+                delayDestroyGo.Property = property;
+                float num = Time.time + delayTime;
+                delayDestroyGo.DestroyTime = num;
+                int index1 = -1;
+                for (int index2 = 0; index2 < _delayDestroyList.Count; ++index2)
                 {
-                    spawner.Destroy();
+                    if (_delayDestroyList[index2].DestroyTime >= num)
+                    {
+                        index1 = index2;
+                        break;
+                    }
                 }
 
-                Spawners.Clear();
-
-                _isInitialize = false;
-
-                Log.Info($"{nameof(ResourcePool)} destroy all !");
-            }
-        }
-
-        /// <summary>
-        /// 更新游戏对象池系统
-        /// </summary>
-        internal static void Update()
-        {
-            if (_isInitialize)
-            {
-                foreach (var spawner in Spawners)
+                if (index1 >= 0)
                 {
-                    spawner.Update();
+                    _delayDestroyList.Insert(index1, delayDestroyGo);
+                }
+                else
+                {
+                    _delayDestroyList.Add(delayDestroyGo);
                 }
             }
         }
 
-        /// <summary>
-        /// 创建游戏对象生成器
-        /// </summary>
-        /// <param name="packageName">资源包名称</param>
-        public static Spawner CreateSpawner(string packageName = "")
+        public bool AddCacheGo(string resPath, GameObject go, GoProperty property)
         {
-            if (string.IsNullOrEmpty(packageName))
+            if (_poolRootTrans == null)
             {
-                packageName = GameModule.Resource.packageName;
+                DoDestroy(go);
+                return false;
             }
 
-            // 获取资源包
-            var assetPackage = YooAssets.GetPackage(packageName);
-            if (assetPackage == null)
-                throw new Exception($"Not found asset package : {packageName}");
+            go.SetActive(false);
+            GoPoolNode orNewResourceNode = GetOrNewResourceNode(resPath);
+            if (!orNewResourceNode.AddCacheGo(go))
+            {
+                if (LogWhenPoolFull)
+                {
+                    Log.Info("cache is full, ResPath[{0}] Max cache count:{1}", resPath, orNewResourceNode.MaxCacheCnt);
+                }
 
-            // 检测资源包初始化状态
-            if (assetPackage.InitializeStatus == EOperationStatus.None)
-                throw new Exception($"Asset package {packageName} not initialize !");
-            if (assetPackage.InitializeStatus == EOperationStatus.Failed)
-                throw new Exception($"Asset package {packageName} initialize failed !");
+                DoDestroy(go);
+                return false;
+            }
 
-            if (HasSpawner(packageName))
-                return GetSpawner(packageName);
+            go.transform.SetParent(GetRootTrans(), false);
+            int hashCode = go.GetHashCode();
+            property.FrameID = _frameID;
+            property.FrameTime = _frameTime;
+            AddGoProperty(hashCode, property);
+            ++_totalPoolObjectCount;
+            if (orNewResourceNode.CacheFreeTime != 0)
+            {
+                orNewResourceNode.PoolGoRefreshTime = _frameTime;
+            }
 
-            Spawner spawner = new Spawner(_root, assetPackage);
-            Spawners.Add(spawner);
-            return spawner;
+            return true;
         }
 
-        /// <summary>
-        /// 获取游戏对象生成器。
-        /// </summary>
-        /// <param name="packageName">资源包名称。</param>
-        public static Spawner GetSpawner(string packageName = "")
+        public void AddNewRecycleProperty(GameObject go, string resPath, Vector3 initScale)
         {
-            if (string.IsNullOrEmpty(packageName))
+            if (PauseGoPool)
             {
-                packageName = GameModule.Resource.packageName;
+                return;
             }
 
-            foreach (var spawner in Spawners)
+            GoProperty property;
+            property.ResPath = resPath;
+            property.Layer = go.layer;
+            property.FrameID = _frameID;
+            property.FrameTime = _frameTime;
+            property.InitScale = initScale;
+            AddGoProperty(go.GetHashCode(), property);
+        }
+
+        public GameObject AllocCacheGoByLocation(
+            string location,
+            Transform parentTrans = null,
+            bool haveLocalPos = false,
+            Vector3 localPos = default,
+            Quaternion localRot = default,
+            bool initEnable = true)
+        {
+            AssetInfo assetInfo = GameModule.Resource.GetAssetInfo(location);
+            return AllocCacheGo(assetInfo.AssetPath, parentTrans, haveLocalPos, localPos, localRot, initEnable);
+        }
+
+        public GameObject AllocCacheGo(
+            string resPath,
+            Transform parentTrans = null,
+            bool haveLocalPos = false,
+            Vector3 localPos = default,
+            Quaternion localRot = default,
+            bool initEnable = true)
+        {
+            if (_cacheGo.TryGetValue(resPath, out GoPoolNode goPoolNode))
             {
-                if (spawner.PackageName == packageName)
-                    return spawner;
+                List<GameObject> listGo = goPoolNode.ListGameObjects;
+                ResourceCacheMgr.Instance.GetCacheData(resPath);
+                for (int index = 0; index < listGo.Count; ++index)
+                {
+                    GameObject gameObject = listGo[index];
+                    if (gameObject == null)
+                    {
+                        --_totalPoolObjectCount;
+                        listGo[index] = listGo[^1];
+                        listGo.RemoveAt(listGo.Count - 1);
+                        --index;
+                    }
+                    else
+                    {
+                        int hashCode = gameObject.GetHashCode();
+                        if (!_goProperty.TryGetValue(hashCode, out GoProperty goProperty))
+                        {
+                            --_totalPoolObjectCount;
+                            Log.Warning("AllocCacheGo Find property failed, bug [{0}]", gameObject.name);
+                            listGo[index] = listGo[^1];
+                            listGo.RemoveAt(listGo.Count - 1);
+                            --index;
+                        }
+                        else if (goProperty.FrameTime > _frameTime || goProperty.FrameTime + PoolWaitReuseTime < _frameTime)
+                        {
+                            gameObject.transform.SetParent(null);
+                            gameObject.transform.localScale = goProperty.InitScale;
+                            if (PauseGoPool)
+                            {
+                                RemoveGoProperty(hashCode);
+                            }
+
+                            Transform transform = gameObject.transform;
+                            transform.SetParent(parentTrans);
+                            gameObject.layer = goProperty.Layer;
+                            if (haveLocalPos)
+                            {
+                                transform.localPosition = localPos;
+                                transform.localRotation = localRot;
+                            }
+
+                            gameObject.SetActive(initEnable);
+                            listGo[index] = listGo[^1];
+                            listGo.RemoveAt(listGo.Count - 1);
+                            --_totalPoolObjectCount;
+                            return gameObject;
+                        }
+                    }
+                }
             }
 
-            Log.Warning($"Not found spawner : {packageName}");
             return null;
         }
 
-        /// <summary>
-        /// 检测游戏对象生成器是否存在。
-        /// </summary>
-        /// <param name="packageName">资源包名称。</param>
-        public static bool HasSpawner(string packageName = "")
+        public static void FreeAllCacheAndGo()
         {
-            if (string.IsNullOrEmpty(packageName))
+            ResourcePool.Instance.FreeAllCacheGo();
+            ResourceCacheMgr.Instance.RemoveAllCache();
+        }
+
+        public static void FreeAllPoolGo()
+        {
+            Instance.FreeAllCacheGo();
+        }
+
+        public void FreeAllCacheGo()
+        {
+            using Dictionary<string, GoPoolNode>.Enumerator enumerator = _cacheGo.GetEnumerator();
+            while (enumerator.MoveNext())
             {
-                packageName = GameModule.Resource.packageName;
+                List<GameObject> listGo = enumerator.Current.Value.ListGameObjects;
+                for (int index = 0; index < listGo.Count; ++index)
+                {
+                    GameObject go = listGo[index];
+                    if (go != null)
+                    {
+                        go.transform.SetParent(null, false);
+                        DoDestroy(go);
+                    }
+                }
+
+                listGo.Clear();
             }
 
-            foreach (var spawner in Spawners)
+            _cacheGo.Clear();
+            _goProperty.Clear();
+            _totalPoolObjectCount = 0;
+        }
+
+        private GoPoolNode GetOrNewResourceNode(string resPath)
+        {
+            if (!_cacheGo.TryGetValue(resPath, out GoPoolNode orNewResourceNode))
             {
-                if (spawner.PackageName == packageName)
-                    return true;
+                orNewResourceNode = new GoPoolNode();
+                ResourceCacheMgr.Instance.GetCacheCfg(resPath, out orNewResourceNode.MaxCacheCnt, out orNewResourceNode.CacheFreeTime,
+                    out orNewResourceNode.MinCacheCnt);
+                _cacheGo.Add(resPath, orNewResourceNode);
             }
 
+            return orNewResourceNode;
+        }
+
+        private void AddGoProperty(int hashCode, GoProperty property)
+        {
+            if (!_goProperty.ContainsKey(hashCode))
+                ++GetOrNewResourceNode(property.ResPath).GoRefCnt;
+            _goProperty[hashCode] = property;
+        }
+
+        private void RemoveGoProperty(int hashCode)
+        {
+            if (!_goProperty.TryGetValue(hashCode, out GoProperty goProperty))
+            {
+                return;
+            }
+
+            --GetOrNewResourceNode(goProperty.ResPath).GoRefCnt;
+            _goProperty.Remove(hashCode);
+        }
+
+        private void DoDestroy(GameObject go)
+        {
+            RemoveGoProperty(go.GetHashCode());
+            Object.Destroy(go);
+        }
+
+        public bool IsNeedAutoFree(string resPath)
+        {
+            return !_cacheGo.TryGetValue(resPath, out GoPoolNode goPoolNode) || goPoolNode.GoRefCnt <= goPoolNode.ListGameObjects.Count;
+        }
+
+        public void FreeGoByResPath(string resPath)
+        {
+            if (!_cacheGo.TryGetValue(resPath, out GoPoolNode goPoolNode))
+            {
+                return;
+            }
+
+            List<GameObject> listGo = goPoolNode.ListGameObjects;
+            Log.Assert(goPoolNode.GoRefCnt <= listGo.Count);
+            foreach (var go in listGo)
+            {
+                if (!(go == null))
+                {
+                    DoDestroy(go);
+                }
+            }
+
+            listGo.Clear();
+            _cacheGo.Remove(resPath);
+        }
+
+        public bool IsExistInCache(string resPath)
+        {
+            return _cacheGo.TryGetValue(resPath, out GoPoolNode goPoolNode) && goPoolNode.GoRefCnt > 0;
+        }
+
+        public bool IsNeedRecycle(GameObject go, out GoProperty property, bool forceNoPool)
+        {
+            int hashCode = go.GetHashCode();
+            if (!_goProperty.TryGetValue(hashCode, out property))
+                return false;
+            if (PauseGoPool)
+            {
+                RemoveGoProperty(hashCode);
+                return false;
+            }
+
+            if (!ResourceCacheMgr.Instance.IsResourceCached(property.ResPath))
+            {
+                RemoveGoProperty(hashCode);
+                return false;
+            }
+
+            if (!forceNoPool)
+            {
+                return true;
+            }
+
+            RemoveGoProperty(hashCode);
             return false;
         }
 
-        #region 操作接口
-
-        /// <summary>
-        /// 销毁所有对象池及其资源。
-        /// </summary>
-        /// <param name="includeAll">销毁所有对象池，包括常驻对象池。</param>
-        public static void DestroyAll(bool includeAll)
+        public void ClearAllDelayDestroy()
         {
-            DefaultSpawner.DestroyAll(includeAll);
+            List<DelayDestroyGo> delayDestroyList = _delayDestroyList;
+            for (int index = 0; index < delayDestroyList.Count; ++index)
+            {
+                DelayDestroyGo node = delayDestroyList[index];
+                AddCacheGo(node.Property.ResPath, node.Asset, node.Property);
+                FreeDelayNode(node);
+            }
+
+            delayDestroyList.Clear();
+            _freeDelayNode.Clear();
         }
 
-
-        /// <summary>
-        /// 异步创建指定资源的游戏对象池。
-        /// </summary>
-        /// <param name="location">资源定位地址。</param>
-        /// <param name="dontDestroy">资源常驻不销毁。</param>
-        /// <param name="initCapacity">对象池的初始容量。</param>
-        /// <param name="maxCapacity">对象池的最大容量。</param>
-        /// <param name="destroyTime">静默销毁时间（注意：小于零代表不主动销毁）。</param>
-        public static CreatePoolOperation CreateGameObjectPoolAsync(string location, bool dontDestroy = false, int initCapacity = 0, int maxCapacity = int.MaxValue,
-            float destroyTime = -1f)
+        public void CheckPoolCacheFree()
         {
-            return DefaultSpawner.CreateGameObjectPoolAsync(location, dontDestroy, initCapacity, maxCapacity, destroyTime);
+            if (!PoolCacheFreeEnable)
+            {
+                return;
+            }
+
+            using Dictionary<string, GoPoolNode>.Enumerator enumerator = _cacheGo.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                GoPoolNode goPoolNode = enumerator.Current.Value;
+                string key = enumerator.Current.Key;
+                if (goPoolNode.CacheFreeTime != 0 && goPoolNode.CacheFreeTime + goPoolNode.PoolGoRefreshTime < _frameTime)
+                {
+                    List<GameObject> listGo = goPoolNode.ListGameObjects;
+                    for (int index = 0; index < listGo.Count; ++index)
+                    {
+                        GameObject go = listGo[index];
+                        if (go != null)
+                        {
+                            go.transform.SetParent(null, false);
+                            DoDestroy(go);
+                        }
+                    }
+
+                    listGo.Clear();
+                    _listToDelete.Add(key);
+                }
+            }
+
+            foreach (var location in _listToDelete)
+            {
+                _cacheGo.Remove(location);
+            }
+
+            if (_listToDelete.Count <= 0)
+            {
+                return;
+            }
+
+            _listToDelete.Clear();
         }
 
-        /// <summary>
-        /// 同步创建指定资源的游戏对象池。
-        /// </summary>
-        /// <param name="location">资源定位地址。</param>
-        /// <param name="dontDestroy">资源常驻不销毁。</param>
-        /// <param name="initCapacity">对象池的初始容量。</param>
-        /// <param name="maxCapacity">对象池的最大容量。</param>
-        /// <param name="destroyTime">静默销毁时间（注意：小于零代表不主动销毁）。</param>
-        public static CreatePoolOperation CreateGameObjectPoolSync(string location, bool dontDestroy = false, int initCapacity = 0, int maxCapacity = int.MaxValue,
-            float destroyTime = -1f)
+        public void OnUpdate()
         {
-            return DefaultSpawner.CreateGameObjectPoolSync(location, dontDestroy, initCapacity, maxCapacity, destroyTime);
+            float time = Time.time;
+            int num = -1;
+            for (int index = 0; index < _delayDestroyList.Count; ++index)
+            {
+                DelayDestroyGo delayDestroy = _delayDestroyList[index];
+                if (delayDestroy.DestroyTime <= time)
+                {
+                    num = index;
+                    if (delayDestroy.Asset == null)
+                    {
+                        Log.Warning("delay destroy gameobject is freed: {0}", delayDestroy.Property.ResPath);
+                        RemoveGoProperty(delayDestroy.HashId);
+                    }
+                    else
+                    {
+                        AddCacheGo(delayDestroy.Property.ResPath, delayDestroy.Asset, delayDestroy.Property);
+                    }
+
+                    {
+                        FreeDelayNode(delayDestroy);
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (num >= 0)
+            {
+                _delayDestroyList.RemoveRange(0, num + 1);
+            }
+
+            CheckPoolCacheFree();
+
+            LateUpdate();
+            
+            ResourceCacheMgr.Instance.OnUpdate();
         }
 
-        /// <summary>
-        /// 异步实例化一个游戏对象。
-        /// </summary>
-        /// <param name="location">资源定位地址。</param>
-        /// <param name="forceClone">强制克隆游戏对象，忽略缓存池里的对象。</param>
-        /// <param name="userDatas">用户自定义数据。</param>
-        public static SpawnHandle SpawnAsync(string location, bool forceClone = false, params System.Object[] userDatas)
+        private void LateUpdate()
         {
-            return DefaultSpawner.SpawnAsync(location, null, Vector3.zero, Quaternion.identity, forceClone, userDatas);
+            ++_frameID;
+            _frameTime = Time.time;
         }
-
-        /// <summary>
-        /// 异步实例化一个游戏对象。
-        /// </summary>
-        /// <param name="location">资源定位地址。</param>
-        /// <param name="parent">父物体。</param>
-        /// <param name="forceClone">强制克隆游戏对象，忽略缓存池里的对象。</param>
-        /// <param name="userDatas">用户自定义数据。</param>
-        public static SpawnHandle SpawnAsync(string location, Transform parent, bool forceClone = false, params System.Object[] userDatas)
-        {
-            return DefaultSpawner.SpawnAsync(location, parent, Vector3.zero, Quaternion.identity, forceClone, userDatas);
-        }
-
-        /// <summary>
-        /// 异步实例化一个游戏对象。
-        /// </summary>
-        /// <param name="location">资源定位地址。</param>
-        /// <param name="parent">父物体。</param>
-        /// <param name="position">世界坐标。</param>
-        /// <param name="rotation">世界角度。</param>
-        /// <param name="forceClone">强制克隆游戏对象，忽略缓存池里的对象。</param>
-        /// <param name="userDatas">用户自定义数据。</param>
-        public static SpawnHandle SpawnAsync(string location, Transform parent, Vector3 position, Quaternion rotation, bool forceClone = false, params System.Object[] userDatas)
-        {
-            return DefaultSpawner.SpawnAsync(location, parent, position, rotation, forceClone, userDatas);
-        }
-
-        /// <summary>
-        /// 同步实例化一个游戏对象。
-        /// </summary>
-        /// <param name="location">资源定位地址。</param>
-        /// <param name="forceClone">强制克隆游戏对象，忽略缓存池里的对象。</param>
-        /// <param name="userDatas">用户自定义数据。</param>
-        public static SpawnHandle SpawnSync(string location, bool forceClone = false, params System.Object[] userDatas)
-        {
-            return DefaultSpawner.SpawnSync(location, null, Vector3.zero, Quaternion.identity, forceClone, userDatas);
-        }
-
-        /// <summary>
-        /// 同步实例化一个游戏对象。
-        /// </summary>
-        /// <param name="location">资源定位地址。</param>
-        /// <param name="parent">父物体</param>
-        /// <param name="forceClone">强制克隆游戏对象，忽略缓存池里的对象。</param>
-        /// <param name="userDatas">用户自定义数据。</param>
-        public static SpawnHandle SpawnSync(string location, Transform parent, bool forceClone = false, params System.Object[] userDatas)
-        {
-            return DefaultSpawner.SpawnAsync(location, parent, forceClone, userDatas);
-        }
-
-        /// <summary>
-        /// 同步实例化一个游戏对象。
-        /// </summary>
-        /// <param name="location">资源定位地址。</param>
-        /// <param name="parent">父物体。</param>
-        /// <param name="position">世界坐标。</param>
-        /// <param name="rotation">世界角度。</param>
-        /// <param name="forceClone">强制克隆游戏对象，忽略缓存池里的对象。</param>
-        /// <param name="userDatas">用户自定义数据。</param>
-        public static SpawnHandle SpawnSync(string location, Transform parent, Vector3 position, Quaternion rotation, bool forceClone = false, params System.Object[] userDatas)
-        {
-            return DefaultSpawner.SpawnSync(location, parent, position, rotation, forceClone, userDatas);
-        }
-
-        #endregion
     }
 }

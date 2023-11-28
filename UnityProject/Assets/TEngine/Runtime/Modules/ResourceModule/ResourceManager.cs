@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using YooAsset;
+using Object = UnityEngine.Object;
 
 namespace TEngine
 {
@@ -90,22 +92,33 @@ namespace TEngine
         /// </summary>
         public int ARCTableCapacity { get; set; }
 
+        /// <summary>
+        /// 是否开启对象池。
+        /// </summary>
+        public static bool EnableGoPool { get; set; } = true;
+
+        private readonly Dictionary<string, AssetInfo> _assetInfoMap = new Dictionary<string, AssetInfo>();
+
+        private static readonly Type _typeOfGameObject = typeof(GameObject);
+
         #endregion
 
         #region 生命周期
 
         internal override void Update(float elapseSeconds, float realElapseSeconds)
         {
-            ResourcePool.Update();
+            ResourcePool.Instance.OnUpdate();
         }
 
         internal override void Shutdown()
         {
+            _assetInfoMap.Clear();
+
             ReleasePreLoadAssets(isShutDown: true);
 #if !UNITY_WEBGL
             YooAssets.Destroy();
 #endif
-            ResourcePool.Destroy();
+            ResourcePool.Instance.OnDestroy();
         }
 
         private void ReleaseAllHandle()
@@ -320,7 +333,7 @@ namespace TEngine
                 YooAssets.SetDefaultPackage(defaultPackage);
             }
 
-            ResourcePool.Initialize(GameModule.Get<ResourceModule>().gameObject);
+            ResourcePool.Instance.OnAwake();
 
             _releaseMaps ??= new Dictionary<string, AssetOperationHandle>(ARCTableCapacity);
             _operationHandlesMaps ??= new Dictionary<string, AssetOperationHandle>(ARCTableCapacity);
@@ -416,6 +429,60 @@ namespace TEngine
         }
 
         /// <summary>
+        /// 释放游戏物体。
+        /// </summary>
+        /// <param name="gameObject">游戏物体。</param>
+        /// <param name="forceNoPool">强制不入回收池。</param>
+        /// <param name="delayTime">延迟时间。</param>
+        public void FreeGameObject(GameObject gameObject, bool forceNoPool = false, float delayTime = 0f)
+        {
+            if (Application.isPlaying)
+            {
+                if (EnableGoPool && ResourcePool.Instance.IsNeedRecycle(gameObject, out GoProperty property, forceNoPool))
+                {
+                    if (delayTime > 0f)
+                    {
+                        ResourcePool.Instance.DelayDestroy(gameObject, property, delayTime);
+                        return;
+                    }
+
+                    ResourcePool.Instance.AddCacheGo(property.ResPath, gameObject, property);
+                }
+                else
+                {
+                    if (delayTime > 0f)
+                    {
+                        Object.Destroy(gameObject, delayTime);
+                        return;
+                    }
+
+                    Object.Destroy(gameObject);
+                }
+            }
+            else
+            {
+                if (delayTime > 0f)
+                {
+                    Object.Destroy(gameObject, delayTime);
+                    return;
+                }
+
+                Object.Destroy(gameObject);
+            }
+        }
+
+        private void AddRecycleGoProperty(string location, GameObject go, Vector3 initScale)
+        {
+            bool flag = ResourceCacheMgr.Instance.IsNeedCache(location, out int _, out int maxPoolCnt);
+            if (!(EnableGoPool & flag) || maxPoolCnt <= 0)
+            {
+                return;
+            }
+
+            ResourcePool.Instance.AddNewRecycleProperty(go, location, initScale);
+        }
+
+        /// <summary>
         /// 资源回收（卸载引用计数为零的资源）。
         /// </summary>
         public void UnloadUnusedAssets()
@@ -459,7 +526,7 @@ namespace TEngine
 #endif
         }
 
-        /// <inheritdoc />
+
         public HasAssetResult HasAsset(string location, string packageName = "")
         {
             if (string.IsNullOrEmpty(location))
@@ -467,21 +534,7 @@ namespace TEngine
                 throw new GameFrameworkException("Asset name is invalid.");
             }
 
-            AssetInfo assetInfo;
-            if (string.IsNullOrEmpty(packageName))
-            {
-                assetInfo = YooAssets.GetAssetInfo(location);
-            }
-            else
-            {
-                var package = YooAssets.GetPackage(packageName);
-                if (package == null)
-                {
-                    throw new GameFrameworkException($"The package does not exist. Package Name :{packageName}");
-                }
-
-                assetInfo = package.GetAssetInfo(location);
-            }
+            AssetInfo assetInfo = GetAssetInfo(location, packageName);
 
             if (!CheckLocationValid(location))
             {
@@ -512,7 +565,6 @@ namespace TEngine
 
         #region 资源信息
 
-        /// <inheritdoc />
         public bool IsNeedDownloadFromRemote(string location, string packageName = "")
         {
             if (string.IsNullOrEmpty(packageName))
@@ -526,7 +578,7 @@ namespace TEngine
             }
         }
 
-        /// <inheritdoc />
+
         public bool IsNeedDownloadFromRemote(AssetInfo assetInfo, string packageName = "")
         {
             if (string.IsNullOrEmpty(packageName))
@@ -540,7 +592,7 @@ namespace TEngine
             }
         }
 
-        /// <inheritdoc />
+
         public AssetInfo[] GetAssetInfos(string tag, string packageName = "")
         {
             if (string.IsNullOrEmpty(packageName))
@@ -554,7 +606,7 @@ namespace TEngine
             }
         }
 
-        /// <inheritdoc />
+
         public AssetInfo[] GetAssetInfos(string[] tags, string packageName = "")
         {
             if (string.IsNullOrEmpty(packageName))
@@ -568,21 +620,46 @@ namespace TEngine
             }
         }
 
-        /// <inheritdoc />
+
         public AssetInfo GetAssetInfo(string location, string packageName = "")
         {
+            if (string.IsNullOrEmpty(location))
+            {
+                throw new GameFrameworkException("Asset name is invalid.");
+            }
+
             if (string.IsNullOrEmpty(packageName))
             {
-                return YooAssets.GetAssetInfo(location);
+                if (_assetInfoMap.TryGetValue(location, out AssetInfo assetInfo))
+                {
+                    return assetInfo;
+                }
+
+                assetInfo = YooAssets.GetAssetInfo(location);
+                _assetInfoMap[location] = assetInfo;
+                return assetInfo;
             }
             else
             {
+                string key = $"{packageName}/{location}";
+                if (_assetInfoMap.TryGetValue(key, out AssetInfo assetInfo))
+                {
+                    return assetInfo;
+                }
+
                 var package = YooAssets.GetPackage(packageName);
-                return package.GetAssetInfo(location);
+                if (package == null)
+                {
+                    throw new GameFrameworkException($"The package does not exist. Package Name :{packageName}");
+                }
+
+                assetInfo = package.GetAssetInfo(location);
+                _assetInfoMap[key] = assetInfo;
+                return assetInfo;
             }
         }
 
-        /// <inheritdoc />
+
         public bool CheckLocationValid(string location, string packageName = "")
         {
             if (string.IsNullOrEmpty(packageName))
@@ -598,44 +675,12 @@ namespace TEngine
 
         #endregion
 
-        /// <inheritdoc />
-        public T LoadAsset<T>(string location, bool needInstance = true, bool needCache = false,
-            string packageName = "") where T : Object
+        public T LoadAsset<T>(string location, bool needInstance = true, bool needCache = false, string packageName = "") where T : Object
         {
-            if (string.IsNullOrEmpty(location))
-            {
-                Log.Error("Asset name is invalid.");
-                return default;
-            }
-
-            AssetOperationHandle handle = GetHandleSync<T>(location, needCache, packageName);
-
-            if (typeof(T) == typeof(GameObject))
-            {
-                if (needInstance)
-                {
-                    GameObject gameObject = handle.InstantiateSync();
-                    if (!needCache)
-                    {
-                        AssetReference.BindAssetReference(gameObject, handle, location, packageName: packageName);
-                    }
-
-                    return gameObject as T;
-                }
-            }
-
-            T ret = handle.AssetObject as T;
-            if (!needCache)
-            {
-                handle.Dispose();
-            }
-
-            return ret;
+            return LoadAsset<T>(location, parent: null, needInstance, needCache, packageName);
         }
 
-        /// <inheritdoc />
-        public T LoadAsset<T>(string location, Transform parent, bool needInstance = true, bool needCache = false,
-            string packageName = "")
+        public T LoadAsset<T>(string location, Transform parent, bool needInstance = true, bool needCache = false, string packageName = "")
             where T : Object
         {
             if (string.IsNullOrEmpty(location))
@@ -644,9 +689,30 @@ namespace TEngine
                 return default;
             }
 
+            Type assetType = typeof(T);
+
+            if (EnableGoPool && assetType == _typeOfGameObject)
+            {
+                GameObject go = ResourcePool.Instance.AllocCacheGoByLocation(location, parentTrans: parent);
+
+                if (go != null)
+                {
+                    return go as T;
+                }
+            }
+
             AssetOperationHandle handle = GetHandleSync<T>(location, needCache, packageName: packageName);
 
-            if (typeof(T) == typeof(GameObject))
+            AssetInfo assetInfo = GetAssetInfo(location, packageName);
+            if (EnableGoPool && handle.AssetObject != null)
+            {
+                if (ResourceCacheMgr.Instance.IsNeedCache(assetInfo.AssetPath, out var cacheTime))
+                {
+                    ResourceCacheMgr.Instance.AddCache(assetInfo.AssetPath, handle.AssetObject, cacheTime);
+                }
+            }
+
+            if (assetType == _typeOfGameObject)
             {
                 if (needInstance)
                 {
@@ -656,6 +722,11 @@ namespace TEngine
                         AssetReference.BindAssetReference(gameObject, handle, location, packageName: packageName);
                     }
 
+                    if (EnableGoPool)
+                    {
+                        AddRecycleGoProperty(assetInfo.AssetPath, gameObject, gameObject.transform.localScale);
+                    }
+
                     return gameObject as T;
                 }
             }
@@ -669,38 +740,12 @@ namespace TEngine
             return ret;
         }
 
-        /// <inheritdoc />
         public T LoadAsset<T>(string location, out AssetOperationHandle handle, bool needCache = false,
             string packageName = "") where T : Object
         {
-            handle = GetHandleSync<T>(location, needCache, packageName: packageName);
-            if (string.IsNullOrEmpty(location))
-            {
-                Log.Error("Asset name is invalid.");
-                return default;
-            }
-
-            if (typeof(T) == typeof(GameObject))
-            {
-                GameObject gameObject = handle.InstantiateSync();
-                if (!needCache)
-                {
-                    AssetReference.BindAssetReference(gameObject, handle, location, packageName: packageName);
-                }
-
-                return gameObject as T;
-            }
-
-            T ret = handle.AssetObject as T;
-            if (!needCache)
-            {
-                handle.Dispose();
-            }
-
-            return ret;
+            return LoadAsset<T>(location, null, out handle, needCache, packageName);
         }
 
-        /// <inheritdoc />
         public T LoadAsset<T>(string location, Transform parent, out AssetOperationHandle handle,
             bool needCache = false, string packageName = "") where T : Object
         {
@@ -712,7 +757,7 @@ namespace TEngine
                 return default;
             }
 
-            if (typeof(T) == typeof(GameObject))
+            if (typeof(T) == _typeOfGameObject)
             {
                 GameObject gameObject = handle.InstantiateSync(parent);
                 if (!needCache)
@@ -732,21 +777,18 @@ namespace TEngine
             return ret;
         }
 
-        /// <inheritdoc />
         public AssetOperationHandle LoadAssetGetOperation<T>(string location, bool needCache = false,
             string packageName = "") where T : Object
         {
             return GetHandleSync<T>(location, needCache, packageName: packageName);
         }
 
-        /// <inheritdoc />
         public AssetOperationHandle LoadAssetAsyncHandle<T>(string location, bool needCache = false,
             string packageName = "") where T : Object
         {
             return GetHandleAsync<T>(location, needCache, packageName: packageName);
         }
 
-        /// <inheritdoc />
         public SubAssetsOperationHandle LoadSubAssetsSync<TObject>(string location, string packageName = "")
             where TObject : Object
         {
@@ -759,7 +801,6 @@ namespace TEngine
             return package.LoadSubAssetsSync<TObject>(location);
         }
 
-        /// <inheritdoc />
         public SubAssetsOperationHandle LoadSubAssetsAsync<TObject>(string location, string packageName = "")
             where TObject : Object
         {
@@ -772,7 +813,6 @@ namespace TEngine
             return package.LoadSubAssetsAsync<TObject>(location: location);
         }
 
-        /// <inheritdoc />
         public SubAssetsOperationHandle LoadSubAssetsSync(AssetInfo assetInfo, string packageName = "")
         {
             if (string.IsNullOrEmpty(packageName))
@@ -784,7 +824,6 @@ namespace TEngine
             return package.LoadSubAssetsSync(assetInfo);
         }
 
-        /// <inheritdoc />
         public async UniTask<List<T>> LoadAssetsByTagAsync<T>(string assetTag, string packageName = "")
             where T : UnityEngine.Object
         {
@@ -796,10 +835,27 @@ namespace TEngine
             return assetObjects;
         }
 
-        /// <inheritdoc />
         public async UniTask<T> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default,
-            bool needInstance = true, bool needCache = false, string packageName = "") where T : Object
+            bool needInstance = true, bool needCache = false, string packageName = "", Transform parent = null) where T : Object
         {
+            if (string.IsNullOrEmpty(location))
+            {
+                Log.Error("Asset name is invalid.");
+                return default;
+            }
+
+            Type assetType = typeof(T);
+
+            if (EnableGoPool && assetType == _typeOfGameObject)
+            {
+                GameObject go = ResourcePool.Instance.AllocCacheGoByLocation(location, parentTrans: parent);
+
+                if (go != null)
+                {
+                    return go as T;
+                }
+            }
+
             AssetOperationHandle handle = LoadAssetAsyncHandle<T>(location, needCache, packageName: packageName);
 
             bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken)
@@ -810,14 +866,28 @@ namespace TEngine
                 return null;
             }
 
-            if (typeof(T) == typeof(GameObject))
+            AssetInfo assetInfo = GetAssetInfo(location, packageName);
+            if (EnableGoPool && handle.AssetObject != null)
+            {
+                if (ResourceCacheMgr.Instance.IsNeedCache(assetInfo.AssetPath, out var cacheTime))
+                {
+                    ResourceCacheMgr.Instance.AddCache(assetInfo.AssetPath, handle.AssetObject, cacheTime);
+                }
+            }
+
+            if (typeof(T) == _typeOfGameObject)
             {
                 if (needInstance)
                 {
-                    GameObject gameObject = handle.InstantiateSync();
+                    GameObject gameObject = handle.InstantiateSync(parent);
                     if (!needCache)
                     {
                         AssetReference.BindAssetReference(gameObject, handle, location, packageName: packageName);
+                    }
+
+                    if (EnableGoPool)
+                    {
+                        AddRecycleGoProperty(assetInfo.AssetPath, gameObject, gameObject.transform.localScale);
                     }
 
                     return gameObject as T;
@@ -833,49 +903,30 @@ namespace TEngine
             return ret;
         }
 
-        /// <inheritdoc />
         public async UniTask<GameObject> LoadGameObjectAsync(string location,
             CancellationToken cancellationToken = default, bool needCache = false, string packageName = "")
         {
-            AssetOperationHandle handle =
-                LoadAssetAsyncHandle<GameObject>(location, needCache, packageName: packageName);
-
-            bool cancelOrFailed = await handle.ToUniTask().AttachExternalCancellation(cancellationToken)
-                .SuppressCancellationThrow();
-
-            if (cancelOrFailed)
-            {
-                return null;
-            }
-
-            GameObject gameObject = handle.InstantiateSync();
-            if (!needCache)
-            {
-                AssetReference.BindAssetReference(gameObject, handle, location, packageName: packageName);
-            }
-
-            return gameObject;
+            return await LoadGameObjectAsync(location, null, cancellationToken, needCache, packageName);
         }
 
-        /// <inheritdoc />
         public async UniTask<GameObject> LoadGameObjectAsync(string location, Transform parent,
             CancellationToken cancellationToken = default, bool needCache = false, string packageName = "")
         {
-            GameObject gameObject =
-                await LoadGameObjectAsync(location, cancellationToken, needCache, packageName: packageName);
-            if (parent != null)
+            if (EnableGoPool)
             {
-                gameObject.transform.SetParent(parent);
+                GameObject go = ResourcePool.Instance.AllocCacheGoByLocation(location, parentTrans: parent);
+
+                if (go != null)
+                {
+                    return go;
+                }
             }
-            else
-            {
-                Log.Error("Set Parent Failed");
-            }
+
+            GameObject gameObject = await LoadAssetAsync<GameObject>(location, cancellationToken, needCache, packageName: packageName, parent: parent);
 
             return gameObject;
         }
 
-        /// <inheritdoc />
         public async UniTask<RawFileOperationHandle> LoadRawAssetAsync(string location,
             CancellationToken cancellationToken = default, string packageName = "")
         {
@@ -896,7 +947,6 @@ namespace TEngine
             return cancelOrFailed ? null : handle;
         }
 
-        /// <inheritdoc />
         public async UniTask<T> LoadSubAssetAsync<T>(string location, string assetName,
             CancellationToken cancellationToken = default, string packageName = "") where T : Object
         {
@@ -926,7 +976,6 @@ namespace TEngine
             return cancelOrFailed ? null : handle.GetSubAssetObject<T>(assetName);
         }
 
-        /// <inheritdoc />
         public async UniTask<T[]> LoadAllSubAssetAsync<T>(string location,
             CancellationToken cancellationToken = default, string packageName = "") where T : Object
         {
@@ -960,7 +1009,6 @@ namespace TEngine
 
         private readonly Dictionary<string, Object> _preLoadMaps = new Dictionary<string, Object>();
 
-        /// <inheritdoc />
         public void PushPreLoadAsset(string location, Object assetObject, string packageName = "")
         {
             var cacheKey = string.IsNullOrEmpty(packageName) || packageName.Equals(PackageName)
@@ -974,7 +1022,6 @@ namespace TEngine
             _preLoadMaps.Add(cacheKey, assetObject);
         }
 
-        /// <inheritdoc />
         public T GetPreLoadAsset<T>(string location, string packageName = "") where T : Object
         {
             var cacheKey = string.IsNullOrEmpty(packageName) || packageName.Equals(PackageName)
