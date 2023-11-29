@@ -922,7 +922,7 @@ namespace TEngine
                 }
             }
 
-            GameObject gameObject = await LoadAssetAsync<GameObject>(location, cancellationToken, needCache, packageName: packageName, parent: parent);
+            GameObject gameObject = await LoadAssetAsync<GameObject>(location, cancellationToken, needInstance:true, needCache: needCache, packageName: packageName, parent: parent);
 
             return gameObject;
         }
