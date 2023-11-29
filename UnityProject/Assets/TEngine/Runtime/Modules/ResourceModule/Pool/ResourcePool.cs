@@ -1,4 +1,5 @@
 ﻿#region Class Documentation
+
 /************************************************************************************************************
 Class Name:     ResourcePool对象池。
 Type:           Util, Singleton
@@ -6,16 +7,17 @@ Type:           Util, Singleton
 Example:
                 //注册 - 添加对象池路径，满足这个路径开头的GameObject开启对象池：
                 ResourceCacheMgr.Instance.RegCacheResPath("Assets/AssetRaw/Effects");
-                
+
                 //正常引用资源。
                 var obj = await GameModule.Resource.LoadAssetAsync<GameObject>("Sprite",parent:transform);
-                
-                //回收资源
+
+                //回收资源。
                 GameModule.Resource.FreeGameObject(obj);
-                
+
                 //删除资源 放心资源不存在泄露。
                 Unity Engine.Object。Destroy(obj);
 ************************************************************************************************************/
+
 #endregion
 
 using System.Collections.Generic;
@@ -85,7 +87,7 @@ namespace TEngine
 
         public void OnDestroy()
         {
-            FreeAllCacheAndGo();
+            FreeAllCacheAndGo(needDestroy: false);
         }
 
         public void AddCacheGo(string resPath, GameObject go)
@@ -105,6 +107,7 @@ namespace TEngine
             {
                 return new DelayDestroyGo();
             }
+
             int index = _freeDelayNode.Count - 1;
             DelayDestroyGo delayDestroyGo = _freeDelayNode[index];
             _freeDelayNode.RemoveAt(index);
@@ -275,9 +278,9 @@ namespace TEngine
             return null;
         }
 
-        public static void FreeAllCacheAndGo()
+        public static void FreeAllCacheAndGo(bool needDestroy = true)
         {
-            ResourcePool.Instance.FreeAllCacheGo();
+            ResourcePool.Instance.FreeAllCacheGo(needDestroy);
             ResourceCacheMgr.Instance.RemoveAllCache();
         }
 
@@ -286,7 +289,7 @@ namespace TEngine
             Instance.FreeAllCacheGo();
         }
 
-        public void FreeAllCacheGo()
+        public void FreeAllCacheGo(bool needDestroy = true)
         {
             using Dictionary<string, GoPoolNode>.Enumerator enumerator = _cacheGo.GetEnumerator();
             while (enumerator.MoveNext())
@@ -297,8 +300,11 @@ namespace TEngine
                     GameObject go = listGo[index];
                     if (go != null)
                     {
-                        go.transform.SetParent(null, false);
-                        DoDestroy(go);
+                        if (needDestroy)
+                        {
+                            go.transform.SetParent(null, false);
+                            DoDestroy(go, true);
+                        }
                     }
                 }
 
@@ -341,10 +347,13 @@ namespace TEngine
             _goProperty.Remove(hashCode);
         }
 
-        private void DoDestroy(GameObject go)
+        private void DoDestroy(GameObject go, bool needDestroy = true)
         {
             RemoveGoProperty(go.GetHashCode());
-            Object.Destroy(go);
+            if (needDestroy)
+            {
+                Object.Destroy(go);
+            }
         }
 
         public bool IsNeedAutoFree(string resPath)
@@ -499,7 +508,7 @@ namespace TEngine
             CheckPoolCacheFree();
 
             LateUpdate();
-            
+
             ResourceCacheMgr.Instance.OnUpdate();
         }
 
