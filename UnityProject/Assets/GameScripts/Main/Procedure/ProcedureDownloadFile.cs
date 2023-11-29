@@ -13,9 +13,18 @@ namespace GameMain
         
         private ProcedureOwner _procedureOwner;
 
-        private float CurrentSpeed =>
-            (GameModule.Resource.Downloader.TotalDownloadBytes -
-             GameModule.Resource.Downloader.CurrentDownloadBytes) / GameTime.time;
+        private float _lastUpdateDownloadedSize;
+        private float CurrentSpeed
+        {
+            get
+            {
+                float interval = GameTime.deltaTime;
+                var sizeDiff = GameModule.Resource.Downloader.CurrentDownloadBytes - _lastUpdateDownloadedSize;
+                _lastUpdateDownloadedSize = GameModule.Resource.Downloader.CurrentDownloadBytes;
+                var speed = (float)Math.Floor(sizeDiff / interval);
+                return speed;
+            }
+        }
         
         protected override void OnEnter(ProcedureOwner procedureOwner)
         {
@@ -63,7 +72,7 @@ namespace GameMain
                 Utility.File.GetByteLengthString(currentDownloadBytes), 
                 Utility.File.GetByteLengthString(totalDownloadBytes), 
                 GameModule.Resource.Downloader.Progress, 
-                Utility.File.GetByteLengthString((int)CurrentSpeed));
+                Utility.File.GetLengthString((int)CurrentSpeed));
             LoadUpdateLogic.Instance.DownProgressAction?.Invoke(GameModule.Resource.Downloader.Progress);
             UILoadMgr.Show(UIDefine.UILoadUpdate,descriptionText);
 
