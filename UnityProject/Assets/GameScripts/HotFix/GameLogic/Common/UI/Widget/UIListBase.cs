@@ -312,9 +312,9 @@ namespace GameLogic
         /// <summary>
         /// 获取item
         /// </summary>
-        /// <param name="i"></param>
+        /// <param name="index"></param>
         /// <returns></returns>
-        public virtual ItemT GetItem(int i)
+        public virtual ItemT GetItem(int index)
         {
             return null;
         }

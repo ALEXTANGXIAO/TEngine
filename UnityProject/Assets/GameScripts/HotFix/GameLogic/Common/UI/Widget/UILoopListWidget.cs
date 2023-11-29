@@ -147,11 +147,11 @@ namespace GameLogic
        /// <summary>
        /// 获取item
        /// </summary>
-       /// <param name="i"></param>
+       /// <param name="index"></param>
        /// <returns></returns>
-        public override TItem GetItem(int i)
+        public override TItem GetItem(int index)
         {
-            return i >= 0 && i < m_items.Count ? m_items[i] : null;
+            return index >= 0 && index < m_itemCache.Count ? m_itemCache.GetValueByIndex(index) : null;
         }
 
        /// <summary>
