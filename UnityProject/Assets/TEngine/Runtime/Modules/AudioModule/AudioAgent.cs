@@ -196,7 +196,7 @@ namespace TEngine
             _source = host.AddComponent<AudioSource>();
             _source.playOnAwake = false;
             AudioMixerGroup[] audioMixerGroups =
-                audioCategory.AudioMixer.FindMatchingGroups(Utility.Text.Format("Master/{0}/{1}", audioCategory.AudioMixerGroup.name, index));
+                audioCategory.AudioMixer.FindMatchingGroups(Utility.Text.Format("Master/{0}/{1}", audioCategory.AudioMixerGroup.name, $"{audioCategory.AudioMixerGroup.name} - {index}"));
             _source.outputAudioMixerGroup = audioMixerGroups.Length > 0 ? audioMixerGroups[0] : audioCategory.AudioMixerGroup;
             _source.rolloffMode = audioCategory.AudioGroupConfig.audioRolloffMode;
             _source.minDistance = audioCategory.AudioGroupConfig.minDistance;

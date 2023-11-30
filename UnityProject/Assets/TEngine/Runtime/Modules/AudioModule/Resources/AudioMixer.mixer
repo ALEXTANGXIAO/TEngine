@@ -48,7 +48,7 @@ AudioMixerGroupController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: 2
+  m_Name: Sound - 2
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: 039cd795affa7134a8d5f5d43d3b659d
   m_Children: []
@@ -67,7 +67,7 @@ AudioMixerGroupController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: 1
+  m_Name: Sound - 1
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: c0d40106c2ffb1a44bd48f50b210ee20
   m_Children: []
@@ -100,7 +100,7 @@ AudioMixerGroupController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: 3
+  m_Name: Sound - 3
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: 5f20d1b8f9ac1914dac8beae718e7d40
   m_Children: []
@@ -153,7 +153,7 @@ AudioMixerGroupController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: 1
+  m_Name: UISound - 1
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: e012b6d2e0501df43a88eb6beff8ae07
   m_Children: []
@@ -192,7 +192,7 @@ AudioMixerGroupController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: 0
+  m_Name: Sound - 0
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: 71c50c6b966d1f548a63193919ebfbad
   m_Children: []
@@ -225,7 +225,7 @@ AudioMixerGroupController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: 0
+  m_Name: Voice - 0
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: f46651e8ad3c6034b8764fd635dda3fd
   m_Children: []
@@ -313,25 +313,25 @@ AudioMixerController:
   m_UpdateMode: 0
   m_ExposedParameters:
   - guid: 7835f2c4248cb3e43a1a773bab1f8b9d
-    name: UISoundVolume
+    name: SoundVolume0
   - guid: 41591fd4a32f4034f880ecbc14ee69f1
-    name: MusicVolume
+    name: MusicVolume0
   - guid: 6e0d1a5935a802d41b27d9e2fad3ba2f
-    name: UISoundVolume
+    name: UISoundVolume0
   - guid: 0bc64c1c6cebbeb40ba2f724fdcaa257
-    name: VoiceVolume
+    name: VoiceVolume0
   - guid: f62a8b3fe89df00409532af739ee4e02
-    name: SoundVolume
+    name: SoundVolume1
   - guid: 265eaf7c8910ab842a845c7bb5e570c4
-    name: UISoundVolume
+    name: UISoundVolume1
   - guid: 2a8ce0f3383c3f0468a04fa3fc5e317d
-    name: SoundVolume
+    name: SoundVolume2
   - guid: e83be6d6c4ae85142a51f584159c4ff6
-    name: UISoundVolume
+    name: UISoundVolume2
   - guid: e54edf7c1bf7ee44297e65adce5b10b7
-    name: SoundVolume
+    name: SoundVolume3
   - guid: 2dd26f9dadf160f4bbd77f307c3f4f2e
-    name: UISoundVolume
+    name: UISoundVolume3
   - guid: ba83e724007d7e9459f157db3a54a741
     name: MasterVolume
   - guid: 6d4c2b8bc0ef38d44b2fbff2b3298ab4
@@ -409,10 +409,14 @@ AudioMixerSnapshotController:
   m_AudioMixer: {fileID: 24100000}
   m_SnapshotID: 91dee90f8902c804c9da7728ea355157
   m_FloatValues:
+    b47f0c73299cd9b4fba9896e70683903: 1
     ba83e724007d7e9459f157db3a54a741: 0
     fe15a1b40c14ea646a13dacb15b6a73b: 0
+    77212647508232a458ac7d48fb55d037: 1
     3bbd22597ed32714eb271cf06b098c63: 0
+    30975daa872456b41bc18e0277e301e6: 1
     6d4c2b8bc0ef38d44b2fbff2b3298ab4: -0.03
+    8542b6bfd7b7bfc4d9b961ba97edf0d2: 1
   m_TransitionOverrides: {}
 --- !u!244 &246003612463095956
 AudioMixerEffectController:
@@ -464,7 +468,7 @@ AudioMixerGroupController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: 0
+  m_Name: Music - 0
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: 1cf576bd46399874d9494863d6502d94
   m_Children: []
@@ -483,7 +487,7 @@ AudioMixerGroupController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: 3
+  m_Name: UISound - 3
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: 98657376d4096a947953ee04d82830c1
   m_Children: []
@@ -516,7 +520,7 @@ AudioMixerGroupController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: 2
+  m_Name: UISound - 2
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: e84c25a476798ea43a2f6de217af7dba
   m_Children: []
@@ -629,7 +633,7 @@ AudioMixerGroupController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: 0
+  m_Name: UISound - 0
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: 29257697b1e6be546aa0558e342a15a6
   m_Children: []
