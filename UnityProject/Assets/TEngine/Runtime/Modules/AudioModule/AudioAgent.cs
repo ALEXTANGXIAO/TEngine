@@ -4,6 +4,50 @@ using YooAsset;
 
 namespace TEngine
 {
+    public class AudioData : MemoryObject
+    {
+        public AssetOperationHandle AssetOperationHandle { private set; get; }
+
+        public bool InPool { private set; get; } = false;
+
+        public override void InitFromPool()
+        {
+        }
+
+        public override void RecycleToPool()
+        {
+            if (!InPool)
+            {
+                AssetOperationHandle.Dispose();
+            }
+
+            InPool = false;
+            AssetOperationHandle = null;
+        }
+
+        internal static AudioData Alloc(AssetOperationHandle assetOperationHandle, bool inPool)
+        {
+            AudioData ret = MemoryPool.Acquire<AudioData>();
+            ret.AssetOperationHandle = assetOperationHandle;
+            ret.InPool = inPool;
+            if (!ret.InPool)
+            {
+                Log.Error("Is not In Pool");
+            }
+            ret.InitFromPool();
+            return ret;
+        }
+
+        internal static void DeAlloc(AudioData audioData)
+        {
+            if (audioData != null)
+            {
+                MemoryPool.Release(audioData);
+                audioData.RecycleToPool();
+            }
+        }
+    }
+
     /// <summary>
     /// 音频代理辅助器。
     /// </summary>
@@ -11,7 +55,7 @@ namespace TEngine
     {
         private int _instanceId;
         private AudioSource _source;
-        private AssetOperationHandle _assetOperationHandle;
+        private AudioData _audioData;
         private AudioModuleImp _audioModuleImp;
         private Transform _transform;
         float _volume = 1.0f;
@@ -32,6 +76,7 @@ namespace TEngine
         {
             public string Path;
             public bool BAsync;
+            public bool BInPool;
         }
 
         /// <summary>
@@ -47,7 +92,7 @@ namespace TEngine
         /// <summary>
         /// 资源操作句柄。
         /// </summary>
-        public AssetOperationHandle AssetOperationHandle => _assetOperationHandle;
+        public AudioData AudioData => _audioData;
 
         /// <summary>
         /// 音频代理辅助器音频大小。
@@ -196,7 +241,8 @@ namespace TEngine
             _source = host.AddComponent<AudioSource>();
             _source.playOnAwake = false;
             AudioMixerGroup[] audioMixerGroups =
-                audioCategory.AudioMixer.FindMatchingGroups(Utility.Text.Format("Master/{0}/{1}", audioCategory.AudioMixerGroup.name, $"{audioCategory.AudioMixerGroup.name} - {index}"));
+                audioCategory.AudioMixer.FindMatchingGroups(Utility.Text.Format("Master/{0}/{1}", audioCategory.AudioMixerGroup.name,
+                    $"{audioCategory.AudioMixerGroup.name} - {index}"));
             _source.outputAudioMixerGroup = audioMixerGroups.Length > 0 ? audioMixerGroups[0] : audioCategory.AudioMixerGroup;
             _source.rolloffMode = audioCategory.AudioGroupConfig.audioRolloffMode;
             _source.minDistance = audioCategory.AudioGroupConfig.minDistance;
@@ -218,7 +264,7 @@ namespace TEngine
                 _duration = 0;
                 if (!string.IsNullOrEmpty(path))
                 {
-                    if (_audioModuleImp.AudioClipPool.TryGetValue(path, out var operationHandle))
+                    if (bInPool && _audioModuleImp.AudioClipPool.TryGetValue(path, out var operationHandle))
                     {
                         OnAssetLoadComplete(operationHandle);
                         return;
@@ -239,7 +285,7 @@ namespace TEngine
             }
             else
             {
-                _pendingLoad = new LoadRequest { Path = path, BAsync = bAsync };
+                _pendingLoad = new LoadRequest { Path = path, BAsync = bAsync, BInPool = bInPool};
 
                 if (_audioAgentRuntimeState == AudioAgentRuntimeState.Playing)
                 {
@@ -277,16 +323,15 @@ namespace TEngine
         {
             if (handle != null)
             {
-                handle.Completed -= OnAssetLoadComplete;
                 if (_inPool)
                 {
-                    _audioModuleImp.AudioClipPool.TryAdd(handle.GetAssetInfo().AssetPath, handle);
+                    _audioModuleImp.AudioClipPool.TryAdd(handle.GetAssetInfo().Address, handle);
                 }
             }
 
             if (_pendingLoad != null)
             {
-                if (handle != null)
+                if (!_inPool && handle != null)
                 {
                     handle.Dispose();
                 }
@@ -294,19 +339,21 @@ namespace TEngine
                 _audioAgentRuntimeState = AudioAgentRuntimeState.End;
                 string path = _pendingLoad.Path;
                 bool bAsync = _pendingLoad.BAsync;
+                bool bInPool = _pendingLoad.BInPool;
                 _pendingLoad = null;
-                Load(path, bAsync);
+                Load(path, bAsync, bInPool);
             }
             else if (handle != null)
             {
-                if (_assetOperationHandle != null)
+                if (_audioData != null)
                 {
-                    _assetOperationHandle.Dispose();
+                    AudioData.DeAlloc(_audioData);
+                    _audioData = null;
                 }
 
-                _assetOperationHandle = handle;
+                _audioData = AudioData.Alloc(handle, _inPool);
 
-                _source.clip = _assetOperationHandle.AssetObject as AudioClip;
+                _source.clip = handle.AssetObject as AudioClip;
                 if (_source.clip != null)
                 {
                     _source.Play();
@@ -350,8 +397,9 @@ namespace TEngine
                     {
                         string path = _pendingLoad.Path;
                         bool bAsync = _pendingLoad.BAsync;
+                        bool bInPool = _pendingLoad.BInPool;
                         _pendingLoad = null;
-                        Load(path, bAsync);
+                        Load(path, bAsync, bInPool);
                     }
 
                     _source.volume = _volume;
@@ -371,9 +419,9 @@ namespace TEngine
                 Object.Destroy(_transform.gameObject);
             }
 
-            if (_assetOperationHandle != null)
+            if (_audioData != null)
             {
-                _assetOperationHandle.Dispose();
+                AudioData.DeAlloc(_audioData);
             }
         }
     }

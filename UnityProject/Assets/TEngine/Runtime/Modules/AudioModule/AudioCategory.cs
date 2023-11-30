@@ -127,7 +127,7 @@ namespace TEngine
 
             for (int i = 0; i < AudioAgents.Count; i++)
             {
-                if (AudioAgents[i].AssetOperationHandle == null || AudioAgents[i].IsFree)
+                if (AudioAgents[i].AudioData?.AssetOperationHandle == null || AudioAgents[i].IsFree)
                 {
                     freeChannel = i;
                     break;
