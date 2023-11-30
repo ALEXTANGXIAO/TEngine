@@ -295,7 +295,7 @@ namespace TEngine
         }
 
         /// <summary>
-        /// 暂停音频代理辅助器。
+        /// 停止播放音频代理辅助器。
         /// </summary>
         /// <param name="fadeout">是否渐出。</param>
         public void Stop(bool fadeout = false)
@@ -312,6 +312,28 @@ namespace TEngine
                     _source.Stop();
                     _audioAgentRuntimeState = AudioAgentRuntimeState.End;
                 }
+            }
+        }
+        
+        /// <summary>
+        /// 暂停音频代理辅助器。
+        /// </summary>
+        public void Pause()
+        {
+            if (_source != null)
+            {
+                _source.Pause();
+            }
+        }
+        
+        /// <summary>
+        /// 取消暂停音频代理辅助器。
+        /// </summary>
+        public void UnPause()
+        {
+            if (_source != null)
+            {
+                _source.UnPause();
             }
         }
 
