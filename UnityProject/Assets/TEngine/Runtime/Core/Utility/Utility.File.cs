@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 
 namespace TEngine
