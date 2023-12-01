@@ -30,10 +30,6 @@ namespace TEngine
             AudioData ret = MemoryPool.Acquire<AudioData>();
             ret.AssetOperationHandle = assetOperationHandle;
             ret.InPool = inPool;
-            if (!ret.InPool)
-            {
-                Log.Error("Is not In Pool");
-            }
             ret.InitFromPool();
             return ret;
         }
@@ -285,7 +281,7 @@ namespace TEngine
             }
             else
             {
-                _pendingLoad = new LoadRequest { Path = path, BAsync = bAsync, BInPool = bInPool};
+                _pendingLoad = new LoadRequest { Path = path, BAsync = bAsync, BInPool = bInPool };
 
                 if (_audioAgentRuntimeState == AudioAgentRuntimeState.Playing)
                 {
@@ -325,7 +321,7 @@ namespace TEngine
                 _source.Pause();
             }
         }
-        
+
         /// <summary>
         /// 取消暂停音频代理辅助器。
         /// </summary>
