@@ -9,10 +9,10 @@ namespace GameLogic
     /// <summary>
     /// UI列表Item
     /// </summary>
-    /// <typeparam name="DataT"></typeparam>
-    public interface IListDataItem<in DataT>
+    /// <typeparam name="TData"></typeparam>
+    public interface IListDataItem<in TData>
     {
-        void SetItemData(DataT d);
+        void SetItemData(TData d);
     }
 
     /// <summary>
@@ -180,8 +180,7 @@ namespace GameLogic
         /// <param name="n"></param>
         public void SetDatas(List<DataT> dataList, int n = -1)
         {
-            AdjustItemNum(Mathf.Max(0, n >= 0 ? n : (dataList == null ? 0 : (dataList.Count - dataStartOffset))),
-                dataList);
+            AdjustItemNum(Mathf.Max(0, n >= 0 ? n : (dataList == null ? 0 : (dataList.Count - dataStartOffset))), dataList);
         }
 
         /// <summary>
@@ -215,8 +214,7 @@ namespace GameLogic
                 return;
             }
 
-            var listDataItem = item as IListDataItem<DataT>;
-            if (listDataItem != null)
+            if (item is IListDataItem<DataT> listDataItem)
             {
                 listDataItem.SetItemData(GetData(i));
             }
@@ -271,8 +269,7 @@ namespace GameLogic
 
             var preIndex = selectIndex;
             m_selectIndex = i;
-            var item = GetItem(preIndex) as IListSelectItem;
-            if (item != null)
+            if (GetItem(preIndex) is IListSelectItem item)
             {
                 item.SetSelected(false);
             }
@@ -282,11 +279,18 @@ namespace GameLogic
             {
                 item.SetSelected(true);
             }
-
+            UpdateSnapTargetItem();
             if (triggerEvt && funcOnSelectChange != null)
             {
                 funcOnSelectChange.Invoke();
             }
+        }
+        
+        /// <summary>
+        /// 刷新Snap
+        /// </summary>
+        protected virtual void UpdateSnapTargetItem()
+        {
         }
 
         /// <summary>
@@ -312,12 +316,17 @@ namespace GameLogic
         /// <summary>
         /// 获取item
         /// </summary>
-        /// <param name="index"></param>
+        /// <param name="i"></param>
         /// <returns></returns>
-        public virtual ItemT GetItem(int index)
+        public virtual ItemT GetItem(int i)
         {
             return null;
         }
+        
+        /// <summary>
+        /// 点击选择
+        /// </summary>
+        public bool SelectByClick = true;
 
         /// <summary>
         /// item被点击
@@ -331,7 +340,10 @@ namespace GameLogic
                 funcOnItemClick.Invoke(i);
             }
 
-            selectIndex = i;
+            if (SelectByClick)
+            {
+                selectIndex = i;
+            }
         }
     }
 }

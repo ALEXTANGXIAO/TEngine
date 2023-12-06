@@ -65,8 +65,9 @@ namespace GameLogic
             base.AdjustItemNum(n, datas, funcItem);
             m_tpFuncItem = funcItem;
             LoopRectView.SetListItemCount(n);
-            // LoopRectView.RefreshAllShownItem();
+            LoopRectView.RefreshAllShownItem();
             m_tpFuncItem = null;
+            UpdateAllItemSelect();
         }
 
         /// <summary>
@@ -151,7 +152,16 @@ namespace GameLogic
        /// <returns></returns>
         public override TItem GetItem(int index)
         {
-            return index >= 0 && index < m_itemCache.Count ? m_itemCache.GetValueByIndex(index) : null;
+            for (var i = 0; i < m_itemCache.Count; i++)
+            {
+                
+                var item = m_itemCache.GetValueByIndex(i);
+                if (item.GetItemIndex() == index)
+                {
+                    return item;
+                }
+            }
+            return null;
         }
 
        /// <summary>
@@ -185,6 +195,31 @@ namespace GameLogic
         public TItem GetItemByIndex(int index)
         {
             return m_itemCache.GetValueByIndex(index);
+        }
+        
+        /// <summary>
+        /// 刷新所有item选中状态
+        /// </summary>
+        /// <returns></returns>
+        public void UpdateAllItemSelect()
+        {
+            var index = selectIndex;
+            for (var i = 0; i < m_itemCache.Count; i++)
+            {
+                if (m_itemCache.GetValueByIndex(i) is IListSelectItem item)
+                {
+                    item.SetSelected(item.GetItemIndex() == index);
+                }
+            }
+        }
+
+        protected override void UpdateSnapTargetItem()
+        {
+            base.UpdateSnapTargetItem();
+            if (LoopRectView != null && LoopRectView.ItemSnapEnable)
+            {
+                LoopRectView.SetSnapTargetItemIndex(selectIndex);
+            }
         }
     }
 }

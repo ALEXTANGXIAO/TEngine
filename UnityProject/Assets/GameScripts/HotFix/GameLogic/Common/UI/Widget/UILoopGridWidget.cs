@@ -66,6 +66,7 @@ namespace GameLogic
             LoopRectView.SetListItemCount(n);
             LoopRectView.RefreshAllShownItem();
             m_tpFuncItem = null;
+            UpdateAllItemSelect();
         }
 
         /// <summary>
@@ -145,14 +146,23 @@ namespace GameLogic
             return widget;
         }
 
-        /// <summary>
-        /// 获取item
-        /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
+       /// <summary>
+       /// 获取item
+       /// </summary>
+       /// <param name="index"></param>
+       /// <returns></returns>
         public override TItem GetItem(int index)
         {
-            return index >= 0 && index < m_itemCache.Count ? m_itemCache.GetValueByIndex(index) : null;
+            for (var i = 0; i < m_itemCache.Count; i++)
+            {
+                
+                var item = m_itemCache.GetValueByIndex(i);
+                if (item.GetItemIndex() == index)
+                {
+                    return item;
+                }
+            }
+            return null;
         }
 
        /// <summary>
@@ -177,6 +187,22 @@ namespace GameLogic
        public TItem GetItemByIndex(int index)
        {
            return m_itemCache.GetValueByIndex(index);
+       }
+       
+       /// <summary>
+       /// 刷新所有item选中状态
+       /// </summary>
+       /// <returns></returns>
+       public void UpdateAllItemSelect()
+       {
+           var index = selectIndex;
+           for (var i = 0; i < m_itemCache.Count; i++)
+           {
+               if (m_itemCache.GetValueByIndex(i) is IListSelectItem item)
+               {
+                   item.SetSelected(item.GetItemIndex() == index);
+               }
+           }
        }
     }
 }
