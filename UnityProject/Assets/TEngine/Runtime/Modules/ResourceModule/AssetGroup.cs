@@ -31,7 +31,7 @@ namespace TEngine
         /// </summary>
         public void Clear()
         {
-            if (_handle != null)
+            if (_handle is { IsValid: true })
             {
                 _handle.Dispose();
             }

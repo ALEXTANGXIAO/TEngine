@@ -59,7 +59,7 @@ namespace TEngine
         public void Bind(AssetOperationHandle operation, string assetLocation, AssetReference parent = null,
             string packageName = "")
         {
-            if (_operationHandle != null)
+            if (_operationHandle is { IsValid: true })
             {
                 Log.Warning($"rebind AssetReference gameObject.name:{gameObject.name} assetLocation:{assetLocation}");
                 _operationHandle.Dispose();
