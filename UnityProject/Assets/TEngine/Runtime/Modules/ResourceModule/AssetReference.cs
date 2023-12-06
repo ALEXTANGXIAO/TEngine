@@ -153,82 +153,49 @@ namespace TEngine
         /// <summary>
         /// 同步加载资源。
         /// </summary>
-        /// <param name="assetName">要加载资源的名称。</param>
-        /// <typeparam name="T">要加载资源的类型。</typeparam>
-        /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string assetName) where T : Object
-        {
-            DirtyInitAssetGroup();
-            return _assetGroup.LoadAsset<T>(assetName);
-        }
-
-        /// <summary>
-        /// 同步加载资源。
-        /// </summary>
-        /// <param name="assetName">要加载资源的名称。</param>
+        /// <param name="location">资源的定位地址。</param>
         /// <param name="parent">父节点位置。</param>
+        /// <param name="needInstance">是否需要实例化。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string assetName, Transform parent) where T : Object
+        public T LoadAsset<T>(string location, bool needInstance = true,string packageName = "",Transform parent = null) where T : Object
         {
             DirtyInitAssetGroup();
-            return _assetGroup.LoadAsset<T>(assetName, parent);
+            return _assetGroup.LoadAsset<T>(location, needInstance, packageName, parent);
         }
 
         /// <summary>
-        /// 同步加载资源。
+        /// 异步加载资源。
         /// </summary>
-        /// <param name="assetName">要加载资源的名称。</param>
-        /// <typeparam name="T">要加载资源的类型。</typeparam>
-        /// <param name="assetOperationHandle">资源操作句柄。</param>
-        /// <returns>资源实例。</returns>
-        // ReSharper disable once ParameterHidesMember
-        public T LoadAsset<T>(string assetName, out AssetOperationHandle assetOperationHandle) where T : Object
-        {
-            DirtyInitAssetGroup();
-            return _assetGroup.LoadAsset<T>(assetName, out assetOperationHandle);
-        }
-
-        /// <summary>
-        /// 同步加载资源。
-        /// </summary>
-        /// <param name="assetName">要加载资源的名称。</param>
-        /// <param name="parent">父节点位置。</param>
-        /// <typeparam name="T">要加载资源的类型。</typeparam>
-        /// <param name="assetOperationHandle">资源操作句柄。</param>
-        /// <returns>资源实例。</returns>
-        // ReSharper disable once ParameterHidesMember
-        public T LoadAsset<T>(string assetName, Transform parent, out AssetOperationHandle assetOperationHandle)
-            where T : Object
-        {
-            DirtyInitAssetGroup();
-            return _assetGroup.LoadAsset<T>(assetName, parent, out assetOperationHandle);
-        }
-
-        /// <summary>
-        /// 异步加载资源实例。
-        /// </summary>
-        /// <param name="assetName">要加载的实例名称。</param>
+        /// <param name="location">资源的定位地址。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
-        /// <returns>资源实实例。</returns>
-        public async UniTask<T> LoadAssetAsync<T>(string assetName, CancellationToken cancellationToken = default)
-            where T : Object
+        /// <param name="needInstance">是否需要实例化。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包。</param>
+        /// <param name="parent">资源实例父节点。</param>
+        /// <typeparam name="T">要加载资源的类型。</typeparam>
+        /// <returns>异步资源实例。</returns>
+        public async UniTask<T> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default,
+            bool needInstance = true, string packageName = "", Transform parent = null) where T : Object
         {
             DirtyInitAssetGroup();
-            return await _assetGroup.LoadAssetAsync<T>(assetName, cancellationToken);
+            return await _assetGroup.LoadAssetAsync<T>(location, cancellationToken, needInstance, packageName, parent);
         }
 
         /// <summary>
         /// 异步加载游戏物体。
         /// </summary>
-        /// <param name="assetName">要加载的游戏物体名称。</param>
+        /// <param name="location">资源的定位地址。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
-        /// <returns>异步游戏物体实例。</returns>
-        public async UniTask<GameObject> LoadGameObjectAsync(string assetName,
-            CancellationToken cancellationToken = default)
+        /// <param name="needInstance">是否需要实例化。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包。</param>
+        /// <param name="parent">资源实例父节点。</param>
+        /// <returns>异步资源实例。</returns>
+        public async UniTask<GameObject> LoadGameObjectAsync(string location, CancellationToken cancellationToken = default,
+            bool needInstance = true, string packageName = "", Transform parent = null)
         {
             DirtyInitAssetGroup();
-            return await _assetGroup.LoadGameObjectAsync(assetName, cancellationToken);
+            return await LoadAssetAsync<GameObject>(location, cancellationToken, needInstance, packageName, parent);
         }
 
         /// <summary>
