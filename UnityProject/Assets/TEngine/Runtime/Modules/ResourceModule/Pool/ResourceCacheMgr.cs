@@ -14,7 +14,7 @@ namespace TEngine
 
         private readonly Dictionary<string, ResCacheData> _cachePool = new Dictionary<string, ResCacheData>();
         private readonly Dictionary<string, ResCacheData> _persistCachePool = new Dictionary<string, ResCacheData>();
-        private bool _enableLog = true;
+        private bool _enableLog = false;
         private readonly List<ResourceCacheConfig> _needCacheResList = new List<ResourceCacheConfig>();
         private readonly List<string> _needPersistResList = new List<string>();
         private GameTimerTick _tickCheckExpire;
