@@ -671,7 +671,7 @@ namespace TEngine
         /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
         /// <typeparam name="T">资源类型。</typeparam>
         /// <returns>资源对象集合。</returns>
-        public async UniTask<List<T>> LoadAssetsByTagAsync<T>(string assetTag, string customPackageName = "")
+        public async UniTask<LoadAssetsByTagOperation<T>> LoadAssetsByTagAsync<T>(string assetTag, string customPackageName = "")
             where T : UnityEngine.Object
         {
             return await m_ResourceManager.LoadAssetsByTagAsync<T>(assetTag, packageName: customPackageName);

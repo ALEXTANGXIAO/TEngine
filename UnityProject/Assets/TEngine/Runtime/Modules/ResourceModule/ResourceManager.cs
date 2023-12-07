@@ -824,15 +824,13 @@ namespace TEngine
             return package.LoadSubAssetsSync(assetInfo);
         }
 
-        public async UniTask<List<T>> LoadAssetsByTagAsync<T>(string assetTag, string packageName = "")
+        public async UniTask<LoadAssetsByTagOperation<T>> LoadAssetsByTagAsync<T>(string assetTag,string packageName = "")
             where T : UnityEngine.Object
         {
             LoadAssetsByTagOperation<T> operation = new LoadAssetsByTagOperation<T>(assetTag, packageName);
             YooAssets.StartOperation(operation);
             await operation.ToUniTask();
-            List<T> assetObjects = operation.AssetObjects;
-            operation.ReleaseHandle();
-            return assetObjects;
+            return operation;
         }
 
         public async UniTask<T> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default,

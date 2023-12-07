@@ -280,7 +280,7 @@ namespace TEngine
         /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <typeparam name="T">资源类型。</typeparam>
         /// <returns>资源对象集合。</returns>
-        UniTask<List<T>> LoadAssetsByTagAsync<T>(string assetTag, string packageName = "") where T : UnityEngine.Object;
+        UniTask<LoadAssetsByTagOperation<T>> LoadAssetsByTagAsync<T>(string assetTag, string packageName = "") where T : UnityEngine.Object;
 
         /// <summary>
         /// 异步加载资源。
