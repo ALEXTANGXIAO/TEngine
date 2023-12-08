@@ -255,7 +255,8 @@ namespace TEngine
             this.userDatas = userDatas;
             if (!FromResources)
             {
-                GameModule.Resource.LoadAssetAsync<GameObject>(location, Handle_Completed, needCache: NeedCache);
+                Handle = GameModule.Resource.LoadAssetAsyncHandle<GameObject>(location, needCache: NeedCache);
+                Handle.Completed += Handle_Completed;
             }
             else
             {
@@ -394,13 +395,11 @@ namespace TEngine
             {
                 throw new GameFrameworkException("Load uiWindows Failed because AssetObject is null");
             }
-            Handle = handle;
-            
             // 实例化对象
             var panel = handle.InstantiateSync(UIModule.UIRootStatic);
             if (!NeedCache)
             {
-                AssetReference.BindAssetReference(panel, handle, AssetName);
+                AssetReference.BindAssetReference(panel, Handle, AssetName);
             }
             Handle_Completed(panel);
         }
