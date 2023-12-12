@@ -134,8 +134,9 @@ namespace TEngine
         /// <param name="isSetNativeSize">是否使用原生分辨率。</param>
         /// <param name="isAsync">是否使用异步加载。</param>
         /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
+        /// <param name="assetReference">指定资源引用组。</param>
         public static void SetSprite(this UnityEngine.UI.Image image, string spriteName, bool isSetNativeSize = false,
-            bool isAsync = false, string customPackageName = "")
+            bool isAsync = false, string customPackageName = "",AssetReference assetReference = null)
         {
             if (image == null)
             {
@@ -157,7 +158,14 @@ namespace TEngine
                         image.SetNativeSize();
                     }
 
-                    image.gameObject.GetOrAddComponent<AssetReference>().Reference(operation, spriteName);
+                    if (assetReference != null)
+                    {
+                        assetReference.Reference(operation, spriteName);
+                    }
+                    else
+                    {
+                        image.gameObject.GetOrAddComponent<AssetReference>().Reference(operation, spriteName);
+                    }
                 }
                 else
                 {
@@ -176,7 +184,15 @@ namespace TEngine
                             image.SetNativeSize();
                         }
 
-                        image.gameObject.GetOrAddComponent<AssetReference>().Reference(operation, spriteName);
+                        image.sprite = operation.AssetObject as Sprite;
+                        if (assetReference != null)
+                        {
+                            assetReference.Reference(operation, spriteName);
+                        }
+                        else
+                        {
+                            image.gameObject.GetOrAddComponent<AssetReference>().Reference(operation, spriteName);
+                        }
                     }, customPackageName: customPackageName);
                 }
             }
@@ -189,8 +205,9 @@ namespace TEngine
         /// <param name="spriteName">图片名称。</param>
         /// <param name="isAsync">是否使用异步加载。</param>
         /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
+        /// <param name="assetReference">指定资源引用组。</param>
         public static void SetSprite(this SpriteRenderer spriteRenderer, string spriteName, bool isAsync = false,
-            string customPackageName = "")
+            string customPackageName = "",AssetReference assetReference = null)
         {
             if (spriteRenderer == null)
             {
@@ -208,7 +225,14 @@ namespace TEngine
                     var operation = GameModule.Resource.LoadAssetGetOperation<Sprite>(spriteName, customPackageName: customPackageName);
                     spriteRenderer.sprite = operation.AssetObject as Sprite;
 
-                    spriteRenderer.gameObject.GetOrAddComponent<AssetReference>().Reference(operation, spriteName);
+                    if (assetReference != null)
+                    {
+                        assetReference.Reference(operation, spriteName);
+                    }
+                    else
+                    {
+                        spriteRenderer.gameObject.GetOrAddComponent<AssetReference>().Reference(operation, spriteName);
+                    }
                 }
                 else
                 {
@@ -222,7 +246,14 @@ namespace TEngine
                         }
 
                         spriteRenderer.sprite = operation.AssetObject as Sprite;
-                        spriteRenderer.gameObject.GetOrAddComponent<AssetReference>().Reference(operation, spriteName);
+                        if (assetReference != null)
+                        {
+                            assetReference.Reference(operation, spriteName);
+                        }
+                        else
+                        {
+                            spriteRenderer.gameObject.GetOrAddComponent<AssetReference>().Reference(operation, spriteName);
+                        }
                     }, customPackageName: customPackageName);
                 }
             }
