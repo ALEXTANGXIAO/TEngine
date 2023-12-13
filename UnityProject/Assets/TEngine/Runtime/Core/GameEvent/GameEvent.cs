@@ -12,6 +12,7 @@ namespace TEngine
         /// </summary>
         private static readonly EventMgr _eventMgr = new EventMgr();
 
+        public static EventMgr EventMgr => _eventMgr;
         #region 细分的注册接口
 
         /// <summary>

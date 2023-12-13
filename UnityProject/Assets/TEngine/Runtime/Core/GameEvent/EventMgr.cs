@@ -50,6 +50,21 @@ namespace TEngine
                 _eventEntryMap.Add(typeName, entry);
             }
         }
+        
+        /// <summary>
+        /// 注册wrap的函数。
+        /// </summary>
+        /// <param name="typeName">类型名称。</param>
+        /// <param name="callerWrap">调用接口名。</param>
+        public void RegWrapInterface(string typeName,object callerWrap)
+        {
+            var entry = new EventEntryData();
+            entry.InterfaceWrap = callerWrap;
+            if (typeName != null)
+            {
+                _eventEntryMap.Add(typeName, entry);
+            }
+        }
 
         /// <summary>
         /// 分发注册器。

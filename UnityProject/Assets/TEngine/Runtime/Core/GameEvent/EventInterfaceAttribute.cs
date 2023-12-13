@@ -19,10 +19,11 @@ namespace TEngine
     }
 
     [System.AttributeUsage(System.AttributeTargets.Interface)]
-    public class EventInterface : Attribute
+    public class EventInterfaceAttribute : Attribute
      {
          private EEventGroup _eGroup;
-         public EventInterface(EEventGroup group)
+         public EEventGroup EventGroup => _eGroup;
+         public EventInterfaceAttribute(EEventGroup group)
          {
              _eGroup = group;
          }

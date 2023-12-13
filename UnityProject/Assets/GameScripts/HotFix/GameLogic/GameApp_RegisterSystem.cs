@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using GameLogic;
 using TEngine;
 using UnityEngine;
 
@@ -8,6 +9,8 @@ public partial class GameApp
     
     private void Init()
     {
+        CodeTypes.Instance.Init(_hotfixAssembly.ToArray());
+        EventInterfaceHelper.Init();
         _listLogicMgr = new List<ILogicSys>();
         RegisterAllSystem();
         InitSystemSetting();
