@@ -31,12 +31,32 @@ public static class EventInterfaceGenerate
         
     public const string EventInterfacePath = "Assets/GameScripts/HotFix/GameLogic/Event/Interface/";
 
+    public static bool BOpenAutoGenerate = false;
+    
     static EventInterfaceGenerate()
     {
-        Generate();
+        BOpenAutoGenerate = EditorPrefs.GetBool("EventInterfaceGenerate.BOpenAutoGenerate", true);
+        if (BOpenAutoGenerate)
+        {
+            Generate();
+        }
     }
 
-    [MenuItem("TEngine/Generate EventInterface", false, 300)]
+    [MenuItem("TEngine/EventInterface/OpenAutoGenerate", false, 300)]
+    public static void OpenAutoGenerate()
+    {
+        EditorPrefs.SetBool("EventInterfaceGenerate.BOpenAutoGenerate", true);
+        Debug.Log("OpenAutoGenerate");
+    }
+
+    [MenuItem("TEngine/EventInterface/CloseAutoGenerate", false, 301)]
+    public static void CloseAutoGenerate()
+    {
+        EditorPrefs.SetBool("EventInterfaceGenerate.BOpenAutoGenerate", false);
+        Debug.Log("CloseAutoGenerate");
+    }
+    
+    [MenuItem("TEngine/EventInterface/Generate EventInterface", false, 302)]
     public static void Generate()
     {
         if (EventInterfaceGenerateTag.HadGenerate)
