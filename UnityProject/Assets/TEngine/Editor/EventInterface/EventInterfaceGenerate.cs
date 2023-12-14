@@ -15,6 +15,7 @@ Example:
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -136,10 +137,17 @@ public static class EventInterfaceGenerate
             // 获取接口中的所有方法
             MethodInfo[] methods = interfaceType.GetMethods();
 
+            HashSet<string> hadGenerate = new HashSet<string>();
+            
             //组件字段
             foreach (MethodInfo method in methods)
             {
+                if (hadGenerate.Contains(method.Name))
+                {
+                    continue;
+                }
                 sw.WriteLine($"\t\tpublic static readonly int {method.Name} = RuntimeId.ToRuntimeId(\"{interfaceName}_Event.{method.Name}\");");
+                hadGenerate.Add(method.Name);
             }
 
             sw.WriteLine("\t}");
