@@ -60,6 +60,11 @@ namespace TEngine
             while (itr.MoveNext())
             {
                 var kv = itr.Current;
+                List<EventRegInfo> list = kv.Value;
+                foreach (var eventRegInfo in list)
+                {
+                    EventRegInfo.Release(eventRegInfo);
+                }
                 kv.Value.Clear();
             }
 
@@ -97,6 +102,7 @@ namespace TEngine
                         {
                             Log.Info("remove delay delete eventId[{0}]", eventId);
                             listListener[i] = listListener[^1];
+                            EventRegInfo.Release(listListener[i]);
                             listListener.RemoveAt(listListener.Count - 1);
                             i--;
                         }
@@ -437,7 +443,7 @@ namespace TEngine
                 return;
             }
 
-            listListener.Add(new EventRegInfo(listener, owner));
+            listListener.Add(EventRegInfo.Alloc(listener, owner));
         }
 
         /// <summary>
@@ -469,6 +475,7 @@ namespace TEngine
                         else
                         {
                             list[i] = list[^1];
+                            EventRegInfo.Release(list[i]);
                             list.RemoveAt(list.Count - 1);
                             i--;
                         }
@@ -587,17 +594,17 @@ namespace TEngine
     /// <summary>
     /// 事件注册信息。
     /// </summary>
-    public class EventRegInfo
+    public class EventRegInfo : IMemory
     {
         /// <summary>
         /// 事件回调。
         /// </summary>
-        public readonly Delegate Callback;
+        public Delegate Callback;
 
         /// <summary>
         /// 事件持有者。
         /// </summary>
-        public readonly object Owner;
+        public object Owner;
 
         /// <summary>
         /// 事件是否删除。
@@ -609,6 +616,29 @@ namespace TEngine
             this.Callback = callback;
             Owner = owner;
             IsDeleted = false;
+        }
+        
+        public EventRegInfo() { }
+
+        public void Clear()
+        {
+            Callback = null;
+            Owner = null;
+            IsDeleted = false;
+        }
+
+        public static EventRegInfo Alloc(Delegate callback, object owner)
+        {
+            EventRegInfo ret = MemoryPool.Acquire<EventRegInfo>();
+            ret.Callback = callback;
+            ret.Owner = owner;
+            ret.IsDeleted = false;
+            return ret;
+        }
+        
+        public static void Release(EventRegInfo eventRegInfo)
+        {
+            MemoryPool.Release(eventRegInfo);
         }
     }
 }
