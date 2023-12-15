@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Internal;
@@ -108,6 +109,12 @@ namespace TEngine
             public static void AddUpdateListener(UnityAction fun)
             {
                 _MakeEntity();
+                AddUpdateListenerImp(fun).Forget();
+            }
+            
+            private static async UniTaskVoid AddUpdateListenerImp(UnityAction fun)
+            {
+                await UniTask.Yield(/*PlayerLoopTiming.LastPreUpdate*/);
                 _behaviour.AddUpdateListener(fun);
             }
 
@@ -118,6 +125,12 @@ namespace TEngine
             public static void AddFixedUpdateListener(UnityAction fun)
             {
                 _MakeEntity();
+                AddFixedUpdateListenerImp(fun).Forget();
+            }
+            
+            private static async UniTaskVoid AddFixedUpdateListenerImp(UnityAction fun)
+            {
+                await UniTask.Yield(PlayerLoopTiming.LastEarlyUpdate);
                 _behaviour.AddFixedUpdateListener(fun);
             }
 
@@ -128,6 +141,12 @@ namespace TEngine
             public static void AddLateUpdateListener(UnityAction fun)
             {
                 _MakeEntity();
+                AddLateUpdateListenerImp(fun).Forget();
+            }
+
+            private static async UniTaskVoid AddLateUpdateListenerImp(UnityAction fun)
+            {
+                await UniTask.Yield(/*PlayerLoopTiming.LastPreLateUpdate*/);
                 _behaviour.AddLateUpdateListener(fun);
             }
 
