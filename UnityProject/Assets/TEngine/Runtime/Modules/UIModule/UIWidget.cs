@@ -24,7 +24,7 @@ namespace TEngine
         /// 窗口组件名称。
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        public string name { private set; get; } = nameof(UIWidget);
+        public string name { protected set; get; } = string.Empty;
 
         /// <summary>
         /// UI类型。
@@ -237,6 +237,7 @@ namespace TEngine
                 return false;
             }
 
+            name = GetType().Name;
             transform = go.GetComponent<Transform>();
             rectTransform = transform as RectTransform;
             gameObject = go;
