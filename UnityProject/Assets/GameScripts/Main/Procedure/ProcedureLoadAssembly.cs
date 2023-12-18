@@ -116,8 +116,7 @@ namespace GameMain
         {
             ChangeState<ProcedureStartGame>(m_procedureOwner);
 #if UNITY_EDITOR
-            m_MainLogicAssembly = AppDomain.CurrentDomain.GetAssemblies().
-                First(assembly => $"{assembly.GetName().Name}.dll" == SettingsUtils.HybridCLRCustomGlobalSettings.LogicMainDllName);
+            m_MainLogicAssembly = GetMainLogicAssembly();
 #endif
             if (m_MainLogicAssembly == null)
             {
