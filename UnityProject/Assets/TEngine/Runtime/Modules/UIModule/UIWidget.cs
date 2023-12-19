@@ -102,6 +102,11 @@ namespace TEngine
                 for (int i = 0; i < listChild.Count; i++)
                 {
                     var uiWidget = listChild[i];
+                    
+                    if (uiWidget == null)
+                    {
+                        continue;
+                    }
 
                     TProfiler.BeginSample(uiWidget.name);
                     var needValid = uiWidget.InternalUpdate();
@@ -208,6 +213,7 @@ namespace TEngine
             RestChildCanvas(parentUI);
             parent = parentUI;
             Parent.ListChild.Add(this);
+            Parent.SetUpdateDirty();
             ScriptGenerator();
             BindMemberProperty();
             RegisterEvent();
@@ -279,6 +285,8 @@ namespace TEngine
         /// </summary>
         internal void OnDestroyWidget()
         {
+            Parent?.SetUpdateDirty();
+            
             RemoveAllUIEvent();
 
             foreach (var uiChild in ListChild)

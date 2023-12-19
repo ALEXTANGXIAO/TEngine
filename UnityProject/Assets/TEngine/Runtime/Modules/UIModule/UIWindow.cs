@@ -318,6 +318,11 @@ namespace TEngine
                 {
                     var uiWidget = listChild[i];
 
+                    if (uiWidget == null)
+                    {
+                        continue;
+                    }
+
                     TProfiler.BeginSample(uiWidget.name);
                     var needValid = uiWidget.InternalUpdate();
                     TProfiler.EndSample();

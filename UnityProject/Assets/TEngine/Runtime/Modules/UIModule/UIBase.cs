@@ -175,7 +175,15 @@ namespace TEngine
         protected virtual void OnSetVisible(bool visible)
         {
         }
-
+        
+        internal void SetUpdateDirty()
+        {
+            m_updateListValid = false;
+            if (Parent != null)
+            {
+                Parent.SetUpdateDirty();
+            }
+        }
 
         #region FindChildComponent
 
