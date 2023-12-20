@@ -1,1 +1,0 @@
-server -p 8081 -cors 
