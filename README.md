@@ -46,6 +46,7 @@
 * [06_对象池模块](Books/3-4-%E5%AF%B9%E8%B1%A1%E6%B1%A0%E6%A8%A1%E5%9D%97.md): 展示对象池模块概览。
 * [07_配置表模块](Books/3-6-%E9%85%8D%E7%BD%AE%E8%A1%A8%E6%A8%A1%E5%9D%97.md): 展示配置表模块概览。
 * [08_流程模块](Books/3-7-%E6%B5%81%E7%A8%8B%E6%A8%A1%E5%9D%97.md): 展示商业化流程模块。
+* [09_UI模块](Books/3-5-UI模块.md): 展示商业化UI模块。
 
 
 ## <strong>为什么要使用TEngine
@@ -85,6 +86,11 @@ Assets
         └── GameLogic   // 游戏业务逻辑程序集 [Dll]
             ├── GameApp.cs                  // 热更主入口
             └── GameApp_RegisterSystem.cs   // 热更主入口注册系统   
+
+
+TEngine
+├── Editor              // TEngine编辑器核心代码
+└── Runtime             // TEngine运行时核心代码
 ```
 
  - 必要：项目使用了以下第三方插件，请自行购买导入：
@@ -103,3 +109,8 @@ Assets
 
 ## <strong>交流群
 ### <a href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=MzOcQIzGVLQ5AC5LHaqqA3h_F6lZ_DX4&authKey=LctqAWGHkJ7voQvuj1oaSe5tsGrc1XmQG3U4QniieGUlxY3lC7FtDIpEvPOX0vT8&noverify=0&group_code=862987645">群   号：862987645 </strong></a>
+
+
+## <strong>Buy me a coffee.
+
+[您的赞助会让我们做得更快更好，如果觉得TEngine对您有帮助，不妨赞助我买杯咖啡吧~](Books/Donate.md)
