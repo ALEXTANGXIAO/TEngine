@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &1
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e189374413a3f00468e49d51d8b27a09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enable: 1
+  useGlobalIl2cpp: 0
+  hybridclrRepoURL: https://gitee.com/focus-creative-games/hybridclr
+  il2cppPlusRepoURL: https://gitee.com/focus-creative-games/il2cpp_plus
+  hotUpdateAssemblyDefinitions:
+  - {fileID: 5897886265953266890, guid: cbb0d51b565003841ae81cdbaf747114, type: 3}
+  - {fileID: 5897886265953266890, guid: 8f58f15387c7a6f4fad9857024eb47f7, type: 3}
+  - {fileID: 5897886265953266890, guid: 6e76b07590314a543b982daed6af2509, type: 3}
+  hotUpdateAssemblies: []
+  preserveHotUpdateAssemblies: []
+  hotUpdateDllCompileOutputRootDir: HybridCLRData/HotUpdateDlls
+  externalHotUpdateAssembliyDirs: []
+  strippedAOTDllOutputRootDir: HybridCLRData/AssembliesPostIl2CppStrip
+  patchAOTAssemblies:
+  - mscorlib.dll
+  - System.dll
+  - System.Core.dll
+  - UnityEngine.CoreModule.dll
+  - YooAsset.dll
+  - UniTask.dll
+  - TEngine.Runtime.dll
+  outputLinkFile: HybridCLRGenerate/link.xml
+  outputAOTGenericReferenceFile: HybridCLRGenerate/AOTGenericReferences.cs
+  maxGenericReferenceIteration: 10
+  maxMethodBridgeGenericIteration: 10
