@@ -152,7 +152,7 @@ namespace GameMain
 
                 foreach (var hotUpdateDllName in SettingsUtils.HybridCLRCustomGlobalSettings.HotUpdateAssemblies)
                 {
-                    if (hotUpdateDllName == $"{assembly.GetName().Name}.dll")
+                    if (hotUpdateDllName == $"{assembly.GetName().Name}.dll" && string.IsNullOrEmpty(assembly.Location))
                     {
                         m_HotfixAssemblys.Add(assembly);
                     }
