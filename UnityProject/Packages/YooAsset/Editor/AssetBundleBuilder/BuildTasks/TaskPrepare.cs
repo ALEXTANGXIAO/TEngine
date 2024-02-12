@@ -79,7 +79,7 @@ namespace YooAsset.Editor
 
 				// 检测包裹输出目录是否存在
 				string packageOutputDirectory = buildParametersContext.GetPackageOutputDirectory();
-				if (Directory.Exists(packageOutputDirectory))
+				if (Directory.Exists(packageOutputDirectory)&& buildParameters.BuildMode != EBuildMode.ForceRebuild)
 					throw new Exception($"本次构建的补丁目录已经存在：{packageOutputDirectory}");
 
 				// 保存改动的资源

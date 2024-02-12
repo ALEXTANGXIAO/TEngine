@@ -31,6 +31,7 @@ public partial class GameApp
     {
         //带生命周期的单例系统。
         AddLogicSys(BehaviourSingleSystem.Instance);
+        AddLogicSys(Module01.Instance);
     }
     
     /// <summary>
@@ -50,6 +51,10 @@ public partial class GameApp
         {
             Log.Fatal("{0} Init failed", logicSys.GetType().Name);
             return false;
+        }
+        else
+        {
+            Log.Info("{0} Init success", logicSys.GetType().Name);
         }
 
         _listLogicMgr.Add(logicSys);
