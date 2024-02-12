@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 185f6993d5150494d98da50e26cb1c25, type: 3}
   m_Name: AssetBundleCollectorSetting
   m_EditorClassIdentifier: 
-  ShowPackageView: 0
+  ShowPackageView: 1
   EnableAddressable: 1
   LocationToLower: 0
   IncludeAssetGUID: 0
@@ -167,6 +167,32 @@ MonoBehaviour:
       Collectors:
       - CollectPath: Assets/AssetRaw/Fonts
         CollectorGUID: 2473375c9ee163a4b861278b38091455
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 
+    - GroupName: Models
+      GroupDesc: "\u6A21\u578B"
+      AssetTags: Models
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/AssetRaw/Models
+        CollectorGUID: c476e2b17462a7d47b63821021cd863d
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 
+    - GroupName: Preabs
+      GroupDesc: "\u9884\u5236\u4F53"
+      AssetTags: Preabs
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/AssetRaw/Prefabs
+        CollectorGUID: 7149406624046ea479cdab55e7bb060b
         CollectorType: 0
         AddressRuleName: AddressByFileName
         PackRuleName: PackDirectory

@@ -26,8 +26,8 @@ MonoBehaviour:
       m_ExtraResourceSourceUrl: http://127.0.0.1:8088
       m_FormalResourceSourceUrl: http://127.0.0.1:8088
     m_AtlasFolder: Assets/AssetRaw/Atlas
-    HostServerURL: http://127.0.0.1:8081/AssetRoot
-    FallbackHostServerURL: http://127.0.0.1:8081/AssetRoot
+    HostServerURL: http://127.0.0.1:8081?BuildPackage=
+    FallbackHostServerURL: http://127.0.0.1:8081?BuildPackage=
     EnableUpdateData: 0
     WindowsUpdateDataUrl: http://127.0.0.1
     MacOSUpdateDataUrl: http://127.0.0.1
