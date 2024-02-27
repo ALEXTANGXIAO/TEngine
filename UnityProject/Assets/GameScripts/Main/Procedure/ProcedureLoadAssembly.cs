@@ -141,6 +141,7 @@ namespace GameMain
 
         private Assembly GetMainLogicAssembly()
         {
+            m_HotfixAssemblys.Clear();
             Assembly mainLogicAssembly = null;
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
@@ -152,7 +153,7 @@ namespace GameMain
 
                 foreach (var hotUpdateDllName in SettingsUtils.HybridCLRCustomGlobalSettings.HotUpdateAssemblies)
                 {
-                    if (hotUpdateDllName == $"{assembly.GetName().Name}.dll" && string.IsNullOrEmpty(assembly.Location))
+                    if (hotUpdateDllName == $"{assembly.GetName().Name}.dll")
                     {
                         m_HotfixAssemblys.Add(assembly);
                     }
