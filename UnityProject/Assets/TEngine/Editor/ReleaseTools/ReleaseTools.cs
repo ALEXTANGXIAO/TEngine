@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
@@ -91,21 +93,22 @@ namespace TEngine
             return target;
         }
 
-        private static void BuildInternal(BuildTarget buildTarget, string outputRoot, string packageVersion = "1.0")
+        private static void BuildInternal(BuildTarget buildTarget, string outputRoot, string packageVersion = "1.0", EBuildMode buildMode = EBuildMode.IncrementalBuild,
+            EBuildPipeline buildPipeline = EBuildPipeline.ScriptableBuildPipeline, string packageName = "DefaultPackage")
         {
             Debug.Log($"开始构建 : {buildTarget}");
 
             BuildParameters.SBPBuildParameters sbpBuildParameters = new BuildParameters.SBPBuildParameters();
             sbpBuildParameters.WriteLinkXML = true;
-            
+
             // 构建参数
             BuildParameters buildParameters = new BuildParameters();
             buildParameters.StreamingAssetsRoot = AssetBundleBuilderHelper.GetDefaultStreamingAssetsRoot();
-            buildParameters.BuildOutputRoot = outputRoot; //AssetBundleBuilderHelper.GetDefaultBuildOutputRoot();
+            buildParameters.BuildOutputRoot = outputRoot;//AssetBundleBuilderHelper.GetDefaultBuildOutputRoot();
             buildParameters.BuildTarget = buildTarget;
-            buildParameters.BuildPipeline = EBuildPipeline.ScriptableBuildPipeline;
-            buildParameters.BuildMode = EBuildMode.IncrementalBuild;
-            buildParameters.PackageName = "DefaultPackage";
+            buildParameters.BuildPipeline = buildPipeline;
+            buildParameters.BuildMode = buildMode;
+            buildParameters.PackageName = packageName;
             buildParameters.PackageVersion = packageVersion;
             buildParameters.VerifyBuildingResult = true;
             buildParameters.SharedPackRule = new ZeroRedundancySharedPackRule();
@@ -126,7 +129,29 @@ namespace TEngine
                 Debug.LogError($"构建失败 : {buildResult.ErrorInfo}");
             }
         }
-
+        [MenuItem("TEngine/Build/一键打包Windows资源", false, 30)]
+        public static void AutomationBuildBundle()
+        {
+            //生成版本号
+            var verstion = GetBuildPackageVersion();
+            //热更新dll
+            BuildDLLCommand.BuildAndCopyDlls(BuildTarget.StandaloneWindows64);
+            AssetDatabase.Refresh();
+            //BuildInternal(BuildTarget.StandaloneWindows64, Application.dataPath + "/../Builds/Windows", "1.0"); 
+            var window = AssetBundleBuilderWindow.OpenWindow();
+            //自动设置版本号
+            window.ChangeVersion(verstion);
+            window.SuccessAction = () =>
+            {
+                //导出版本号，同步至FileSever
+                var versionPath = Application.dataPath + $"/../Bundles/{BuildTarget.StandaloneWindows64}/version.text";
+                using var writer = new StreamWriter(versionPath, false, Encoding.UTF8);
+                writer.WriteLine(verstion);
+                //刷新database
+                Log.Info("Refresh");
+                AssetDatabase.Refresh();
+            };
+        }
         [MenuItem("TEngine/Build/一键打包Windows", false, 30)]
         public static void AutomationBuild()
         {
@@ -136,30 +161,30 @@ namespace TEngine
             AssetDatabase.Refresh();
             BuildImp(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64, $"{Application.dataPath}/../Builds/Windows/{GetBuildPackageVersion()}Windows.exe");
         }
-        
+
         // 构建版本相关
         private static string GetBuildPackageVersion()
         {
             int totalMinutes = DateTime.Now.Hour * 60 + DateTime.Now.Minute;
             return DateTime.Now.ToString("yyyy-MM-dd") + "-" + totalMinutes;
         }
-        
+
         [MenuItem("TEngine/Build/一键打包Android", false, 30)]
         public static void AutomationBuildAndroid()
         {
             BuildDLLCommand.BuildAndCopyDlls(BuildTarget.Android);
             AssetDatabase.Refresh();
-            BuildInternal(BuildTarget.Android, outputRoot:Application.dataPath + "/../Bundles",packageVersion: GetBuildPackageVersion());
+            BuildInternal(BuildTarget.Android, outputRoot: Application.dataPath + "/../Bundles", packageVersion: GetBuildPackageVersion());
             AssetDatabase.Refresh();
             BuildImp(BuildTargetGroup.Android, BuildTarget.Android, $"{Application.dataPath}/../Build/Android/{GetBuildPackageVersion()}Android.apk");
         }
-        
+
         [MenuItem("TEngine/Build/一键打包IOS", false, 30)]
         public static void AutomationBuildIOS()
         {
             BuildDLLCommand.BuildAndCopyDlls(BuildTarget.iOS);
             AssetDatabase.Refresh();
-            BuildInternal(BuildTarget.iOS, outputRoot:Application.dataPath + "/../Bundles",packageVersion: GetBuildPackageVersion());
+            BuildInternal(BuildTarget.iOS, outputRoot: Application.dataPath + "/../Bundles", packageVersion: GetBuildPackageVersion());
             AssetDatabase.Refresh();
             BuildImp(BuildTargetGroup.iOS, BuildTarget.iOS, $"{Application.dataPath}/../Build/IOS/XCode_Project");
         }

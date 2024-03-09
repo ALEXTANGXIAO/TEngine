@@ -74,8 +74,8 @@ crashlytics-build.properties
 [Aa]ssets/AATest.meta
 
 #Bundles
-Bundles/
-
+Bundles/StandaloneWindows64/
+Bundles/node_modules/
 #Sandbox
 Sandbox/
 

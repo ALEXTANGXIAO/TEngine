@@ -45,8 +45,12 @@ public class DisStripCode : MonoBehaviour
 
     private void RegisterType<T>()
     {
+        RegistrerType(typeof(T));
+    }
+    private void RegistrerType(Type type)
+    {
 #if UNITY_EDITOR && false
-      Debug.Log($"DisStripCode RegisterType :{typeof(T)}");
+      Debug.Log($"DisStripCode RegisterType :{type}");
 #endif
     }
 }
