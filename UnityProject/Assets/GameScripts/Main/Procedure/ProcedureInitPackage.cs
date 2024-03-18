@@ -29,92 +29,111 @@ namespace GameMain
 
         private async UniTaskVoid InitPackage(ProcedureOwner procedureOwner)
         {
-            if (GameModule.Resource.PlayMode == EPlayMode.HostPlayMode ||
-                GameModule.Resource.PlayMode == EPlayMode.WebPlayMode)
+            try
             {
-                if (SettingsUtils.EnableUpdateData())
+                if (GameModule.Resource.PlayMode == EPlayMode.HostPlayMode ||
+                    GameModule.Resource.PlayMode == EPlayMode.WebPlayMode)
                 {
-                    UpdateData updateData = await RequestUpdateData();
-
-                    if (updateData != null)
+                    if (SettingsUtils.EnableUpdateData())
                     {
-                        if (!string.IsNullOrEmpty(updateData.HostServerURL))
-                        {
-                            SettingsUtils.FrameworkGlobalSettings.HostServerURL = updateData.HostServerURL;
-                        }
+                        UpdateData updateData = await RequestUpdateData();
 
-                        if (!string.IsNullOrEmpty(updateData.FallbackHostServerURL))
+                        if (updateData != null)
                         {
-                            SettingsUtils.FrameworkGlobalSettings.FallbackHostServerURL =
-                                updateData.FallbackHostServerURL;
+                            if (!string.IsNullOrEmpty(updateData.HostServerURL))
+                            {
+                                SettingsUtils.FrameworkGlobalSettings.HostServerURL = updateData.HostServerURL;
+                            }
+
+                            if (!string.IsNullOrEmpty(updateData.FallbackHostServerURL))
+                            {
+                                SettingsUtils.FrameworkGlobalSettings.FallbackHostServerURL =
+                                    updateData.FallbackHostServerURL;
+                            }
                         }
                     }
                 }
-            }
 
-            var initializationOperation = GameModule.Resource.InitPackage();
+                var initializationOperation = await GameModule.Resource.InitPackage();
 
-            await UniTask.Delay(TimeSpan.FromSeconds(1f));
-
-            await initializationOperation.ToUniTask();
-
-            if (initializationOperation.Status == EOperationStatus.Succeed)
-            {
-                //热更新阶段文本初始化
-                LoadText.Instance.InitConfigData(null);
-
-                GameEvent.Send(RuntimeId.ToRuntimeId("RefreshVersion"));
-
-                EPlayMode playMode = GameModule.Resource.PlayMode;
-
-                // 编辑器模式。
-                if (playMode == EPlayMode.EditorSimulateMode)
+                if (initializationOperation.Status == EOperationStatus.Succeed)
                 {
-                    Log.Info("Editor resource mode detected.");
-                    ChangeState<ProcedurePreload>(procedureOwner);
+                    //热更新阶段文本初始化
+                    LoadText.Instance.InitConfigData(null);
+
+                    GameEvent.Send(RuntimeId.ToRuntimeId("RefreshVersion"));
+
+                    EPlayMode playMode = GameModule.Resource.PlayMode;
+
+                    // 编辑器模式。
+                    if (playMode == EPlayMode.EditorSimulateMode)
+                    {
+                        Log.Info("Editor resource mode detected.");
+                        ChangeState<ProcedurePreload>(procedureOwner);
+                    }
+                    // 单机模式。
+                    else if (playMode == EPlayMode.OfflinePlayMode)
+                    {
+                        Log.Info("Package resource mode detected.");
+                        ChangeState<ProcedureInitResources>(procedureOwner);
+                    }
+                    // 可更新模式。
+                    else if (playMode == EPlayMode.HostPlayMode)
+                    {
+                        // 打开启动UI。
+                        UILoadMgr.Show(UIDefine.UILoadUpdate);
+
+                        Log.Info("Updatable resource mode detected.");
+                        ChangeState<ProcedureUpdateVersion>(procedureOwner);
+                    }
+                    // 可更新模式。
+                    else if (playMode == EPlayMode.WebPlayMode)
+                    {
+                        Log.Info("WebPlayMode resource mode detected.");
+                        ChangeState<ProcedurePreload>(procedureOwner);
+                    }
+                    else
+                    {
+                        Log.Error("UnKnow resource mode detected Please check???");
+                    }
                 }
-                // 单机模式。
-                else if (playMode == EPlayMode.OfflinePlayMode)
-                {
-                    Log.Info("Package resource mode detected.");
-                    ChangeState<ProcedureInitResources>(procedureOwner);
-                }
-                // 可更新模式。
-                else if (playMode == EPlayMode.HostPlayMode)
+                else
                 {
                     // 打开启动UI。
                     UILoadMgr.Show(UIDefine.UILoadUpdate);
 
-                    Log.Info("Updatable resource mode detected.");
-                    ChangeState<ProcedureUpdateVersion>(procedureOwner);
-                }
-                // 可更新模式。
-                else if (playMode == EPlayMode.WebPlayMode)
-                {
-                    Log.Info("WebPlayMode resource mode detected.");
-                    ChangeState<ProcedurePreload>(procedureOwner);
-                }
-                else
-                {
-                    Log.Error("UnKnow resource mode detected Please check???");
+                    Log.Error($"{initializationOperation.Error}");
+
+                    // 打开启动UI。
+                    UILoadMgr.Show(UIDefine.UILoadUpdate, $"资源初始化失败！");
+
+                    UILoadTip.ShowMessageBox(
+                        $"资源初始化失败！点击确认重试 \n \n <color=#FF0000>原因{initializationOperation.Error}</color>",
+                        MessageShowType.TwoButton,
+                        LoadStyle.StyleEnum.Style_Retry
+                        , () => { Retry(procedureOwner); }, UnityEngine.Application.Quit);
                 }
             }
-            else
+            catch (Exception e)
             {
-                // 打开启动UI。
-                UILoadMgr.Show(UIDefine.UILoadUpdate);
-
-                Log.Error($"{initializationOperation.Error}");
-
-                // 打开启动UI。
-                UILoadMgr.Show(UIDefine.UILoadUpdate, $"资源初始化失败！");
-
-                UILoadTip.ShowMessageBox(
-                    $"资源初始化失败！点击确认重试 \n \n <color=#FF0000>原因{initializationOperation.Error}</color>",
-                    MessageShowType.TwoButton,
-                    LoadStyle.StyleEnum.Style_Retry
-                    , () => { Retry(procedureOwner); }, UnityEngine.Application.Quit);
+                OnInitPackageFailed(procedureOwner, e.Message);
             }
+        }
+
+        private void OnInitPackageFailed(ProcedureOwner procedureOwner, string message)
+        {
+            // 打开启动UI。
+            UILoadMgr.Show(UIDefine.UILoadUpdate);
+
+            Log.Error($"{message}");
+
+            // 打开启动UI。
+            UILoadMgr.Show(UIDefine.UILoadUpdate, $"资源初始化失败！");
+
+            UILoadTip.ShowMessageBox($"资源初始化失败！点击确认重试 \n \n <color=#FF0000>原因{message}</color>", MessageShowType.TwoButton,
+                LoadStyle.StyleEnum.Style_Retry
+                , () => { Retry(procedureOwner); },
+                Application.Quit);
         }
 
         private void Retry(ProcedureOwner procedureOwner)

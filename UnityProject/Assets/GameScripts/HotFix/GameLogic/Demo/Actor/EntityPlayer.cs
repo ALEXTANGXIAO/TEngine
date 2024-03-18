@@ -51,7 +51,7 @@ public class EntityPlayer : MonoBehaviour
 		if (name.StartsWith("enemy") || name.StartsWith("asteroid"))
 		{
 			GameEvent.Send(ActorEventDefine.PlayerDead,transform.position, transform.rotation);
-			GameModule.Resource.FreeGameObject(this.gameObject);
+			PoolManager.Instance.PushGameObject(this.gameObject);
 		}
 	}
 }

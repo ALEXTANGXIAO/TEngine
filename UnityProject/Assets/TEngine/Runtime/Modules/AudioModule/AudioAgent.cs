@@ -6,7 +6,7 @@ namespace TEngine
 {
     public class AudioData : MemoryObject
     {
-        public AssetOperationHandle AssetOperationHandle { private set; get; }
+        public AssetHandle AssetOperationHandle { private set; get; }
 
         public bool InPool { private set; get; } = false;
 
@@ -25,7 +25,7 @@ namespace TEngine
             AssetOperationHandle = null;
         }
 
-        internal static AudioData Alloc(AssetOperationHandle assetOperationHandle, bool inPool)
+        internal static AudioData Alloc(AssetHandle assetOperationHandle, bool inPool)
         {
             AudioData ret = MemoryPool.Acquire<AudioData>();
             ret.AssetOperationHandle = assetOperationHandle;
@@ -269,12 +269,12 @@ namespace TEngine
                     if (bAsync)
                     {
                         _audioAgentRuntimeState = AudioAgentRuntimeState.Loading;
-                        AssetOperationHandle handle = GameModule.Resource.LoadAssetAsyncHandle<AudioClip>(path);
+                        AssetHandle handle = GameModule.Resource.LoadAssetAsyncHandle<AudioClip>(path);
                         handle.Completed += OnAssetLoadComplete;
                     }
                     else
                     {
-                        AssetOperationHandle handle = GameModule.Resource.LoadAssetGetOperation<AudioClip>(path);
+                        AssetHandle handle = GameModule.Resource.LoadAssetGetOperation<AudioClip>(path);
                         OnAssetLoadComplete(handle);
                     }
                 }
@@ -337,7 +337,7 @@ namespace TEngine
         /// 资源加载完成。
         /// </summary>
         /// <param name="handle">资源操作句柄。</param>
-        void OnAssetLoadComplete(AssetOperationHandle handle)
+        void OnAssetLoadComplete(AssetHandle handle)
         {
             if (handle != null)
             {

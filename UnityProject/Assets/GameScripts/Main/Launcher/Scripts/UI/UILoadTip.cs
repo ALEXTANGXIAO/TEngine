@@ -25,7 +25,7 @@ namespace GameMain
         private Text m_textInfo;
         private Button m_btnIgnore;
         private Button m_btnUpdate;
-        public override void ScriptGenerator()
+        protected override void ScriptGenerator()
         {
             m_btnPackage = FindChildComponent<Button>("BgImage/m_btnPackage");
             m_textTittle = FindChildComponent<Text>("BgImage/m_textTittle");
@@ -81,8 +81,18 @@ namespace GameMain
 
         #endregion
 
-        public override void OnRefresh()
+        protected override void OnRefresh()
         {
+            OnOk = (Action)userDatas[1];
+            OnCancel = (Action)userDatas[2];
+            ShowType = (MessageShowType)userDatas[3];
+
+            var loadStyleUI = gameObject.GetComponent<LoadStyle>();
+            if (loadStyleUI)
+            {
+                loadStyleUI.SetStyle((LoadStyle.StyleEnum)userDatas[4]);
+            }
+            
             base.OnRefresh();
             m_btnIgnore.gameObject.SetActive(false);
             m_btnPackage.gameObject.SetActive(false);
@@ -121,23 +131,7 @@ namespace GameMain
             Action onCancel = null,
             Action onPackage = null)
         {
-            var operation = GameModule.UI.ShowUI<UILoadTip>(desc);
-            if (operation == null || operation.Window == null)
-            {
-                return;
-            }
-
-            var ui = operation.Window as UILoadTip;
-            ui.OnOk = onOk;
-            ui.OnCancel = onCancel;
-            ui.ShowType = showtype;
-            ui.OnRefresh();
-
-            var loadStyleUI = ui.gameObject.GetComponent<LoadStyle>();
-            if (loadStyleUI)
-            {
-                loadStyleUI.SetStyle(style);
-            }
+            GameModule.UI.ShowUI<UILoadTip>(desc,onOk,onCancel,showtype,style);
         }
     }
 }

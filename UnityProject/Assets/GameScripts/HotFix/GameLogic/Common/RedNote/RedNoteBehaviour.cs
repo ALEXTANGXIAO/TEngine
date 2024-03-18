@@ -171,7 +171,7 @@ namespace GameLogic
             CurState = false;
         }
 
-        public override void OnDestroy()
+        protected override void OnDestroy()
         {
             RemoveNotifyBind();
         }

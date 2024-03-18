@@ -1,3 +1,4 @@
+using GameLogic;
 using TEngine;
 using UnityEngine;
 
@@ -28,7 +29,7 @@ public class EntityBullet : MonoBehaviour
 		{
 			if (name.StartsWith("enemy") == false)
 			{
-				GameModule.Resource.FreeGameObject(this.gameObject);
+				PoolManager.Instance.PushGameObject(this.gameObject);
 			}
 		}
 
@@ -36,7 +37,7 @@ public class EntityBullet : MonoBehaviour
 		{
 			if (name.StartsWith("player") == false)
 			{
-				GameModule.Resource.FreeGameObject(this.gameObject);
+				PoolManager.Instance.PushGameObject(this.gameObject);
 			}
 		}
 	}
@@ -45,7 +46,7 @@ public class EntityBullet : MonoBehaviour
 		var name = other.gameObject.name;
 		if (name.StartsWith("Boundary"))
 		{
-			GameModule.Resource.FreeGameObject(this.gameObject);
+			PoolManager.Instance.PushGameObject(this.gameObject);
 		}
 	}
 }

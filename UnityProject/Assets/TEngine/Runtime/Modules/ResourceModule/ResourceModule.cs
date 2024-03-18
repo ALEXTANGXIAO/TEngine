@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -8,27 +7,30 @@ using YooAsset;
 namespace TEngine
 {
     /// <summary>
-    /// 资源模块。
+    /// 资源组件。
     /// </summary>
     [DisallowMultipleComponent]
     public class ResourceModule : Module
     {
         #region Propreties
 
-        /// <summary>
-        /// 获取当前资源适用的游戏版本号。
-        /// </summary>
-        public string ApplicableGameVersion => m_ResourceManager?.ApplicableGameVersion ?? "Unknown";
+        private const int DefaultPriority = 0;
 
-        /// <summary>
-        /// 获取当前内部资源版本号。
-        /// </summary>
-        public int InternalResourceVersion => m_ResourceManager?.InternalResourceVersion ?? 0;
+        private IResourceManager m_ResourceManager;
 
-        /// <summary>
-        /// 默认资源加载优先级。
-        /// </summary>
-        public const int DefaultPriority = 0;
+        private bool m_ForceUnloadUnusedAssets = false;
+
+        private bool m_PreorderUnloadUnusedAssets = false;
+
+        private bool m_PerformGCCollect = false;
+
+        private AsyncOperation m_AsyncOperation = null;
+
+        private float m_LastUnloadUnusedAssetsOperationElapseSeconds = 0f;
+
+        [SerializeField] private float m_MinUnloadUnusedAssetsInterval = 60f;
+
+        [SerializeField] private float m_MaxUnloadUnusedAssetsInterval = 300f;
 
         /// <summary>
         /// 当前最新的包裹版本。
@@ -38,7 +40,7 @@ namespace TEngine
         /// <summary>
         /// 资源包名称。
         /// </summary>
-        public string packageName = "DefaultPackage";
+        public string PackageName = "DefaultPackage";
 
         /// <summary>
         /// 资源系统运行模式。
@@ -55,7 +57,7 @@ namespace TEngine
             {
 #if UNITY_EDITOR
                 //编辑器模式使用。
-                return (EPlayMode)UnityEditor.EditorPrefs.GetInt("EditorResourceMode");
+                return (EPlayMode)UnityEditor.EditorPrefs.GetInt("EditorPlayMode");
 #else
                 if (playMode == EPlayMode.EditorSimulateMode)
                 {
@@ -76,75 +78,56 @@ namespace TEngine
         /// <summary>
         /// 下载文件校验等级。
         /// </summary>
-        public EVerifyLevel verifyLevel = EVerifyLevel.Middle;
+        public EVerifyLevel VerifyLevel = EVerifyLevel.Middle;
 
-        /// <summary>
-        /// 资源下载器，用于下载当前资源版本所有的资源包文件。
-        /// </summary>
-        public ResourceDownloaderOperation Downloader { get; set; }
-
-        [SerializeField] private ReadWritePathType readWritePathType = ReadWritePathType.Unspecified;
-
-        [SerializeField] private float minUnloadUnusedAssetsInterval = 60f;
-
-        [SerializeField] private float maxUnloadUnusedAssetsInterval = 300f;
+        [SerializeField] private ReadWritePathType m_ReadWritePathType = ReadWritePathType.Unspecified;
 
         /// <summary>
         /// 设置异步系统参数，每帧执行消耗的最大时间切片（单位：毫秒）
         /// </summary>
-        public long milliseconds = 30;
+        [SerializeField] public long Milliseconds = 30;
 
-        public int downloadingMaxNum = 3;
-        public int failedTryAgain = 3;
-
-        /// <summary>
-        /// 资源缓存表容量。
-        /// </summary>
-        public int adaptiveReplacementCacheCapacity = 32;
-
-        private IResourceManager m_ResourceManager;
-        private AsyncOperation m_AsyncOperation = null;
-        private bool m_ForceUnloadUnusedAssets = false;
-        private bool m_PreorderUnloadUnusedAssets = false;
-        private bool m_PerformGCCollect = false;
-        private float m_LastUnloadUnusedAssetsOperationElapseSeconds = 0f;
-        private bool m_InitPackageByProcedure = true;
-
-        /// <summary>
-        /// 全局取消操作Token。
-        /// </summary>
-        public CancellationToken DefaultToken { private set; get; }
+        public int m_DownloadingMaxNum = 10;
 
         /// <summary>
         /// 获取或设置同时最大下载数目。
         /// </summary>
         public int DownloadingMaxNum
         {
-            get => downloadingMaxNum;
-            set => downloadingMaxNum = value;
+            get => m_DownloadingMaxNum;
+            set => m_DownloadingMaxNum = value;
+        }
+
+        public int m_FailedTryAgain = 3;
+
+        public int FailedTryAgain
+        {
+            get => m_FailedTryAgain;
+            set => m_FailedTryAgain = value;
         }
 
         /// <summary>
-        /// 失败尝试数目。
+        /// 获取当前资源适用的游戏版本号。
         /// </summary>
-        public int FailedTryAgain
-        {
-            get => failedTryAgain;
-            set => failedTryAgain = value;
-        }
+        public string ApplicableGameVersion => m_ResourceManager.ApplicableGameVersion;
+
+        /// <summary>
+        /// 获取当前内部资源版本号。
+        /// </summary>
+        public int InternalResourceVersion => m_ResourceManager.InternalResourceVersion;
 
         /// <summary>
         /// 获取资源读写路径类型。
         /// </summary>
-        public ReadWritePathType ReadWritePathType => readWritePathType;
+        public ReadWritePathType ReadWritePathType => m_ReadWritePathType;
 
         /// <summary>
         /// 获取或设置无用资源释放的最小间隔时间，以秒为单位。
         /// </summary>
         public float MinUnloadUnusedAssetsInterval
         {
-            get => minUnloadUnusedAssetsInterval;
-            set => minUnloadUnusedAssetsInterval = value;
+            get => m_MinUnloadUnusedAssetsInterval;
+            set => m_MinUnloadUnusedAssetsInterval = value;
         }
 
         /// <summary>
@@ -152,8 +135,8 @@ namespace TEngine
         /// </summary>
         public float MaxUnloadUnusedAssetsInterval
         {
-            get => maxUnloadUnusedAssetsInterval;
-            set => maxUnloadUnusedAssetsInterval = value;
+            get => m_MaxUnloadUnusedAssetsInterval;
+            set => m_MaxUnloadUnusedAssetsInterval = value;
         }
 
         /// <summary>
@@ -171,79 +154,148 @@ namespace TEngine
         /// </summary>
         public string ReadWritePath => m_ResourceManager.ReadWritePath;
 
+        [SerializeField]
+        private float m_AssetAutoReleaseInterval = 60f;
+
+        [SerializeField]
+        private int m_AssetCapacity = 64;
+
+        [SerializeField]
+        private float m_AssetExpireTime = 60f;
+
+        [SerializeField]
+        private int m_AssetPriority = 0;
+        
+        /// <summary>
+        /// 获取或设置资源对象池自动释放可释放对象的间隔秒数。
+        /// </summary>
+        public float AssetAutoReleaseInterval
+        {
+            get
+            {
+                return m_ResourceManager.AssetAutoReleaseInterval;
+            }
+            set
+            {
+                m_ResourceManager.AssetAutoReleaseInterval = m_AssetAutoReleaseInterval = value;
+            }
+        }
+
+        /// <summary>
+        /// 获取或设置资源对象池的容量。
+        /// </summary>
+        public int AssetCapacity
+        {
+            get
+            {
+                return m_ResourceManager.AssetCapacity;
+            }
+            set
+            {
+                m_ResourceManager.AssetCapacity = m_AssetCapacity = value;
+            }
+        }
+
+        /// <summary>
+        /// 获取或设置资源对象池对象过期秒数。
+        /// </summary>
+        public float AssetExpireTime
+        {
+            get
+            {
+                return m_ResourceManager.AssetExpireTime;
+            }
+            set
+            {
+                m_ResourceManager.AssetExpireTime = m_AssetExpireTime = value;
+            }
+        }
+
+        /// <summary>
+        /// 获取或设置资源对象池的优先级。
+        /// </summary>
+        public int AssetPriority
+        {
+            get
+            {
+                return m_ResourceManager.AssetPriority;
+            }
+            set
+            {
+                m_ResourceManager.AssetPriority = m_AssetPriority = value;
+            }
+        }
         #endregion
 
         private void Start()
         {
-            RootModule baseComponent = ModuleSystem.GetModule<RootModule>();
-            if (baseComponent == null)
+            RootModule rootModule = ModuleSystem.GetModule<RootModule>();
+            if (rootModule == null)
             {
-                Log.Fatal("Base component is invalid.");
+                Log.Fatal("Root module is invalid.");
                 return;
             }
 
             m_ResourceManager = ModuleImpSystem.GetModule<IResourceManager>();
             if (m_ResourceManager == null)
             {
-                Log.Fatal("YooAssetsManager component is invalid.");
+                Log.Fatal("Resource module is invalid.");
                 return;
             }
 
-            DefaultToken = gameObject.GetCancellationTokenOnDestroy();
-
-            if (playMode == EPlayMode.EditorSimulateMode)
+            if (PlayMode == EPlayMode.EditorSimulateMode)
             {
-                Log.Info("During this run, TEngine will use editor resource files, which you should validate first.");
+                Log.Info("During this run, Game Framework will use editor resource files, which you should validate first.");
 #if !UNITY_EDITOR
-                playMode = EPlayMode.OfflinePlayMode;
+                PlayMode = EPlayMode.OfflinePlayMode;
 #endif
             }
 
             m_ResourceManager.SetReadOnlyPath(Application.streamingAssetsPath);
-            if (readWritePathType == ReadWritePathType.TemporaryCache)
+            if (m_ReadWritePathType == ReadWritePathType.TemporaryCache)
             {
                 m_ResourceManager.SetReadWritePath(Application.temporaryCachePath);
             }
             else
             {
-                if (readWritePathType == ReadWritePathType.Unspecified)
+                if (m_ReadWritePathType == ReadWritePathType.Unspecified)
                 {
-                    readWritePathType = ReadWritePathType.PersistentData;
+                    m_ReadWritePathType = ReadWritePathType.PersistentData;
                 }
 
                 m_ResourceManager.SetReadWritePath(Application.persistentDataPath);
             }
 
-            m_ResourceManager.PackageName = packageName;
-            m_ResourceManager.PlayMode = playMode;
-            m_ResourceManager.VerifyLevel = verifyLevel;
-            m_ResourceManager.Milliseconds = milliseconds;
-            m_ResourceManager.ARCTableCapacity = adaptiveReplacementCacheCapacity;
+            m_ResourceManager.DefaultPackageName = PackageName;
+            m_ResourceManager.PlayMode = PlayMode;
+            m_ResourceManager.VerifyLevel = VerifyLevel;
+            m_ResourceManager.Milliseconds = Milliseconds;
+            m_ResourceManager.InstanceRoot = transform;
+            m_ResourceManager.HostServerURL = SettingsUtils.GetResDownLoadPath();
             m_ResourceManager.Initialize();
-            Log.Info($"ResourceModule Run Mode：{playMode}");
-            if (playMode == EPlayMode.EditorSimulateMode && !m_InitPackageByProcedure)
-            {
-                m_ResourceManager.InitPackage();
-            }
+            m_ResourceManager.AssetAutoReleaseInterval = m_AssetAutoReleaseInterval;
+            m_ResourceManager.AssetCapacity = m_AssetCapacity;
+            m_ResourceManager.AssetExpireTime = m_AssetExpireTime;
+            m_ResourceManager.AssetPriority = m_AssetPriority;
+            Log.Info($"ResourceComponent Run Mode：{PlayMode}");
         }
 
         /// <summary>
         /// 初始化操作。
         /// </summary>
-        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
         /// <returns></returns>
-        public InitializationOperation InitPackage(string customPackageName = "")
+        public async UniTask<InitializationOperation> InitPackage(string packageName = "")
         {
-            InitializationOperation operation = m_ResourceManager.InitPackage(customPackageName);
-
-            operation.Completed += _ =>
+            if (m_ResourceManager == null)
             {
-                ResourceCacheMgr.Instance.InitDefaultCachePool();
-            };
-            
-            return operation;
+                Log.Fatal("Resource component is invalid.");
+                return null;
+            }
+
+            return await m_ResourceManager.InitPackage(string.IsNullOrEmpty(packageName) ? PackageName:packageName);
         }
 
+        #region 版本更新
         /// <summary>
         /// 获取当前资源包版本。
         /// </summary>
@@ -252,7 +304,7 @@ namespace TEngine
         public string GetPackageVersion(string customPackageName = "")
         {
             var package = string.IsNullOrEmpty(customPackageName)
-                ? YooAssets.GetPackage(this.packageName)
+                ? YooAssets.GetPackage(PackageName)
                 : YooAssets.GetPackage(customPackageName);
             if (package == null)
             {
@@ -273,7 +325,7 @@ namespace TEngine
             string customPackageName = "")
         {
             var package = string.IsNullOrEmpty(customPackageName)
-                ? YooAssets.GetPackage(this.packageName)
+                ? YooAssets.GetPackage(PackageName)
                 : YooAssets.GetPackage(customPackageName);
             return package.UpdatePackageVersionAsync(appendTimeTicks, timeout);
         }
@@ -289,11 +341,16 @@ namespace TEngine
             bool autoSaveVersion = true, int timeout = 60, string customPackageName = "")
         {
             var package = string.IsNullOrEmpty(customPackageName)
-                ? YooAssets.GetPackage(this.packageName)
+                ? YooAssets.GetPackage(PackageName)
                 : YooAssets.GetPackage(customPackageName);
             return package.UpdatePackageManifestAsync(packageVersion, autoSaveVersion, timeout);
         }
-
+        
+        /// <summary>
+        /// 资源下载器，用于下载当前资源版本所有的资源包文件。
+        /// </summary>
+        public ResourceDownloaderOperation Downloader { get; set; }
+        
         /// <summary>
         /// 创建资源下载器，用于下载当前资源版本所有的资源包文件。
         /// </summary>
@@ -302,39 +359,18 @@ namespace TEngine
         {
             if (string.IsNullOrEmpty(customPackageName))
             {
-                var package = YooAssets.GetPackage(this.packageName);
-                Downloader = package.CreateResourceDownloader(downloadingMaxNum, failedTryAgain);
+                var package = YooAssets.GetPackage(PackageName);
+                Downloader = package.CreateResourceDownloader(DownloadingMaxNum, FailedTryAgain);
                 return Downloader;
             }
             else
             {
                 var package = YooAssets.GetPackage(customPackageName);
-                Downloader = package.CreateResourceDownloader(downloadingMaxNum, failedTryAgain);
+                Downloader = package.CreateResourceDownloader(DownloadingMaxNum, FailedTryAgain);
                 return Downloader;
             }
         }
-
-        /// <summary>
-        /// 创建资源下载器，用于下载当前资源版本指定地址的资源文件。
-        /// </summary>
-        /// <param name="location">资源地址</param>
-        /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
-        public ResourceDownloaderOperation CreateResourceDownloader(string location, string packageName = "")
-        {
-            if (string.IsNullOrEmpty(packageName))
-            {
-                var package = YooAssets.GetPackage(this.packageName);
-                Downloader = package.CreateResourceDownloader(location, downloadingMaxNum, failedTryAgain);
-                return Downloader;
-            }
-            else
-            {
-                var package = YooAssets.GetPackage(packageName);
-                Downloader = package.CreateResourceDownloader(location, downloadingMaxNum, failedTryAgain);
-                return Downloader;
-            }
-        }
-
+        
         /// <summary>
         /// 清理包裹未使用的缓存文件。
         /// </summary>
@@ -342,7 +378,7 @@ namespace TEngine
         public ClearUnusedCacheFilesOperation ClearUnusedCacheFilesAsync(string customPackageName = "")
         {
             var package = string.IsNullOrEmpty(customPackageName)
-                ? YooAssets.GetPackage(this.packageName)
+                ? YooAssets.GetPackage(PackageName)
                 : YooAssets.GetPackage(customPackageName);
             return package.ClearUnusedCacheFilesAsync();
         }
@@ -354,80 +390,13 @@ namespace TEngine
         public void ClearSandbox(string customPackageName = "")
         {
             var package = string.IsNullOrEmpty(customPackageName)
-                ? YooAssets.GetPackage(this.packageName)
+                ? YooAssets.GetPackage(PackageName)
                 : YooAssets.GetPackage(customPackageName);
             package.ClearPackageSandbox();
         }
+        #endregion
 
-        /// <summary>
-        /// 卸载资源。
-        /// </summary>
-        /// <param name="asset">要卸载的资源。</param>
-        public void UnloadAsset(object asset)
-        {
-            m_ResourceManager.UnloadAsset(asset);
-        }
-
-        public void FreeGameObject(GameObject go, bool forceNoPool = false, float delayTime = 0f)
-        {
-            m_ResourceManager.FreeGameObject(go, forceNoPool, delayTime);
-        }
-
-        /// <summary>
-        /// 预订执行释放未被使用的资源。
-        /// </summary>
-        /// <param name="performGCCollect">是否使用垃圾回收。</param>
-        public void UnloadUnusedAssets(bool performGCCollect)
-        {
-            m_PreorderUnloadUnusedAssets = true;
-            m_PerformGCCollect = performGCCollect;
-        }
-
-        /// <summary>
-        /// 强制执行释放未被使用的资源。
-        /// </summary>
-        /// <param name="performGCCollect">是否使用垃圾回收。</param>
-        public void ForceUnloadUnusedAssets(bool performGCCollect)
-        {
-            m_ForceUnloadUnusedAssets = true;
-            if (performGCCollect)
-            {
-                m_PerformGCCollect = true;
-            }
-        }
-
-        /// <summary>
-        /// 资源模块外部轮询（释放无用资源）。
-        /// </summary>
-        private void Update()
-        {
-            m_LastUnloadUnusedAssetsOperationElapseSeconds += GameTime.unscaledDeltaTime;
-            if (m_AsyncOperation == null &&
-                (m_ForceUnloadUnusedAssets ||
-                 m_LastUnloadUnusedAssetsOperationElapseSeconds >= maxUnloadUnusedAssetsInterval ||
-                 m_PreorderUnloadUnusedAssets &&
-                 m_LastUnloadUnusedAssetsOperationElapseSeconds >= minUnloadUnusedAssetsInterval))
-            {
-                Log.Info("Unload unused assets...");
-                m_ForceUnloadUnusedAssets = false;
-                m_PreorderUnloadUnusedAssets = false;
-                m_LastUnloadUnusedAssetsOperationElapseSeconds = 0f;
-                m_AsyncOperation = Resources.UnloadUnusedAssets();
-            }
-
-            if (m_AsyncOperation is { isDone: true })
-            {
-                m_ResourceManager.UnloadUnusedAssets();
-                m_AsyncOperation = null;
-                if (m_PerformGCCollect)
-                {
-                    Log.Info("GC.Collect...");
-                    m_PerformGCCollect = false;
-                    GC.Collect();
-                }
-            }
-        }
-
+        #region 获取资源
         /// <summary>
         /// 检查资源是否存在。
         /// </summary>
@@ -438,38 +407,17 @@ namespace TEngine
         {
             return m_ResourceManager.HasAsset(location, packageName: customPackageName);
         }
-
+        
         /// <summary>
-        /// 设置默认资源包。
+        /// 检查资源定位地址是否有效。
         /// </summary>
-        /// <param name="package">资源包。</param>
-        public void SetDefaultPackage(ResourcePackage package)
-        {
-            m_ResourceManager.SetDefaultPackage(package);
-        }
-
-        /// <summary>
-        /// 是否需要从远端更新下载。
-        /// </summary>
-        /// <param name="location">资源的定位地址。</param>
+        /// <param name="location">资源的定位地址</param>
         /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
-        /// <returns></returns>
-        public bool IsNeedDownloadFromRemote(string location, string customPackageName = "")
+        public bool CheckLocationValid(string location, string customPackageName = "")
         {
-            return m_ResourceManager.IsNeedDownloadFromRemote(location, packageName: customPackageName);
+            return m_ResourceManager.CheckLocationValid(location, packageName: customPackageName);
         }
-
-        /// <summary>
-        /// 是否需要从远端更新下载。
-        /// </summary>
-        /// <param name="assetInfo">资源信息。</param>
-        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
-        /// <returns></returns>
-        public bool IsNeedDownloadFromRemote(AssetInfo assetInfo, string customPackageName = "")
-        {
-            return m_ResourceManager.IsNeedDownloadFromRemote(assetInfo, packageName: customPackageName);
-        }
-
+        
         /// <summary>
         /// 获取资源信息列表。
         /// </summary>
@@ -502,299 +450,230 @@ namespace TEngine
         {
             return m_ResourceManager.GetAssetInfo(location, packageName: customPackageName);
         }
+        #endregion
+
+        #region 加载资源
 
         /// <summary>
-        /// 检查资源定位地址是否有效。
+        /// 异步加载资源。
         /// </summary>
-        /// <param name="location">资源的定位地址</param>
-        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
-        public bool CheckLocationValid(string location, string customPackageName = "")
+        /// <param name="location">资源的定位地址。</param>
+        /// <param name="assetType">要加载资源的类型。</param>
+        /// <param name="loadAssetCallbacks">加载资源回调函数集。</param>
+        /// <param name="userData">用户自定义数据。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包。</param>
+        public void LoadAssetAsync(string location, Type assetType, LoadAssetCallbacks loadAssetCallbacks, object userData = null, string packageName = "")
         {
-            return m_ResourceManager.CheckLocationValid(location, packageName: customPackageName);
+            LoadAssetAsync(location, assetType, DefaultPriority, loadAssetCallbacks, userData, packageName);
+        }
+
+        /// <summary>
+        /// 异步加载资源。
+        /// </summary>
+        /// <param name="location">资源的定位地址。</param>
+        /// <param name="assetType">要加载资源的类型。</param>
+        /// <param name="priority">加载资源的优先级。</param>
+        /// <param name="loadAssetCallbacks">加载资源回调函数集。</param>
+        /// <param name="userData">用户自定义数据。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包。</param>
+        public void LoadAssetAsync(string location, Type assetType, int priority, LoadAssetCallbacks loadAssetCallbacks, object userData, string packageName = "")
+        {
+            if (string.IsNullOrEmpty(location))
+            {
+                Log.Error("Asset name is invalid.");
+                return;
+            }
+
+            m_ResourceManager.LoadAssetAsync(location, assetType, priority, loadAssetCallbacks, userData, packageName);
         }
 
         /// <summary>
         /// 同步加载资源。
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
-        /// <param name="needInstance">是否需要实例化。</param>
-        /// <param name="needCache">是否需要缓存。</param>
-        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string location, bool needInstance = true, bool needCache = false,
-            string customPackageName = "") where T : UnityEngine.Object
+        public T LoadAsset<T>(string location, string packageName = "") where T : UnityEngine.Object
         {
-            return m_ResourceManager.LoadAsset<T>(location, needInstance, needCache, packageName: customPackageName);
+            if (string.IsNullOrEmpty(location))
+            {
+                Log.Error("Asset name is invalid.");
+                return null;
+            }
+
+            return m_ResourceManager.LoadAsset<T>(location, packageName);
         }
 
         /// <summary>
-        /// 同步加载资源。
+        /// 同步加载游戏物体并实例化。
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
-        /// <param name="parent">父节点位置。</param>
-        /// <param name="needInstance">是否需要实例化。</param>
-        /// <param name="needCache">是否需要缓存。</param>
-        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
-        /// <typeparam name="T">要加载资源的类型。</typeparam>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包。</param>
+        /// <param name="parent">资源实例父节点。</param>
         /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string location, Transform parent, bool needInstance = true, bool needCache = false,
-            string customPackageName = "") where T : UnityEngine.Object
+        public GameObject LoadGameObject(string location, string packageName = "", Transform parent = null)
         {
-            return m_ResourceManager.LoadAsset<T>(location, parent, needInstance, needCache,
-                packageName: customPackageName);
-        }
+            if (string.IsNullOrEmpty(location))
+            {
+                Log.Error("Asset name is invalid.");
+                return null;
+            }
 
-        /// <summary>
-        /// 同步加载资源。
-        /// </summary>
-        /// <param name="handle">资源操作句柄。</param>
-        /// <param name="location">资源的定位地址。</param>
-        /// <param name="needCache">是否需要缓存。</param>
-        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
-        /// <typeparam name="T">要加载资源的类型。</typeparam>
-        /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string location, out AssetOperationHandle handle, bool needCache = false,
-            string customPackageName = "") where T : UnityEngine.Object
-        {
-            return m_ResourceManager.LoadAsset<T>(location, out handle, needCache, packageName: customPackageName);
+            return m_ResourceManager.LoadGameObject(location, packageName, parent);
         }
-
-        /// <summary>
-        /// 同步加载资源。
-        /// </summary>
-        /// <param name="location">资源的定位地址。</param>
-        /// <param name="handle">资源操作句柄。</param>
-        /// <param name="parent">父节点位置。</param>
-        /// <param name="needCache">是否需要缓存。</param>
-        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
-        /// <typeparam name="T">要加载资源的类型。</typeparam>
-        /// <returns>资源实例。</returns>
-        public T LoadAsset<T>(string location, Transform parent, out AssetOperationHandle handle,
-            bool needCache = false, string customPackageName = "") where T : UnityEngine.Object
-        {
-            return m_ResourceManager.LoadAsset<T>(location, parent, out handle, needCache,
-                packageName: customPackageName);
-        }
-
+        
         /// <summary>
         /// 异步加载资源。
         /// </summary>
         /// <param name="location">资源的定位地址。</param>
         /// <param name="callback">回调函数。</param>
-        /// <param name="needCache">是否需要缓存。</param>
         /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
-        public void LoadAssetAsync<T>(string location, Action<AssetOperationHandle> callback = null,
-            bool needCache = false, string customPackageName = "") where T : UnityEngine.Object
+        public void LoadAsset<T>(string location, Action<T> callback, string customPackageName = "") where T : UnityEngine.Object
         {
-            AssetOperationHandle handle =
-                m_ResourceManager.LoadAssetAsyncHandle<T>(location, needCache, packageName: customPackageName);
-
-            handle.Completed += callback;
-        }
-
-        /// <summary>
-        /// 同步加载资源并获取句柄。
-        /// </summary>
-        /// <param name="location">资源的定位地址。</param>
-        /// <param name="needCache">是否需要缓存。</param>
-        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
-        /// <typeparam name="T">要加载资源的类型。</typeparam>
-        /// <returns>同步加载资源句柄。</returns>
-        public AssetOperationHandle LoadAssetGetOperation<T>(string location, bool needCache = false,
-            string customPackageName = "") where T : UnityEngine.Object
-        {
-            return m_ResourceManager.LoadAssetGetOperation<T>(location, needCache, packageName: customPackageName);
-        }
-
-        /// <summary>
-        /// 异步加载资源并获取句柄。
-        /// </summary>
-        /// <param name="location">资源的定位地址。</param>
-        /// <param name="needCache">是否需要缓存。</param>
-        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
-        /// <typeparam name="T">要加载资源的类型。</typeparam>
-        /// <returns>异步加载资源句柄。</returns>
-        public AssetOperationHandle LoadAssetAsyncHandle<T>(string location, bool needCache = false,
-            string customPackageName = "") where T : UnityEngine.Object
-        {
-            return m_ResourceManager.LoadAssetAsyncHandle<T>(location, needCache, packageName: customPackageName);
-        }
-
-
-        /// <summary>
-        /// 同步加载子资源对象
-        /// </summary>
-        /// <typeparam name="TObject">资源类型</typeparam>
-        /// <param name="location">资源的定位地址</param>
-        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
-        public SubAssetsOperationHandle LoadSubAssetsSync<TObject>(string location, string customPackageName = "")
-            where TObject : UnityEngine.Object
-        {
-            return m_ResourceManager.LoadSubAssetsSync<TObject>(location: location, packageName: customPackageName);
-        }
-
-        /// <summary>
-        /// 异步加载子资源对象
-        /// </summary>
-        /// <typeparam name="TObject">资源类型</typeparam>
-        /// <param name="location">资源的定位地址</param>
-        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
-        public SubAssetsOperationHandle LoadSubAssetsAsync<TObject>(string location, string customPackageName = "")
-            where TObject : UnityEngine.Object
-        {
-            return m_ResourceManager.LoadSubAssetsAsync<TObject>(location: location, packageName: customPackageName);
-        }
-
-        /// <summary>
-        /// 同步加载子资源对象
-        /// </summary>
-        /// <param name="location">资源的定位地址</param>
-        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
-        public SubAssetsOperationHandle LoadSubAssetsSync(string location, string customPackageName = "")
-        {
-            var assetInfo = GetAssetInfo(location, customPackageName: customPackageName);
-            if (assetInfo == null)
+            if (string.IsNullOrEmpty(location))
             {
-                Log.Fatal($"AssetsInfo is null");
-                return null;
+                Log.Error("Asset name is invalid.");
+                return;
             }
-
-            return m_ResourceManager.LoadSubAssetsSync(assetInfo, packageName: customPackageName);
-        }
-
-        /// <summary>
-        /// 通过Tag加载资源对象集合。
-        /// </summary>
-        /// <param name="assetTag">资源标识。</param>
-        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
-        /// <typeparam name="T">资源类型。</typeparam>
-        /// <returns>资源对象集合。</returns>
-        public async UniTask<LoadAssetsByTagOperation<T>> LoadAssetsByTagAsync<T>(string assetTag, string customPackageName = "")
-            where T : UnityEngine.Object
-        {
-            return await m_ResourceManager.LoadAssetsByTagAsync<T>(assetTag, packageName: customPackageName);
+            
+            m_ResourceManager.LoadAsset<T>(location, callback, packageName: customPackageName);
         }
 
         /// <summary>
         /// 异步加载资源。
         /// </summary>
-        /// <param name="location">资源的定位地址。</param>
+        /// <param name="location">资源定位地址。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
-        /// <param name="needInstance">是否需要实例化。</param>
-        /// <param name="needCache">是否需要缓存。</param>
-        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包。</param>
-        /// <param name="parent">资源实例父节点。</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包。</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
         /// <returns>异步资源实例。</returns>
         public async UniTask<T> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default,
-            bool needInstance = true, bool needCache = false, string customPackageName = "", Transform parent = null)
-            where T : UnityEngine.Object
+            string packageName = "") where T : UnityEngine.Object
         {
-            return await m_ResourceManager.LoadAssetAsync<T>(location, cancellationToken, needInstance, needCache,
-                packageName: customPackageName,parent:parent);
+            if (string.IsNullOrEmpty(location))
+            {
+                Log.Error("Asset name is invalid.");
+                return null;
+            }
+
+            return await m_ResourceManager.LoadAssetAsync<T>(location, cancellationToken, packageName);
         }
 
         /// <summary>
-        /// 异步加载游戏物体。
+        /// 异步加载游戏物体并实例化。
         /// </summary>
-        /// <param name="location">要加载的游戏物体名称。</param>
+        /// <param name="location">资源定位地址。</param>
         /// <param name="cancellationToken">取消操作Token。</param>
-        /// <param name="needCache">是否需要缓存。</param>
-        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
+        /// <param name="packageName">指定资源包的名称。不传使用默认资源包。</param>
+        /// <param name="parent">资源实例父节点。</param>
         /// <returns>异步游戏物体实例。</returns>
-        public async UniTask<GameObject> LoadGameObjectAsync(string location,
-            CancellationToken cancellationToken = default, bool needCache = false, string customPackageName = "")
+        public async UniTask<GameObject> LoadGameObjectAsync(string location, CancellationToken cancellationToken = default,
+            string packageName = "",
+            Transform parent = null)
         {
-            return await m_ResourceManager.LoadGameObjectAsync(location, cancellationToken, needCache,
-                packageName: customPackageName);
+            if (string.IsNullOrEmpty(location))
+            {
+                Log.Error("Asset name is invalid.");
+                return null;
+            }
+
+            return await m_ResourceManager.LoadGameObjectAsync(location, cancellationToken, packageName, parent);
+        }
+
+        internal AssetHandle LoadAssetGetOperation<T>(string location,
+            string packageName = "") where T : UnityEngine.Object
+        {
+            if (string.IsNullOrEmpty(packageName))
+            {
+                return YooAssets.LoadAssetSync<T>(location);
+            }
+
+            var package = YooAssets.GetPackage(packageName);
+            return package.LoadAssetSync<T>(location);
+        }
+
+        internal AssetHandle LoadAssetAsyncHandle<T>(string location, string packageName = "") where T : UnityEngine.Object
+        {
+            if (string.IsNullOrEmpty(packageName))
+            {
+                return YooAssets.LoadAssetAsync<T>(location);
+            }
+
+            var package = YooAssets.GetPackage(packageName);
+            return package.LoadAssetAsync<T>(location);
+        }
+        #endregion
+
+        #region 卸载资源
+
+        /// <summary>
+        /// 卸载资源。
+        /// </summary>
+        /// <param name="asset">要卸载的资源。</param>
+        public void UnloadAsset(object asset)
+        {
+            if (asset == null)
+            {
+                return;
+            }
+            m_ResourceManager.UnloadAsset(asset);
+        }
+
+        #endregion
+
+        #region 释放资源
+
+        /// <summary>
+        /// 强制执行释放未被使用的资源。
+        /// </summary>
+        /// <param name="performGCCollect">是否使用垃圾回收。</param>
+        public void ForceUnloadUnusedAssets(bool performGCCollect)
+        {
+            m_ForceUnloadUnusedAssets = true;
+            if (performGCCollect)
+            {
+                m_PerformGCCollect = true;
+            }
         }
 
         /// <summary>
-        /// 异步加载游戏物体。
+        /// 预订执行释放未被使用的资源。
         /// </summary>
-        /// <param name="location">资源定位地址。</param>
-        /// <param name="parent">父节点位置。</param>
-        /// <param name="cancellationToken">取消操作Token。</param>
-        /// <param name="needCache">是否需要缓存。</param>
-        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
-        /// <returns>异步游戏物体实例。</returns>
-        public async UniTask<GameObject> LoadGameObjectAsync(string location, Transform parent,
-            CancellationToken cancellationToken = default, bool needCache = false, string customPackageName = "")
+        /// <param name="performGCCollect">是否使用垃圾回收。</param>
+        public void UnloadUnusedAssets(bool performGCCollect)
         {
-            return await m_ResourceManager.LoadGameObjectAsync(location, parent, cancellationToken, needCache,
-                packageName: customPackageName);
+            m_PreorderUnloadUnusedAssets = true;
+            if (performGCCollect)
+            {
+                m_PerformGCCollect = true;
+            }
         }
 
-        /// <summary>
-        /// 异步加载原生文件。
-        /// </summary>
-        /// <param name="location">资源定位地址。</param>
-        /// <param name="cancellationToken">取消操作Token。</param>
-        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
-        /// <returns>原生文件资源实例。</returns>
-        public async UniTask<RawFileOperationHandle> LoadRawAssetAsync(string location,
-            CancellationToken cancellationToken = default, string customPackageName = "")
+        private void Update()
         {
-            return await m_ResourceManager.LoadRawAssetAsync(location, cancellationToken,
-                packageName: customPackageName);
-        }
+            m_LastUnloadUnusedAssetsOperationElapseSeconds += Time.unscaledDeltaTime;
+            if (m_AsyncOperation == null && (m_ForceUnloadUnusedAssets || m_LastUnloadUnusedAssetsOperationElapseSeconds >= m_MaxUnloadUnusedAssetsInterval ||
+                                             m_PreorderUnloadUnusedAssets && m_LastUnloadUnusedAssetsOperationElapseSeconds >= m_MinUnloadUnusedAssetsInterval))
+            {
+                Log.Info("Unload unused assets...");
+                m_ForceUnloadUnusedAssets = false;
+                m_PreorderUnloadUnusedAssets = false;
+                m_LastUnloadUnusedAssetsOperationElapseSeconds = 0f;
+                m_AsyncOperation = Resources.UnloadUnusedAssets();
+            }
 
-        /// <summary>
-        /// 异步加载子文件。
-        /// </summary>
-        /// <param name="location">资源定位地址。</param>
-        /// <param name="assetName">子资源名称。</param>
-        /// <param name="cancellationToken">取消操作Token。</param>
-        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
-        /// <typeparam name="T">资源实例类型。</typeparam>
-        /// <returns>原生文件资源实例。</returns>
-        public async UniTask<T> LoadSubAssetAsync<T>(string location, string assetName,
-            CancellationToken cancellationToken = default, string customPackageName = "") where T : UnityEngine.Object
-        {
-            return await m_ResourceManager.LoadSubAssetAsync<T>(location, assetName, cancellationToken,
-                packageName: customPackageName);
-        }
-
-        /// <summary>
-        /// 异步加载所有子文件。
-        /// </summary>
-        /// <param name="location">资源定位地址。</param>
-        /// <param name="cancellationToken">取消操作Token。</param>
-        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
-        /// <typeparam name="T">资源实例类型。</typeparam>
-        /// <returns>原生文件资源实例。</returns>
-        public async UniTask<T[]> LoadAllSubAssetAsync<T>(string location,
-            CancellationToken cancellationToken = default, string customPackageName = "") where T : UnityEngine.Object
-        {
-            return await m_ResourceManager.LoadAllSubAssetAsync<T>(location, cancellationToken,
-                packageName: customPackageName);
-        }
-
-        #region 预加载
-
-        /// <summary>
-        /// 放入预加载对象。
-        /// </summary>
-        /// <param name="location">资源定位地址。</param>
-        /// <param name="assetObject">预加载对象。</param>
-        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
-        public void PushPreLoadAsset(string location, UnityEngine.Object assetObject, string customPackageName = "")
-        {
-            m_ResourceManager.PushPreLoadAsset(location, assetObject, packageName: customPackageName);
-        }
-
-        /// <summary>
-        /// 获取预加载的实例对象。
-        /// </summary>
-        /// <param name="location">资源定位地址。</param>
-        /// <param name="customPackageName">指定资源包的名称。不传使用默认资源包</param>
-        /// <typeparam name="T">资源实例类型。</typeparam>
-        /// <returns>预加载对象。</returns>
-        public T GetPreLoadAsset<T>(string location, string customPackageName = "") where T : UnityEngine.Object
-        {
-            return m_ResourceManager.GetPreLoadAsset<T>(location, packageName: customPackageName);
+            if (m_AsyncOperation is { isDone: true })
+            {
+                m_AsyncOperation = null;
+                if (m_PerformGCCollect)
+                {
+                    Log.Info("GC.Collect...");
+                    m_PerformGCCollect = false;
+                    GC.Collect();
+                }
+            }
         }
 
         #endregion

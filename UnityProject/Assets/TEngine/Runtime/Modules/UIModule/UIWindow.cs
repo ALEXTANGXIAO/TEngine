@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
-using YooAsset;
 using Object = UnityEngine.Object;
 
 namespace TEngine
@@ -25,7 +25,7 @@ namespace TEngine
 
         private GraphicRaycaster[] _childRaycaster;
 
-        public override UIBaseType BaseType => UIBaseType.Window;
+        public override UIType Type => UIType.Window;
 
         /// <summary>
         /// 窗口位置组件。
@@ -58,9 +58,9 @@ namespace TEngine
         public string AssetName { private set; get; }
 
         /// <summary>
-        /// 是否为全屏窗口
+        /// 是否为全屏窗口。
         /// </summary>
-        public bool FullScreen { private set; get; }
+        public virtual bool FullScreen { private set; get; } = false;
 
         /// <summary>
         /// 是内部资源无需AB加载。
@@ -68,9 +68,11 @@ namespace TEngine
         public bool FromResources { private set; get; }
         
         /// <summary>
-        /// 是否需要缓存。
+        /// 隐藏窗口关闭时间。
         /// </summary>
-        public bool NeedCache { private set; get; }
+        public int HideTimeToClose { get; set; }
+        
+        public int HideTimerId { get; set; }
 
         /// <summary>
         /// 自定义数据。
@@ -96,7 +98,7 @@ namespace TEngine
         public System.Object[] UserDatas => userDatas;
 
         /// <summary>
-        /// 窗口深度值
+        /// 窗口深度值。
         /// </summary>
         public int Depth
         {
@@ -222,18 +224,18 @@ namespace TEngine
         /// <summary>
         /// 是否加载完毕。
         /// </summary>
-        internal bool IsLoadDone => Handle.IsDone;
+        internal bool IsLoadDone = false;
 
         #endregion
 
-        public void Init(string name, int layer, bool fullScreen, string assetName, bool fromResources, bool needCache = false)
+        public void Init(string name, int layer, bool fullScreen, string assetName, bool fromResources, int hideTimeToClose)
         {
             WindowName = name;
             WindowLayer = layer;
             FullScreen = fullScreen;
             AssetName = assetName;
             FromResources = fromResources;
-            NeedCache = needCache;
+            HideTimeToClose = hideTimeToClose;
         }
 
         internal void TryInvoke(System.Action<UIWindow> prepareCallback, System.Object[] userDatas)
@@ -247,20 +249,29 @@ namespace TEngine
             {
                 _prepareCallback = prepareCallback;
             }
+            CancelHideToCloseTimer();
         }
 
-        internal void InternalLoad(string location, System.Action<UIWindow> prepareCallback, System.Object[] userDatas)
+        internal async UniTaskVoid InternalLoad(string location, Action<UIWindow> prepareCallback, bool isAsync, System.Object[] userDatas)
         {
             _prepareCallback = prepareCallback;
             this.userDatas = userDatas;
             if (!FromResources)
             {
-                Handle = GameModule.Resource.LoadAssetAsyncHandle<GameObject>(location, needCache: NeedCache);
-                Handle.Completed += Handle_Completed;
+                if (isAsync)
+                {
+                    var uiInstance = await GameModule.Resource.LoadGameObjectAsync(location, parent: GameModule.UI.UIRoot);
+                    Handle_Completed(uiInstance);
+                }
+                else
+                {
+                    var uiInstance = GameModule.Resource.LoadGameObject(location, parent: GameModule.UI.UIRoot);
+                    Handle_Completed(uiInstance);
+                }
             }
             else
             {
-                GameObject panel = Object.Instantiate(Resources.Load<GameObject>(location), UIModule.UIRootStatic);
+                GameObject panel = Object.Instantiate(Resources.Load<GameObject>(location), GameModule.UI.UIRoot);
                 Handle_Completed(panel);
             }
         }
@@ -368,7 +379,7 @@ namespace TEngine
             for (int i = 0; i < ListChild.Count; i++)
             {
                 var uiChild = ListChild[i];
-                uiChild.OnDestroy();
+                uiChild.CallDestroy();
                 uiChild.OnDestroyWidget();
             }
 
@@ -383,30 +394,7 @@ namespace TEngine
                 Object.Destroy(_panel);
                 _panel = null;
             }
-        }
-
-        /// <summary>
-        /// 处理资源加载完成回调。
-        /// </summary>
-        /// <param name="handle"></param>
-        /// <exception cref="Exception"></exception>
-        private void Handle_Completed(AssetOperationHandle handle)
-        {
-            if (handle == null)
-            {
-                throw new GameFrameworkException("Load uiWindows failed because AssetOperationHandle is null");
-            }
-            if (handle.AssetObject == null)
-            {
-                throw new GameFrameworkException("Load uiWindows Failed because AssetObject is null");
-            }
-            // 实例化对象
-            var panel = handle.InstantiateSync(UIModule.UIRootStatic);
-            if (!NeedCache)
-            {
-                AssetReference.BindAssetReference(panel, Handle, AssetName);
-            }
-            Handle_Completed(panel);
+            CancelHideToCloseTimer();
         }
 
         /// <summary>
@@ -420,6 +408,9 @@ namespace TEngine
                 return;
             }
 
+            IsLoadDone = true;
+            
+            panel.name = GetType().Name;
             _panel = panel;
             _panel.transform.localPosition = Vector3.zero;
 
@@ -446,7 +437,16 @@ namespace TEngine
 
         protected virtual void Close()
         {
-            GameModule.UI.CloseWindow(this.GetType());
+            GameModule.UI.CloseUI(this.GetType());
+        }
+
+        internal void CancelHideToCloseTimer()
+        {
+            if (HideTimerId > 0)
+            {
+                GameModule.Timer.RemoveTimer(HideTimerId);
+                HideTimerId = 0;
+            }
         }
     }
 }

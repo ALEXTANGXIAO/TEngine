@@ -13,9 +13,9 @@ namespace TEngine
     {
         private string _currentMainSceneName = string.Empty;
         
-        private SceneOperationHandle _currentMainScene;
+        private SceneHandle _currentMainScene;
         
-        private readonly Dictionary<string,SceneOperationHandle> _subScenes = new Dictionary<string, SceneOperationHandle>();
+        private readonly Dictionary<string,SceneHandle> _subScenes = new Dictionary<string, SceneHandle>();
 
         /// <summary>
         /// 当前主场景名称。
@@ -27,7 +27,7 @@ namespace TEngine
             var iter = _subScenes.Values.GetEnumerator();
             while (iter.MoveNext())
             {
-                SceneOperationHandle subScene = iter.Current;
+                SceneHandle subScene = iter.Current;
                 if (subScene != null)
                 {
                     subScene.UnloadAsync();   
@@ -48,22 +48,22 @@ namespace TEngine
         /// <param name="callBack">加载回调。</param>
         /// <param name="gcCollect">加载主场景是否回收垃圾。</param>
         /// <param name="progressCallBack">加载进度回调。</param>
-        public SceneOperationHandle LoadScene(string location, 
+        public SceneHandle LoadScene(string location, 
             LoadSceneMode sceneMode = LoadSceneMode.Single, 
             bool suspendLoad = false, 
             int priority = 100, 
-            Action<SceneOperationHandle> callBack = null,
+            Action<SceneHandle> callBack = null,
             bool gcCollect = true,
             Action<float> progressCallBack = null)
         {
             if (sceneMode == LoadSceneMode.Additive)
             {
-                if (_subScenes.TryGetValue(location, out SceneOperationHandle subScene))
+                if (_subScenes.TryGetValue(location, out SceneHandle subScene))
                 {
                     Log.Warning($"Could not load subScene while already loaded. Scene: {location}");
                     return subScene;
                 }
-                subScene = YooAssets.LoadSceneAsync(location, sceneMode, suspendLoad, priority);
+                subScene = YooAssets.LoadSceneAsync(location, sceneMode, suspendLoad, (uint)priority);
 
                 if (callBack != null)
                 {
@@ -88,7 +88,7 @@ namespace TEngine
                 
                 _currentMainSceneName = location;
                 
-                _currentMainScene = YooAssets.LoadSceneAsync(location, sceneMode, suspendLoad, priority);
+                _currentMainScene = YooAssets.LoadSceneAsync(location, sceneMode, suspendLoad, (uint)priority);
 
                 if (callBack != null)
                 {
@@ -106,18 +106,18 @@ namespace TEngine
             }
         }
 
-        private async UniTaskVoid InvokeProgress(SceneOperationHandle sceneOperationHandle,Action<float> progress)
+        private async UniTaskVoid InvokeProgress(SceneHandle SceneHandle,Action<float> progress)
         {
-            if (sceneOperationHandle == null)
+            if (SceneHandle == null)
             {
                 return;
             }
 
-            while (!sceneOperationHandle.IsDone)
+            while (!SceneHandle.IsDone)
             {
                 await UniTask.Yield();
                 
-                progress?.Invoke(sceneOperationHandle.Progress);
+                progress?.Invoke(SceneHandle.Progress);
             }
         }
 
@@ -136,7 +136,7 @@ namespace TEngine
                 }
                 return false;
             }
-            _subScenes.TryGetValue(location, out SceneOperationHandle subScene);
+            _subScenes.TryGetValue(location, out SceneHandle subScene);
             if (subScene != null)
             {
                 return subScene.ActivateScene();
@@ -160,7 +160,7 @@ namespace TEngine
                 }
                 return false;
             }
-            _subScenes.TryGetValue(location, out SceneOperationHandle subScene);
+            _subScenes.TryGetValue(location, out SceneHandle subScene);
             if (subScene != null)
             {
                 return subScene.UnSuspend();
@@ -184,7 +184,7 @@ namespace TEngine
                 }
                 return true;
             }
-            _subScenes.TryGetValue(location, out SceneOperationHandle subScene);
+            _subScenes.TryGetValue(location, out SceneHandle subScene);
             if (subScene != null)
             {
                 return subScene.IsMainScene();
@@ -200,7 +200,7 @@ namespace TEngine
         /// <returns>场景卸载异步操作类。</returns>
         public UnloadSceneOperation UnloadAsync(string location)
         {
-            _subScenes.TryGetValue(location, out SceneOperationHandle subScene);
+            _subScenes.TryGetValue(location, out SceneHandle subScene);
             if (subScene != null)
             {
                 if (subScene.SceneObject == default)

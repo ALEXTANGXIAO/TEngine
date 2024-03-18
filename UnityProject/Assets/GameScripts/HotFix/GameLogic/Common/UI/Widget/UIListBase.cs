@@ -86,7 +86,7 @@ namespace GameLogic
         {
         }
 
-        public override void RegisterEvent()
+        protected override void RegisterEvent()
         {
             base.RegisterEvent();
             AddSelectEvt();

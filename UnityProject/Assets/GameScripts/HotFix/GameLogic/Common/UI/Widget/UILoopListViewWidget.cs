@@ -10,13 +10,13 @@ namespace GameLogic
 
         private GameFrameworkDictionary<int, T> m_itemCache = new GameFrameworkDictionary<int, T>();
 
-        public override void BindMemberProperty()
+        protected override void BindMemberProperty()
         {
             base.BindMemberProperty();
             LoopRectView = this.rectTransform.GetComponent<LoopListView>();
         }
 
-        public override void OnDestroy()
+        protected override void OnDestroy()
         {
             base.OnDestroy();
             m_itemCache.Clear();

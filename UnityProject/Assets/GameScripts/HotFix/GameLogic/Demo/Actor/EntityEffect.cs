@@ -1,4 +1,5 @@
-﻿using TEngine;
+﻿using GameLogic;
+using TEngine;
 using UnityEngine;
 
 public class EntityEffect : MonoBehaviour
@@ -11,6 +12,6 @@ public class EntityEffect : MonoBehaviour
 	}
 	private void DelayDestroy()
 	{
-		GameModule.Resource.FreeGameObject(this.gameObject);
+		PoolManager.Instance.PushGameObject(this.gameObject);
 	}
 }

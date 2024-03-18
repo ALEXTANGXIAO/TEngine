@@ -7,14 +7,14 @@ namespace GameLogic
     public class RedNoteWidget : UIWidget
     {
         #region 脚本工具生成的代码
-        public override void ScriptGenerator()
+        protected override void ScriptGenerator()
         {
         }
         #endregion
 
         private Image m_image;
         public RedNoteBehaviour m_redNote;
-        public override void OnCreate()
+        protected override void OnCreate()
         {
             m_redNote = CreateWidget<RedNoteBehaviour>(gameObject);
             m_image = gameObject.GetComponent<Image>();
@@ -42,10 +42,10 @@ namespace GameLogic
 
         public void SetSprite(string sprite)
         {
-            m_image.SetSprite(sprite);
+            // m_image.SetSprite(sprite);
         }
 
-        public override void OnUpdate()
+        protected override void OnUpdate()
         {
             /*if (!m_redNote.CurState)
             {

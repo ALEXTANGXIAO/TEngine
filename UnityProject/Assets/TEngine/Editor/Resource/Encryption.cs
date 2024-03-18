@@ -3,39 +3,51 @@ using System.IO;
 using TEngine;
 using YooAsset;
 
-namespace TEngine.Editor.Resource
+/// <summary>
+/// 文件偏移加密方式
+/// </summary>
+public class FileOffsetEncryption : IEncryptionServices
 {
-    public class FileOffsetEncryption : IEncryptionServices
+    public EncryptResult Encrypt(EncryptFileInfo fileInfo)
     {
-        public EncryptResult Encrypt(EncryptFileInfo fileInfo)
+        if (fileInfo.BundleName.Contains("DLL"))
         {
-            int offset = 32;
-            byte[] fileData = File.ReadAllBytes(fileInfo.FilePath);
-            var encryptedData = new byte[fileData.Length + offset];
-            Buffer.BlockCopy(fileData, 0, encryptedData, offset, fileData.Length);
-
-            EncryptResult result = new EncryptResult();
-            result.LoadMethod = EBundleLoadMethod.LoadFromFileOffset;
-            result.EncryptedData = encryptedData;
-            return result;
+            
         }
+        
+        int offset = 32;
+        byte[] fileData = File.ReadAllBytes(fileInfo.FilePath);
+        var encryptedData = new byte[fileData.Length + offset];
+        Buffer.BlockCopy(fileData, 0, encryptedData, offset, fileData.Length);
+
+        EncryptResult result = new EncryptResult();
+        result.Encrypted = true;
+        result.EncryptedData = encryptedData;
+        return result;
     }
+}
 
-    public class FileStreamEncryption : IEncryptionServices
+/// <summary>
+/// 文件流加密方式
+/// </summary>
+public class FileStreamEncryption : IEncryptionServices
+{
+    public EncryptResult Encrypt(EncryptFileInfo fileInfo)
     {
-        public EncryptResult Encrypt(EncryptFileInfo fileInfo)
+        if (fileInfo.BundleName.Contains("DLL"))
         {
-            // LoadFromStream
-            var fileData = File.ReadAllBytes(fileInfo.FilePath);
-            for (int i = 0; i < fileData.Length; i++)
-            {
-                fileData[i] ^= BundleStream.KEY;
-            }
-
-            EncryptResult result = new EncryptResult();
-            result.LoadMethod = EBundleLoadMethod.LoadFromStream;
-            result.EncryptedData = fileData;
-            return result;
+            
         }
+        
+        var fileData = File.ReadAllBytes(fileInfo.FilePath);
+        for (int i = 0; i < fileData.Length; i++)
+        {
+            fileData[i] ^= BundleStream.KEY;
+        }
+
+        EncryptResult result = new EncryptResult();
+        result.Encrypted = true;
+        result.EncryptedData = fileData;
+        return result;
     }
 }

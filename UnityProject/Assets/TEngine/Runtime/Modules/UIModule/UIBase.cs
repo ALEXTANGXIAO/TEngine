@@ -1,38 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using YooAsset;
 
 namespace TEngine
 {
     /// <summary>
-    /// UI类型。
-    /// </summary>
-    public enum UIBaseType
-    {
-        /// <summary>
-        /// 类型无。
-        /// </summary>
-        None,
-
-        /// <summary>
-        /// 类型Windows。
-        /// </summary>
-        Window,
-
-        /// <summary>
-        /// 类型Widget。
-        /// </summary>
-        Widget,
-    }
-
-    /// <summary>
     /// UI基类。
     /// </summary>
-    public class UIBase : IUIBehaviour
+    public class UIBase
     {
+        /// <summary>
+        /// UI类型。
+        /// </summary>
+        public enum UIType
+        {
+            /// <summary>
+            /// 类型无。
+            /// </summary>
+            None,
+
+            /// <summary>
+            /// 类型Windows。
+            /// </summary>
+            Window,
+
+            /// <summary>
+            /// 类型Widget。
+            /// </summary>
+            Widget,
+        }
+        
         /// <summary>
         /// 所属UI父节点。
         /// </summary>
@@ -52,7 +50,7 @@ namespace TEngine
         /// 窗口的实例资源对象。
         /// </summary>
         public virtual GameObject gameObject { protected set; get; }
-        
+
         /// <summary>
         /// 窗口位置组件。
         /// </summary>
@@ -66,12 +64,7 @@ namespace TEngine
         /// <summary>
         /// UI类型。
         /// </summary>
-        public virtual UIBaseType BaseType => UIBaseType.None;
-
-        /// <summary>
-        /// 资源操作句柄。
-        /// </summary>
-        public AssetOperationHandle Handle { protected set; get; }
+        public virtual UIType Type => UIType.None;
 
         /// <summary>
         /// 资源是否准备完毕。
@@ -93,52 +86,38 @@ namespace TEngine
         /// </summary>
         protected bool m_updateListValid = false;
 
-        private ComponentAutoBindTool _autoBindTool;
-
-        protected ComponentAutoBindTool AutoBindTool
-        {
-            get
-            {
-                if (_autoBindTool == null && gameObject != null)
-                {
-                    _autoBindTool = gameObject.GetComponent<ComponentAutoBindTool>();
-                }
-                return _autoBindTool;
-            }
-        }
-        
         /// <summary>
         /// 代码自动生成绑定。
         /// </summary>
-        public virtual void ScriptGenerator()
+        protected virtual void ScriptGenerator()
         {
         }
 
         /// <summary>
         /// 绑定UI成员元素。
         /// </summary>
-        public virtual void BindMemberProperty()
+        protected virtual void BindMemberProperty()
         {
         }
 
         /// <summary>
         /// 注册事件。
         /// </summary>
-        public virtual void RegisterEvent()
+        protected virtual void RegisterEvent()
         {
         }
 
         /// <summary>
         /// 窗口创建。
         /// </summary>
-        public virtual void OnCreate()
+        protected virtual void OnCreate()
         {
         }
 
         /// <summary>
         /// 窗口刷新
         /// </summary>
-        public virtual void OnRefresh()
+        protected virtual void OnRefresh()
         {
         }
 
@@ -150,32 +129,37 @@ namespace TEngine
         /// <summary>
         /// 窗口更新
         /// </summary>
-        public virtual void OnUpdate()
+        protected virtual void OnUpdate()
         {
             HasOverrideUpdate = false;
+        }
+
+        internal void CallDestroy()
+        {
+            OnDestroy();
         }
 
         /// <summary>
         /// 窗口销毁
         /// </summary>
-        public virtual void OnDestroy()
+        protected virtual void OnDestroy()
         {
         }
 
         /// <summary>
-        /// 当触发窗口的层级排序
+        /// 当触发窗口的层级排序。
         /// </summary>
         protected virtual void OnSortDepth(int depth)
         {
         }
 
         /// <summary>
-        /// 当因为全屏遮挡触发窗口的显隐
+        /// 当因为全屏遮挡触或者窗口可见性触发窗口的显隐。
         /// </summary>
         protected virtual void OnSetVisible(bool visible)
         {
         }
-        
+
         internal void SetUpdateDirty()
         {
             m_updateListValid = false;
@@ -199,12 +183,12 @@ namespace TEngine
 
         public T FindChildComponent<T>(string path) where T : Component
         {
-            return rectTransform.FindChildComponent<T>(path);
+            return UnityExtension.FindChildComponent<T>(rectTransform, path);
         }
 
         public T FindChildComponent<T>(Transform trans, string path) where T : Component
         {
-            return trans.FindChildComponent<T>(path);
+            return UnityExtension.FindChildComponent<T>(trans, path);
         }
 
         #endregion
@@ -333,7 +317,7 @@ namespace TEngine
         /// <returns>UIWidget实例。</returns>
         public T CreateWidgetByPath<T>(Transform parentTrans, string assetLocation, bool visible = true) where T : UIWidget, new()
         {
-            GameObject goInst = GameModule.Resource.LoadAsset<GameObject>(assetLocation, parentTrans);
+            GameObject goInst = GameModule.Resource.LoadGameObject(assetLocation, parent: parentTrans);
             return CreateWidget<T>(goInst, visible);
         }
 
@@ -347,8 +331,7 @@ namespace TEngine
         /// <returns>UIWidget实例。</returns>
         public async UniTask<T> CreateWidgetByPathAsync<T>(Transform parentTrans, string assetLocation, bool visible = true) where T : UIWidget, new()
         {
-            GameObject goInst = await GameModule.Resource.LoadAssetAsync<GameObject>(assetLocation, gameObject.GetCancellationTokenOnDestroy());
-            goInst.transform.SetParent(parentTrans, false);
+            GameObject goInst = await GameModule.Resource.LoadGameObjectAsync(assetLocation, gameObject.GetCancellationTokenOnDestroy(), parent: parentTrans);
             return CreateWidget<T>(goInst, visible);
         }
 

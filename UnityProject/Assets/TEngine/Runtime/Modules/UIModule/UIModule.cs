@@ -236,14 +236,14 @@ namespace TEngine
             return IsContains(type.FullName);
         }
 
-        /// <summary>
+       /// <summary>
         /// 异步打开窗口。
         /// </summary>
         /// <param name="userDatas">用户自定义数据。</param>
         /// <returns>打开窗口操作句柄。</returns>
-        public OpenWindowOperation ShowUIAsync<T>(params System.Object[] userDatas) where T : UIWindow
+        public void ShowUIAsync<T>(params System.Object[] userDatas) where T : UIWindow
         {
-            return ShowUIAsync(typeof(T), userDatas);
+            ShowUIImp(typeof(T), true, userDatas);
         }
 
         /// <summary>
@@ -252,7 +252,34 @@ namespace TEngine
         /// <param name="type">界面类型。</param>
         /// <param name="userDatas">用户自定义数据。</param>
         /// <returns>打开窗口操作句柄。</returns>
-        public OpenWindowOperation ShowUIAsync(Type type, params System.Object[] userDatas)
+        public void ShowUIAsync(Type type, params System.Object[] userDatas)
+        {
+            ShowUIImp(type, true, userDatas);
+        }
+
+        /// <summary>
+        /// 同步打开窗口。
+        /// </summary>
+        /// <typeparam name="T">窗口类。</typeparam>
+        /// <param name="userDatas">用户自定义数据。</param>
+        /// <returns>打开窗口操作句柄。</returns>
+        public void ShowUI<T>(params System.Object[] userDatas) where T : UIWindow
+        {
+            ShowUIImp(typeof(T), false, userDatas);
+        }
+
+        /// <summary>
+        /// 同步打开窗口。
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="userDatas"></param>
+        /// <returns>打开窗口操作句柄。</returns>
+        public void ShowUI(Type type, params System.Object[] userDatas)
+        {
+            ShowUIImp(type, false, userDatas);
+        }
+
+        private void ShowUIImp(Type type, bool isAsync, params System.Object[] userDatas)
         {
             string windowName = type.FullName;
 
@@ -263,56 +290,24 @@ namespace TEngine
                 Pop(window); //弹出窗口
                 Push(window); //重新压入
                 window.TryInvoke(OnWindowPrepare, userDatas);
-                var operation = new OpenWindowOperation(window);
-                YooAssets.StartOperation(operation);
-                return operation;
             }
             else
             {
                 UIWindow window = CreateInstance(type);
                 Push(window); //首次压入
-                window.InternalLoad(window.AssetName, OnWindowPrepare, userDatas);
-                var operation = new OpenWindowOperation(window);
-                YooAssets.StartOperation(operation);
-                return operation;
+                window.InternalLoad(window.AssetName, OnWindowPrepare, isAsync, userDatas).Forget();
             }
-        }
-
-        /// <summary>
-        /// 同步打开窗口。
-        /// </summary>
-        /// <typeparam name="T">窗口类。</typeparam>
-        /// <param name="userDatas">用户自定义数据。</param>
-        /// <returns>打开窗口操作句柄。</returns>
-        public OpenWindowOperation ShowUI<T>(params System.Object[] userDatas) where T : UIWindow
-        {
-            var operation = ShowUIAsync(typeof(T), userDatas);
-            operation.WaitForAsyncComplete();
-            return operation;
-        }
-
-        /// <summary>
-        /// 同步打开窗口。
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="userDatas"></param>
-        /// <returns>打开窗口操作句柄。</returns>
-        public OpenWindowOperation ShowUI(Type type, params System.Object[] userDatas)
-        {
-            var operation = ShowUIAsync(type, userDatas);
-            operation.WaitForAsyncComplete();
-            return operation;
         }
 
         /// <summary>
         /// 关闭窗口
         /// </summary>
-        public void CloseWindow<T>() where T : UIWindow
+        public void CloseUI<T>() where T : UIWindow
         {
-            CloseWindow(typeof(T));
+            CloseUI(typeof(T));
         }
 
-        public void CloseWindow(Type type)
+        public void CloseUI(Type type)
         {
             string windowName = type.FullName;
             UIWindow window = GetWindow(windowName);
@@ -323,6 +318,33 @@ namespace TEngine
             Pop(window);
             OnSortWindowDepth(window.WindowLayer);
             OnSetWindowVisible();
+        }
+        
+        public void HideUI<T>() where T : UIWindow
+        {
+            HideUI(typeof(T));
+        }
+
+        public void HideUI(Type type)
+        {
+            string windowName = type.FullName;
+            UIWindow window = GetWindow(windowName);
+            if (window == null)
+            {
+                return;
+            }
+
+            if (window.HideTimeToClose <= 0)
+            {
+                CloseUI(type);
+                return;
+            }
+            
+            window.Visible = false;
+            window.HideTimerId = GameModule.Timer.AddTimer((arg) =>
+            {
+                CloseUI(type);
+            },window.HideTimeToClose);
         }
 
         /// <summary>
@@ -423,12 +445,18 @@ namespace TEngine
             WindowAttribute attribute = Attribute.GetCustomAttribute(type, typeof(WindowAttribute)) as WindowAttribute;
 
             if (window == null)
-                throw new Exception($"Window {type.FullName} create instance failed.");
-            if (attribute == null)
-                throw new Exception($"Window {type.FullName} not found {nameof(WindowAttribute)} attribute.");
+                throw new GameFrameworkException($"Window {type.FullName} create instance failed.");
 
-            string assetName = string.IsNullOrEmpty(attribute.Location) ? type.Name : attribute.Location;
-            window.Init(type.FullName, attribute.WindowLayer, attribute.FullScreen, assetName, attribute.FromResources, attribute.NeedCache);
+            if (attribute != null)
+            {
+                string assetName = string.IsNullOrEmpty(attribute.Location) ? type.Name : attribute.Location;
+                window.Init(type.FullName, attribute.WindowLayer, attribute.FullScreen, assetName, attribute.FromResources, attribute.HideTimeToClose);
+            }
+            else
+            {
+                window.Init(type.FullName, (int)UILayer.UI, fullScreen: window.FullScreen, assetName: type.Name, fromResources: false, hideTimeToClose: 10);
+            }
+
             return window;
         }
 

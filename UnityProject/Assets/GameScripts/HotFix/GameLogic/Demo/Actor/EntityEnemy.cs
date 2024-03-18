@@ -69,7 +69,7 @@ public class EntityEnemy : MonoBehaviour
 		if (name.StartsWith("player"))
 		{
 			GameEvent.Send(ActorEventDefine.EnemyDead,this.transform.position, this.transform.rotation);
-			GameModule.Resource.FreeGameObject(this.gameObject);
+			PoolManager.Instance.PushGameObject(this.gameObject);
 		}
 	}
 	void OnTriggerExit(Collider other)
@@ -77,7 +77,7 @@ public class EntityEnemy : MonoBehaviour
 		var name = other.gameObject.name;
 		if (name.StartsWith("Boundary"))
 		{
-			GameModule.Resource.FreeGameObject(this.gameObject);
+			PoolManager.Instance.PushGameObject(this.gameObject);
 		}
 	}
 

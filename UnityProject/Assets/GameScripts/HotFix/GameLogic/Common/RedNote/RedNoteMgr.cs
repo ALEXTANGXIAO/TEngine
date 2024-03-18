@@ -516,7 +516,7 @@ namespace GameLogic
         {
             if (paramList is { Count: > 0 })
             {
-                return false;
+                return true;
             }
 
             return false;

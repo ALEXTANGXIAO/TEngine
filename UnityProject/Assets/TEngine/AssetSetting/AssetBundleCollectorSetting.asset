@@ -13,14 +13,16 @@ MonoBehaviour:
   m_Name: AssetBundleCollectorSetting
   m_EditorClassIdentifier: 
   ShowPackageView: 0
-  EnableAddressable: 1
-  LocationToLower: 0
-  IncludeAssetGUID: 0
-  UniqueBundleName: 0
   ShowEditorAlias: 0
+  UniqueBundleName: 0
   Packages:
   - PackageName: DefaultPackage
     PackageDesc: "\u9ED8\u8BA4\u8D44\u6E90\u5305"
+    EnableAddressable: 1
+    LocationToLower: 0
+    IncludeAssetGUID: 0
+    IgnoreDefaultType: 1
+    AutoCollectShaders: 1
     Groups:
     - GroupName: Actor
       GroupDesc: "\u89D2\u8272"

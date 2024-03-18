@@ -31,19 +31,19 @@ namespace GameLogic
         /// </summary>
         public List<TItem> items => m_items;
 
-        public override void BindMemberProperty()
+        protected override void BindMemberProperty()
         {
             base.BindMemberProperty();
             LoopRectView = rectTransform.GetComponent<LoopListView>();
         }
 
-        public override void OnCreate()
+        protected override void OnCreate()
         {
             base.OnCreate();
             LoopRectView.InitListView(0, OnGetItemByIndex);
         }
 
-        public override void OnDestroy()
+        protected override void OnDestroy()
         {
             base.OnDestroy();
             m_itemCache.Clear();

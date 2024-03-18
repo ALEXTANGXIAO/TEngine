@@ -15,7 +15,7 @@ namespace GameLogic
         private Button m_btnRestart;
         private Button m_btnHome;
 
-        public override void ScriptGenerator()
+        protected override void ScriptGenerator()
         {
             m_textScore = FindChildComponent<Text>("ScoreView/m_textScore");
             m_goOverView = FindChild("m_goOverView").gameObject;
@@ -27,13 +27,13 @@ namespace GameLogic
 
         #endregion
 
-        public override void RegisterEvent()
+        protected override void RegisterEvent()
         {
             AddUIEvent<int>(ActorEventDefine.ScoreChange, OnScoreChange);
             AddUIEvent(ActorEventDefine.GameOver, OnGameOver);
         }
 
-        public override void OnRefresh()
+        protected override void OnRefresh()
         {
             m_textScore.text = "Score : 0";
             m_goOverView.SetActive(false);
