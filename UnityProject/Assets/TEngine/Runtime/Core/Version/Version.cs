@@ -5,7 +5,7 @@
     /// </summary>
     public static partial class Version
     {
-        private const string GameFrameworkVersionString = "2023.09.31";
+        private const string GameFrameworkVersionString = "2024.03.18";
 
         private static IVersionHelper s_VersionHelper = null;
 
