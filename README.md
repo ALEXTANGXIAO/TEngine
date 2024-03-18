@@ -53,21 +53,16 @@
 0. 开箱即用5分钟即可上手整套开发流程，代码整洁，思路清晰，功能强大。高内聚低耦合。您可以很轻易的把您不需要的模块进行移除替换。
 1. 严格按照商业要求使用次世代的HybridClr进行热更新、最佳的Luban配置表(TEngine支持懒加载、异步加载、同步加载配置。)、百万DAU游戏验证过的YooAsset资源框架（框架管理资源引用与释放。），全平台热更新流程已跑通。
 2. 严格按照商业化流程执行的热更新、商业化的UI开发流程、以及资源管理等等，设计并实现了YooAsset资源自动释放、支持LRU、ARC严格管理资源内存。
-3. C#双端解决方案，服务器使用Fantasy，是一套源于ETServer，但极为简洁，性能更强，更好上手的一套商业级服务器框架。
-4. 支持全平台，已有项目使用TEngine上架Steam、Wechat-minigame、AppStore。
+3. 支持全平台，已有项目使用TEngine上架Steam、Wechat-minigame、AppStore。
 
-## <strong>资源重要拓展概念
-* AssetReference (资源引用标识) 通用加载资源的时候绑定一个引用标识使你无需关心手动Dispose资源句柄。
+## <strong>最新的Demo飞机大战位于demo分支
 
-* AssetGroup（资源组数据）进行资源分组绑定管理内存中的生命周期资源生命周期托管给资源组的根节点进行Dispose。
+## <strong>服务器相关
+TEngine本身为纯净的客户端。不强绑定任何服务器。但是个人开发以及中小型公司开发双端则推荐C#服务器。
 
-* LruCacheTable (Least Recently Used Cache缓存表)
-
-* ArcCacheTable (Adaptive Replacement Cache缓存表)
-
-## <strong>为什么服务器使用C#
 Net Core现在已经更新到了8.0的版本，在性能和设计上其实是远超JAVA和GO。在JAVAER还在为JVM更新和添加更多功能时，其实他们已经被国内大环境所包围了，看不到.Net Core的性能之强，组件化的结构。国内大环境是JAVA和GO的天下这个不可否认，但是国外C#也确实很多。其实.Net Core最大的问题是大多数自己人都不知道他的优点(AOT、JIT混合编译、热重载等等)，甚至很多守旧派抵制core。GO喜欢吹性能，但其实目前来看，除了协程的轻量级，大多数性能测试其实不如JAVA和.Net。简单可以说出了C++的性能以外，Net Core其实都打得过。
-<strong>当然作为商业级解决方案服务器的耦合度也极低，如果不喜欢您也可以很轻松直接移除替换成你的服务器。</strong>
+
+分支Fantasy为接好的带有服务器的双端分支。
 
 ## <strong>项目结构概览
 ```
