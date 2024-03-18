@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace TEngine
 {
-    public abstract class UIWidget : UIBase, IUIBehaviour
+    public abstract class UIWidget : UIBase
     {
         /// <summary>
         /// 窗口组件的实例资源对象。
@@ -29,7 +29,7 @@ namespace TEngine
         /// <summary>
         /// UI类型。
         /// </summary>
-        public override UIBaseType BaseType => UIBaseType.Widget;
+        public override UIType Type => UIType.Widget;
 
         /// <summary>
         /// 所属的窗口。
@@ -41,7 +41,7 @@ namespace TEngine
                 var parentUI = base.parent;
                 while (parentUI != null)
                 {
-                    if (parentUI.BaseType == UIBaseType.Window)
+                    if (parentUI.Type == UIType.Window)
                     {
                         return parentUI as UIWindow;
                     }
@@ -125,9 +125,8 @@ namespace TEngine
             }
 
             TProfiler.BeginSample("OnUpdate");
-
             bool needUpdate = false;
-            if (listNextUpdateChild == null || listNextUpdateChild.Count <= 0)
+            if (listNextUpdateChild is not { Count: > 0 })
             {
                 HasOverrideUpdate = true;
                 OnUpdate();
@@ -138,7 +137,6 @@ namespace TEngine
                 OnUpdate();
                 needUpdate = true;
             }
-
             TProfiler.EndSample();
 
             return needUpdate;
@@ -168,7 +166,7 @@ namespace TEngine
         /// <returns></returns>
         public bool CreateByPath(string resPath, UIBase parentUI, Transform parentTrans = null, bool visible = true)
         {
-            GameObject goInst = GameModule.Resource.LoadAsset<GameObject>(resPath, parentTrans);
+            GameObject goInst = GameModule.Resource.LoadGameObject(resPath, parent: parentTrans);
             if (goInst == null)
             {
                 return false;

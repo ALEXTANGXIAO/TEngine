@@ -42,16 +42,9 @@ public class ConfigSystem : Singleton<ConfigSystem>
     /// <returns>ByteBuf</returns>
     private ByteBuf LoadByteBuf(string file)
     {
-        TextAsset textAsset = null;
-        textAsset = GameModule.Resource.GetPreLoadAsset<TextAsset>(file);
-        if (textAsset != null)
-        {
-            return new ByteBuf(textAsset.bytes);
-        }
-        else
-        {
-            textAsset = GameModule.Resource.LoadAsset<TextAsset>(file);
-            return new ByteBuf(textAsset.bytes);
-        }
+        TextAsset textAsset = GameModule.Resource.LoadAsset<TextAsset>(file);
+        byte[] bytes = textAsset.bytes;
+        GameModule.Resource.UnloadAsset(textAsset);
+        return new ByteBuf(bytes);
     }
 }

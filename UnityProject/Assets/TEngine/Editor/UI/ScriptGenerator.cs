@@ -68,7 +68,7 @@ namespace TEngine.Editor.UI
                 // 脚本工具生成的代码
                 strFile.Append("\t\t#region 脚本工具生成的代码\n");
                 strFile.Append(strVar);
-                strFile.Append("\t\tpublic override void ScriptGenerator()\n");
+                strFile.Append("\t\tprotected override void ScriptGenerator()\n");
                 strFile.Append("\t\t{\n");
                 strFile.Append(strBind);
                 strFile.Append(strOnCreate);

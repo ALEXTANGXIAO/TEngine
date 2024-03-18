@@ -9,15 +9,16 @@ using UnityEngine.Serialization;
 [Serializable]
 public class HybridCLRCustomGlobalSettings
 {
-    [Header("Auto sync with [HybridCLRGlobalSettings]")]
-    [Tooltip("You should modify the file form file path [Assets/CustomHybridCLR/Settings/HybridCLRGlobalSettings.asset]")]
-    [SerializeField]
-    private bool m_Enable = false;
-
     public bool Enable
     {
-        get => m_Enable;
-        set => m_Enable = value;
+        get
+        {
+#if ENABLE_HYBRIDCLR
+            return true;
+#else
+            return false;
+#endif
+        }
     }
 
     [Header("Auto sync with [HybridCLRGlobalSettings]")]

@@ -19,7 +19,7 @@ namespace TEngine
         private bool _enable = true;
         private readonly AudioCategory[] _audioCategories = new AudioCategory[(int)AudioType.Max];
         private readonly float[] _categoriesVolume = new float[(int)AudioType.Max];
-        public readonly Dictionary<string, AssetOperationHandle> AudioClipPool = new Dictionary<string, AssetOperationHandle>();
+        public readonly Dictionary<string, AssetHandle> AudioClipPool = new Dictionary<string, AssetHandle>();
         private bool _bUnityAudioDisabled = false;
 
         #region Public Propreties
@@ -496,7 +496,7 @@ namespace TEngine
             {
                 if (AudioClipPool != null && !AudioClipPool.ContainsKey(path))
                 {
-                    AssetOperationHandle assetData = GameModule.Resource.LoadAssetGetOperation<AudioClip>(path);
+                    AssetHandle assetData = GameModule.Resource.LoadAssetGetOperation<AudioClip>(path);
                     AudioClipPool?.Add(path, assetData);
                 }
             }

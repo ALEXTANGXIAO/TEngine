@@ -106,6 +106,13 @@ namespace TEngine
         public static TimerModule Timer => _timer ??= Get<TimerModule>();
         
         private static TimerModule _timer;
+        
+        /// <summary>
+        /// 资源组件拓展。
+        /// </summary>
+        public static ResourceExtComponent ResourceExt => _resourceExt ??= Get<ResourceExtComponent>();
+        
+        private static ResourceExtComponent _resourceExt;
         #endregion
 
         /// <summary>
@@ -161,6 +168,7 @@ namespace TEngine
             _localization = null;
             _scene = null;
             _timer = null;
+            _resourceExt = null;
         }
     }
 }

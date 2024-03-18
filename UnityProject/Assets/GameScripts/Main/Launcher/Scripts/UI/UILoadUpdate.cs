@@ -16,7 +16,7 @@ namespace GameMain
         private Button m_btnClear;
         private Text m_textAppid;
         private Text m_textResid;
-        public override void ScriptGenerator()
+        protected override void ScriptGenerator()
         {
             m_imgBackGround = FindChildComponent<Image>("m_imgBackGround");
             m_textDesc = FindChildComponent<Text>("m_textDesc");
@@ -28,7 +28,7 @@ namespace GameMain
         }
         #endregion
 
-        public override void OnCreate()
+        protected override void OnCreate()
         {
             base.OnCreate();
             LoadUpdateLogic.Instance.DownloadCompleteAction += DownLoad_Complete_Action;
@@ -38,13 +38,13 @@ namespace GameMain
             m_btnClear.gameObject.SetActive(true);
         }
 
-        public override void RegisterEvent()
+        protected override void RegisterEvent()
         {
             base.RegisterEvent();
             AddUIEvent(RuntimeId.ToRuntimeId("RefreshVersion"),RefreshVersion);
         }
 
-        public override void OnRefresh()
+        protected override void OnRefresh()
         {
             base.OnRefresh();
         }
@@ -123,7 +123,7 @@ namespace GameMain
             m_scrollbarProgress.size = progress;
         }
 
-        public override void OnDestroy()
+        protected override void OnDestroy()
         {
             base.OnDestroy();
             OnStop(null);

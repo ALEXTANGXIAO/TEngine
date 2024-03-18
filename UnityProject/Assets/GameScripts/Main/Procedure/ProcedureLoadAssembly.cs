@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+#if ENABLE_HYBRIDCLR
 using HybridCLR;
+#endif
 using UnityEngine;
 using TEngine;
 using System.Reflection;
@@ -15,11 +17,6 @@ namespace GameMain
     /// </summary>
     public class ProcedureLoadAssembly : ProcedureBase
     {
-        /// <summary>
-        /// 是否需要加载热更新DLL
-        /// </summary>
-        public bool NeedLoadDll => (int)GameModule.Resource.PlayMode > (int)EPlayMode.EditorSimulateMode;
-
         private bool m_enableAddressable = true;
         public override bool UseNativeDialog => true;
         private int m_LoadAssetCount;
@@ -59,7 +56,7 @@ namespace GameMain
                 m_LoadMetadataAssemblyComplete = true;
             }
             
-            if (!NeedLoadDll || GameModule.Resource.PlayMode == EPlayMode.EditorSimulateMode)
+            if (!SettingsUtils.HybridCLRCustomGlobalSettings.Enable || GameModule.Resource.PlayMode == EPlayMode.EditorSimulateMode)
             {
                 m_MainLogicAssembly = GetMainLogicAssembly();
             }
@@ -81,7 +78,7 @@ namespace GameMain
                            
                         Log.Debug($"LoadAsset: [ {assetLocation} ]");
                         m_LoadAssetCount++;
-                        GameModule.Resource.LoadAssetAsync<TextAsset>(assetLocation,LoadAssetSuccess);
+                        GameModule.Resource.LoadAsset<TextAsset>(assetLocation,LoadAssetSuccess);
                     }
 
                     m_LoadAssemblyWait = true;
@@ -171,19 +168,18 @@ namespace GameMain
         /// <summary>
         /// 加载代码资源成功回调。
         /// </summary>
-        /// <param name="assetOperationHandle">资源操作句柄。</param>
-        private void LoadAssetSuccess(AssetOperationHandle assetOperationHandle)
+        /// <param name="textAsset">代码资产。</param>
+        private void LoadAssetSuccess(TextAsset textAsset)
         {
             m_LoadAssetCount--;
-            var assetName = assetOperationHandle.AssetObject.name;
-            Log.Debug($"LoadAssetSuccess, assetName: [ {assetName} ]");
-            
-            var textAsset = assetOperationHandle.AssetObject as TextAsset;
             if (textAsset == null)
             {
-                Log.Warning($"Load text asset [ {assetName} ] failed.");
+                Log.Warning($"Load Assembly failed.");
                 return;
             }
+
+            var assetName = textAsset.name;
+            Log.Debug($"LoadAssetSuccess, assetName: [ {assetName} ]");
 
             try
             {
@@ -205,7 +201,7 @@ namespace GameMain
             {
                 m_LoadAssemblyComplete = m_LoadAssemblyWait && 0 == m_LoadAssetCount;
             }
-            assetOperationHandle.Dispose();
+            GameModule.Resource.UnloadAsset(textAsset);
         }
 
         /// <summary>
@@ -239,7 +235,7 @@ namespace GameMain
                 
                 Log.Debug($"LoadMetadataAsset: [ {assetLocation} ]");
                 m_LoadMetadataAssetCount++;
-                GameModule.Resource.LoadAssetAsync<TextAsset>(assetLocation,LoadMetadataAssetSuccess);
+                GameModule.Resource.LoadAsset<TextAsset>(assetLocation,LoadMetadataAssetSuccess);
             }
             m_LoadMetadataAssemblyWait = true;
         }
@@ -247,27 +243,29 @@ namespace GameMain
         /// <summary>
         /// 加载元数据资源成功回调。
         /// </summary>
-        /// <param name="assetOperationHandle">资源操作句柄。</param>
-        private unsafe void LoadMetadataAssetSuccess(AssetOperationHandle assetOperationHandle)
+        /// <param name="textAsset">代码资产。</param>
+        private unsafe void LoadMetadataAssetSuccess(TextAsset textAsset)
         {
             m_LoadMetadataAssetCount--;
-            string assetName = assetOperationHandle.AssetObject.name;
-            Log.Debug($"LoadMetadataAssetSuccess, assetName: [ {assetName} ]");
-            var textAsset = assetOperationHandle.AssetObject as TextAsset;
             if (null == textAsset)
             {
-                Log.Debug($"LoadMetadataAssetSuccess:Load text asset [ {assetName} ] failed.");
+                Log.Debug($"LoadMetadataAssetSuccess:Load Metadata failed.");
                 return;
             }
+
+            string assetName = textAsset.name;
+            Log.Debug($"LoadMetadataAssetSuccess, assetName: [ {assetName} ]");
             try
             {
                 byte[] dllBytes = textAsset.bytes;
                 fixed (byte* ptr = dllBytes)
                 {
+#if ENABLE_HYBRIDCLR
                     // 加载assembly对应的dll，会自动为它hook。一旦Aot泛型函数的native函数不存在，用解释器版本代码
                     HomologousImageMode mode = HomologousImageMode.SuperSet;
                     LoadImageErrorCode err = (LoadImageErrorCode)HybridCLR.RuntimeApi.LoadMetadataForAOTAssembly(dllBytes,mode); 
                     Log.Warning($"LoadMetadataForAOTAssembly:{assetName}. mode:{mode} ret:{err}");
+#endif
                 }
             }
             catch (Exception e)
@@ -279,8 +277,8 @@ namespace GameMain
             finally
             {
                 m_LoadMetadataAssemblyComplete = m_LoadMetadataAssemblyWait && 0 == m_LoadMetadataAssetCount;
-
             }
+            GameModule.Resource.UnloadAsset(textAsset);
         }
     }
 }

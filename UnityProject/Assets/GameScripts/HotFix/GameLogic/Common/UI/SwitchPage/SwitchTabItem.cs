@@ -55,7 +55,7 @@ namespace GameLogic
             }
         }
 
-        public override void BindMemberProperty()
+        protected override void BindMemberProperty()
         {
             m_selectNode = FindChild("SelectNode");
             m_noSelectNode = FindChild("NoSelectNode");

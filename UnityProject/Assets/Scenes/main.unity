@@ -708,11 +708,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 914171637}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ecea0510f57e4f30a2e44abbc8da5b0a, type: 3}
+  m_Script: {fileID: 11500000, guid: 706e6317a59f61044b2805be79f6b284, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_LocalizationHelperTypeName: TEngine.DefaultLocalizationHelper
-  m_CustomLocalizationHelper: {fileID: 0}
+  m_InnerLocalizationCSV: {fileID: 0}
+  m_AllLanguage: []
+  m_UseRuntimeModule: 1
 --- !u!1 &964133196
 GameObject:
   m_ObjectHideFlags: 0
@@ -770,6 +771,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 965975541}
+  - component: {fileID: 965975543}
   - component: {fileID: 965975542}
   m_Layer: 0
   m_Name: Resource
@@ -802,19 +804,36 @@ MonoBehaviour:
   m_GameObject: {fileID: 965975540}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35b9a0ed33eb4c928f1d408679c9ef51, type: 3}
+  m_Script: {fileID: 11500000, guid: 6153d27eaaa74c0e9a00c9eb273cc21c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  packageName: DefaultPackage
+  m_CheckCanReleaseInterval: 30
+  m_AutoReleaseInterval: 60
+--- !u!114 &965975543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 965975540}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da56eb8e282380a478681f0d4445502d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_MinUnloadUnusedAssetsInterval: 60
+  m_MaxUnloadUnusedAssetsInterval: 300
+  PackageName: DefaultPackage
   playMode: 1
-  verifyLevel: 1
-  readWritePathType: 0
-  minUnloadUnusedAssetsInterval: 60
-  maxUnloadUnusedAssetsInterval: 300
-  milliseconds: 30
-  downloadingMaxNum: 3
-  failedTryAgain: 3
-  adaptiveReplacementCacheCapacity: 32
+  VerifyLevel: 1
+  m_ReadWritePathType: 0
+  Milliseconds: 30
+  m_DownloadingMaxNum: 10
+  m_FailedTryAgain: 3
+  m_AssetAutoReleaseInterval: 60
+  m_AssetCapacity: 64
+  m_AssetExpireTime: 60
+  m_AssetPriority: 0
 --- !u!1 &1029867561
 GameObject:
   m_ObjectHideFlags: 0

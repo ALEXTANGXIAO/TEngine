@@ -15,6 +15,6 @@ namespace TEngine
         /// <summary>
         /// 获取内部游戏版本号。
         /// </summary>
-        public string InternalGameVersion => BuiltinQueryMgr.InternalGameVersion;
+        public string InternalGameVersion => string.Empty;
     }
 }

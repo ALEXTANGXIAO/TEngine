@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.UIElements;
-using UnityEngine;
-using UnityEngine.UIElements;
-using YooAsset.Editor;
 
 namespace TEngine.Editor.Inspector
 {
@@ -13,59 +8,34 @@ namespace TEngine.Editor.Inspector
     {
         private static readonly string[] _resourceModeNames = new string[]
         {
-            "EditorSimulateMode (编辑器下的模拟模式)", 
-            "OfflinePlayMode (单机模式)", 
-            "HostPlayMode (联机运行模式)" , 
+            "EditorSimulateMode (编辑器下的模拟模式)",
+            "OfflinePlayMode (单机模式)",
+            "HostPlayMode (联机运行模式)",
             "WebPlayMode (WebGL运行模式)"
         };
+
         private static readonly string[] _verifyLevelNames = new string[]
         {
-            "Low (验证文件存在)", 
-            "Middle (验证文件大小)", 
+            "Low (验证文件存在)",
+            "Middle (验证文件大小)",
             "High (验证文件大小和CRC)"
         };
 
-        private SerializedProperty m_PackageName = null;
         private SerializedProperty m_PlayMode = null;
-        private SerializedProperty m_ReadWritePathType = null;
         private SerializedProperty m_VerifyLevel = null;
         private SerializedProperty m_Milliseconds = null;
+        private SerializedProperty m_ReadWritePathType = null;
         private SerializedProperty m_MinUnloadUnusedAssetsInterval = null;
         private SerializedProperty m_MaxUnloadUnusedAssetsInterval = null;
+        private SerializedProperty m_AssetAutoReleaseInterval = null;
+        private SerializedProperty m_AssetCapacity = null;
+        private SerializedProperty m_AssetExpireTime = null;
+        private SerializedProperty m_AssetPriority = null;
         private SerializedProperty m_DownloadingMaxNum = null;
         private SerializedProperty m_FailedTryAgain = null;
-        private SerializedProperty m_adaptiveReplacementCacheCapacity = null;
 
         private int m_ResourceModeIndex = 0;
-        private int m_PackageIndex = 0;
         private int m_VerifyIndex = 0;
-
-        private PopupField<string> _buildPackageField;
-        private List<string> _buildPackageNames;
-
-        private void OnEnable()
-        {
-            m_PackageName = serializedObject.FindProperty("packageName");
-            m_PlayMode = serializedObject.FindProperty("playMode");
-            m_VerifyLevel = serializedObject.FindProperty("verifyLevel");
-            m_Milliseconds = serializedObject.FindProperty("milliseconds");
-
-            m_ReadWritePathType = serializedObject.FindProperty("readWritePathType");
-            m_MinUnloadUnusedAssetsInterval = serializedObject.FindProperty("minUnloadUnusedAssetsInterval");
-            m_MaxUnloadUnusedAssetsInterval = serializedObject.FindProperty("maxUnloadUnusedAssetsInterval");
-            m_DownloadingMaxNum = serializedObject.FindProperty("downloadingMaxNum");
-            m_FailedTryAgain = serializedObject.FindProperty("failedTryAgain");
-            m_adaptiveReplacementCacheCapacity = serializedObject.FindProperty("adaptiveReplacementCacheCapacity");
-
-            RefreshModes();
-            RefreshTypeNames();
-        }
-
-        private void RefreshModes()
-        {
-            m_ResourceModeIndex = m_PlayMode.enumValueIndex > 0 ? m_PlayMode.enumValueIndex : 0;
-            m_VerifyIndex = m_VerifyLevel.enumValueIndex > 0 ? m_VerifyLevel.enumValueIndex : 0;
-        }
 
         public override void OnInspectorGUI()
         {
@@ -81,17 +51,10 @@ namespace TEngine.Editor.Inspector
                 {
                     EditorGUILayout.EnumPopup("Resource Mode", t.PlayMode);
 
-                    EditorGUILayout.EnumPopup("VerifyLevel", t.verifyLevel);
-
-                    _buildPackageNames = GetBuildPackageNames();
-                    if (_buildPackageNames.Count > 0)
-                    {
-                        GUILayout.Label(_buildPackageNames[0]);
-                    }
+                    EditorGUILayout.EnumPopup("VerifyLevel", t.VerifyLevel);
                 }
                 else
                 {
-                    // 资源模式
                     int selectedIndex = EditorGUILayout.Popup("Resource Mode", m_ResourceModeIndex, _resourceModeNames);
                     if (selectedIndex != m_ResourceModeIndex)
                     {
@@ -105,32 +68,6 @@ namespace TEngine.Editor.Inspector
                         m_VerifyIndex = selectedVerifyIndex;
                         m_VerifyLevel.enumValueIndex = selectedVerifyIndex;
                     }
-
-                    // 包裹名称列表
-                    _buildPackageNames = GetBuildPackageNames();
-                    if (_buildPackageNames.Count > 0)
-                    {
-                        int selectedPackageIndex = EditorGUILayout.Popup("Used Packages", m_PackageIndex, _buildPackageNames.ToArray());
-                        if (selectedPackageIndex != m_PackageIndex)
-                        {
-                            m_PackageIndex = selectedPackageIndex;
-                            m_PlayMode.enumValueIndex = selectedIndex + 1;
-                        }
-
-                        int defaultIndex = GetDefaultPackageIndex(AssetBundleBuilderSettingData.Setting.BuildPackage);
-                        _buildPackageField = new PopupField<string>(_buildPackageNames, defaultIndex);
-                        _buildPackageField.label = "Build Package";
-                        _buildPackageField.style.width = 350;
-                        _buildPackageField.RegisterValueChangedCallback(evt =>
-                        {
-                            AssetBundleBuilderSettingData.IsDirty = true;
-                            AssetBundleBuilderSettingData.Setting.BuildPackage = _buildPackageField.value;
-                        });
-                    }
-                    else
-                    {
-                        GUILayout.Label("Please Create Packages with YooAssets ...!");
-                    }
                 }
 
                 m_ReadWritePathType.enumValueIndex = (int)(ReadWritePathType)EditorGUILayout.EnumPopup("Read-Write Path Type", t.ReadWritePathType);
@@ -142,7 +79,7 @@ namespace TEngine.Editor.Inspector
             {
                 if (EditorApplication.isPlaying)
                 {
-                    t.milliseconds = milliseconds;
+                    t.Milliseconds = milliseconds;
                 }
                 else
                 {
@@ -150,8 +87,9 @@ namespace TEngine.Editor.Inspector
                 }
             }
 
-            float minUnloadUnusedAssetsInterval = EditorGUILayout.Slider("Min Unload Unused Assets Interval", m_MinUnloadUnusedAssetsInterval.floatValue, 0f, 3600f);
-            if (Math.Abs(minUnloadUnusedAssetsInterval - m_MinUnloadUnusedAssetsInterval.floatValue) > 0.001f)
+            float minUnloadUnusedAssetsInterval =
+                EditorGUILayout.Slider("Min Unload Unused Assets Interval", m_MinUnloadUnusedAssetsInterval.floatValue, 0f, 3600f);
+            if (Math.Abs(minUnloadUnusedAssetsInterval - m_MinUnloadUnusedAssetsInterval.floatValue) > 0.01f)
             {
                 if (EditorApplication.isPlaying)
                 {
@@ -163,8 +101,9 @@ namespace TEngine.Editor.Inspector
                 }
             }
 
-            float maxUnloadUnusedAssetsInterval = EditorGUILayout.Slider("Max Unload Unused Assets Interval", m_MaxUnloadUnusedAssetsInterval.floatValue, 0f, 3600f);
-            if (Math.Abs(maxUnloadUnusedAssetsInterval - m_MaxUnloadUnusedAssetsInterval.floatValue) > 0.001f)
+            float maxUnloadUnusedAssetsInterval =
+                EditorGUILayout.Slider("Max Unload Unused Assets Interval", m_MaxUnloadUnusedAssetsInterval.floatValue, 0f, 3600f);
+            if (Math.Abs(maxUnloadUnusedAssetsInterval - m_MaxUnloadUnusedAssetsInterval.floatValue) > 0.01f)
             {
                 if (EditorApplication.isPlaying)
                 {
@@ -181,7 +120,7 @@ namespace TEngine.Editor.Inspector
             {
                 if (EditorApplication.isPlaying)
                 {
-                    t.downloadingMaxNum = (int)downloadingMaxNum;
+                    t.DownloadingMaxNum = (int)downloadingMaxNum;
                 }
                 else
                 {
@@ -194,36 +133,77 @@ namespace TEngine.Editor.Inspector
             {
                 if (EditorApplication.isPlaying)
                 {
-                    t.failedTryAgain = (int)failedTryAgain;
+                    t.FailedTryAgain = (int)failedTryAgain;
                 }
                 else
                 {
                     m_FailedTryAgain.intValue = (int)failedTryAgain;
                 }
             }
-            
-            int adaptiveReplacementCacheCapacity = (int)EditorGUILayout.Slider("ARC Table Capacity", m_adaptiveReplacementCacheCapacity.intValue, 8f, 128f);
-            if (adaptiveReplacementCacheCapacity != m_adaptiveReplacementCacheCapacity.intValue)
+
+            EditorGUI.BeginDisabledGroup(EditorApplication.isPlaying);
             {
-                if (EditorApplication.isPlaying)
+                float assetAutoReleaseInterval = EditorGUILayout.DelayedFloatField("Asset Auto Release Interval", m_AssetAutoReleaseInterval.floatValue);
+                if (Math.Abs(assetAutoReleaseInterval - m_AssetAutoReleaseInterval.floatValue) > 0.01f)
                 {
-                    t.adaptiveReplacementCacheCapacity = adaptiveReplacementCacheCapacity;
+                    if (EditorApplication.isPlaying)
+                    {
+                        t.AssetAutoReleaseInterval = assetAutoReleaseInterval;
+                    }
+                    else
+                    {
+                        m_AssetAutoReleaseInterval.floatValue = assetAutoReleaseInterval;
+                    }
                 }
-                else
+
+                int assetCapacity = EditorGUILayout.DelayedIntField("Asset Capacity", m_AssetCapacity.intValue);
+                if (assetCapacity != m_AssetCapacity.intValue)
                 {
-                    m_adaptiveReplacementCacheCapacity.intValue = adaptiveReplacementCacheCapacity;
+                    if (EditorApplication.isPlaying)
+                    {
+                        t.AssetCapacity = assetCapacity;
+                    }
+                    else
+                    {
+                        m_AssetCapacity.intValue = assetCapacity;
+                    }
+                }
+
+                float assetExpireTime = EditorGUILayout.DelayedFloatField("Asset Expire Time", m_AssetExpireTime.floatValue);
+                if (Math.Abs(assetExpireTime - m_AssetExpireTime.floatValue) > 0.01f)
+                {
+                    if (EditorApplication.isPlaying)
+                    {
+                        t.AssetExpireTime = assetExpireTime;
+                    }
+                    else
+                    {
+                        m_AssetExpireTime.floatValue = assetExpireTime;
+                    }
+                }
+
+                int assetPriority = EditorGUILayout.DelayedIntField("Asset Priority", m_AssetPriority.intValue);
+                if (assetPriority != m_AssetPriority.intValue)
+                {
+                    if (EditorApplication.isPlaying)
+                    {
+                        t.AssetPriority = assetPriority;
+                    }
+                    else
+                    {
+                        m_AssetPriority.intValue = assetPriority;
+                    }
                 }
             }
-
+            EditorGUI.EndDisabledGroup();
 
             if (EditorApplication.isPlaying && IsPrefabInHierarchy(t.gameObject))
             {
                 EditorGUILayout.LabelField("Unload Unused Assets",
                     Utility.Text.Format("{0:F2} / {1:F2}", t.LastUnloadUnusedAssetsOperationElapseSeconds, t.MaxUnloadUnusedAssetsInterval));
-                EditorGUILayout.LabelField("Read-Only Path", t.ReadOnlyPath.ToString());
-                EditorGUILayout.LabelField("Read-Write Path", t.ReadWritePath.ToString());
+                EditorGUILayout.LabelField("Read-Only Path", t?.ReadOnlyPath?.ToString());
+                EditorGUILayout.LabelField("Read-Write Path", t?.ReadWritePath?.ToString());
                 EditorGUILayout.LabelField("Applicable Game Version", t.ApplicableGameVersion ?? "<Unknwon>");
-                EditorGUILayout.LabelField("Internal Resource Version", t.InternalResourceVersion.ToString());
             }
 
             serializedObject.ApplyModifiedProperties();
@@ -238,36 +218,34 @@ namespace TEngine.Editor.Inspector
             RefreshTypeNames();
         }
 
+        private void OnEnable()
+        {
+            m_PlayMode = serializedObject.FindProperty("playMode");
+            m_VerifyLevel = serializedObject.FindProperty("VerifyLevel");
+            m_Milliseconds = serializedObject.FindProperty("Milliseconds");
+            m_ReadWritePathType = serializedObject.FindProperty("m_ReadWritePathType");
+            m_MinUnloadUnusedAssetsInterval = serializedObject.FindProperty("m_MinUnloadUnusedAssetsInterval");
+            m_MaxUnloadUnusedAssetsInterval = serializedObject.FindProperty("m_MaxUnloadUnusedAssetsInterval");
+            m_AssetAutoReleaseInterval = serializedObject.FindProperty("m_AssetAutoReleaseInterval");
+            m_AssetCapacity = serializedObject.FindProperty("m_AssetCapacity");
+            m_AssetExpireTime = serializedObject.FindProperty("m_AssetExpireTime");
+            m_AssetPriority = serializedObject.FindProperty("m_AssetPriority");
+            m_DownloadingMaxNum = serializedObject.FindProperty("m_DownloadingMaxNum");
+            m_FailedTryAgain = serializedObject.FindProperty("m_FailedTryAgain");
+
+            RefreshModes();
+            RefreshTypeNames();
+        }
+
+        private void RefreshModes()
+        {
+            m_ResourceModeIndex = m_PlayMode.enumValueIndex > 0 ? m_PlayMode.enumValueIndex : 0;
+            m_VerifyIndex = m_VerifyLevel.enumValueIndex > 0 ? m_VerifyLevel.enumValueIndex : 0;
+        }
+
         private void RefreshTypeNames()
         {
             serializedObject.ApplyModifiedProperties();
-        }
-
-        // 构建包裹相关
-        private int GetDefaultPackageIndex(string packageName)
-        {
-            for (int index = 0; index < _buildPackageNames.Count; index++)
-            {
-                if (_buildPackageNames[index] == packageName)
-                {
-                    return index;
-                }
-            }
-
-            AssetBundleBuilderSettingData.IsDirty = true;
-            AssetBundleBuilderSettingData.Setting.BuildPackage = _buildPackageNames[0];
-            return 0;
-        }
-
-        private List<string> GetBuildPackageNames()
-        {
-            List<string> result = new List<string>();
-            foreach (var package in AssetBundleCollectorSettingData.Setting.Packages)
-            {
-                result.Add(package.PackageName);
-            }
-
-            return result;
         }
     }
 }

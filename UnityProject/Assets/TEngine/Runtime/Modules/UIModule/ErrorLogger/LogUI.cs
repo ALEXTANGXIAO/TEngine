@@ -13,7 +13,7 @@ namespace TEngine
         #region 脚本工具生成的代码
         private Text m_textError;
         private Button m_btnClose;
-        public override void ScriptGenerator()
+        protected override void ScriptGenerator()
         {
             m_textError = FindChildComponent<Text>("m_textError");
             m_btnClose = FindChildComponent<Button>("m_btnClose");
@@ -28,7 +28,7 @@ namespace TEngine
         }
         #endregion
         
-         public override void OnRefresh()
+         protected override void OnRefresh()
          {
              _errorTextString.Push(UserData.ToString());
              m_textError.text = UserData.ToString();

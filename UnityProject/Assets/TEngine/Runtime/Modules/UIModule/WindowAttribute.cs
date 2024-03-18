@@ -37,41 +37,39 @@ namespace TEngine
         /// </summary>
         public readonly bool FromResources;
 
-        /// <summary>
-        /// 需要缓存。
-        /// <remarks>关闭界面不立刻释放资源。</remarks>
-        /// </summary>
-        public readonly bool NeedCache;
+        public readonly int HideTimeToClose;
 
-        public WindowAttribute(int windowLayer, string location = "", bool fullScreen = false,bool needCache = false)
+        public WindowAttribute(int windowLayer, string location = "", bool fullScreen = false, int hideTimeToClose = 10)
         {
             WindowLayer = windowLayer;
             Location = location;
             FullScreen = fullScreen;
-            NeedCache = needCache;
+            HideTimeToClose = hideTimeToClose;
         }
 
-        public WindowAttribute(UILayer windowLayer, string location = "", bool fullScreen = false,bool needCache = false)
+        public WindowAttribute(UILayer windowLayer, string location = "", bool fullScreen = false, int hideTimeToClose = 10)
         {
             WindowLayer = (int)windowLayer;
             Location = location;
             FullScreen = fullScreen;
-            NeedCache = needCache;
+            HideTimeToClose = hideTimeToClose;
         }
 
-        public WindowAttribute(UILayer windowLayer, bool fromResources, bool fullScreen = false,bool needCache = false)
+        public WindowAttribute(UILayer windowLayer, bool fromResources, bool fullScreen = false, int hideTimeToClose = 10)
         {
             WindowLayer = (int)windowLayer;
             FromResources = fromResources;
-            NeedCache = needCache;
+            FullScreen = fullScreen;
+            HideTimeToClose = hideTimeToClose;
         }
 
-        public WindowAttribute(UILayer windowLayer, bool fromResources, string location, bool fullScreen = false,bool needCache = false)
+        public WindowAttribute(UILayer windowLayer, bool fromResources, string location, bool fullScreen = false, int hideTimeToClose = 10)
         {
             WindowLayer = (int)windowLayer;
             FromResources = fromResources;
             Location = location;
-            NeedCache = needCache;
+            FullScreen = fullScreen;
+            HideTimeToClose = hideTimeToClose;
         }
     }
 }

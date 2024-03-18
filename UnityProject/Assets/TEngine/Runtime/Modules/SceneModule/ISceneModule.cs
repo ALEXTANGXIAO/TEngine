@@ -21,11 +21,11 @@ namespace TEngine
         /// <param name="callBack">加载回调。</param>
         /// <param name="gcCollect">加载主场景是否回收垃圾。</param>
         /// <param name="progressCallBack">加载进度回调。</param>
-        public SceneOperationHandle LoadScene(string location, 
+        public SceneHandle LoadScene(string location, 
             LoadSceneMode sceneMode = LoadSceneMode.Single,
             bool suspendLoad = false, 
             int priority = 100,
-            Action<SceneOperationHandle> callBack = null, 
+            Action<SceneHandle> callBack = null, 
             bool gcCollect = true, 
             Action<float> progressCallBack = null);
 

@@ -22,18 +22,23 @@ namespace GameMain
 
         private readonly bool _needProLoadConfig = true;
 
-        private bool _hadInitConfigXml = false;
+        /// <summary>
+        /// 预加载回调。
+        /// </summary>
+        private LoadAssetCallbacks m_PreLoadAssetCallbacks;
+        
+        protected override void OnInit(ProcedureOwner procedureOwner)
+        {
+            base.OnInit(procedureOwner);
+            m_PreLoadAssetCallbacks = new LoadAssetCallbacks(OnPreLoadAssetSuccess, OnPreLoadAssetFailure);
+        }
 
+        
         protected override void OnEnter(ProcedureOwner procedureOwner)
         {
             base.OnEnter(procedureOwner);
 
             _loadedFlag.Clear();
-
-            if (GameModule.Resource.PlayMode == EPlayMode.EditorSimulateMode)
-            {
-                _hadInitConfigXml = true;
-            }
 
             UILoadMgr.Show(UIDefine.UILoadUpdate, Utility.Text.Format(LoadText.Instance.Label_Load_Load_Progress, 0));
 
@@ -87,11 +92,6 @@ namespace GameMain
                 return;
             }
 
-            if (_hadInitConfigXml == false)
-            {
-                return;
-            }
-
             ChangeState<ProcedureLoadAssembly>(procedureOwner);
         }
 
@@ -120,51 +120,44 @@ namespace GameMain
             {
                 LoadAllConfig();
             }
-            else
-            {
-                _hadInitConfigXml = true;
-            }
         }
 
         private void LoadAllConfig()
         {
             if (GameModule.Resource.PlayMode == EPlayMode.EditorSimulateMode)
             {
-                _hadInitConfigXml = true;
                 return;
             }
             AssetInfo[] assetInfos = GameModule.Resource.GetAssetInfos("PRELOAD");
             foreach (var assetInfo in assetInfos)
             {
-                LoadConfig(assetInfo.Address);
+                PreLoad(assetInfo.Address);
             }
 #if UNITY_WEBGL
             AssetInfo[] webAssetInfos = GameModule.Resource.GetAssetInfos("WEBGL_PRELOAD");
             foreach (var assetInfo in webAssetInfos)
             {
-                LoadConfig(assetInfo.Address);
+                PreLoad(assetInfo.Address);
             }
 #endif
-            _hadInitConfigXml = true;
         }
 
-        private void LoadConfig(string configName)
+        private void PreLoad(string location)
         {
-            _loadedFlag.Add(configName, false);
-            GameModule.Resource.LoadAssetAsync<TextAsset>(configName, OnLoadSuccess);
+            _loadedFlag.Add(location, false);
+            GameModule.Resource.LoadAssetAsync(location, typeof(UnityEngine.Object), m_PreLoadAssetCallbacks, null);
         }
 
-        private void OnLoadSuccess(AssetOperationHandle assetOperationHandle)
+        private void OnPreLoadAssetFailure(string assetName, LoadResourceStatus status, string errormessage, object userdata)
         {
-            if (assetOperationHandle == null)
-            {
-                return;
-            }
-            var location = assetOperationHandle.GetAssetInfo().Address;
-            _loadedFlag[location] = true;
-            GameModule.Resource.PushPreLoadAsset(location, assetOperationHandle.AssetObject);
-            Log.Info("Load config '{0}' OK.", location);
-            assetOperationHandle.Dispose();
+            Log.Warning("Can not preload asset from '{0}' with error message '{1}'.", assetName, errormessage);
+            _loadedFlag[assetName] = true;
+        }
+
+        private void OnPreLoadAssetSuccess(string assetName, object asset, float duration, object userdata)
+        {
+            Log.Debug("Success preload asset from '{0}' duration '{1}'.", assetName, duration);
+            _loadedFlag[assetName] = true;
         }
     }
 }

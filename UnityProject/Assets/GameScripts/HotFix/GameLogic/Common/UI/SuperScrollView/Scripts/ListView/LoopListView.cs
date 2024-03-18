@@ -669,7 +669,7 @@ namespace GameLogic
         private ItemPool TryCreateItemPool(string itemPrefabName)
         {
             string resPath = itemPrefabName;
-            GameObject go = GameModule.Resource.LoadAsset<GameObject>(resPath, _containerTrans);
+            GameObject go = GameModule.Resource.LoadGameObject(resPath, parent: _containerTrans);
             if (go != null)
             {
                 go.SetActive(false);

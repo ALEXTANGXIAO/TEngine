@@ -56,8 +56,8 @@ namespace GameMain
         /// </summary>
         public static void HideAll()
         {
-            GameModule.UI.CloseWindow<UILoadTip>();
-            GameModule.UI.CloseWindow<UILoadUpdate>();
+            GameModule.UI.CloseUI<UILoadTip>();
+            GameModule.UI.CloseUI<UILoadUpdate>();
         }
     }
 }
