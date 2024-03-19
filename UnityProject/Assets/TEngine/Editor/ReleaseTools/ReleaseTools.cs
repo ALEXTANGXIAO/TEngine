@@ -60,7 +60,7 @@ namespace TEngine.Editor
         public static void BuildCurrentPlatformAB()
         {
             BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
-            BuildInternal(target, Application.dataPath + "/../Builds/Windows", packageVersion: GetBuildPackageVersion());
+            BuildInternal(target, Application.dataPath + "/../Builds/", packageVersion: GetBuildPackageVersion());
             AssetDatabase.Refresh();
         }
 
@@ -140,7 +140,7 @@ namespace TEngine.Editor
             buildParameters.PackageVersion = packageVersion;
             buildParameters.VerifyBuildingResult = true;
             buildParameters.FileNameStyle =  EFileNameStyle.BundleName_HashName;
-            buildParameters.BuildinFileCopyOption = EBuildinFileCopyOption.None;
+            buildParameters.BuildinFileCopyOption = EBuildinFileCopyOption.ClearAndCopyAll;
             buildParameters.BuildinFileCopyParams = string.Empty;
             buildParameters.EncryptionServices = CreateEncryptionInstance("DefaultPackage",buildPipeline);
             // 启用共享资源打包
