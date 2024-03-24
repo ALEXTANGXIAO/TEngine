@@ -230,7 +230,7 @@ namespace TEngine
         /// <param name="callback">回调函数。</param>
         /// <param name="packageName">指定资源包的名称。不传使用默认资源包</param>
         /// <typeparam name="T">要加载资源的类型。</typeparam>
-        void LoadAsset<T>(string location, Action<T> callback, string packageName = "") where T : UnityEngine.Object;
+        UniTaskVoid LoadAsset<T>(string location, Action<T> callback, string packageName = "") where T : UnityEngine.Object;
 
         /// <summary>
         /// 同步加载子资源对象。
