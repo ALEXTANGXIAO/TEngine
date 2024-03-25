@@ -14,7 +14,6 @@ namespace TEngine
     internal sealed partial class ResourceManager : ModuleImp, IResourceManager
     {
         #region Propreties
-
         /// <summary>
         /// 资源包名称。
         /// </summary>
@@ -532,7 +531,7 @@ namespace TEngine
             return ret;
         }
 
-        public GameObject LoadGameObject(string location, string packageName = "", Transform parent = null)
+        public GameObject LoadGameObject(string location, Transform parent = null, string packageName = "")
         {
             if (string.IsNullOrEmpty(location))
             {
@@ -663,8 +662,7 @@ namespace TEngine
             return handle.AssetObject as T;
         }
 
-        public async UniTask<GameObject> LoadGameObjectAsync(string location, CancellationToken cancellationToken = default, string packageName = "",
-            Transform parent = null)
+        public async UniTask<GameObject> LoadGameObjectAsync(string location, Transform parent = null, CancellationToken cancellationToken = default, string packageName = "")
         {
             if (string.IsNullOrEmpty(location))
             {
@@ -896,12 +894,33 @@ namespace TEngine
                 }
             }
         }
-
+        
+        private readonly TimeoutController _timeoutController = new TimeoutController();
+        
         private async UniTask TryWaitingLoading(string assetObjectKey)
         {
             if (_assetLoadingList.Contains(assetObjectKey))
             {
-                await UniTask.WaitUntil(() => !_assetLoadingList.Contains(assetObjectKey), cancellationToken:CancellationToken);
+                try
+                {
+                    await UniTask.WaitUntil(
+                        () => !_assetLoadingList.Contains(assetObjectKey), 
+                        cancellationToken:CancellationToken)
+#if UNITY_EDITOR
+                        .AttachExternalCancellation(_timeoutController.Timeout(TimeSpan.FromSeconds(60)));
+                    _timeoutController.Reset();
+#else
+                    ;
+#endif
+                
+                }
+                catch (OperationCanceledException ex)
+                {
+                    if (_timeoutController.IsTimeout())
+                    {
+                        Log.Error($"LoadAssetAsync Waiting {assetObjectKey} timeout. reason:{ex.Message}");
+                    }
+                }
             }
         }
         #endregion
