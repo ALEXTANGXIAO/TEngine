@@ -35,6 +35,14 @@ namespace GameMain
                 //更新成功
                 //注意：保存资源版本号作为下次默认启动的版本!
                 operation.SavePackageVersion();
+                
+                if (GameModule.Resource.PlayMode == EPlayMode.WebPlayMode ||
+                    GameModule.Resource.UpdatableWhilePlaying)
+                {
+                    // 边玩边下载还可以拓展首包支持。
+                    ChangeState<ProcedurePreload>(procedureOwner);
+                    return;
+                }
                 ChangeState<ProcedureCreateDownloader>(procedureOwner);
             }
             else

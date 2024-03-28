@@ -78,19 +78,14 @@ namespace GameMain
                         ChangeState<ProcedureInitResources>(procedureOwner);
                     }
                     // 可更新模式。
-                    else if (playMode == EPlayMode.HostPlayMode)
+                    else if (playMode == EPlayMode.HostPlayMode ||
+                             playMode == EPlayMode.WebPlayMode)
                     {
                         // 打开启动UI。
                         UILoadMgr.Show(UIDefine.UILoadUpdate);
 
                         Log.Info("Updatable resource mode detected.");
                         ChangeState<ProcedureUpdateVersion>(procedureOwner);
-                    }
-                    // 可更新模式。
-                    else if (playMode == EPlayMode.WebPlayMode)
-                    {
-                        Log.Info("WebPlayMode resource mode detected.");
-                        ChangeState<ProcedurePreload>(procedureOwner);
                     }
                     else
                     {
