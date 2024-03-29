@@ -145,8 +145,8 @@ MonoBehaviour:
         CollectorGUID: 2a4bceb84ed685447ace957f497eb810
         CollectorType: 0
         AddressRuleName: AddressByFileName
-        PackRuleName: PackShaderVariants
-        FilterRuleName: CollectShaderVariants
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
     - GroupName: UI
