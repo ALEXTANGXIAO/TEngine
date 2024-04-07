@@ -12,7 +12,7 @@ public static class SetSpriteExtensions
     /// <param name="setNativeSize">是否使用原始分辨率。</param>
     public static void SetSprite(this Image image, string location, bool setNativeSize = false)
     {
-        GameModule.ResourceExt.SetAssetByResources<Sprite>(SetSpriteObject.Create(image, location, setNativeSize));
+        GameModule.ResourceExt.SetAssetByResources<Sprite>(SetSpriteObject.Create(image, location, setNativeSize)).Forget();
     }
 
     /// <summary>
@@ -22,6 +22,6 @@ public static class SetSpriteExtensions
     /// <param name="location">资源定位地址。</param>
     public static void SetSprite(this SpriteRenderer spriteRenderer, string location)
     {
-        GameModule.ResourceExt.SetAssetByResources<Sprite>(SetSpriteObject.Create(spriteRenderer, location));
+        GameModule.ResourceExt.SetAssetByResources<Sprite>(SetSpriteObject.Create(spriteRenderer, location)).Forget();
     }
 }
