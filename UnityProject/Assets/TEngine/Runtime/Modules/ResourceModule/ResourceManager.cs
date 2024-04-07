@@ -14,6 +14,7 @@ namespace TEngine
     internal sealed partial class ResourceManager : ModuleImp, IResourceManager
     {
         #region Propreties
+
         /// <summary>
         /// 资源包名称。
         /// </summary>
@@ -582,6 +583,7 @@ namespace TEngine
             AssetObject assetObject = m_AssetPool.Spawn(assetObjectKey);
             if (assetObject != null)
             {
+                await UniTask.Yield();
                 callback?.Invoke(assetObject.Target as T);
                 return;
             }
@@ -640,6 +642,7 @@ namespace TEngine
             AssetObject assetObject = m_AssetPool.Spawn(assetObjectKey);
             if (assetObject != null)
             {
+                await UniTask.Yield();
                 return assetObject.Target as T;
             }
             
@@ -676,6 +679,7 @@ namespace TEngine
             AssetObject assetObject = m_AssetPool.Spawn(assetObjectKey);
             if (assetObject != null)
             {
+                await UniTask.Yield();
                 return AssetsReference.Instantiate(assetObject.Target as GameObject, parent, this).gameObject;
             }
             
@@ -727,10 +731,13 @@ namespace TEngine
             
             await TryWaitingLoading(assetObjectKey);
             
+            float duration = Time.time;
+            
             AssetObject assetObject = m_AssetPool.Spawn(assetObjectKey);
             if (assetObject != null)
             {
-                loadAssetCallbacks.LoadAssetSuccessCallback(location, assetObject.Target, 0, userData);
+                await UniTask.Yield();
+                loadAssetCallbacks.LoadAssetSuccessCallback(location, assetObject.Target, Time.time - duration, userData);
                 return;
             }
             
@@ -749,8 +756,6 @@ namespace TEngine
 
                 throw new GameFrameworkException(errorMessage);
             }
-            
-            float duration = Time.time;
 
             AssetHandle handle = GetHandleAsync(location, assetType, packageName: packageName);
 
@@ -814,10 +819,13 @@ namespace TEngine
             
             await TryWaitingLoading(assetObjectKey);
             
+            float duration = Time.time;
+            
             AssetObject assetObject = m_AssetPool.Spawn(assetObjectKey);
             if (assetObject != null)
             {
-                loadAssetCallbacks.LoadAssetSuccessCallback(location, assetObject.Target, 0, userData);
+                await UniTask.Yield();
+                loadAssetCallbacks.LoadAssetSuccessCallback(location, assetObject.Target, Time.time - duration, userData);
                 return;
             }
             
@@ -837,8 +845,6 @@ namespace TEngine
                 throw new GameFrameworkException(errorMessage);
             }
             
-            float duration = Time.time;
-
             AssetHandle handle = GetHandleAsync(location, assetInfo.AssetType, packageName: packageName);
 
             if (loadAssetCallbacks.LoadAssetUpdateCallback != null)
