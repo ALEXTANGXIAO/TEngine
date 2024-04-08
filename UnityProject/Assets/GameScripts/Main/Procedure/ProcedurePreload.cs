@@ -44,7 +44,7 @@ namespace GameMain
 
             GameEvent.Send("UILoadUpdate.RefreshVersion");
 
-            PreloadResources().Forget();
+            PreloadResources();
         }
 
         protected override void OnUpdate(ProcedureOwner procedureOwner, float elapseSeconds, float realElapseSeconds)
@@ -110,12 +110,8 @@ namespace GameMain
             callback?.Invoke();
         }
 
-        private async UniTaskVoid PreloadResources()
+        private void PreloadResources()
         {
-            await SmoothValue(1f, 1.2f).ToUniTask(GameModule.Procedure);
-
-            await UniTask.Delay(TimeSpan.FromSeconds(2.5f));
-
             if (_needProLoadConfig)
             {
                 LoadAllConfig();
