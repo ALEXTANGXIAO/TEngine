@@ -19,6 +19,7 @@ namespace TEngine
         private static readonly GameFrameworkLinkedList<ModuleImp> _modules = new GameFrameworkLinkedList<ModuleImp>();
         private static readonly GameFrameworkLinkedList<ModuleImp> _updateModules = new GameFrameworkLinkedList<ModuleImp>();
         private static readonly List<ModuleImp> _updateExecuteList = new List<ModuleImp>(DesignModuleCount);
+        private static bool _isExecuteListDirty;
 
         /// <summary>
         /// 所有游戏框架模块轮询。
@@ -27,6 +28,12 @@ namespace TEngine
         /// <param name="realElapseSeconds">真实流逝时间，以秒为单位。</param>
         public static void Update(float elapseSeconds, float realElapseSeconds)
         {
+            if (_isExecuteListDirty)
+            {
+                _isExecuteListDirty = false;
+                BuildExecuteList();
+            }
+            
             int executeCount = _updateExecuteList.Count;
             for (int i = 0; i < executeCount; i++)
             {
@@ -149,12 +156,20 @@ namespace TEngine
                 {
                     _updateModules.AddLast(moduleImp);
                 }
-
-                _updateExecuteList.Clear();
-                _updateExecuteList.AddRange(_updateModules);
+                
+                _isExecuteListDirty = true;
             }
 
             return moduleImp;
+        }
+        
+        /// <summary>
+        /// 构造执行队列。
+        /// </summary>
+        private static void BuildExecuteList()
+        {
+            _updateExecuteList.Clear();
+            _updateExecuteList.AddRange(_updateModules);
         }
     }
 }
