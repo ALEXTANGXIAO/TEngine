@@ -7,13 +7,13 @@ public class TEngineSettings : ScriptableObject
 
     public FrameworkGlobalSettings FrameworkGlobalSettings => m_FrameworkGlobalSettings;
 
-    [Header("HybridCLR")] [SerializeField] private HybridCLRCustomGlobalSettings m_BybridCLRCustomGlobalSettings;
+    [Header("HybridCLR")] [SerializeField] private HybridCLRCustomGlobalSettings m_HybridCLRCustomGlobalSettings;
 
-    public HybridCLRCustomGlobalSettings BybridCLRCustomGlobalSettings => m_BybridCLRCustomGlobalSettings;
+    public HybridCLRCustomGlobalSettings BybridCLRCustomGlobalSettings => m_HybridCLRCustomGlobalSettings;
 
     public void Set(FrameworkGlobalSettings globalSettings,HybridCLRCustomGlobalSettings hybridClrCustomGlobalSettings)
     {
         m_FrameworkGlobalSettings = globalSettings;
-        m_BybridCLRCustomGlobalSettings = hybridClrCustomGlobalSettings;
+        m_HybridCLRCustomGlobalSettings = hybridClrCustomGlobalSettings;
     }
 }
