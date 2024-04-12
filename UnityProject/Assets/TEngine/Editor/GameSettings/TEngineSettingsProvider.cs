@@ -58,7 +58,7 @@ public class TEngineSettingsProvider : SettingsProvider
             m_CustomSettings = GetSerializedSettings();
         }
 
-        EditorGUILayout.PropertyField(m_CustomSettings.FindProperty("m_BybridCLRCustomGlobalSettings"));
+        EditorGUILayout.PropertyField(m_CustomSettings.FindProperty("m_HybridCLRCustomGlobalSettings"));
         EditorGUILayout.Space(20);
         if (!changeCheckScope.changed)
         {
