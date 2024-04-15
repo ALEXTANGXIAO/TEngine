@@ -58,7 +58,12 @@ namespace YooAsset
         }
         private static string CreateDefaultBuildinRoot()
         {
-            return PathUtility.Combine(UnityEngine.Application.streamingAssetsPath, YooAssetSettingsData.Setting.DefaultYooFolderName);
+            string path = PathUtility.Combine(UnityEngine.Application.streamingAssetsPath, YooAssetSettingsData.Setting.DefaultYooFolderName);
+#if UNITY_OPENHARMONY
+            return $"file://{path}";
+#else
+            return path;
+#endif
         }
         private static string CreateDefaultSandboxRoot()
         {
@@ -176,6 +181,7 @@ namespace YooAsset
         /// </summary>
         public void SaveSandboxPackageVersionFile(string version)
         {
+            YooLogger.Log($"Save package version : {version}");
             string filePath = GetSandboxPackageVersionFilePath();
             FileUtility.WriteAllText(filePath, version);
         }

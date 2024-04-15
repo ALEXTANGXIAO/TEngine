@@ -100,28 +100,21 @@ namespace YooAsset
             if (IsValidWithWarning == false)
                 return false;
 
-            if (SceneObject.IsValid())
+            if (Provider is DatabaseSceneProvider)
             {
-                if (Provider is DatabaseSceneProvider)
-                {
-                    var temp = Provider as DatabaseSceneProvider;
-                    return temp.UnSuspendLoad();
-                }
-                else if (Provider is BundledSceneProvider)
-                {
-                    var temp = Provider as BundledSceneProvider;
-                    return temp.UnSuspendLoad();
-                }
-                else
-                {
-                    throw new System.NotImplementedException();
-                }
+                var provider = Provider as DatabaseSceneProvider;
+                provider.UnSuspendLoad();
+            }
+            else if (Provider is BundledSceneProvider)
+            {
+                var provider = Provider as BundledSceneProvider;
+                provider.UnSuspendLoad();
             }
             else
             {
-                YooLogger.Warning($"Scene is invalid : {SceneObject.name}");
-                return false;
+                throw new System.NotImplementedException();
             }
+            return true;
         }
 
         /// <summary>

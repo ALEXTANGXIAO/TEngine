@@ -10,7 +10,7 @@ namespace YooAsset.Editor
 {
     public class AssetBundleCollectorConfig
     {
-        public const string ConfigVersion = "v2.0.0";
+        public const string ConfigVersion = "v2.1";
 
         public const string XmlVersion = "Version";
         public const string XmlCommon = "Common";
@@ -25,7 +25,7 @@ namespace YooAsset.Editor
         public const string XmlEnableAddressable = "AutoAddressable";
         public const string XmlLocationToLower = "LocationToLower";
         public const string XmlIncludeAssetGUID = "IncludeAssetGUID";
-        public const string XmlIgnoreDefaultType = "IgnoreDefaultType";
+        public const string XmlIgnoreRuleName = "IgnoreRuleName";
 
         public const string XmlGroup = "Group";
         public const string XmlGroupActiveRule = "GroupActiveRule";
@@ -101,7 +101,7 @@ namespace YooAsset.Editor
                 package.EnableAddressable = packageElement.GetAttribute(XmlEnableAddressable) == "True" ? true : false;
                 package.LocationToLower = packageElement.GetAttribute(XmlLocationToLower) == "True" ? true : false;
                 package.IncludeAssetGUID = packageElement.GetAttribute(XmlIncludeAssetGUID) == "True" ? true : false;
-                package.IgnoreDefaultType = packageElement.GetAttribute(XmlIgnoreDefaultType) == "True" ? true : false;
+                package.IgnoreRuleName = packageElement.GetAttribute(XmlIgnoreRuleName);
                 packages.Add(package);
 
                 // 读取分组配置
@@ -213,7 +213,7 @@ namespace YooAsset.Editor
                 packageElement.SetAttribute(XmlEnableAddressable, package.EnableAddressable.ToString());
                 packageElement.SetAttribute(XmlLocationToLower, package.LocationToLower.ToString());
                 packageElement.SetAttribute(XmlIncludeAssetGUID, package.IncludeAssetGUID.ToString());
-                packageElement.SetAttribute(XmlIgnoreDefaultType, package.IgnoreDefaultType.ToString());
+                packageElement.SetAttribute(XmlIgnoreRuleName, package.IgnoreRuleName);
                 root.AppendChild(packageElement);
 
                 // 设置分组配置
@@ -257,6 +257,23 @@ namespace YooAsset.Editor
             string configVersion = root.GetAttribute(XmlVersion);
             if (configVersion == ConfigVersion)
                 return true;
+
+            // v2.0.0 -> v2.1
+            if (configVersion == "v2.0.0")
+            {
+                // 读取包裹配置
+                var packageNodeList = root.GetElementsByTagName(XmlPackage);
+                foreach (var packageNode in packageNodeList)
+                {
+                    XmlElement packageElement = packageNode as XmlElement;
+                    if (packageElement.HasAttribute(XmlIgnoreRuleName) == false)
+                        packageElement.SetAttribute(XmlIgnoreRuleName, nameof(NormalIgnoreRule));
+                }
+
+                // 更新版本
+                root.SetAttribute(XmlVersion, "v2.1");
+                return UpdateXmlConfig(xmlDoc);
+            }
 
             return false;
         }

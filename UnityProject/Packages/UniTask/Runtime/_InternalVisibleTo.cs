@@ -4,4 +4,3 @@
 [assembly: InternalsVisibleTo("UniTask.Addressables")]
 [assembly: InternalsVisibleTo("UniTask.DOTween")]
 [assembly: InternalsVisibleTo("UniTask.TextMeshPro")]
-[assembly: InternalsVisibleTo("UniTask.YooAsset")]
