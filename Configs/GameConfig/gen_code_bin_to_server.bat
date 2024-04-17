@@ -1,3 +1,6 @@
+Cd /d %~dp0
+echo %CD%
+
 set WORKSPACE=../../
 set LUBAN_DLL=%WORKSPACE%/Tools/Luban/Luban.dll
 set CONF_ROOT=.
