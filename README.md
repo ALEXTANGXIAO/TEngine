@@ -62,7 +62,7 @@ TEngine本身为纯净的客户端。不强绑定任何服务器。但是个人�
 
 Net Core现在已经更新到了8.0的版本，在性能和设计上其实是远超JAVA和GO。在JAVAER还在为JVM更新和添加更多功能时，其实他们已经被国内大环境所包围了，看不到.Net Core的性能之强，组件化的结构。国内大环境是JAVA和GO的天下这个不可否认，但是国外C#也确实很多。其实.Net Core最大的问题是大多数自己人都不知道他的优点(AOT、JIT混合编译、热重载等等)，甚至很多守旧派抵制core。GO喜欢吹性能，但其实目前来看，除了协程的轻量级，大多数性能测试其实不如JAVA和.Net。简单可以说出了C++的性能以外，Net Core其实都打得过。
 
-分支Fantasy为接好的带有服务器的双端分支。
+需要服务器可以合并<a href="https://github.com/ALEXTANGXIAO/GameNetty"><strong>GameNetty</strong></a>过来，或者分支Fantasy为接好的带有Fantasy服务器的双端分支。
 
 ## <strong>项目结构概览
 ```
@@ -100,12 +100,14 @@ TEngine
 
 #### <a href="https://github.com/focus-creative-games/hybridclr"><strong>HybridCLR</strong></a> - 特性完整、零成本、高性能、低内存的近乎完美的Unity全平台原生c#热更方案
 
-#### <a href="https://github.com/qq362946/Fantasy"><strong>Fantasy</strong></a> - Fantasy是一套源于ETServer但极为简洁，性能更强，更好上手的一套商业级服务器框架。
+#### <a href="https://github.com/qq362946/Fantasy"><strong>Fantasy</strong></a> - Fantasy是一套源于ETServer但极为简洁，更好上手的一套商业级服务器框架。
+
+#### <a href="https://github.com/ALEXTANGXIAO/GameNetty"><strong>GameNetty</strong></a> - GameNetty是一套源于ETServer，首次拆分最新的ET8.1的前后端解决方案（包），客户端最精简大约750k，完美做成包的形式，几乎零成本 无侵入的嵌入进你的框架。
 
 ## <strong>交流群
 ### <a href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=MzOcQIzGVLQ5AC5LHaqqA3h_F6lZ_DX4&authKey=LctqAWGHkJ7voQvuj1oaSe5tsGrc1XmQG3U4QniieGUlxY3lC7FtDIpEvPOX0vT8&noverify=0&group_code=862987645">群   号：862987645 </strong></a>
 
 
-## <strong>Buy me a coffee.
+## <strong>Buy me a 奶茶.
 
-[您的赞助会让我们做得更快更好，如果觉得TEngine对您有帮助，不妨赞助我买杯咖啡吧~](Books/Donate.md)
+[您的赞助会让我们做得更快更好，如果觉得TEngine对您有帮助，不妨请我可爱的女儿买杯奶茶吧~](Books/Donate.md)
