@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
@@ -225,7 +226,7 @@ namespace TEngine.Editor
 
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
             {
-                scenes = new[] { "Assets/Scenes/main.unity" },
+                scenes = EditorBuildSettings.scenes.Select(scene => scene.path).ToArray(),
                 locationPathName = locationPathName,
                 targetGroup = buildTargetGroup,
                 target = buildTarget,
