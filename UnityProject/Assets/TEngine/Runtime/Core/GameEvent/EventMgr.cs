@@ -62,13 +62,22 @@ namespace TEngine
             entry.InterfaceWrap = callerWrap;
             if (typeName != null)
             {
-                _eventEntryMap.Add(typeName, entry);
+                _eventEntryMap[typeName] = entry;
             }
         }
 
         /// <summary>
         /// 分发注册器。
         /// </summary>
-        public EventDispatcher Dispatcher { get; } = new EventDispatcher();
+        public EventDispatcher Dispatcher { get; private set; } = new EventDispatcher();
+
+        /// <summary>
+        /// 清除事件。
+        /// </summary>
+        public void Init()
+        {
+            _eventEntryMap.Clear();
+            Dispatcher = new EventDispatcher();
+        }
     }
 }

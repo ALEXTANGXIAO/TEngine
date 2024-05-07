@@ -34,6 +34,7 @@ namespace GameLogic
 
                 object obj = Activator.CreateInstance(type, mgr.Dispatcher);
 
+                mgr.Init();
                 mgr.RegWrapInterface(obj.GetType().GetInterfaces()[0]?.FullName, obj);
             }
         }

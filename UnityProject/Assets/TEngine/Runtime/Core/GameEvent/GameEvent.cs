@@ -585,5 +585,13 @@ namespace TEngine
         }
 
         #endregion
+
+        /// <summary>
+        /// 清除事件。
+        /// </summary>
+        public static void Shutdown()
+        {
+            _eventMgr.Init();
+        }
     }
 }

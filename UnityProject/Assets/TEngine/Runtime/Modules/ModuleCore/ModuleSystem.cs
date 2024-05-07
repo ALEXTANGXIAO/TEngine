@@ -87,6 +87,7 @@ namespace TEngine
             _modules.Clear();
 
             GameModule.Shutdown(shutdownType);
+            GameEvent.Shutdown();
             
             if (shutdownType == ShutdownType.None)
             {
