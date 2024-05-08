@@ -170,7 +170,7 @@ namespace TEngine
         }
 
         [TypeInferenceRule(TypeInferenceRules.TypeReferencedByFirstArgument)]
-        public static Component FindChildComponent(this Type type, Transform transform, string path)
+        public static Component FindChildComponent(this Transform transform, string path, Type type)
         {
             var findTrans = transform.Find(path);
             if (findTrans != null)
