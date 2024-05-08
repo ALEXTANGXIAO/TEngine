@@ -266,7 +266,7 @@ namespace TEngine
             {
                 if (_behaviour != null)
                 {
-                    _behaviour.Release();
+                    _behaviour.Shutdown();
                 }
                 if (_entity != null)
                 {
@@ -392,8 +392,9 @@ namespace TEngine
                     OnApplicationPauseEvent -= fun;
                 }
 
-                public void Release()
+                internal void Shutdown()
                 {
+                    DestroyEvent?.Invoke();
                     UpdateEvent = null;
                     FixedUpdateEvent = null;
                     LateUpdateEvent = null;

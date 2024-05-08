@@ -46,6 +46,7 @@ public partial class GameApp:Singleton<GameApp>
     /// <param name="shutdownType">关闭游戏框架类型。</param>
     public static void Shutdown(ShutdownType shutdownType)
     {
+        Log.Info("GameApp Shutdown");
         if (shutdownType == ShutdownType.None)
         {
             return;
@@ -128,6 +129,7 @@ public partial class GameApp:Singleton<GameApp>
             var logic = listLogic[i];
             logic.OnDestroy();
         }
+        Shutdown(ShutdownType.Restart);
     }
 
     private void OnDrawGizmos()
