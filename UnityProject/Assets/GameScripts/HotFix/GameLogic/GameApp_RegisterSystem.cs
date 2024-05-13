@@ -7,7 +7,7 @@ public partial class GameApp
 {
     private List<ILogicSys> _listLogicMgr;
     
-    private void Init()
+    public override void Active()
     {
         CodeTypes.Instance.Init(_hotfixAssembly.ToArray());
         EventInterfaceHelper.Init();

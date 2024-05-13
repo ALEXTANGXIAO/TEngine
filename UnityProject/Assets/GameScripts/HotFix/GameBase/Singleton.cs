@@ -1,14 +1,14 @@
-﻿using TEngine;
+﻿using System.Diagnostics;
 
 namespace GameBase
 {
     /// <summary>
-    /// 通用单例。
+    /// 全局对象必须继承于此。
     /// </summary>
-    /// <typeparam name="T">泛型T。</typeparam>
-    public class Singleton<T> where T : new()
+    /// <typeparam name="T">子类类型。</typeparam>
+    public abstract class Singleton<T> : ISingleton where T : Singleton<T>, new()
     {
-        private static T _instance;
+        protected static T _instance = default(T);
 
         public static T Instance
         {
@@ -17,10 +17,42 @@ namespace GameBase
                 if (null == _instance)
                 {
                     _instance = new T();
-                    Log.Assert(_instance != null);
+                    _instance.Init();
+                    SingletonSystem.Retain(_instance);
                 }
 
                 return _instance;
+            }
+        }
+
+        public static bool IsValid => _instance != null;
+
+        protected Singleton()
+        {
+#if UNITY_EDITOR
+            string st = new StackTrace().ToString();
+            // using const string to compare simply
+            if (!st.Contains("GameBase.Singleton`1[T].get_Instance"))
+            {
+                UnityEngine.Debug.LogError($"请必须通过Instance方法来实例化{typeof(T).FullName}类");
+            }
+#endif
+        }
+
+        protected virtual void Init()
+        {
+        }
+
+        public virtual void Active()
+        {
+        }
+
+        public virtual void Release()
+        {
+            if (_instance != null)
+            {
+                SingletonSystem.Release(_instance);
+                _instance = null;
             }
         }
     }
