@@ -170,6 +170,8 @@ public static class SettingsUtils
         return "Android";
 #elif UNITY_IOS
         return "IOS";
+#elif UNITY_WEBGL
+        return "WebGL";
 #else
         switch (Application.platform)
         {
