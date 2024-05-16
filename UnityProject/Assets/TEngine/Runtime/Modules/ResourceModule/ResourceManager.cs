@@ -128,6 +128,10 @@ namespace TEngine
             YooAssets.Initialize(new ResourceLogger());
             YooAssets.SetOperationSystemMaxTimeSlice(Milliseconds);
 
+#if UNITY_WECHAT_GAME && !UNITY_EDITOR
+            YooAssets.SetCacheSystemDisableCacheOnWebGL();    
+#endif
+
             // 创建默认的资源包
             string packageName = DefaultPackageName;
             var defaultPackage = YooAssets.TryGetPackage(packageName);
