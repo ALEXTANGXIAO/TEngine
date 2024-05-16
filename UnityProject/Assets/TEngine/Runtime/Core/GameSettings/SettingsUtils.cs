@@ -191,6 +191,9 @@ public static class SettingsUtils
                 return "Android";
             case RuntimePlatform.WebGLPlayer:
                 return "WebGL";
+
+            case RuntimePlatform.PS5:
+                return "PS5";
             default:
                 throw new NotSupportedException($"Platform '{Application.platform.ToString()}' is not supported.");
         }

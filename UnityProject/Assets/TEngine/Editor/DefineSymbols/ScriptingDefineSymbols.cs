@@ -14,7 +14,8 @@ namespace TEngine.Editor
             BuildTargetGroup.iOS,
             BuildTargetGroup.Android,
             BuildTargetGroup.WSA,
-            BuildTargetGroup.WebGL
+            BuildTargetGroup.WebGL,
+            BuildTargetGroup.PS5
         };
 
         /// <summary>
