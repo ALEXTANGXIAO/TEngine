@@ -90,6 +90,7 @@ Sandbox/
 # [Aa]ssets/Plugins/Sirenix.meta
 
 #YooAssets
+package/
 yoo/
 [Aa]ssets/TEngine/AssetSetting/Resources/BuiltinFileManifest.asset
 [Aa]ssets/TEngine/AssetSetting/Resources/BuiltinFileManifest.asset.meta
