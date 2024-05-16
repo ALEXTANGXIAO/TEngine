@@ -17,6 +17,6 @@
 
 ### 索尼 PS5 真机运行
 
-![image](src/Console Viewer.png)
+![image](src/Console-Viewer.png)
 
-![image](src/Console Output.png)
+![image](src/Console-Output.png)
