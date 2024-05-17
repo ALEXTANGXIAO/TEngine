@@ -93,7 +93,6 @@ public static class EventInterfaceGenerate
             }
         }
 
-        EditorUtility.SetDirty(HybridCLRSettings.Instance);
         AssetDatabase.Refresh();
         Debug.Log("Generate EventInterface Complete");
         // EditorUtility.DisplayDialog("提示", "代码生成完毕", "OK");
