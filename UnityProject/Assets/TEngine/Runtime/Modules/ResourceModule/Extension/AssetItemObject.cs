@@ -15,7 +15,7 @@ namespace TEngine
             {
                 return;
             }
-            GameModule.Resource.UnloadAsset(Target);
+            GameModule.Resource?.UnloadAsset(Target);
         }
     }
 }
