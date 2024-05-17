@@ -6,19 +6,9 @@ using TEngine.Editor;
 using UnityEditor;
 using UnityEngine;
 
-[InitializeOnLoad]
 public static class BuildDLLCommand
 {
     private const string EnableHybridClrScriptingDefineSymbol = "ENABLE_HYBRIDCLR";
-
-    static BuildDLLCommand()
-    {
-#if ENABLE_HYBRIDCLR
-        HybridCLR.Editor.SettingsUtil.Enable = true;
-#else
-        HybridCLR.Editor.SettingsUtil.Enable = false;
-#endif
-    }
     
     /// <summary>
     /// 禁用HybridCLR宏定义。
