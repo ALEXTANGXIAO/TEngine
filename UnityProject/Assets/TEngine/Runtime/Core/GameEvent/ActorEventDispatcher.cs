@@ -102,7 +102,7 @@ namespace TEngine
                         {
                             Log.Info("remove delay delete eventId[{0}]", eventId);
                             listListener[i] = listListener[^1];
-                            EventRegInfo.Release(listListener[i]);
+                            EventRegInfo.Release(listListener[^1]);
                             listListener.RemoveAt(listListener.Count - 1);
                             i--;
                         }
@@ -475,7 +475,7 @@ namespace TEngine
                         else
                         {
                             list[i] = list[^1];
-                            EventRegInfo.Release(list[i]);
+                            EventRegInfo.Release(list[^1]);
                             list.RemoveAt(list.Count - 1);
                             i--;
                         }
