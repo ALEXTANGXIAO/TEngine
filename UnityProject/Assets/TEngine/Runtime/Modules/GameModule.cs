@@ -194,6 +194,7 @@ namespace TEngine
         {
             if (state == PlayModeStateChange.ExitingPlayMode)
             {
+				ModuleImpSystem.Shutdown();
                 ModuleSystem.Shutdown(ShutdownType.Quit);
             }
         }
