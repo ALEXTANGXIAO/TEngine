@@ -82,7 +82,7 @@ namespace GameBase
 
             if (_singletons != null)
             {
-                for (int i = 0; i < _singletons.Count; ++i)
+                for (int i = _singletons.Count -1; i >= 0; i--)
                 {
                     _singletons[i].Release();
                 }
