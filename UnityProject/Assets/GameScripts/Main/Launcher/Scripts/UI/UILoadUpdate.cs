@@ -5,11 +5,11 @@ using Version = TEngine.Version;
 
 namespace GameMain
 {
-    [Window(UILayer.UI, fromResources: true, location: "AssetLoad/UILoadUpdate",fullScreen:true)]
+    [Window(UILayer.UI, fromResources: true, location: "AssetLoad/UILoadUpdate", fullScreen: true)]
     public class UILoadUpdate : UIWindow
     {
         private Scrollbar m_scrollbarProgress;
-        
+
         #region 脚本工具生成的代码
         private Image m_imgBackGround;
         private Text m_textDesc;
@@ -41,12 +41,16 @@ namespace GameMain
         protected override void RegisterEvent()
         {
             base.RegisterEvent();
-            AddUIEvent(RuntimeId.ToRuntimeId("RefreshVersion"),RefreshVersion);
+            AddUIEvent(RuntimeId.ToRuntimeId("RefreshVersion"), RefreshVersion);
         }
 
         protected override void OnRefresh()
         {
             base.OnRefresh();
+            if (base.userDatas.Length > 0 && base.userDatas[0] != null)
+            {
+                m_textDesc.text = base.userDatas[0].ToString(); //获取更新内容，由ProcedureDownloadFile -> OnDownloadProgressCallback 传递
+            }
         }
 
         #region 事件
