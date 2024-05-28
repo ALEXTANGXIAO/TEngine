@@ -40,7 +40,16 @@ namespace TEngine
         /// <summary>
         /// 资源包名称。
         /// </summary>
-        public string PackageName = "DefaultPackage";
+        [SerializeField] private string packageName = "DefaultPackage";
+
+        /// <summary>
+        /// 资源包名称。
+        /// </summary>
+        public string PackageName
+        {
+            get => packageName;
+            set => packageName = value;
+        }
 
         /// <summary>
         /// 资源系统运行模式。

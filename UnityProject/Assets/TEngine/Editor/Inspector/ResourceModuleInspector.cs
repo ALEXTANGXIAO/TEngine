@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEditor;
+using YooAsset.Editor;
 
 namespace TEngine.Editor.Inspector
 {
@@ -34,10 +36,12 @@ namespace TEngine.Editor.Inspector
         private SerializedProperty m_AssetPriority = null;
         private SerializedProperty m_DownloadingMaxNum = null;
         private SerializedProperty m_FailedTryAgain = null;
-
+        private SerializedProperty m_PackageName = null;
         private int m_ResourceModeIndex = 0;
         private int m_VerifyIndex = 0;
 
+        private int m_PackageNameIndex = 0;
+        private string[] m_PackageNames;
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
@@ -76,6 +80,18 @@ namespace TEngine.Editor.Inspector
             EditorGUILayout.PropertyField(m_UpdatableWhilePlaying);
             
             EditorGUI.EndDisabledGroup();
+
+            m_PackageNames = GetBuildPackageNames().ToArray();
+            m_PackageNameIndex = Array.IndexOf(m_PackageNames, m_PackageName.stringValue);
+            if (m_PackageNameIndex < 0)
+            {
+                m_PackageNameIndex = 0;
+            }
+            m_PackageNameIndex = EditorGUILayout.Popup("Package Name", m_PackageNameIndex, m_PackageNames);
+            if (m_PackageName.stringValue != m_PackageNames[m_PackageNameIndex])
+            {
+                m_PackageName.stringValue = m_PackageNames[m_PackageNameIndex];
+            }
 
             int milliseconds = EditorGUILayout.DelayedIntField("Milliseconds", m_Milliseconds.intValue);
             if (milliseconds != m_Milliseconds.intValue)
@@ -236,6 +252,7 @@ namespace TEngine.Editor.Inspector
             m_AssetPriority = serializedObject.FindProperty("m_AssetPriority");
             m_DownloadingMaxNum = serializedObject.FindProperty("m_DownloadingMaxNum");
             m_FailedTryAgain = serializedObject.FindProperty("m_FailedTryAgain");
+            m_PackageName = serializedObject.FindProperty("packageName");
 
             RefreshModes();
             RefreshTypeNames();
@@ -250,6 +267,20 @@ namespace TEngine.Editor.Inspector
         private void RefreshTypeNames()
         {
             serializedObject.ApplyModifiedProperties();
+        }
+
+        /// <summary>
+        /// 获取构建包名称列表，用于下拉可选择
+        /// </summary>
+        /// <returns></returns>
+        private List<string> GetBuildPackageNames()
+        {
+            List<string> result = new List<string>();
+            foreach (var package in AssetBundleCollectorSettingData.Setting.Packages)
+            {
+                result.Add(package.PackageName);
+            }
+            return result;
         }
     }
 }
