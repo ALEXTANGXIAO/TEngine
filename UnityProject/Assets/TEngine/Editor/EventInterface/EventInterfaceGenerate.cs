@@ -239,8 +239,6 @@ public static class EventInterfaceGenerate
         {
             return parameterInfo.ParameterType.FullName;
         }
-
-        return parameterInfo.ParameterType.FullName;
     }
     
     /// <summary>
