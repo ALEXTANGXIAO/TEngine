@@ -13,6 +13,7 @@ namespace GameLogic
         /// </summary>
         public static void Init()
         {
+            GameEvent.EventMgr.Init();
             RegisterEventInterface_Logic.Register(GameEvent.EventMgr);
             RegisterEventInterface_UI.Register(GameEvent.EventMgr);
         }
