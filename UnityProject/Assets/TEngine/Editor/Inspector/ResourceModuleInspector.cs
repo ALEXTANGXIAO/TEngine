@@ -30,6 +30,7 @@ namespace TEngine.Editor.Inspector
         private SerializedProperty m_ReadWritePathType = null;
         private SerializedProperty m_MinUnloadUnusedAssetsInterval = null;
         private SerializedProperty m_MaxUnloadUnusedAssetsInterval = null;
+        private  SerializedProperty m_UseSystemUnloadUnusedAssets = null;
         private SerializedProperty m_AssetAutoReleaseInterval = null;
         private SerializedProperty m_AssetCapacity = null;
         private SerializedProperty m_AssetExpireTime = null;
@@ -106,6 +107,8 @@ namespace TEngine.Editor.Inspector
                 }
             }
 
+            EditorGUILayout.PropertyField(m_UseSystemUnloadUnusedAssets);
+            
             float minUnloadUnusedAssetsInterval =
                 EditorGUILayout.Slider("Min Unload Unused Assets Interval", m_MinUnloadUnusedAssetsInterval.floatValue, 0f, 3600f);
             if (Math.Abs(minUnloadUnusedAssetsInterval - m_MinUnloadUnusedAssetsInterval.floatValue) > 0.01f)
@@ -246,6 +249,7 @@ namespace TEngine.Editor.Inspector
             m_ReadWritePathType = serializedObject.FindProperty("m_ReadWritePathType");
             m_MinUnloadUnusedAssetsInterval = serializedObject.FindProperty("m_MinUnloadUnusedAssetsInterval");
             m_MaxUnloadUnusedAssetsInterval = serializedObject.FindProperty("m_MaxUnloadUnusedAssetsInterval");
+            m_UseSystemUnloadUnusedAssets = serializedObject.FindProperty("m_UseSystemUnloadUnusedAssets");
             m_AssetAutoReleaseInterval = serializedObject.FindProperty("m_AssetAutoReleaseInterval");
             m_AssetCapacity = serializedObject.FindProperty("m_AssetCapacity");
             m_AssetExpireTime = serializedObject.FindProperty("m_AssetExpireTime");
