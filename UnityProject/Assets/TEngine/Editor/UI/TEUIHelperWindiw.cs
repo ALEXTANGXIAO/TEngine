@@ -34,7 +34,7 @@ namespace TEngine.Editor.UI
 
         [ReadOnly, LabelText("生成的脚本"),HorizontalGroup(GroupID ="BS")]
         public TextAsset buildScript;
-
+        [Button(SdfIconType.Trash, Name = ""), HorizontalGroup(GroupID = "BS", Width = 50)]
         protected override void OnDisable()
         {
             base.OnDisable();
@@ -65,7 +65,7 @@ namespace TEngine.Editor.UI
             if (File.Exists(path))
                 buildScript = AssetDatabase.LoadAssetAtPath<TextAsset>(originPath);
         }
-        [Button(SdfIconType.Trash, Name = ""), HorizontalGroup(GroupID = "BS", Width = 50)]
+
         void Delete()
         {
             AssetDatabase.DeleteAsset($"{savePath}/{className}.cs");
