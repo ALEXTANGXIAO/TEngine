@@ -36,7 +36,10 @@ namespace GameBase
 
         protected virtual void OnDestroy()
         {
-            Release();
+            if (this == _instance)
+            {
+                Release();
+            }
         }
 
         /// <summary>
@@ -60,7 +63,7 @@ namespace GameBase
             if (_instance != null)
             {
                 SingletonSystem.Release(_instance.gameObject);
-                _instance = null;   
+                _instance = null;
             }
         }
 
@@ -96,7 +99,7 @@ namespace GameBase
                         }
                     }
 
-                    if(_instance == null)
+                    if (_instance == null)
                     {
                         Log.Error($"Can't create SingletonBehaviour<{typeof(T)}>");
                     }
