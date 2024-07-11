@@ -3,10 +3,10 @@ using GameLogic;
 using TEngine;
 using UnityEngine;
 
-public partial class GameApp
+public partial class GameApp : Singleton<GameApp>
 {
     private List<ILogicSys> _listLogicMgr;
-    
+
     public override void Active()
     {
         CodeTypes.Instance.Init(_hotfixAssembly.ToArray());
@@ -15,13 +15,13 @@ public partial class GameApp
         RegisterAllSystem();
         InitSystemSetting();
     }
-    
+
     /// <summary>
     /// 设置一些通用的系统属性。
     /// </summary>
     private void InitSystemSetting()
     {
-        
+
     }
 
     /// <summary>
@@ -32,7 +32,7 @@ public partial class GameApp
         //带生命周期的单例系统。
         AddLogicSys(BehaviourSingleSystem.Instance);
     }
-    
+
     /// <summary>
     /// 注册逻辑系统。
     /// </summary>

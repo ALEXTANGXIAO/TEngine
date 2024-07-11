@@ -9,6 +9,7 @@ using UnityEngine;
 using TEngine;
 using System.Reflection;
 using YooAsset;
+using Cysharp.Threading.Tasks;
 
 namespace GameMain
 {
@@ -38,6 +39,12 @@ namespace GameMain
             base.OnEnter(procedureOwner);
             Log.Debug("HyBridCLR ProcedureLoadAssembly OnEnter");
             m_procedureOwner = procedureOwner;
+
+            LoadAssembly().Forget();
+        }
+
+        private async UniTaskVoid LoadAssembly()
+        {
             m_LoadAssemblyComplete = false;
             m_HotfixAssemblys = new List<Assembly>();
 
@@ -55,7 +62,7 @@ namespace GameMain
             {
                 m_LoadMetadataAssemblyComplete = true;
             }
-            
+
             if (!SettingsUtils.HybridCLRCustomGlobalSettings.Enable || GameModule.Resource.PlayMode == EPlayMode.EditorSimulateMode)
             {
                 m_MainLogicAssembly = GetMainLogicAssembly();
@@ -75,10 +82,11 @@ namespace GameMain
                                     SettingsUtils.HybridCLRCustomGlobalSettings.AssemblyTextAssetPath,
                                     $"{hotUpdateDllName}{SettingsUtils.HybridCLRCustomGlobalSettings.AssemblyTextAssetExtension}"));
                         }
-                           
+
                         Log.Debug($"LoadAsset: [ {assetLocation} ]");
                         m_LoadAssetCount++;
-                        GameModule.Resource.LoadAsset<TextAsset>(assetLocation,LoadAssetSuccess);
+                        var result = await GameModule.Resource.LoadAssetAsync<TextAsset>(assetLocation);
+                        LoadAssetSuccess(result);
                     }
 
                     m_LoadAssemblyWait = true;
@@ -94,7 +102,7 @@ namespace GameMain
                 m_LoadAssemblyComplete = true;
             }
         }
-        
+
         protected override void OnUpdate(IFsm<IProcedureManager> procedureOwner, float elapseSeconds, float realElapseSeconds)
         {
             base.OnUpdate(procedureOwner, elapseSeconds, realElapseSeconds);
@@ -108,7 +116,7 @@ namespace GameMain
             }
             AllAssemblyLoadComplete();
         }
-        
+
         private void AllAssemblyLoadComplete()
         {
             ChangeState<ProcedureStartGame>(m_procedureOwner);
@@ -231,11 +239,11 @@ namespace GameMain
                             SettingsUtils.HybridCLRCustomGlobalSettings.AssemblyTextAssetPath,
                             $"{aotDllName}{SettingsUtils.HybridCLRCustomGlobalSettings.AssemblyTextAssetExtension}"));
                 }
-                
-                
+
+
                 Log.Debug($"LoadMetadataAsset: [ {assetLocation} ]");
                 m_LoadMetadataAssetCount++;
-                GameModule.Resource.LoadAsset<TextAsset>(assetLocation,LoadMetadataAssetSuccess);
+                GameModule.Resource.LoadAsset<TextAsset>(assetLocation, LoadMetadataAssetSuccess);
             }
             m_LoadMetadataAssemblyWait = true;
         }
