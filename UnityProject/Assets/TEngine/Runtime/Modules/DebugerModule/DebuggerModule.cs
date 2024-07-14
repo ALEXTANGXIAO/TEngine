@@ -25,7 +25,7 @@ namespace TEngine
         /// </summary>
         internal static readonly float DefaultWindowScale = 1.5f;
 
-        private static readonly TextEditor s_TextEditor = new TextEditor();
+        private static TextEditor s_TextEditor = null;
         private IDebuggerManager _debuggerManager = null;
         private Rect m_DragRect = new Rect(0f, 0f, float.MaxValue, 25f);
         private Rect m_IconRect = DefaultIconRect;
@@ -146,6 +146,7 @@ namespace TEngine
         protected override void Awake()
         {
             base.Awake();
+            s_TextEditor = new TextEditor();
             _eventSystem = GameObject.Find("UIRoot/EventSystem");
             _debuggerManager = ModuleImpSystem.GetModule<IDebuggerManager>();
             if (_debuggerManager == null)
