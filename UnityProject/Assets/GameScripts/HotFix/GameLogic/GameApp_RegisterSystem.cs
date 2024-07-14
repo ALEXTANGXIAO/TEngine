@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using GameBase;
 using GameLogic;
 using TEngine;
-using UnityEngine;
 
 public partial class GameApp : Singleton<GameApp>
 {
