@@ -176,12 +176,12 @@ namespace TEngine
         /// <summary>
         /// 获取资源只读路径。
         /// </summary>
-        public string ReadOnlyPath => m_ResourceManager.ReadOnlyPath;
+        public string ReadOnlyPath => m_ResourceManager?.ReadOnlyPath;
 
         /// <summary>
         /// 获取资源读写路径。
         /// </summary>
-        public string ReadWritePath => m_ResourceManager.ReadWritePath;
+        public string ReadWritePath => m_ResourceManager?.ReadWritePath;
 
         [SerializeField]
         private float m_AssetAutoReleaseInterval = 60f;
