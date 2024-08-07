@@ -69,7 +69,23 @@ public static class EventInterfaceGenerate
         EventInterfaceGenerateTag.HadGenerate = true;
 
         // 加载程序集
-        Assembly assembly = typeof(GameApp).Assembly;
+         Assembly assembly = null;
+        foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            foreach(var type in asm.GetTypes())
+            {
+                if (type.Name == "GameApp")
+                {
+                    assembly = asm;
+                    break;
+                }
+            }
+        }
+        if(assembly == null)
+        {
+            Debug.LogError("Game App Class Not Found");
+            return;
+        }
 
         // 获取程序集中的所有类型
         Type[] types = assembly.GetTypes();
