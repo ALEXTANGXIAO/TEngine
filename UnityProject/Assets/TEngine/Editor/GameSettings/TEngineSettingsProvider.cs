@@ -10,6 +10,7 @@ public class TEngineSettingsProvider : SettingsProvider
     private const string headerName = "TEngine/TEngineSettings";
     private SerializedObject m_CustomSettings;
 
+    private static string m_SettingsPath = k_SettingsPath;
     internal static SerializedObject GetSerializedSettings()
     {
         return new SerializedObject(SettingsUtils.GlobalSettings);
@@ -17,7 +18,12 @@ public class TEngineSettingsProvider : SettingsProvider
 
     public static bool IsSettingsAvailable()
     {
-        return File.Exists(k_SettingsPath);
+        var pathes = AssetDatabase.FindAssets("TEngineGlobalSettings", new string[2] { k_SettingsPath,"Packages/com.tengine/" });
+        if (pathes.Length > 0)
+        {
+            m_SettingsPath = AssetDatabase.GUIDToAssetPath(pathes[0]);
+        }
+        return pathes.Length > 0;
     }
 
     public override void OnActivate(string searchContext, VisualElement rootElement)
@@ -29,16 +35,16 @@ public class TEngineSettingsProvider : SettingsProvider
     public override void OnDeactivate()
     {
         base.OnDeactivate();
-        SaveAssetData(k_SettingsPath);
+        SaveAssetData(m_SettingsPath);
     }
-    
+
     void SaveAssetData(string path)
     {
-        TEngineSettings old = AssetDatabase.LoadAssetAtPath<TEngineSettings>(k_SettingsPath);
+        TEngineSettings old = AssetDatabase.LoadAssetAtPath<TEngineSettings>(m_SettingsPath);
         TEngineSettings data = ScriptableObject.CreateInstance<TEngineSettings>();
         data.Set(old.FrameworkGlobalSettings, old.BybridCLRCustomGlobalSettings);
         AssetDatabase.DeleteAsset(path);
-        AssetDatabase.CreateAsset(data, path);              
+        AssetDatabase.CreateAsset(data, path);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }
