@@ -58,7 +58,7 @@ namespace GameLogic
 
         private Dictionary<int, string> _notifyStringMap;
 
-        public void Init()
+        protected override void Init()
         {
             InitState();
             InitRedNoteConfig();
