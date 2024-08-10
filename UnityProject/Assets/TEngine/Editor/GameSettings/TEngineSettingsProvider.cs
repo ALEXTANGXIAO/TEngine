@@ -35,18 +35,36 @@ public class TEngineSettingsProvider : SettingsProvider
     public override void OnDeactivate()
     {
         base.OnDeactivate();
-        SaveAssetData(m_SettingsPath);
+
+        // 确保只有在有修改时才保存
+        if (m_CustomSettings != null && m_CustomSettings.hasModifiedProperties)
+        {
+            EditorApplication.delayCall += () => SaveAssetData(k_SettingsPath);
+        }
     }
 
     void SaveAssetData(string path)
     {
-        TEngineSettings old = AssetDatabase.LoadAssetAtPath<TEngineSettings>(m_SettingsPath);
+        TEngineSettings old = AssetDatabase.LoadAssetAtPath<TEngineSettings>(k_SettingsPath);
+        if (old == null)
+        {
+            Debug.LogError($"Failed to load TEngineSettings from path: {k_SettingsPath}");
+            return;
+        }
+
         TEngineSettings data = ScriptableObject.CreateInstance<TEngineSettings>();
         data.Set(old.FrameworkGlobalSettings, old.BybridCLRCustomGlobalSettings);
-        AssetDatabase.DeleteAsset(path);
-        AssetDatabase.CreateAsset(data, path);
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
+
+        if (AssetDatabase.DeleteAsset(path))
+        {
+            AssetDatabase.CreateAsset(data, path);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+        }
+        else
+        {
+            Debug.LogError($"Failed to delete existing asset at path: {path}");
+        }
     }
 
 
