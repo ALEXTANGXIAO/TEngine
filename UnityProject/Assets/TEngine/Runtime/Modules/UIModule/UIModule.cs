@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using YooAsset;
@@ -267,6 +268,16 @@ namespace TEngine
         {
             ShowUIImp(typeof(T), false, userDatas);
         }
+        
+        /// <summary>
+        /// 异步打开窗口。
+        /// </summary>
+        /// <param name="userDatas">用户自定义数据。</param>
+        /// <returns>打开窗口操作句柄。</returns>
+        public async UniTask<UIWindow> ShowUIAsyncAwait<T>(params System.Object[] userDatas) where T : UIWindow
+        {
+            return await ShowUIAwaitImp(typeof(T), true, userDatas);
+        }
 
         /// <summary>
         /// 同步打开窗口。
@@ -296,6 +307,38 @@ namespace TEngine
                 UIWindow window = CreateInstance(type);
                 Push(window); //首次压入
                 window.InternalLoad(window.AssetName, OnWindowPrepare, isAsync, userDatas).Forget();
+            }
+        }
+        
+        private async UniTask<UIWindow> ShowUIAwaitImp(Type type, bool isAsync, params System.Object[] userDatas)
+        {
+            string windowName = type.FullName;
+
+            // 如果窗口已经存在
+            if (IsContains(windowName))
+            {
+                UIWindow window = GetWindow(windowName);
+                Pop(window); //弹出窗口
+                Push(window); //重新压入
+                window.TryInvoke(OnWindowPrepare, userDatas);
+                return window;
+            }
+            else
+            {
+                UIWindow window = CreateInstance(type);
+                Push(window); //首次压入
+                window.InternalLoad(window.AssetName, OnWindowPrepare, isAsync, userDatas).Forget();
+                float time = 0f;
+                while (!window.IsLoadDone)
+                {
+                    time += Time.time;
+                    if (time > 60f)
+                    {
+                        break;
+                    }
+                    await UniTask.Yield();
+                }
+                return window;
             }
         }
 
@@ -458,6 +501,88 @@ namespace TEngine
             }
 
             return window;
+        }
+        
+        /// <summary>
+        /// 异步获取窗口。
+        /// </summary>
+        /// <returns>打开窗口操作句柄。</returns>
+        public async UniTask<T> GetUIAsyncAwait<T>() where T : UIWindow
+        {
+            string windowName = typeof(T).FullName;
+            var window = GetWindow(windowName);
+            if (window == null)
+            {
+                return null;
+            }
+            
+            var ret = window as T;
+
+            if (ret == null)
+            {
+                return null;
+            }
+
+            if (ret.IsLoadDone)
+            {
+                return ret;
+            }
+
+            float time = 0f;
+            while (!ret.IsLoadDone)
+            {
+                time += Time.time;
+                if (time > 60f)
+                {
+                    break;
+                }
+                await UniTask.Yield();
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// 异步获取窗口。
+        /// </summary>
+        /// <param name="callback">回调。</param>
+        /// <returns>打开窗口操作句柄。</returns>
+        public void GetUIAsync<T>(Action<T> callback) where T : UIWindow
+        {
+            string windowName = typeof(T).FullName;
+            var window = GetWindow(windowName);
+            if (window == null)
+            {
+                return;
+            }
+
+            var ret = window as T;
+            
+            if (ret == null)
+            {
+                return;
+            }
+
+            if (ret.IsLoadDone)
+            {
+                return;
+            }
+            
+            GetUIAsyncImp(callback).Forget();
+
+            async UniTaskVoid GetUIAsyncImp(Action<T> ctx)
+            {
+                float time = 0f;
+                while (!ret.IsLoadDone)
+                {
+                    time += Time.time;
+                    if (time > 60f)
+                    {
+                        break;
+                    }
+                    await UniTask.Yield();
+                }
+                ctx?.Invoke(ret);
+            }
         }
 
         private UIWindow GetWindow(string windowName)
