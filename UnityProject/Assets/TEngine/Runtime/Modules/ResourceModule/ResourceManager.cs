@@ -659,6 +659,7 @@ namespace TEngine
 
             if (cancelOrFailed)
             {
+                _assetLoadingList.Remove(assetObjectKey);
                 return null;
             }
             
@@ -696,6 +697,7 @@ namespace TEngine
 
             if (cancelOrFailed)
             {
+                _assetLoadingList.Remove(assetObjectKey);
                 return null;
             }
 
@@ -752,6 +754,8 @@ namespace TEngine
 
             if (!string.IsNullOrEmpty(assetInfo.Error))
             {
+                _assetLoadingList.Remove(assetObjectKey);
+                
                 string errorMessage = Utility.Text.Format("Can not load asset '{0}' because :'{1}'.", location, assetInfo.Error);
                 if (loadAssetCallbacks.LoadAssetFailureCallback != null)
                 {
@@ -840,6 +844,8 @@ namespace TEngine
 
             if (!string.IsNullOrEmpty(assetInfo.Error))
             {
+                _assetLoadingList.Remove(assetObjectKey);
+                
                 string errorMessage = Utility.Text.Format("Can not load asset '{0}' because :'{1}'.", location, assetInfo.Error);
                 if (loadAssetCallbacks.LoadAssetFailureCallback != null)
                 {
