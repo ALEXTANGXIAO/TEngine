@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class TEngineSettingsProvider : SettingsProvider
 {
+    const string k_SettingsPathHeader = "Assets/TEngine/ResRaw/Resources/";
     const string k_SettingsPath = "Assets/TEngine/ResRaw/Resources/TEngineGlobalSettings.asset";
     private const string headerName = "TEngine/TEngineSettings";
     private SerializedObject m_CustomSettings;
@@ -18,7 +19,7 @@ public class TEngineSettingsProvider : SettingsProvider
 
     public static bool IsSettingsAvailable()
     {
-        var pathes = AssetDatabase.FindAssets("TEngineGlobalSettings", new string[2] { k_SettingsPath,"Packages/com.tengine/" });
+        var pathes = AssetDatabase.FindAssets("TEngineGlobalSettings", new string[2] { k_SettingsPathHeader,"Packages/com.tengine/" });
         if (pathes.Length > 0)
         {
             m_SettingsPath = AssetDatabase.GUIDToAssetPath(pathes[0]);
