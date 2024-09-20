@@ -101,7 +101,7 @@ namespace TEngine
                 _errorLogger.Dispose();
                 _errorLogger = null;
             }
-            CloseAll();
+            CloseAll(isShutDown:true);
             if (m_InstanceRoot != null && m_InstanceRoot.parent != null)
             {
                 Destroy(m_InstanceRoot.parent.gameObject);
@@ -393,12 +393,12 @@ namespace TEngine
         /// <summary>
         /// 关闭所有窗口。
         /// </summary>
-        public void CloseAll()
+        public void CloseAll(bool isShutDown = false)
         {
             for (int i = 0; i < _stack.Count; i++)
             {
                 UIWindow window = _stack[i];
-                window.InternalDestroy();
+                window.InternalDestroy(isShutDown);
             }
 
             _stack.Clear();

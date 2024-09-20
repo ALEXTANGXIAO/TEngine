@@ -370,7 +370,7 @@ namespace TEngine
             return needUpdate;
         }
 
-        internal void InternalDestroy()
+        internal void InternalDestroy(bool isShutDown = false)
         {
             _isCreate = false;
 
@@ -394,7 +394,11 @@ namespace TEngine
                 Object.Destroy(_panel);
                 _panel = null;
             }
-            CancelHideToCloseTimer();
+
+            if (!isShutDown)
+            {
+                CancelHideToCloseTimer();
+            }
         }
 
         /// <summary>
