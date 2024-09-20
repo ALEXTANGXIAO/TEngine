@@ -562,11 +562,6 @@ namespace TEngine
                 return;
             }
 
-            if (ret.IsLoadDone)
-            {
-                return;
-            }
-            
             GetUIAsyncImp(callback).Forget();
 
             async UniTaskVoid GetUIAsyncImp(Action<T> ctx)
