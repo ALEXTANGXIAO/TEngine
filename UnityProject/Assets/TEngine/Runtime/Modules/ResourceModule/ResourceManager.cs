@@ -945,6 +945,7 @@ namespace TEngine
         #region 资源回收
         public void UnloadUnusedAssets()
         {
+            m_AssetPool.ReleaseAllUnused();
             foreach (var package in PackageMap.Values)
             {
                 if (package is { InitializeStatus: EOperationStatus.Succeed })
@@ -952,7 +953,6 @@ namespace TEngine
                     package.UnloadUnusedAssets();
                 }
             }
-            m_AssetPool.ReleaseAllUnused();
         }
 
         public void ForceUnloadAllAssets()
