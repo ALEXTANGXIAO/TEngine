@@ -92,6 +92,7 @@ namespace TEngine.Editor.UI
                 te.SelectAll();
                 te.Copy();
             }
+            UnityEngine.Debug.Log($"脚本已生成到剪贴板，请自行Ctl+V粘贴");
         }
 
         public static void Ergodic(Transform root, Transform transform, ref StringBuilder strVar, ref StringBuilder strBind, ref StringBuilder strOnCreate,
