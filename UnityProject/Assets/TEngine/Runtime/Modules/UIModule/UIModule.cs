@@ -331,7 +331,7 @@ namespace TEngine
                 float time = 0f;
                 while (!window.IsLoadDone)
                 {
-                    time += Time.time;
+                    time += Time.deltaTime;
                     if (time > 60f)
                     {
                         break;
