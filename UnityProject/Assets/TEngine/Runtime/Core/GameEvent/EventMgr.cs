@@ -77,7 +77,7 @@ namespace TEngine
         public void Init()
         {
             _eventEntryMap.Clear();
-            Dispatcher = new EventDispatcher();
+            Dispatcher.ClearEventTable();
         }
     }
 }
