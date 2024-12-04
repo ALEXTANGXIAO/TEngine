@@ -531,7 +531,7 @@ namespace TEngine
             float time = 0f;
             while (!ret.IsLoadDone)
             {
-                time += Time.time;
+                time += Time.deltaTime;
                 if (time > 60f)
                 {
                     break;
@@ -569,7 +569,7 @@ namespace TEngine
                 float time = 0f;
                 while (!ret.IsLoadDone)
                 {
-                    time += Time.time;
+                    time += Time.deltaTime;
                     if (time > 60f)
                     {
                         break;
