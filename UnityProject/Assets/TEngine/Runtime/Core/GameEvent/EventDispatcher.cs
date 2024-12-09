@@ -13,6 +13,13 @@ namespace TEngine
         /// </summary>
         private static readonly Dictionary<int, EventDelegateData> _eventTable = new Dictionary<int, EventDelegateData>();
 
+        /// <summary>
+        /// 清空事件表。
+        /// </summary>
+        internal void ClearEventTable()
+        {
+            _eventTable.Clear();
+        }
         #region 事件管理接口
 
         /// <summary>
