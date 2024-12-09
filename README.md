@@ -101,9 +101,6 @@ TEngine
 
 #### <a href="https://github.com/ALEXTANGXIAO/GameNetty"><strong>GameNetty</strong></a> - GameNetty是一套源于ETServer，首次拆分最新的ET8.1的前后端解决方案（包），客户端最精简大约750k，完美做成包的形式，几乎零成本 无侵入的嵌入进你的框架。
 
-## <strong>交流群
-### <a href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=MzOcQIzGVLQ5AC5LHaqqA3h_F6lZ_DX4&authKey=LctqAWGHkJ7voQvuj1oaSe5tsGrc1XmQG3U4QniieGUlxY3lC7FtDIpEvPOX0vT8&noverify=0&group_code=862987645">群   号：862987645 </strong></a>
-
 
 ## <strong>Buy me a 奶茶.
 
