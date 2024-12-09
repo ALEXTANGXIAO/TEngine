@@ -44,6 +44,11 @@ namespace TEngine
                 _resourceManager.UnloadAsset(_sourceGameObject);
             }
 
+            ReleaseRefAssetInfoList();
+        }
+
+        private void ReleaseRefAssetInfoList()
+        {
             if (_refAssetInfoList != null)
             {
                 foreach (var refInfo in _refAssetInfoList)
@@ -80,7 +85,10 @@ namespace TEngine
             }
 
             _resourceManager = resourceManager;
-            _refAssetInfoList = new List<AssetsRefInfo>();
+            if (_refAssetInfoList == null)
+            {
+                _refAssetInfoList = new List<AssetsRefInfo>();
+            }
             _refAssetInfoList.Add(new AssetsRefInfo(source));
             return this;
         }
