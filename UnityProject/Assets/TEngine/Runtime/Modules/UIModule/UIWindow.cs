@@ -75,29 +75,6 @@ namespace TEngine
         public int HideTimerId { get; set; }
 
         /// <summary>
-        /// 自定义数据。
-        /// </summary>
-        public System.Object UserData
-        {
-            get
-            {
-                if (userDatas != null && userDatas.Length >= 1)
-                {
-                    return userDatas[0];
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
-        /// <summary>
-        /// 自定义数据集。
-        /// </summary>
-        public System.Object[] UserDatas => userDatas;
-
-        /// <summary>
         /// 窗口深度值。
         /// </summary>
         public int Depth
@@ -446,6 +423,11 @@ namespace TEngine
             // 通知UI管理器
             IsPrepare = true;
             _prepareCallback?.Invoke(this);
+        }
+        
+        protected virtual void Hide()
+        {
+            GameModule.UI.HideUI(this.GetType());
         }
 
         protected virtual void Close()
